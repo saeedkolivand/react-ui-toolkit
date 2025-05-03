@@ -11,9 +11,9 @@ const sizeClasses: Record<ProgressSize, string> = {
 };
 
 const sizeTextClasses: Record<ProgressSize, string> = {
-  sm: 'text-[10px] leading-3',
-  md: 'text-xs',
-  lg: 'text-sm',
+  sm: 'text-[8px] leading-3',
+  md: 'text-[10px] leading-4',
+  lg: 'text-xs leading-5',
 };
 
 const variantClasses: Record<ProgressVariant, string> = {
@@ -118,7 +118,7 @@ export const Progress: React.FC<ProgressProps> = ({
   );
 
   const valueClasses = twMerge(
-    'absolute inset-0 flex items-center justify-center font-medium text-white',
+    'absolute inset-0 flex items-center justify-center font-medium text-white whitespace-nowrap',
     sizeTextClasses[size]
   );
 

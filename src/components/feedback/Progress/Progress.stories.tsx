@@ -54,7 +54,16 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof Progress>;
 
+const ProgressContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-[600px] p-4 bg-white dark:bg-gray-800 rounded-lg shadow">{children}</div>
+);
+
 export const Basic: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 60,
     max: 100,
@@ -62,6 +71,11 @@ export const Basic: Story = {
 };
 
 export const Small: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 40,
     max: 100,
@@ -70,6 +84,11 @@ export const Small: Story = {
 };
 
 export const Large: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 80,
     max: 100,
@@ -79,6 +98,11 @@ export const Large: Story = {
 };
 
 export const Primary: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 75,
     max: 100,
@@ -88,6 +112,11 @@ export const Primary: Story = {
 };
 
 export const Secondary: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 65,
     max: 100,
@@ -97,6 +126,11 @@ export const Secondary: Story = {
 };
 
 export const Success: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 100,
     max: 100,
@@ -106,6 +140,11 @@ export const Success: Story = {
 };
 
 export const Warning: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 85,
     max: 100,
@@ -115,6 +154,11 @@ export const Warning: Story = {
 };
 
 export const Error: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 25,
     max: 100,
@@ -124,6 +168,11 @@ export const Error: Story = {
 };
 
 export const WithStripes: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 70,
     max: 100,
@@ -134,6 +183,11 @@ export const WithStripes: Story = {
 };
 
 export const Animated: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 90,
     max: 100,
@@ -145,6 +199,11 @@ export const Animated: Story = {
 };
 
 export const Indeterminate: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     indeterminate: true,
     variant: 'primary',
@@ -153,6 +212,11 @@ export const Indeterminate: Story = {
 };
 
 export const WithLabel: Story = {
+  render: args => (
+    <ProgressContainer>
+      <Progress {...args} />
+    </ProgressContainer>
+  ),
   args: {
     value: 60,
     variant: 'primary',
@@ -163,34 +227,40 @@ export const WithLabel: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 min-w-[300px]">
-      <Progress value={60} variant="primary" showValue label="Primary progress" />
-      <Progress value={60} variant="secondary" showValue label="Secondary progress" />
-      <Progress value={60} variant="success" showValue label="Success progress" />
-      <Progress value={60} variant="warning" showValue label="Warning progress" />
-      <Progress value={60} variant="error" showValue label="Error progress" />
-      <Progress indeterminate animated variant="primary" label="Loading..." />
-    </div>
+    <ProgressContainer>
+      <div className="flex flex-col gap-4">
+        <Progress value={60} variant="primary" showValue label="Primary progress" />
+        <Progress value={60} variant="secondary" showValue label="Secondary progress" />
+        <Progress value={60} variant="success" showValue label="Success progress" />
+        <Progress value={60} variant="warning" showValue label="Warning progress" />
+        <Progress value={60} variant="error" showValue label="Error progress" />
+        <Progress indeterminate animated variant="primary" label="Loading..." />
+      </div>
+    </ProgressContainer>
   ),
 };
 
 export const AllSizes: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 min-w-[300px]">
-      <Progress value={60} size="sm" label="Small progress" />
-      <Progress value={60} size="md" showValue label="Medium progress" />
-      <Progress value={60} size="lg" showValue label="Large progress" />
-    </div>
+    <ProgressContainer>
+      <div className="flex flex-col gap-4">
+        <Progress value={60} size="sm" label="Small progress" />
+        <Progress value={60} size="md" showValue label="Medium progress" />
+        <Progress value={60} size="lg" showValue label="Large progress" />
+      </div>
+    </ProgressContainer>
   ),
 };
 
 export const AllStates: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 min-w-[300px]">
-      <Progress value={60} showValue label="Basic progress" />
-      <Progress value={60} showValue striped label="Striped progress" />
-      <Progress value={60} showValue striped animated label="Animated striped progress" />
-      <Progress indeterminate animated label="Indeterminate progress" />
-    </div>
+    <ProgressContainer>
+      <div className="flex flex-col gap-4">
+        <Progress value={60} showValue label="Basic progress" />
+        <Progress value={60} showValue striped label="Striped progress" />
+        <Progress value={60} showValue striped animated label="Animated striped progress" />
+        <Progress indeterminate animated label="Indeterminate progress" />
+      </div>
+    </ProgressContainer>
   ),
 };
