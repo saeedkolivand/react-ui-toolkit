@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
+import { Button } from '../../base/Button/Button';
+import { Icon } from '../../base/Icon/Icon';
 
-export interface DrawerProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
   /**
    * Whether the drawer is open
    */
@@ -87,62 +90,95 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       bottom: 'bottom-0 left-0 right-0',
     };
 
-    const transformClasses = {
-      left: 'transform -translate-x-full',
-      right: 'transform translate-x-full',
-      top: 'transform -translate-y-full',
-      bottom: 'transform translate-y-full',
+    const drawerVariants = {
+      open: {
+        x: position === 'left' ? 0 : position === 'right' ? 0 : 0,
+        y: position === 'top' ? 0 : position === 'bottom' ? 0 : 0,
+        opacity: 1,
+        transition: {
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+        },
+      },
+      closed: {
+        x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
+        y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
+        opacity: 0,
+        transition: {
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+        },
+      },
+    };
+
+    const backdropVariants = {
+      open: {
+        opacity: 1,
+        transition: {
+          duration: 0.2,
+        },
+      },
+      closed: {
+        opacity: 0,
+        transition: {
+          duration: 0.2,
+        },
+      },
     };
 
     const drawerClasses = twMerge(
       'fixed bg-white shadow-xl',
-      'transition-transform duration-300 ease-in-out',
       sizeClasses[size],
       positionClasses[position],
-      !isOpen && transformClasses[position],
       className
     );
 
-    const backdropClasses = twMerge(
-      'fixed inset-0 bg-black bg-opacity-50',
-      'transition-opacity duration-300 ease-in-out',
-      !isOpen && 'opacity-0 pointer-events-none'
-    );
-
-    if (!isOpen) return null;
-
     return createPortal(
-      <div className="relative z-50" role="dialog" aria-modal="true">
-        {/* Backdrop */}
-        <div
-          className={backdropClasses}
-          onClick={closeOnBackdropClick ? onClose : undefined}
-          aria-hidden="true"
-        />
+      <AnimatePresence>
+        {isOpen && (
+          <div className="relative z-50" role="dialog" aria-modal="true">
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-50"
+              variants={backdropVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              onClick={closeOnBackdropClick ? onClose : undefined}
+              aria-hidden="true"
+            />
 
-        {/* Drawer */}
-        <div ref={ref} className={drawerClasses} {...props}>
-          {showCloseButton && (
-            <button
-              type="button"
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              onClick={onClose}
-              aria-label="Close"
+            {/* Drawer */}
+            <motion.div
+              ref={ref}
+              className={drawerClasses}
+              variants={drawerVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              {...props}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
-          {children}
-        </div>
-      </div>,
+              {showCloseButton && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-4 right-4"
+                  onClick={onClose}
+                  aria-label="Close"
+                >
+                  <Icon name="close" size="lg" />
+                </Button>
+              )}
+              {children}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>,
       document.body
     );
   }
 );
+
+Drawer.displayName = 'Drawer';

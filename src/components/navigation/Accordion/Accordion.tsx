@@ -72,7 +72,7 @@ export const Accordion: React.FC<AccordionProps> = ({
             <button
               className={twMerge(
                 'w-full flex justify-between items-center py-2 px-4 text-left',
-                'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                'focus:outline-none',
                 item.disabled && 'opacity-50 cursor-not-allowed',
                 !item.disabled && 'hover:bg-gray-50'
               )}

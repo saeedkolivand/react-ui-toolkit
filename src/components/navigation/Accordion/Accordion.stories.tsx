@@ -14,7 +14,7 @@ const meta: Meta<typeof Accordion> = {
       control: 'object',
       description: 'Array of accordion items',
     },
-    defaultOpen: {
+    defaultExpanded: {
       control: 'number',
       description: 'Index of the item to be open by default',
     },
@@ -55,7 +55,7 @@ export const Default: Story = {
 export const DefaultOpen: Story = {
   args: {
     items: defaultItems,
-    defaultOpen: 0,
+    defaultExpanded: 0,
   },
 };
 
