@@ -2,12 +2,6 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
 
-const defaultOptions = [
-  { value: 'option1', label: 'Option 1' },
-  { value: 'option2', label: 'Option 2' },
-  { value: 'option3', label: 'Option 3' },
-];
-
 const meta: Meta<typeof Select> = {
   title: 'Base/Select',
   component: Select,
@@ -16,27 +10,14 @@ const meta: Meta<typeof Select> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    variant: {
-      control: 'select',
-      options: ['default', 'filled', 'outline'],
-      description: 'The visual style of the select',
-    },
     size: {
       control: 'select',
       options: ['sm', 'md', 'lg'],
-      description: 'The size of the select',
+      description: 'Size of the select input',
     },
     error: {
       control: 'boolean',
-      description: 'Whether the select is in an error state',
-    },
-    errorMessage: {
-      control: 'text',
-      description: 'Error message to display when error is true',
-    },
-    label: {
-      control: 'text',
-      description: 'Label text for the select',
+      description: 'Whether the select is in error state',
     },
     disabled: {
       control: 'boolean',
@@ -48,90 +29,105 @@ const meta: Meta<typeof Select> = {
 export default meta;
 type Story = StoryObj<typeof Select>;
 
+const options = [
+  { value: 'option1', label: 'Option 1' },
+  { value: 'option2', label: 'Option 2' },
+  { value: 'option3', label: 'Option 3' },
+  { value: 'option4', label: 'Option 4', disabled: true },
+  { value: 'option5', label: 'Option 5' },
+];
+
 export const Default: Story = {
   args: {
-    options: defaultOptions,
-  },
-};
-
-export const WithLabel: Story = {
-  args: {
+    value: 'option1',
+    options,
     label: 'Select an option',
-    options: defaultOptions,
+    onChange: e => console.log('Selected:', e.target.value),
   },
 };
 
-export const Filled: Story = {
+export const WithError: Story = {
   args: {
-    variant: 'filled',
-    options: defaultOptions,
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-    options: defaultOptions,
-  },
-};
-
-export const Small: Story = {
-  args: {
-    size: 'sm',
-    options: defaultOptions,
-  },
-};
-
-export const Large: Story = {
-  args: {
-    size: 'lg',
-    options: defaultOptions,
-  },
-};
-
-export const Error: Story = {
-  args: {
+    value: '',
+    options,
+    label: 'Select an option',
     error: true,
     errorMessage: 'Please select an option',
-    options: defaultOptions,
+    onChange: e => console.log('Selected:', e.target.value),
   },
 };
 
 export const Disabled: Story = {
   args: {
+    value: 'option1',
+    options,
+    label: 'Select an option',
     disabled: true,
-    options: defaultOptions,
+    onChange: e => console.log('Selected:', e.target.value),
   },
 };
 
-export const WithDisabledOption: Story = {
-  args: {
-    options: [
-      { value: 'option1', label: 'Option 1' },
-      { value: 'option2', label: 'Option 2', disabled: true },
-      { value: 'option3', label: 'Option 3' },
-    ],
-  },
-};
-
-export const AllVariants: Story = {
+export const DifferentSizes: Story = {
   render: () => (
-    <div className="space-y-4 w-64">
-      <Select options={defaultOptions} />
-      <Select variant="filled" options={defaultOptions} />
-      <Select variant="outline" options={defaultOptions} />
-      <Select size="sm" options={defaultOptions} />
-      <Select size="lg" options={defaultOptions} />
-      <Select label="Select an option" options={defaultOptions} />
-      <Select error errorMessage="Please select an option" options={defaultOptions} />
-      <Select disabled options={defaultOptions} />
+    <div className="space-y-4">
       <Select
-        options={[
-          { value: 'option1', label: 'Option 1' },
-          { value: 'option2', label: 'Option 2', disabled: true },
-          { value: 'option3', label: 'Option 3' },
-        ]}
+        value="option1"
+        options={options}
+        label="Small Select"
+        size="sm"
+        onChange={e => console.log('Selected:', e.target.value)}
+      />
+      <Select
+        value="option1"
+        options={options}
+        label="Medium Select"
+        size="md"
+        onChange={e => console.log('Selected:', e.target.value)}
+      />
+      <Select
+        value="option1"
+        options={options}
+        label="Large Select"
+        size="lg"
+        onChange={e => console.log('Selected:', e.target.value)}
       />
     </div>
   ),
+};
+
+export const WithoutLabel: Story = {
+  args: {
+    value: 'option1',
+    options,
+    onChange: e => console.log('Selected:', e.target.value),
+  },
+};
+
+export const WithCustomOptions: Story = {
+  args: {
+    value: 'option1',
+    label: 'Select with custom options',
+    onChange: e => console.log('Selected:', e.target.value),
+    children: (
+      <>
+        <option value="option1">Custom Option 1</option>
+        <option value="option2">Custom Option 2</option>
+        <option value="option3">Custom Option 3</option>
+      </>
+    ),
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    themes: {
+      defaultTheme: 'dark',
+    },
+  },
+  args: {
+    value: 'option1',
+    options,
+    label: 'Select in dark mode',
+    onChange: e => console.log('Selected:', e.target.value),
+  },
 };

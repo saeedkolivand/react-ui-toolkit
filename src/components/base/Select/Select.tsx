@@ -1,5 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { Option as OptionComponent, OptionProps } from './Option';
 
 export interface SelectOption {
@@ -34,6 +36,11 @@ export function Select({
   children,
   ...props
 }: SelectProps) {
+  const [isFocused, setIsFocused] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const selectRef = React.useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0, width: 0 });
+
   const baseClasses =
     'block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none bg-white dark:bg-gray-800 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700';
 
@@ -58,38 +65,118 @@ export function Select({
     className
   );
 
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  React.useEffect(() => {
+    if (isOpen && selectRef.current) {
+      const rect = selectRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [isOpen]);
+
+  const selectedOption = options?.find(opt => opt.value === value);
+
+  const dropdownContent = (
+    <AnimatePresence>
+      {isOpen && !disabled && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+          className="fixed z-50 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          style={{
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width,
+            maxHeight: '200px',
+            overflowY: 'auto',
+          }}
+        >
+          {options?.map((option, index) => (
+            <motion.div
+              key={option.value}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
+              className={`px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                option.value === value ? 'bg-gray-100 dark:bg-gray-700' : ''
+              } ${option.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={() => {
+                if (!option.disabled) {
+                  onChange({
+                    target: { value: option.value },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                  setIsOpen(false);
+                }
+              }}
+            >
+              {option.label}
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
-    <div className="relative">
+    <div className="relative" ref={selectRef}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
           {label}
         </label>
       )}
       <div className="relative">
-        <select
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          className={selectClasses}
-          {...props}
+        <motion.div whileFocus={{ scale: 1.01 }} className="relative">
+          <div
+            className={selectClasses}
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            tabIndex={0}
+          >
+            {selectedOption?.label || 'Select an option'}
+          </div>
+        </motion.div>
+        <motion.div
+          className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
         >
-          {options
-            ? options.map(option => (
-                <OptionComponent key={option.value} value={option.value} disabled={option.disabled}>
-                  {option.label}
-                </OptionComponent>
-              ))
-            : children}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
           <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <path d="M7 7l3 3 3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </div>
+        </motion.div>
       </div>
-      {error && errorMessage && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
-      )}
+
+      {createPortal(dropdownContent, document.body)}
+
+      <AnimatePresence>
+        {error && errorMessage && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {errorMessage}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
