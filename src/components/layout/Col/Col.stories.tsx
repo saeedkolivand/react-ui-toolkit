@@ -13,33 +13,28 @@ const meta: Meta<typeof Col> = {
   argTypes: {
     span: {
       control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       description: 'Number of columns to span',
     },
     sm: {
       control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       description: 'Number of columns to span on small screens',
     },
     md: {
       control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       description: 'Number of columns to span on medium screens',
     },
     lg: {
       control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       description: 'Number of columns to span on large screens',
     },
     xl: {
       control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       description: 'Number of columns to span on extra large screens',
-    },
-    '2xl': {
-      control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      description: 'Number of columns to span on 2xl screens',
     },
     offset: {
       control: 'select',
@@ -140,17 +135,17 @@ export const DifferentSpans: Story = {
 
 export const AutoWidth: Story = {
   args: {
-    span: 'auto',
+    span: 12,
   },
   render: args => (
     <Section>
       <div className="space-y-16">
         <div>
-          <h3 className="text-xl font-semibold mb-4">Auto Width Column</h3>
+          <h3 className="text-xl font-semibold mb-4">Full Width Column</h3>
           <div className="border-2 border-dashed border-gray-300 p-8 rounded-lg">
             <Row>
               <Col {...args}>
-                <ContentBox color="blue">Auto Width</ContentBox>
+                <ContentBox color="blue">Full Width</ContentBox>
               </Col>
               <Col span={4}>
                 <ContentBox color="green">Fixed Width</ContentBox>
