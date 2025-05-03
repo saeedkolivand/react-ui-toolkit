@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
+import { Button } from '../../base/Button/Button';
+import { Icon } from '../../base/Icon/Icon';
 
-export interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ModalProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'children'> {
   /**
    * Whether the modal is open
    */
@@ -35,6 +38,10 @@ export interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
    * Whether to show a scrollbar when content overflows
    */
   scrollable?: boolean;
+  /**
+   * The content of the modal
+   */
+  children: ReactNode;
 }
 
 export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
@@ -87,58 +94,65 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
 
     const modalClasses = twMerge(
       'relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full mx-auto',
-      'transform transition-all ease-in-out duration-300',
       sizeClasses[size],
       scrollable && 'max-h-[calc(100vh-2rem)] overflow-y-auto',
       className
     );
 
     const backdropClasses = twMerge(
-      'fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70',
-      'transform transition-opacity duration-300 ease-in-out'
+      'fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70'
     );
 
     const containerClasses = twMerge(
       'fixed inset-0 z-50 overflow-y-auto',
-      centered ? 'flex items-center' : 'flex items-start',
+      centered ? 'flex items-center justify-center' : 'flex items-start',
       'p-4 sm:p-6 md:p-8'
     );
 
-    if (!isOpen) return null;
-
     return createPortal(
-      <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        {/* Backdrop */}
-        <div
-          className={backdropClasses}
-          onClick={closeOnBackdropClick ? onClose : undefined}
-          aria-hidden="true"
-        />
+      <AnimatePresence>
+        {isOpen && (
+          <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            {/* Backdrop */}
+            <motion.div
+              className={backdropClasses}
+              onClick={closeOnBackdropClick ? onClose : undefined}
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
 
-        {/* Modal */}
-        <div className={containerClasses}>
-          <div ref={ref} className={modalClasses} {...props}>
-            {showCloseButton && (
-              <button
-                type="button"
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
-                onClick={onClose}
-                aria-label="Close"
+            {/* Modal */}
+            <div className={containerClasses}>
+              <motion.div
+                ref={ref}
+                className={modalClasses}
+                initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: -10 }}
+                exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                style={{ transform: 'translateY(-10%)' }}
+                {...props}
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
-            {children}
+                {showCloseButton && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-4 right-4"
+                    onClick={onClose}
+                    aria-label="Close"
+                  >
+                    <Icon name="close" size="lg" />
+                  </Button>
+                )}
+                {children}
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </div>,
+        )}
+      </AnimatePresence>,
       document.body
     );
   }
