@@ -2,7 +2,6 @@
   "name": "react-ui-toolkit",
   "version": "0.1.0",
   "description": "A modern React UI toolkit with TypeScript support",
-  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
