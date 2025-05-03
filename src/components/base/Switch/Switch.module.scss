@@ -1,0 +1,9 @@
+.switch {
+  &:focus-within {
+    outline: none;
+  }
+
+  &__thumb {
+    transition: transform 0.2s ease-in-out;
+  }
+} 

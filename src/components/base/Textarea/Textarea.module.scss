@@ -1,0 +1,9 @@
+.autoResize {
+  resize: none;
+  overflow-y: hidden;
+  transition: height 0.2s ease;
+  
+  &:focus {
+    overflow-y: auto;
+  }
+} 
