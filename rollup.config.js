@@ -36,10 +36,7 @@ export default [
         declarationDir: './dist/types',
       }),
       postcss({
-        plugins: [
-          tailwindcss('./tailwind.config.js'),
-          autoprefixer(),
-        ],
+        plugins: [tailwindcss('./tailwind.config.js'), autoprefixer()],
         extract: false,
         modules: true,
         use: ['sass'],
@@ -54,4 +51,4 @@ export default [
     plugins: [dts()],
     external: [/\.scss$/],
   },
-]; 
+];
