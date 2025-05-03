@@ -44,4 +44,4 @@ describe('Icon', () => {
     const { container } = render(<Icon />);
     expect(container.firstChild).toBeNull();
   });
-}); 
+});

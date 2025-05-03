@@ -134,4 +134,4 @@ export const DisabledTab: Story = {
       },
     ],
   },
-}; 
+};

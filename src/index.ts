@@ -47,4 +47,4 @@ export type {
   AvatarProps,
   AvatarSize,
   AvatarStatus,
-} from './types'; 
+} from './types';

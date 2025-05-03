@@ -115,4 +115,4 @@ export const AllVariants: Story = {
       <Input label="Username" placeholder="With label" />
     </div>
   ),
-}; 
+};

@@ -94,7 +94,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   className,
 }) => {
   const { container, status: statusSize, font } = sizeStyles[size];
-  
+
   const containerClasses = twMerge(
     'relative inline-flex items-center justify-center bg-gray-200',
     container,
@@ -122,9 +122,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     if (initials) {
       return (
-        <span className={`${font} font-medium text-gray-600`}>
-          {getInitialsFromName(initials)}
-        </span>
+        <span className={`${font} font-medium text-gray-600`}>{getInitialsFromName(initials)}</span>
       );
     }
 
@@ -145,4 +143,4 @@ export const Avatar: React.FC<AvatarProps> = ({
       {status && <span className={statusClasses} />}
     </div>
   );
-}; 
+};

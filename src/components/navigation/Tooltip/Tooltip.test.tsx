@@ -143,4 +143,4 @@ describe('Tooltip', () => {
       jest.runAllTimers();
     });
   });
-}); 
+});

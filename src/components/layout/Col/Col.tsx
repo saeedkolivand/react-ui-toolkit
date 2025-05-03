@@ -101,4 +101,4 @@ export const Col = React.forwardRef<HTMLDivElement, ColProps>(
   }
 );
 
-Col.displayName = 'Col'; 
+Col.displayName = 'Col';

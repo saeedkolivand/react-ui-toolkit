@@ -72,9 +72,7 @@ const ContentBox = ({ children, className = '', color = 'gray' }: ContentBoxProp
 };
 
 const Section = ({ children }: { children: React.ReactNode }) => (
-  <div className="py-16 w-full max-w-6xl mx-auto px-8">
-    {children}
-  </div>
+  <div className="py-16 w-full max-w-6xl mx-auto px-8">{children}</div>
 );
 
 export const Default: Story = {
@@ -85,7 +83,7 @@ export const Default: Story = {
     wrap: true,
     reverse: false,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="border-2 border-dashed border-gray-300 p-8 rounded-lg">
         <Row {...args}>
@@ -108,7 +106,7 @@ export const JustifyExamples: Story = {
   args: {
     spacing: 4,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -172,7 +170,7 @@ export const AlignExamples: Story = {
   args: {
     spacing: 4,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -183,7 +181,9 @@ export const AlignExamples: Story = {
                 <ContentBox color="blue">Start</ContentBox>
               </Col>
               <Col span={4}>
-                <ContentBox color="green" className="h-24">Start</ContentBox>
+                <ContentBox color="green" className="h-24">
+                  Start
+                </ContentBox>
               </Col>
             </Row>
           </div>
@@ -196,7 +196,9 @@ export const AlignExamples: Story = {
                 <ContentBox color="blue">Center</ContentBox>
               </Col>
               <Col span={4}>
-                <ContentBox color="green" className="h-24">Center</ContentBox>
+                <ContentBox color="green" className="h-24">
+                  Center
+                </ContentBox>
               </Col>
             </Row>
           </div>
@@ -209,7 +211,9 @@ export const AlignExamples: Story = {
                 <ContentBox color="blue">End</ContentBox>
               </Col>
               <Col span={4}>
-                <ContentBox color="green" className="h-24">End</ContentBox>
+                <ContentBox color="green" className="h-24">
+                  End
+                </ContentBox>
               </Col>
             </Row>
           </div>
@@ -227,7 +231,7 @@ export const InteractiveExample: Story = {
     wrap: true,
     reverse: false,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="border-2 border-dashed border-gray-300 p-8 rounded-lg">
         <Row {...args}>
@@ -244,4 +248,4 @@ export const InteractiveExample: Story = {
       </div>
     </Section>
   ),
-}; 
+};

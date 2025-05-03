@@ -22,15 +22,15 @@ describe('Accordion', () => {
 
   it('renders all sections', () => {
     render(<Accordion items={defaultItems} />);
-    
-    defaultItems.forEach((item) => {
+
+    defaultItems.forEach(item => {
       expect(screen.getByText(item.title)).toBeInTheDocument();
     });
   });
 
   it('expands and collapses panels on click', () => {
     render(<Accordion items={defaultItems} />);
-    
+
     const firstPanel = screen.getByText('Section 1');
     const firstContent = screen.getByText('Content 1');
 
@@ -43,7 +43,7 @@ describe('Accordion', () => {
 
   it('allows only one panel to be expanded at a time by default', () => {
     render(<Accordion items={defaultItems} />);
-    
+
     const firstPanel = screen.getByText('Section 1');
     const secondPanel = screen.getByText('Section 2');
     const firstContent = screen.getByText('Content 1');
@@ -60,7 +60,7 @@ describe('Accordion', () => {
 
   it('allows multiple panels to be expanded when allowMultiple is true', () => {
     render(<Accordion items={defaultItems} allowMultiple />);
-    
+
     const firstPanel = screen.getByText('Section 1');
     const secondPanel = screen.getByText('Section 2');
     const firstContent = screen.getByText('Content 1');
@@ -75,7 +75,7 @@ describe('Accordion', () => {
 
   it('respects defaultExpanded prop for single panel', () => {
     render(<Accordion items={defaultItems} defaultExpanded={1} />);
-    
+
     const firstContent = screen.getByText('Content 1');
     const secondContent = screen.getByText('Content 2');
 
@@ -84,14 +84,8 @@ describe('Accordion', () => {
   });
 
   it('respects defaultExpanded prop for multiple panels', () => {
-    render(
-      <Accordion
-        items={defaultItems}
-        allowMultiple
-        defaultExpanded={[0, 2]}
-      />
-    );
-    
+    render(<Accordion items={defaultItems} allowMultiple defaultExpanded={[0, 2]} />);
+
     const firstContent = screen.getByText('Content 1');
     const secondContent = screen.getByText('Content 2');
     const thirdContent = screen.getByText('Content 3');
@@ -113,7 +107,7 @@ describe('Accordion', () => {
     ];
 
     render(<Accordion items={itemsWithDisabled} />);
-    
+
     const disabledPanel = screen.getByText('Disabled Section');
     const disabledContent = screen.getByText('Disabled Content');
 
@@ -130,12 +124,12 @@ describe('Accordion', () => {
     ];
 
     render(<Accordion items={richItems} />);
-    
+
     expect(screen.getByTestId('rich-title')).toBeInTheDocument();
-    
+
     const richTitle = screen.getByTestId('rich-title');
     fireEvent.click(richTitle);
-    
+
     expect(screen.getByTestId('rich-content')).toBeVisible();
   });
-}); 
+});

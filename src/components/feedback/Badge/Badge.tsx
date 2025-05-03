@@ -32,7 +32,8 @@ export const Badge: React.FC<BadgeProps> = ({
   children,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors duration-200';
+  const baseClasses =
+    'inline-flex items-center justify-center font-medium transition-colors duration-200';
 
   const variantClasses = {
     primary: outlined
@@ -73,4 +74,4 @@ export const Badge: React.FC<BadgeProps> = ({
       {children}
     </span>
   );
-}; 
+};

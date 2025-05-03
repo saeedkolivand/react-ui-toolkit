@@ -43,19 +43,15 @@ export const Accordion: React.FC<AccordionProps> = ({
 }) => {
   const [expandedPanels, setExpandedPanels] = useState<number[]>(() => {
     if (defaultExpanded === undefined) return [];
-    return Array.isArray(defaultExpanded)
-      ? defaultExpanded
-      : [defaultExpanded];
+    return Array.isArray(defaultExpanded) ? defaultExpanded : [defaultExpanded];
   });
 
   const togglePanel = (index: number) => {
     if (items[index].disabled) return;
 
-    setExpandedPanels((prev) => {
+    setExpandedPanels(prev => {
       if (allowMultiple) {
-        return prev.includes(index)
-          ? prev.filter((i) => i !== index)
-          : [...prev, index];
+        return prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index];
       }
       return prev.includes(index) ? [] : [index];
     });
@@ -120,4 +116,4 @@ export const Accordion: React.FC<AccordionProps> = ({
       })}
     </div>
   );
-}; 
+};

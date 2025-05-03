@@ -27,25 +27,38 @@ export interface RowProps extends React.HTMLAttributes<HTMLDivElement> {
 const getJustifyClass = (justify?: string) => {
   if (!justify) return '';
   switch (justify) {
-    case 'start': return 'justify-start';
-    case 'end': return 'justify-end';
-    case 'center': return 'justify-center';
-    case 'between': return 'justify-between';
-    case 'around': return 'justify-around';
-    case 'evenly': return 'justify-evenly';
-    default: return '';
+    case 'start':
+      return 'justify-start';
+    case 'end':
+      return 'justify-end';
+    case 'center':
+      return 'justify-center';
+    case 'between':
+      return 'justify-between';
+    case 'around':
+      return 'justify-around';
+    case 'evenly':
+      return 'justify-evenly';
+    default:
+      return '';
   }
 };
 
 const getAlignClass = (align?: string) => {
   if (!align) return '';
   switch (align) {
-    case 'start': return 'items-start';
-    case 'end': return 'items-end';
-    case 'center': return 'items-center';
-    case 'baseline': return 'items-baseline';
-    case 'stretch': return 'items-stretch';
-    default: return '';
+    case 'start':
+      return 'items-start';
+    case 'end':
+      return 'items-end';
+    case 'center':
+      return 'items-center';
+    case 'baseline':
+      return 'items-baseline';
+    case 'stretch':
+      return 'items-stretch';
+    default:
+      return '';
   }
 };
 
@@ -65,4 +78,4 @@ export const Row = React.forwardRef<HTMLDivElement, RowProps>(
   }
 );
 
-Row.displayName = 'Row'; 
+Row.displayName = 'Row';

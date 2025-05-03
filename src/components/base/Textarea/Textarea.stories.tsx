@@ -150,4 +150,4 @@ export const AllVariants: Story = {
       <Textarea disabled placeholder="Disabled textarea" />
     </div>
   ),
-}; 
+};

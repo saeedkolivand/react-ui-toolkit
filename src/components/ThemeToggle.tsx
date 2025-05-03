@@ -14,7 +14,7 @@ export const ThemeToggle: React.FC = () => {
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
-    
+
     // Update document class
     if (newTheme) {
       document.documentElement.classList.add('dark');
@@ -24,12 +24,8 @@ export const ThemeToggle: React.FC = () => {
   };
 
   return (
-    <Button
-      variant="ghost"
-      onClick={toggleTheme}
-      className="fixed top-4 right-4"
-    >
+    <Button variant="ghost" onClick={toggleTheme} className="fixed top-4 right-4">
       {isDark ? '🌞 Light Mode' : '🌙 Dark Mode'}
     </Button>
   );
-}; 
+};

@@ -47,13 +47,11 @@ export default meta;
 type Story = StoryObj<typeof Toast>;
 
 const ToastWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative w-[400px] h-[200px] bg-gray-100 rounded-lg p-4">
-    {children}
-  </div>
+  <div className="relative w-[400px] h-[200px] bg-gray-100 rounded-lg p-4">{children}</div>
 );
 
 export const Default: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -70,7 +68,7 @@ export const Default: Story = {
 };
 
 export const Success: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -87,7 +85,7 @@ export const Success: Story = {
 };
 
 export const Warning: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -104,7 +102,7 @@ export const Warning: Story = {
 };
 
 export const Error: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -121,7 +119,7 @@ export const Error: Story = {
 };
 
 export const WithoutIcon: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -138,7 +136,7 @@ export const WithoutIcon: Story = {
 };
 
 export const NonDismissible: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -155,7 +153,7 @@ export const NonDismissible: Story = {
 };
 
 export const AutoDismiss: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -173,7 +171,7 @@ export const AutoDismiss: Story = {
 };
 
 export const LongContent: Story = {
-  render: (args) => (
+  render: args => (
     <ToastWrapper>
       <Toast {...args} />
     </ToastWrapper>
@@ -185,7 +183,8 @@ export const LongContent: Story = {
     dismissible: true,
     showIcon: true,
     title: 'Long Content',
-    children: 'This is a toast with a longer message that might wrap to multiple lines. It demonstrates how the toast handles content that exceeds the typical length.',
+    children:
+      'This is a toast with a longer message that might wrap to multiple lines. It demonstrates how the toast handles content that exceeds the typical length.',
   },
 };
 
@@ -230,4 +229,4 @@ export const AllPositions: Story = {
       </ToastWrapper>
     </div>
   ),
-}; 
+};

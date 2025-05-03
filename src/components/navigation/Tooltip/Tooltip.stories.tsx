@@ -40,7 +40,7 @@ export const Default: Story = {
     placement: 'top',
     delay: 100,
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
@@ -52,7 +52,7 @@ export const Right: Story = {
     content: 'Tooltip on the right',
     placement: 'right',
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
@@ -64,7 +64,7 @@ export const Bottom: Story = {
     content: 'Tooltip on the bottom',
     placement: 'bottom',
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
@@ -76,7 +76,7 @@ export const Left: Story = {
     content: 'Tooltip on the left',
     placement: 'left',
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
@@ -88,7 +88,7 @@ export const LongContent: Story = {
     content: 'This is a longer tooltip message that might wrap to multiple lines',
     placement: 'top',
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
@@ -101,9 +101,9 @@ export const Disabled: Story = {
     placement: 'top',
     disabled: true,
   },
-  render: (args) => (
+  render: args => (
     <Tooltip {...args}>
       <Button>Hover me</Button>
     </Tooltip>
   ),
-}; 
+};

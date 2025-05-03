@@ -87,7 +87,9 @@ export const Card: React.FC<CardProps> = ({
   const headerClasses = twMerge(
     'border-b',
     sizeStyles[size],
-    variant === 'default' ? 'border-gray-200' : `border-opacity-50 ${variantStyles[variant].split(' ')[1]}`
+    variant === 'default'
+      ? 'border-gray-200'
+      : `border-opacity-50 ${variantStyles[variant].split(' ')[1]}`
   );
 
   const contentClasses = sizeStyles[size];
@@ -95,24 +97,18 @@ export const Card: React.FC<CardProps> = ({
   const footerClasses = twMerge(
     'border-t',
     sizeStyles[size],
-    variant === 'default' ? 'border-gray-200 bg-gray-50' : `border-opacity-50 ${variantStyles[variant].split(' ')[1]} bg-opacity-50 ${variantStyles[variant].split(' ')[0]}`
+    variant === 'default'
+      ? 'border-gray-200 bg-gray-50'
+      : `border-opacity-50 ${variantStyles[variant].split(' ')[1]} bg-opacity-50 ${
+          variantStyles[variant].split(' ')[0]
+        }`
   );
 
   return (
     <div className={cardClasses}>
-      {header && (
-        <div className={headerClasses}>
-          {header}
-        </div>
-      )}
-      <div className={contentClasses}>
-        {children}
-      </div>
-      {footer && (
-        <div className={footerClasses}>
-          {footer}
-        </div>
-      )}
+      {header && <div className={headerClasses}>{header}</div>}
+      <div className={contentClasses}>{children}</div>
+      {footer && <div className={footerClasses}>{footer}</div>}
     </div>
   );
 };

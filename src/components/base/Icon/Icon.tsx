@@ -21,44 +21,19 @@ const icons = {
     />
   ),
   close: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
   ),
   chevronDown: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 9l-7 7-7-7"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
   ),
   chevronRight: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 5l7 7-7 7"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
   ),
   chevronLeft: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15 19l-7-7 7-7"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
   ),
   chevronUp: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 15l7-7 7 7"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
   ),
   // Actions
   search: (
@@ -69,22 +44,8 @@ const icons = {
       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
     />
   ),
-  plus: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 4v16m8-8H4"
-    />
-  ),
-  minus: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M20 12H4"
-    />
-  ),
+  plus: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />,
+  minus: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />,
   edit: (
     <path
       strokeLinecap="round"
@@ -118,14 +79,7 @@ const icons = {
     />
   ),
   // Status
-  check: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 13l4 4L19 7"
-    />
-  ),
+  check: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />,
   error: (
     <path
       strokeLinecap="round"
@@ -222,14 +176,7 @@ const icons = {
     />
   ),
   // Media
-  play: (
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M8 5v14l8-7-8-7z"
-    />
-  ),
+  play: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5v14l8-7-8-7z" />,
   playLarge: (
     <path
       strokeLinecap="round"
@@ -877,11 +824,7 @@ export const Icon: React.FC<IconProps> = ({
     xl: 'w-8 h-8',
   };
 
-  const classes = twMerge(
-    'inline-block',
-    sizeClasses[size],
-    className
-  );
+  const classes = twMerge('inline-block', sizeClasses[size], className);
 
   if (customIcon) {
     return (
@@ -907,4 +850,4 @@ export const Icon: React.FC<IconProps> = ({
       {icons[name]}
     </svg>
   );
-}; 
+};

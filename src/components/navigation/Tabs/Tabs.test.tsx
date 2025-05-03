@@ -28,15 +28,15 @@ describe('Tabs', () => {
 
   it('renders all tab labels', () => {
     render(<Tabs tabs={defaultTabs} />);
-    
-    defaultTabs.forEach((tab) => {
+
+    defaultTabs.forEach(tab => {
       expect(screen.getByText(tab.label)).toBeInTheDocument();
     });
   });
 
   it('shows first tab content by default', () => {
     render(<Tabs tabs={defaultTabs} />);
-    
+
     expect(screen.getByText('Content 1')).toBeVisible();
     expect(screen.queryByText('Content 2')).not.toBeVisible();
     expect(screen.queryByText('Content 3')).not.toBeVisible();
@@ -44,7 +44,7 @@ describe('Tabs', () => {
 
   it('switches content when clicking tabs', () => {
     render(<Tabs tabs={defaultTabs} />);
-    
+
     fireEvent.click(screen.getByText('Tab 2'));
     expect(screen.queryByText('Content 1')).not.toBeVisible();
     expect(screen.getByText('Content 2')).toBeVisible();
@@ -53,14 +53,14 @@ describe('Tabs', () => {
 
   it('calls onTabChange when switching tabs', () => {
     render(<Tabs tabs={defaultTabs} onTabChange={onTabChange} />);
-    
+
     fireEvent.click(screen.getByText('Tab 2'));
     expect(onTabChange).toHaveBeenCalledWith(1);
   });
 
   it('respects defaultActiveTab prop', () => {
     render(<Tabs tabs={defaultTabs} defaultActiveTab={1} />);
-    
+
     expect(screen.queryByText('Content 1')).not.toBeVisible();
     expect(screen.getByText('Content 2')).toBeVisible();
     expect(screen.queryByText('Content 3')).not.toBeVisible();
@@ -78,7 +78,7 @@ describe('Tabs', () => {
     ];
 
     render(<Tabs tabs={tabsWithDisabled} onTabChange={onTabChange} />);
-    
+
     fireEvent.click(screen.getByText('Disabled Tab'));
     expect(screen.getByText('Content 1')).toBeVisible();
     expect(screen.queryByText('Disabled Content')).not.toBeVisible();
@@ -87,27 +87,27 @@ describe('Tabs', () => {
 
   it('applies correct orientation classes', () => {
     const { container, rerender } = render(<Tabs tabs={defaultTabs} orientation="vertical" />);
-    
+
     expect(container.firstChild).toHaveClass('flex-row');
-    
+
     rerender(<Tabs tabs={defaultTabs} orientation="horizontal" />);
     expect(container.firstChild).toHaveClass('flex-col');
   });
 
   it('applies variant styles correctly', () => {
     const { container, rerender } = render(<Tabs tabs={defaultTabs} variant="enclosed" />);
-    
+
     expect(screen.getByRole('tablist').firstChild).toHaveClass('border-b');
-    
+
     rerender(<Tabs tabs={defaultTabs} variant="soft-rounded" />);
     expect(screen.getByRole('tablist').firstChild).toHaveClass('bg-gray-100');
   });
 
   it('stretches tabs when isFitted is true', () => {
     render(<Tabs tabs={defaultTabs} isFitted />);
-    
+
     const tabs = screen.getAllByRole('tab');
-    tabs.forEach((tab) => {
+    tabs.forEach(tab => {
       expect(tab).toHaveClass('flex-1');
     });
   });
@@ -121,8 +121,8 @@ describe('Tabs', () => {
     ];
 
     render(<Tabs tabs={richTabs} />);
-    
+
     expect(screen.getByTestId('rich-label')).toBeInTheDocument();
     expect(screen.getByTestId('rich-content')).toBeVisible();
   });
-}); 
+});

@@ -220,4 +220,4 @@ export const AllVariants: Story = {
       </Card>
     </div>
   ),
-}; 
+};

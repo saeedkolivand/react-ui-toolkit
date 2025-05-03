@@ -56,7 +56,7 @@ describe('Select', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Select options={options} onChange={handleChange} />);
-    
+
     fireEvent.change(screen.getByRole('combobox'), {
       target: { value: '2' },
     });
@@ -78,4 +78,4 @@ describe('Select', () => {
     render(<Select options={options} />);
     expect(screen.getByRole('option', { name: 'Option 3' })).toBeDisabled();
   });
-}); 
+});

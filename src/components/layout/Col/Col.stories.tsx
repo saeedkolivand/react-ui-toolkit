@@ -64,29 +64,34 @@ interface ContentBoxProps {
 }
 
 const ContentBox = ({ children, className = '', color = 'gray' }: ContentBoxProps) => (
-  <div className={`p-8 rounded-lg text-white text-lg ${
-    color === 'blue' ? 'bg-blue-500' :
-    color === 'green' ? 'bg-green-500' :
-    color === 'purple' ? 'bg-purple-500' :
-    color === 'orange' ? 'bg-orange-500' :
-    color === 'pink' ? 'bg-pink-500' :
-    'bg-gray-500'
-  } ${className}`}>
+  <div
+    className={`p-8 rounded-lg text-white text-lg ${
+      color === 'blue'
+        ? 'bg-blue-500'
+        : color === 'green'
+        ? 'bg-green-500'
+        : color === 'purple'
+        ? 'bg-purple-500'
+        : color === 'orange'
+        ? 'bg-orange-500'
+        : color === 'pink'
+        ? 'bg-pink-500'
+        : 'bg-gray-500'
+    } ${className}`}
+  >
     {children}
   </div>
 );
 
 const Section = ({ children }: { children: React.ReactNode }) => (
-  <div className="py-16 w-full max-w-6xl mx-auto px-8">
-    {children}
-  </div>
+  <div className="py-16 w-full max-w-6xl mx-auto px-8">{children}</div>
 );
 
 export const Default: Story = {
   args: {
     span: 4,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="border-2 border-dashed border-gray-300 p-8 rounded-lg">
         <Row>
@@ -109,7 +114,7 @@ export const DifferentSpans: Story = {
   args: {
     span: 4,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -137,7 +142,7 @@ export const AutoWidth: Story = {
   args: {
     span: 'auto',
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -162,7 +167,7 @@ export const FullWidth: Story = {
   args: {
     span: 12,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -185,7 +190,7 @@ export const WithOffset: Story = {
     span: 4,
     offset: 2,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -211,7 +216,7 @@ export const WithOrder: Story = {
     span: 4,
     order: 2,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -242,7 +247,7 @@ export const Responsive: Story = {
     md: 4,
     lg: 3,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="space-y-16">
         <div>
@@ -275,7 +280,7 @@ export const InteractiveExample: Story = {
     offset: 0,
     order: 1,
   },
-  render: (args) => (
+  render: args => (
     <Section>
       <div className="border-2 border-dashed border-gray-300 p-8 rounded-lg">
         <Row>
@@ -292,4 +297,4 @@ export const InteractiveExample: Story = {
       </div>
     </Section>
   ),
-}; 
+};

@@ -193,4 +193,4 @@ export const AllStates: Story = {
       <Progress indeterminate animated label="Indeterminate progress" />
     </div>
   ),
-}; 
+};

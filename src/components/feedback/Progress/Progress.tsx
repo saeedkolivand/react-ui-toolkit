@@ -86,8 +86,9 @@ export const Progress: React.FC<ProgressProps> = ({
 }): JSX.Element => {
   const isIndeterminate = indeterminate || typeof value !== 'number';
   const percentage = isIndeterminate ? 0 : Math.min(100, Math.max(0, (value! / max) * 100));
-  
-  const baseClasses = 'relative w-full min-w-[8rem] overflow-hidden rounded-full transition-all duration-300';
+
+  const baseClasses =
+    'relative w-full min-w-[8rem] overflow-hidden rounded-full transition-all duration-300';
   const containerClasses = twMerge(
     baseClasses,
     variantTrackClasses[variant],
@@ -95,17 +96,18 @@ export const Progress: React.FC<ProgressProps> = ({
     className
   );
 
-  const stripedClasses = striped && !isIndeterminate
-    ? 'bg-[length:1rem_100%] bg-gradient-to-r from-white/20 via-white/20 to-transparent bg-repeat-x'
-    : '';
+  const stripedClasses =
+    striped && !isIndeterminate
+      ? 'bg-[length:1rem_100%] bg-gradient-to-r from-white/20 via-white/20 to-transparent bg-repeat-x'
+      : '';
 
-  const animationClasses = animated ? (
-    isIndeterminate 
+  const animationClasses = animated
+    ? isIndeterminate
       ? 'relative before:absolute before:inset-0 before:w-1/3 before:animate-indeterminate before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent'
-      : striped 
-        ? 'animate-progress-stripes'
-        : ''
-  ) : '';
+      : striped
+      ? 'animate-progress-stripes'
+      : ''
+    : '';
 
   const progressClasses = twMerge(
     'absolute inset-0 flex items-center transition-all duration-300 ease-out',
@@ -121,7 +123,8 @@ export const Progress: React.FC<ProgressProps> = ({
   );
 
   const valueLabel = isIndeterminate ? 'Loading...' : `${Math.round(percentage)}%`;
-  const ariaLabel = label || `Progress ${isIndeterminate ? 'loading' : `${Math.round(percentage)}%`}`;
+  const ariaLabel =
+    label || `Progress ${isIndeterminate ? 'loading' : `${Math.round(percentage)}%`}`;
 
   return (
     <div
@@ -134,8 +137,8 @@ export const Progress: React.FC<ProgressProps> = ({
       aria-valuetext={valueLabel}
       {...props}
     >
-      <div 
-        className={progressClasses} 
+      <div
+        className={progressClasses}
         style={isIndeterminate ? undefined : { width: `${percentage}%` }}
       >
         {showValue && !isIndeterminate && size !== 'sm' && (
@@ -144,4 +147,4 @@ export const Progress: React.FC<ProgressProps> = ({
       </div>
     </div>
   );
-}; 
+};

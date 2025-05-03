@@ -49,7 +49,7 @@ describe('Textarea', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Textarea onChange={handleChange} />);
-    
+
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'test' },
     });
@@ -72,4 +72,4 @@ describe('Textarea', () => {
     fireEvent.change(textarea, { target: { value: 'test\ntest\ntest' } });
     expect(textarea.style.height).toBe('100px');
   });
-}); 
+});

@@ -26,7 +26,8 @@ export const Spinner: React.FC<SpinnerProps> = ({
   label = 'Loading...',
   ...props
 }) => {
-  const baseClasses = 'inline-block animate-spin rounded-full border-2 border-current border-t-transparent';
+  const baseClasses =
+    'inline-block animate-spin rounded-full border-2 border-current border-t-transparent';
 
   const sizeClasses = {
     sm: 'h-4 w-4',
@@ -42,12 +43,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
     error: 'text-red-600',
   };
 
-  const classes = twMerge(
-    baseClasses,
-    sizeClasses[size],
-    variantClasses[variant],
-    className
-  );
+  const classes = twMerge(baseClasses, sizeClasses[size], variantClasses[variant], className);
 
   return (
     <div role="status" {...props}>
@@ -55,4 +51,4 @@ export const Spinner: React.FC<SpinnerProps> = ({
       <span className="sr-only">{label}</span>
     </div>
   );
-}; 
+};

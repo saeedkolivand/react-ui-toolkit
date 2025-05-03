@@ -38,7 +38,7 @@ describe('Checkbox', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Checkbox onChange={handleChange} />);
-    
+
     fireEvent.click(screen.getByRole('checkbox'));
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
@@ -69,4 +69,4 @@ describe('Checkbox', () => {
     render(<Checkbox ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
-}); 
+});

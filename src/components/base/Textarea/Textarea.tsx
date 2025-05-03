@@ -50,11 +50,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const baseClasses = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-400 dark:text-white dark:shadow-none';
+    const baseClasses =
+      'block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-400 dark:text-white dark:shadow-none';
 
     const variantClasses = {
       default: 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800',
-      filled: 'border-transparent bg-gray-100 focus:bg-white dark:bg-gray-700 dark:focus:bg-gray-800',
+      filled:
+        'border-transparent bg-gray-100 focus:bg-white dark:bg-gray-700 dark:focus:bg-gray-800',
       outlined: 'border-gray-300 bg-transparent dark:border-gray-600',
     };
 
@@ -64,17 +66,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       lg: 'px-6 py-3 text-lg min-h-[120px]',
     };
 
-    const containerClasses = twMerge(
-      'relative',
-      fullWidth && 'w-full',
-      className
-    );
+    const containerClasses = twMerge('relative', fullWidth && 'w-full', className);
 
     const textareaClasses = twMerge(
       baseClasses,
       variantClasses[variant],
       sizeClasses[size],
-      error && 'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400',
+      error &&
+        'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400',
       autoResize && styles.autoResize,
       className
     );
@@ -117,4 +116,4 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       </div>
     );
   }
-); 
+);

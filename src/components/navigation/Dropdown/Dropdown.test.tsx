@@ -18,24 +18,12 @@ describe('Dropdown', () => {
   });
 
   it('renders trigger element', () => {
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} />);
     expect(screen.getByText('Open')).toBeInTheDocument();
   });
 
   it('shows menu when trigger is clicked', () => {
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Open'));
     expect(screen.getByRole('menu')).toBeVisible();
@@ -45,13 +33,7 @@ describe('Dropdown', () => {
   });
 
   it('calls onSelect when an item is clicked', () => {
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Open'));
     fireEvent.click(screen.getByText('Option 1'));
@@ -61,13 +43,7 @@ describe('Dropdown', () => {
   });
 
   it('does not call onSelect when a disabled item is clicked', () => {
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Open'));
     fireEvent.click(screen.getByText('Option 3'));
@@ -76,13 +52,7 @@ describe('Dropdown', () => {
   });
 
   it('closes menu when clicking outside', () => {
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Open'));
     expect(screen.getByRole('menu')).toBeVisible();
@@ -93,12 +63,7 @@ describe('Dropdown', () => {
 
   it('does not open menu when disabled', () => {
     render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        onSelect={onSelect}
-        disabled
-      />
+      <Dropdown trigger={<button>Open</button>} items={defaultItems} onSelect={onSelect} disabled />
     );
 
     fireEvent.click(screen.getByText('Open'));
@@ -114,13 +79,7 @@ describe('Dropdown', () => {
       },
     ];
 
-    render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={itemsWithIcons}
-        onSelect={onSelect}
-      />
-    );
+    render(<Dropdown trigger={<button>Open</button>} items={itemsWithIcons} onSelect={onSelect} />);
 
     fireEvent.click(screen.getByText('Open'));
     expect(screen.getByTestId('edit-icon')).toBeInTheDocument();
@@ -128,25 +87,15 @@ describe('Dropdown', () => {
 
   it('applies correct position classes', () => {
     const { rerender } = render(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        position="bottom-right"
-      />
+      <Dropdown trigger={<button>Open</button>} items={defaultItems} position="bottom-right" />
     );
 
     fireEvent.click(screen.getByText('Open'));
     const menu = screen.getByRole('menu');
     expect(menu).toBeVisible();
 
-    rerender(
-      <Dropdown
-        trigger={<button>Open</button>}
-        items={defaultItems}
-        position="top-left"
-      />
-    );
+    rerender(<Dropdown trigger={<button>Open</button>} items={defaultItems} position="top-left" />);
 
     expect(menu).toBeVisible();
   });
-}); 
+});

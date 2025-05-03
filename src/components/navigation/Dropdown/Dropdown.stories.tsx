@@ -89,12 +89,7 @@ export const WithIcons: Story = {
         label: 'Profile',
         value: 'profile',
         icon: (
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -108,12 +103,7 @@ export const WithIcons: Story = {
         label: 'Settings',
         value: 'settings',
         icon: (
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -133,12 +123,7 @@ export const WithIcons: Story = {
         label: 'Sign out',
         value: 'signout',
         icon: (
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -151,4 +136,4 @@ export const WithIcons: Story = {
     ],
     position: 'bottom-left',
   },
-}; 
+};

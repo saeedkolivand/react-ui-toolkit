@@ -143,4 +143,4 @@ export const AllSizes: Story = {
       <Avatar src={AVATAR_IMAGES.male1} alt="XL" size="xl" />
     </div>
   ),
-}; 
+};

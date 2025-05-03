@@ -17,17 +17,7 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
-  (
-    {
-      className,
-      maxWidth = 'lg',
-      padding = true,
-      center = true,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, maxWidth = 'lg', padding = true, center = true, children, ...props }, ref) => {
     const maxWidthClasses = {
       sm: 'max-w-screen-sm',
       md: 'max-w-screen-md',
@@ -47,13 +37,9 @@ export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
     );
 
     return (
-      <div
-        ref={ref}
-        className={containerClasses}
-        {...props}
-      >
+      <div ref={ref} className={containerClasses} {...props}>
         {children}
       </div>
     );
   }
-); 
+);

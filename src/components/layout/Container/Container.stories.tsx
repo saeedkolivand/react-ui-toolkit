@@ -29,23 +29,34 @@ const meta: Meta<typeof Container> = {
 export default meta;
 type Story = StoryObj<typeof Container>;
 
-const ContentBox = ({ children, color = 'gray' }: { children: React.ReactNode; color?: string }) => (
-  <div className={`p-6 rounded-lg text-white ${
-    color === 'blue' ? 'bg-blue-500' :
-    color === 'green' ? 'bg-green-500' :
-    color === 'purple' ? 'bg-purple-500' :
-    color === 'orange' ? 'bg-orange-500' :
-    color === 'pink' ? 'bg-pink-500' :
-    'bg-gray-500'
-  }`}>
+const ContentBox = ({
+  children,
+  color = 'gray',
+}: {
+  children: React.ReactNode;
+  color?: string;
+}) => (
+  <div
+    className={`p-6 rounded-lg text-white ${
+      color === 'blue'
+        ? 'bg-blue-500'
+        : color === 'green'
+        ? 'bg-green-500'
+        : color === 'purple'
+        ? 'bg-purple-500'
+        : color === 'orange'
+        ? 'bg-orange-500'
+        : color === 'pink'
+        ? 'bg-pink-500'
+        : 'bg-gray-500'
+    }`}
+  >
     {children}
   </div>
 );
 
 const Section = ({ children }: { children: React.ReactNode }) => (
-  <div className="py-8">
-    {children}
-  </div>
+  <div className="py-8">{children}</div>
 );
 
 export const Default: Story = {
@@ -202,4 +213,4 @@ export const ComplexLayout: Story = {
       </Section>
     </Container>
   ),
-}; 
+};

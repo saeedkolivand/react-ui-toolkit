@@ -183,7 +183,7 @@ const IconGrid = () => {
     setTimeout(() => setCopiedIcon(null), 2000);
   };
 
-  const filteredIcons = iconNames.filter(name => 
+  const filteredIcons = iconNames.filter(name =>
     name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -193,13 +193,13 @@ const IconGrid = () => {
         <Input
           placeholder="Search icons..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           variant="filled"
           size="lg"
         />
       </div>
       <Row justify="center" spacing={4} className="flex-wrap">
-        {filteredIcons.map((name) => (
+        {filteredIcons.map(name => (
           <Col key={name} span={2} sm={4} md={3} lg={2}>
             <div
               className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
@@ -209,9 +209,7 @@ const IconGrid = () => {
                 <Icon name={name} size="lg" />
               </div>
               <span className="text-sm font-medium text-gray-700">{name}</span>
-              {copiedIcon === name && (
-                <span className="text-xs text-green-600 mt-1">Copied!</span>
-              )}
+              {copiedIcon === name && <span className="text-xs text-green-600 mt-1">Copied!</span>}
             </div>
           </Col>
         ))}
@@ -222,4 +220,4 @@ const IconGrid = () => {
 
 export const AllIcons: Story = {
   render: () => <IconGrid />,
-}; 
+};

@@ -75,8 +75,8 @@ export const CustomContent: Story = {
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold mb-2">Custom Content</h3>
             <p className="text-gray-600">
-              This is an example of custom content in an accordion item. You can put
-              any React component here.
+              This is an example of custom content in an accordion item. You can put any React
+              component here.
             </p>
             <button className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
               Click me
@@ -168,10 +168,9 @@ export const WithLongContent: Story = {
           <div>
             {Array.from({ length: 5 }).map((_, i) => (
               <p key={i} className="mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
               </p>
             ))}
           </div>
@@ -180,4 +179,4 @@ export const WithLongContent: Story = {
       ...defaultItems.slice(1),
     ],
   },
-}; 
+};

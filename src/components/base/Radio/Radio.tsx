@@ -4,7 +4,8 @@ import styles from './Radio.module.scss';
 
 export type RadioSize = 'sm' | 'md' | 'lg';
 
-export interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface RadioProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /**
    * Label for the radio button
    */
@@ -24,18 +25,7 @@ export interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 }
 
 export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
-  (
-    {
-      className,
-      label,
-      helperText,
-      error,
-      size = 'md',
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, label, helperText, error, size = 'md', disabled, ...props }, ref) => {
     const sizeClasses = {
       sm: 'h-3 w-3',
       md: 'h-4 w-4',
@@ -72,18 +62,13 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
               className={radioClasses}
               disabled={disabled}
               aria-invalid={error ? 'true' : 'false'}
-              aria-describedby={
-                error || helperText ? `${props.id}-description` : undefined
-              }
+              aria-describedby={error || helperText ? `${props.id}-description` : undefined}
               {...props}
             />
           </div>
           {label && (
             <div className="ml-2">
-              <label
-                htmlFor={props.id}
-                className={labelClasses}
-              >
+              <label htmlFor={props.id} className={labelClasses}>
                 {label}
               </label>
             </div>
@@ -103,4 +88,4 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
       </div>
     );
   }
-); 
+);

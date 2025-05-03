@@ -16,7 +16,7 @@ const columns: ColumnType<User>[] = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text) => <a>{text}</a>,
+    render: text => <a>{text}</a>,
     sorter: (a, b) => a.name.localeCompare(b.name),
   },
   {
@@ -38,7 +38,7 @@ const columns: ColumnType<User>[] = [
     dataIndex: 'tags',
     render: (tags: string[]) => (
       <span className="flex flex-wrap gap-1">
-        {tags.map((tag) => (
+        {tags.map(tag => (
           <Tag key={tag} color="primary" variant="outline">
             {tag}
           </Tag>
@@ -192,10 +192,10 @@ export const WithPagination: Story = {
           current,
           pageSize,
           total: data.length,
-          onChange: (page) => setCurrent(page),
+          onChange: page => setCurrent(page),
           showSizeChanger: true,
           pageSizeOptions: [3, 5, 10],
-          onPageSizeChange: (size) => {
+          onPageSizeChange: size => {
             setPageSize(size);
             setCurrent(1);
           },
@@ -219,15 +219,15 @@ export const WithSortingAndPagination: Story = {
           current,
           pageSize,
           total: data.length,
-          onChange: (page) => setCurrent(page),
+          onChange: page => setCurrent(page),
           showSizeChanger: true,
           pageSizeOptions: [3, 5, 10],
-          onPageSizeChange: (size) => {
+          onPageSizeChange: size => {
             setPageSize(size);
             setCurrent(1);
           },
         }}
-        onChange={(params) => {
+        onChange={params => {
           console.log('Sort changed:', params.sorter);
           console.log('Pagination changed:', params.pagination);
         }}
@@ -243,4 +243,4 @@ export const Scrollable: Story = {
     rowKey: 'id',
     scroll: { x: 800 },
   },
-}; 
+};

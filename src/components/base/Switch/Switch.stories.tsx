@@ -58,14 +58,7 @@ const InteractiveTemplate = (args: SwitchProps) => {
     }, 2000);
   };
 
-  return (
-    <Switch
-      {...args}
-      checked={checked}
-      loading={loading}
-      onChange={handleChange}
-    />
-  );
+  return <Switch {...args} checked={checked} loading={loading} onChange={handleChange} />;
 };
 
 export const Default: Story = {
@@ -189,18 +182,74 @@ export const AllVariants: Story = {
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Switch label="Default" checked={states.default} loading={loadingStates.default} onChange={handleChange('default')} />
-          <Switch label="Checked" checked={states.checked} loading={loadingStates.checked} onChange={handleChange('checked')} />
-          <Switch label="Loading" checked={states.loading} loading={loadingStates.loading} onChange={handleChange('loading')} />
-          <Switch label="Loading Checked" checked={states.loadingChecked} loading={loadingStates.loadingChecked} onChange={handleChange('loadingChecked')} />
-          <Switch label="Small" size="sm" checked={states.small} loading={loadingStates.small} onChange={handleChange('small')} />
-          <Switch label="Large" size="lg" checked={states.large} loading={loadingStates.large} onChange={handleChange('large')} />
+          <Switch
+            label="Default"
+            checked={states.default}
+            loading={loadingStates.default}
+            onChange={handleChange('default')}
+          />
+          <Switch
+            label="Checked"
+            checked={states.checked}
+            loading={loadingStates.checked}
+            onChange={handleChange('checked')}
+          />
+          <Switch
+            label="Loading"
+            checked={states.loading}
+            loading={loadingStates.loading}
+            onChange={handleChange('loading')}
+          />
+          <Switch
+            label="Loading Checked"
+            checked={states.loadingChecked}
+            loading={loadingStates.loadingChecked}
+            onChange={handleChange('loadingChecked')}
+          />
+          <Switch
+            label="Small"
+            size="sm"
+            checked={states.small}
+            loading={loadingStates.small}
+            onChange={handleChange('small')}
+          />
+          <Switch
+            label="Large"
+            size="lg"
+            checked={states.large}
+            loading={loadingStates.large}
+            onChange={handleChange('large')}
+          />
         </div>
         <div className="space-y-2">
-          <Switch label="With Helper Text" helperText="This is a helper text" checked={states.helper} loading={loadingStates.helper} onChange={handleChange('helper')} />
-          <Switch label="With Error" error="This field is required" checked={states.error} loading={loadingStates.error} onChange={handleChange('error')} />
-          <Switch label="Disabled" disabled checked={states.disabled} loading={loadingStates.disabled} onChange={handleChange('disabled')} />
-          <Switch label="Disabled Checked" disabled checked={states.disabledChecked} loading={loadingStates.disabledChecked} onChange={handleChange('disabledChecked')} />
+          <Switch
+            label="With Helper Text"
+            helperText="This is a helper text"
+            checked={states.helper}
+            loading={loadingStates.helper}
+            onChange={handleChange('helper')}
+          />
+          <Switch
+            label="With Error"
+            error="This field is required"
+            checked={states.error}
+            loading={loadingStates.error}
+            onChange={handleChange('error')}
+          />
+          <Switch
+            label="Disabled"
+            disabled
+            checked={states.disabled}
+            loading={loadingStates.disabled}
+            onChange={handleChange('disabled')}
+          />
+          <Switch
+            label="Disabled Checked"
+            disabled
+            checked={states.disabledChecked}
+            loading={loadingStates.disabledChecked}
+            onChange={handleChange('disabledChecked')}
+          />
         </div>
       </div>
     );

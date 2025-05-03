@@ -67,20 +67,44 @@ export const Colors: Story = {
         <Tag color="info">Info</Tag>
       </div>
       <div className="flex gap-2">
-        <Tag variant="outline" color="default">Default</Tag>
-        <Tag variant="outline" color="primary">Primary</Tag>
-        <Tag variant="outline" color="success">Success</Tag>
-        <Tag variant="outline" color="warning">Warning</Tag>
-        <Tag variant="outline" color="error">Error</Tag>
-        <Tag variant="outline" color="info">Info</Tag>
+        <Tag variant="outline" color="default">
+          Default
+        </Tag>
+        <Tag variant="outline" color="primary">
+          Primary
+        </Tag>
+        <Tag variant="outline" color="success">
+          Success
+        </Tag>
+        <Tag variant="outline" color="warning">
+          Warning
+        </Tag>
+        <Tag variant="outline" color="error">
+          Error
+        </Tag>
+        <Tag variant="outline" color="info">
+          Info
+        </Tag>
       </div>
       <div className="flex gap-2">
-        <Tag variant="solid" color="default">Default</Tag>
-        <Tag variant="solid" color="primary">Primary</Tag>
-        <Tag variant="solid" color="success">Success</Tag>
-        <Tag variant="solid" color="warning">Warning</Tag>
-        <Tag variant="solid" color="error">Error</Tag>
-        <Tag variant="solid" color="info">Info</Tag>
+        <Tag variant="solid" color="default">
+          Default
+        </Tag>
+        <Tag variant="solid" color="primary">
+          Primary
+        </Tag>
+        <Tag variant="solid" color="success">
+          Success
+        </Tag>
+        <Tag variant="solid" color="warning">
+          Warning
+        </Tag>
+        <Tag variant="solid" color="error">
+          Error
+        </Tag>
+        <Tag variant="solid" color="info">
+          Info
+        </Tag>
       </div>
     </div>
   ),
@@ -91,22 +115,17 @@ export const Interactive: Story = {
     const [tags, setTags] = React.useState(['Tag 1', 'Tag 2', 'Tag 3']);
 
     const handleClose = (tagToRemove: string) => {
-      setTags(tags.filter((tag) => tag !== tagToRemove));
+      setTags(tags.filter(tag => tag !== tagToRemove));
     };
 
     return (
       <div className="flex gap-2">
-        {tags.map((tag) => (
-          <Tag
-            key={tag}
-            color="primary"
-            closable
-            onClose={() => handleClose(tag)}
-          >
+        {tags.map(tag => (
+          <Tag key={tag} color="primary" closable onClose={() => handleClose(tag)}>
             {tag}
           </Tag>
         ))}
       </div>
     );
   },
-}; 
+};

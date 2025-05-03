@@ -42,8 +42,8 @@ const ModalContent = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Modal Title</h2>
     <p className="mb-4">
-      This is a sample modal content. You can put any content here, including forms,
-      images, or other components.
+      This is a sample modal content. You can put any content here, including forms, images, or
+      other components.
     </p>
     <div className="flex justify-end gap-4">
       <Button variant="outline">Cancel</Button>
@@ -53,7 +53,7 @@ const ModalContent = () => (
 );
 
 export const Default: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -72,7 +72,7 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -89,7 +89,7 @@ export const Small: Story = {
 };
 
 export const Large: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -106,7 +106,7 @@ export const Large: Story = {
 };
 
 export const FullScreen: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -120,4 +120,4 @@ export const FullScreen: Story = {
   args: {
     size: 'full',
   },
-}; 
+};

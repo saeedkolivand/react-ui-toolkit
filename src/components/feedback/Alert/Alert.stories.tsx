@@ -96,7 +96,8 @@ export const WithoutIcon: Story = {
 export const LongContent: Story = {
   args: {
     title: 'Long Content Alert',
-    children: 'This is a longer alert message that might span multiple lines. It demonstrates how the alert component handles content that requires more vertical space. The component should maintain its visual consistency and readability even with extended content.',
+    children:
+      'This is a longer alert message that might span multiple lines. It demonstrates how the alert component handles content that requires more vertical space. The component should maintain its visual consistency and readability even with extended content.',
     variant: 'info',
   },
-}; 
+};

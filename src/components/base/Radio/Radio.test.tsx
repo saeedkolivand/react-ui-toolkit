@@ -38,7 +38,7 @@ describe('Radio', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Radio onChange={handleChange} />);
-    
+
     fireEvent.click(screen.getByRole('radio'));
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
@@ -77,4 +77,4 @@ describe('Radio', () => {
     expect(radios[0]).not.toBeChecked();
     expect(radios[2]).not.toBeChecked();
   });
-}); 
+});

@@ -49,7 +49,7 @@ describe('Input', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Input onChange={handleChange} />);
-    
+
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'test' },
     });
@@ -65,9 +65,9 @@ describe('Input', () => {
   it('renders with start and end icons', () => {
     const StartIcon = () => <span>Start</span>;
     const EndIcon = () => <span>End</span>;
-    
+
     render(<Input startIcon={<StartIcon />} endIcon={<EndIcon />} />);
     expect(screen.getByText('Start')).toBeInTheDocument();
     expect(screen.getByText('End')).toBeInTheDocument();
   });
-}); 
+});

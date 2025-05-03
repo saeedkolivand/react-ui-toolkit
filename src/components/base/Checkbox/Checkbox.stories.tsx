@@ -103,4 +103,4 @@ export const AllVariants: Story = {
       <Checkbox label="Disabled Checked" disabled checked />
     </div>
   ),
-}; 
+};

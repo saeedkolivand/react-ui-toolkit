@@ -1,7 +1,8 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface SwitchProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /**
    * Label for the switch
    */
@@ -34,17 +35,7 @@ export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
 
 export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
   (
-    {
-      className,
-      label,
-      helperText,
-      error,
-      size = 'md',
-      disabled,
-      checked,
-      loading,
-      onChange,
-    },
+    { className, label, helperText, error, size = 'md', disabled, checked, loading, onChange },
     _ref
   ) => {
     const switchSizes = {
@@ -105,7 +96,7 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
     const handleChange = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (!disabled && !loading && onChange) {
         const syntheticEvent = {
-          target: { checked: !checked }
+          target: { checked: !checked },
         } as React.ChangeEvent<HTMLInputElement>;
         onChange(syntheticEvent);
       }
@@ -122,9 +113,7 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
             disabled={disabled || loading}
             onClick={handleChange}
           >
-            <span className={thumbClasses}>
-              {loading && <div className={spinnerClasses} />}
-            </span>
+            <span className={thumbClasses}>{loading && <div className={spinnerClasses} />}</span>
           </button>
           {label && <span className={labelClasses}>{label}</span>}
         </div>
@@ -143,4 +132,4 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
   }
 );
 
-Switch.displayName = 'Switch'; 
+Switch.displayName = 'Switch';

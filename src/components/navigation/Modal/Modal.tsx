@@ -107,12 +107,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     if (!isOpen) return null;
 
     return createPortal(
-      <div
-        className="relative z-50"
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-      >
+      <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         {/* Backdrop */}
         <div
           className={backdropClasses}
@@ -122,11 +117,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
 
         {/* Modal */}
         <div className={containerClasses}>
-          <div
-            ref={ref}
-            className={modalClasses}
-            {...props}
-          >
+          <div ref={ref} className={modalClasses} {...props}>
             {showCloseButton && (
               <button
                 type="button"
@@ -134,12 +125,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                 onClick={onClose}
                 aria-label="Close"
               >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -156,4 +142,4 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       document.body
     );
   }
-); 
+);

@@ -38,7 +38,7 @@ describe('Switch', () => {
   it('handles change events', () => {
     const handleChange = jest.fn();
     render(<Switch onChange={handleChange} />);
-    
+
     fireEvent.click(screen.getByRole('checkbox'));
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
@@ -77,4 +77,4 @@ describe('Switch', () => {
     expect(checkbox).not.toBeChecked();
     expect(switchElement).toHaveClass('bg-gray-200');
   });
-}); 
+});

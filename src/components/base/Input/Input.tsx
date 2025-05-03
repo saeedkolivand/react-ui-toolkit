@@ -37,12 +37,16 @@ export const Input: React.FC<InputProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 dark:bg-gray-800 dark:text-white';
-  
+  const baseClasses =
+    'w-full rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 dark:bg-gray-800 dark:text-white';
+
   const variantClasses = {
-    default: 'border border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400',
-    filled: 'bg-gray-100 border-transparent focus:bg-white focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:focus:bg-gray-800 dark:focus:border-primary-400 dark:focus:ring-primary-400',
-    outline: 'bg-transparent border border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400',
+    default:
+      'border border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400',
+    filled:
+      'bg-gray-100 border-transparent focus:bg-white focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:focus:bg-gray-800 dark:focus:border-primary-400 dark:focus:ring-primary-400',
+    outline:
+      'bg-transparent border border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400',
   };
 
   const sizeClasses = {
@@ -51,7 +55,9 @@ export const Input: React.FC<InputProps> = ({
     lg: 'px-6 py-3 text-lg',
   };
 
-  const errorClasses = error ? 'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400' : '';
+  const errorClasses = error
+    ? 'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400'
+    : '';
 
   const classes = twMerge(
     baseClasses,
@@ -69,14 +75,10 @@ export const Input: React.FC<InputProps> = ({
           {label}
         </label>
       )}
-      <input
-        className={classes}
-        disabled={disabled}
-        {...props}
-      />
+      <input className={classes} disabled={disabled} {...props} />
       {error && errorMessage && (
         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
       )}
     </div>
   );
-}; 
+};

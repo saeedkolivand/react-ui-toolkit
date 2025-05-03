@@ -51,8 +51,8 @@ const DrawerContent = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Drawer Title</h2>
     <p className="mb-4">
-      This is a sample drawer content. You can put any content here, including forms,
-      images, or other components.
+      This is a sample drawer content. You can put any content here, including forms, images, or
+      other components.
     </p>
     <div className="flex justify-end gap-4">
       <Button variant="outline">Cancel</Button>
@@ -62,7 +62,7 @@ const DrawerContent = () => (
 );
 
 export const Left: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -83,7 +83,7 @@ export const Left: Story = {
 };
 
 export const Right: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -104,7 +104,7 @@ export const Right: Story = {
 };
 
 export const Top: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -125,7 +125,7 @@ export const Top: Story = {
 };
 
 export const Bottom: Story = {
-  render: (args) => {
+  render: args => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -143,4 +143,4 @@ export const Bottom: Story = {
     closeOnEsc: true,
     showCloseButton: true,
   },
-}; 
+};

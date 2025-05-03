@@ -39,7 +39,7 @@ export interface TableProps<T> {
     x?: number | string;
     y?: number | string;
   };
-  onChange?: (params: { 
+  onChange?: (params: {
     sorter?: { column: keyof T; order: SortOrder };
     pagination?: { current: number; pageSize: number };
   }) => void;
@@ -60,7 +60,7 @@ export function Table<T extends object>({
     column: keyof T | null;
     order: SortOrder;
   }>(() => {
-    const defaultSortColumn = columns.find((col) => col.defaultSortOrder);
+    const defaultSortColumn = columns.find(col => col.defaultSortOrder);
     return {
       column: defaultSortColumn?.dataIndex || null,
       order: defaultSortColumn?.defaultSortOrder || null,
@@ -93,21 +93,25 @@ export function Table<T extends object>({
 
     setSortState(newSortState);
     onChange?.({
-      sorter: newOrder ? {
-        column: column.dataIndex,
-        order: newOrder,
-      } : undefined,
-      pagination: pagination ? {
-        current: pagination.current,
-        pageSize: pagination.pageSize,
-      } : undefined,
+      sorter: newOrder
+        ? {
+            column: column.dataIndex,
+            order: newOrder,
+          }
+        : undefined,
+      pagination: pagination
+        ? {
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+          }
+        : undefined,
     });
   };
 
   const getSortedData = () => {
     if (!sortState.column || !sortState.order) return dataSource;
 
-    const column = columns.find((col) => col.dataIndex === sortState.column);
+    const column = columns.find(col => col.dataIndex === sortState.column);
     if (!column?.sorter) return dataSource;
 
     return [...dataSource].sort((a, b) => {
@@ -146,7 +150,7 @@ export function Table<T extends object>({
   const renderHeader = () => (
     <thead>
       <tr className="bg-gray-50">
-        {columns.map((column) => (
+        {columns.map(column => (
           <th
             key={column.key}
             className={classNames(
@@ -179,9 +183,9 @@ export function Table<T extends object>({
 
     return (
       <tbody className="bg-white divide-y divide-gray-200">
-        {currentData.map((record) => (
+        {currentData.map(record => (
           <tr key={String(record[rowKey])} className="hover:bg-gray-50">
-            {columns.map((column) => (
+            {columns.map(column => (
               <td key={column.key} className="px-4 py-2 whitespace-nowrap">
                 {column.render
                   ? column.render(record[column.dataIndex], record)
@@ -206,7 +210,7 @@ export function Table<T extends object>({
           {pagination.showSizeChanger && (
             <Select
               value={pagination.pageSize.toString()}
-              onChange={(e) => {
+              onChange={e => {
                 const value = e.target.value;
                 if (value && pagination.onPageSizeChange) {
                   const newPageSize = parseInt(value, 10);
@@ -218,7 +222,7 @@ export function Table<T extends object>({
               size="sm"
               className="w-20"
             >
-              {(pagination.pageSizeOptions || [10, 20, 30, 40, 50]).map((size) => (
+              {(pagination.pageSizeOptions || [10, 20, 30, 40, 50]).map(size => (
                 <Option key={size} value={size.toString()}>
                   {size}
                 </Option>
@@ -226,7 +230,9 @@ export function Table<T extends object>({
             </Select>
           )}
           <span className="text-sm text-gray-600">
-            {((pagination.current - 1) * pagination.pageSize) + 1}-{Math.min(pagination.current * pagination.pageSize, pagination.total)} of {pagination.total}
+            {(pagination.current - 1) * pagination.pageSize + 1}-
+            {Math.min(pagination.current * pagination.pageSize, pagination.total)} of{' '}
+            {pagination.total}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -240,7 +246,7 @@ export function Table<T extends object>({
             ←
           </Button>
           <div className="flex items-center gap-1">
-            {pages.map((page) => (
+            {pages.map(page => (
               <Button
                 key={page}
                 variant={page === pagination.current ? 'primary' : 'outline'}
@@ -277,4 +283,4 @@ export function Table<T extends object>({
       {renderPagination()}
     </Container>
   );
-} 
+}

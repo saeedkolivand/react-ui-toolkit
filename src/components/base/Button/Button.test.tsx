@@ -43,7 +43,7 @@ describe('Button', () => {
   it('handles click events', () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -53,4 +53,4 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toBeDisabled();
     expect(screen.getByRole('button')).toHaveClass('opacity-50');
   });
-}); 
+});

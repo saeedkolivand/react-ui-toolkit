@@ -99,7 +99,9 @@ describe('Modal', () => {
         <div>Modal Content</div>
       </Modal>
     );
-    expect(screen.getByRole('dialog').querySelector('[class*="overflow-y-auto"]')).toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog').querySelector('[class*="overflow-y-auto"]')
+    ).toBeInTheDocument();
   });
 
   it('does not show close button when showCloseButton is false', () => {
@@ -128,4 +130,4 @@ describe('Modal', () => {
     );
     expect(screen.getByRole('dialog').querySelector('[class*="items-start"]')).toBeInTheDocument();
   });
-}); 
+});

@@ -121,11 +121,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
         />
 
         {/* Drawer */}
-        <div
-          ref={ref}
-          className={drawerClasses}
-          {...props}
-        >
+        <div ref={ref} className={drawerClasses} {...props}>
           {showCloseButton && (
             <button
               type="button"
@@ -133,12 +129,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
               onClick={onClose}
               aria-label="Close"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -154,4 +145,4 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       document.body
     );
   }
-); 
+);

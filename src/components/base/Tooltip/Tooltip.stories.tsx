@@ -90,7 +90,8 @@ export const WithIcons: Story = {
 
 export const LongContent: Story = {
   args: {
-    content: 'This is a very long tooltip content that might wrap to multiple lines. It demonstrates how the tooltip handles longer text content and ensures it stays within the viewport boundaries.',
+    content:
+      'This is a very long tooltip content that might wrap to multiple lines. It demonstrates how the tooltip handles longer text content and ensures it stays within the viewport boundaries.',
     children: <Button>Long Content</Button>,
   },
 };
@@ -179,4 +180,4 @@ export const EdgeCases: Story = {
       </div>
     </div>
   ),
-}; 
+};
