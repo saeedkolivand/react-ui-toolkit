@@ -1,6 +1,5 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import styles from './Switch.module.scss';
 
 export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /**
@@ -19,6 +18,18 @@ export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
    * The size of the switch
    */
   size?: 'sm' | 'md' | 'lg';
+  /**
+   * Whether the switch is checked
+   */
+  checked?: boolean;
+  /**
+   * Whether the switch is in loading state
+   */
+  loading?: boolean;
+  /**
+   * Callback when the switch state changes
+   */
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
@@ -31,25 +42,29 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
       size = 'md',
       disabled,
       checked,
-      ...props
+      loading,
+      onChange,
     },
-    ref
+    _ref
   ) => {
     const switchSizes = {
       sm: {
         switch: 'w-8 h-4',
         thumb: 'h-3 w-3',
         translate: 'translate-x-4',
+        spinner: 'h-2.5 w-2.5',
       },
       md: {
         switch: 'w-11 h-6',
         thumb: 'h-5 w-5',
         translate: 'translate-x-5',
+        spinner: 'h-3.5 w-3.5',
       },
       lg: {
         switch: 'w-14 h-7',
         thumb: 'h-6 w-6',
         translate: 'translate-x-7',
+        spinner: 'h-4 w-4',
       },
     };
 
@@ -64,50 +79,54 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
       switchSizes[size].switch,
       checked ? 'bg-primary-600 dark:bg-primary-500' : 'bg-gray-200 dark:bg-gray-600',
       disabled && 'cursor-not-allowed opacity-50',
+      loading && 'cursor-wait',
       className
     );
 
     const thumbClasses = twMerge(
-      'pointer-events-none inline-block transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out dark:bg-gray-100',
+      'pointer-events-none inline-flex items-center justify-center transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out dark:bg-gray-100',
       switchSizes[size].thumb,
       checked ? switchSizes[size].translate : 'translate-x-0'
+    );
+
+    const spinnerClasses = twMerge(
+      'animate-spin rounded-full border-[1.5px] border-current border-t-transparent',
+      switchSizes[size].spinner
     );
 
     const labelClasses = twMerge(
       'ml-3 font-medium text-gray-700 dark:text-gray-200',
       labelSizeClasses[size],
       disabled && 'text-gray-400 dark:text-gray-500',
-      error && 'text-red-500 dark:text-red-400'
+      error && 'text-red-500 dark:text-red-400',
+      loading && 'opacity-70'
     );
+
+    const handleChange = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!disabled && !loading && onChange) {
+        const syntheticEvent = {
+          target: { checked: !checked }
+        } as React.ChangeEvent<HTMLInputElement>;
+        onChange(syntheticEvent);
+      }
+    };
 
     return (
       <div className="relative">
         <div className="flex items-center">
-          <label className="inline-flex items-center">
-            <input
-              type="checkbox"
-              ref={ref}
-              className="sr-only"
-              disabled={disabled}
-              checked={checked}
-              aria-invalid={error ? 'true' : 'false'}
-              aria-describedby={
-                error || helperText ? `${props.id}-description` : undefined
-              }
-              {...props}
-            />
-            <div className={switchClasses}>
-              <span
-                className={thumbClasses}
-                aria-hidden="true"
-              />
-            </div>
-            {label && (
-              <span className={labelClasses}>
-                {label}
-              </span>
-            )}
-          </label>
+          <button
+            type="button"
+            className={switchClasses}
+            role="switch"
+            aria-checked={checked}
+            disabled={disabled || loading}
+            onClick={handleChange}
+          >
+            <span className={thumbClasses}>
+              {loading && <div className={spinnerClasses} />}
+            </span>
+          </button>
+          {label && <span className={labelClasses}>{label}</span>}
         </div>
         {(helperText || error) && (
           <p
@@ -115,7 +134,6 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
               'mt-1 text-sm',
               error ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
             )}
-            id={`${props.id}-description`}
           >
             {error || helperText}
           </p>
@@ -123,4 +141,6 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
       </div>
     );
   }
-); 
+);
+
+Switch.displayName = 'Switch'; 
