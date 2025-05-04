@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
-import Notification, { NotificationType, NotificationProps } from './Notification';
+import Notification, { NotificationProps } from './Notification';
 import styles from './Notification.module.css';
 
 export type NotificationPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';

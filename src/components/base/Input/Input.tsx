@@ -1,6 +1,5 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import styles from './Input.module.scss';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 
@@ -25,6 +24,22 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
    * Label for the input
    */
   label?: string;
+  /**
+   * Helper text to display below the input
+   */
+  helperText?: string;
+  /**
+   * Prefix to display before the input
+   */
+  prefix?: string;
+  /**
+   * Suffix to display after the input
+   */
+  suffix?: string;
+  /**
+   * Whether the input should take full width
+   */
+  fullWidth?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -35,6 +50,10 @@ export const Input: React.FC<InputProps> = ({
   errorMessage,
   label,
   disabled,
+  helperText,
+  prefix,
+  suffix,
+  fullWidth = true,
   ...props
 }) => {
   const baseClasses =
@@ -69,15 +88,30 @@ export const Input: React.FC<InputProps> = ({
   );
 
   return (
-    <div className="w-full">
+    <div className={fullWidth ? 'w-full' : ''}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
           {label}
         </label>
       )}
-      <input className={classes} disabled={disabled} {...props} />
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{prefix}</span>
+        )}
+        <input
+          className={twMerge(classes, prefix && 'pl-8', suffix && 'pr-8')}
+          disabled={disabled}
+          {...props}
+        />
+        {suffix && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">{suffix}</span>
+        )}
+      </div>
       {error && errorMessage && (
         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
+      )}
+      {helperText && !error && (
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helperText}</p>
       )}
     </div>
   );

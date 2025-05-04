@@ -43,7 +43,7 @@ describe('Modal', () => {
         <div>Modal Content</div>
       </Modal>
     );
-    fireEvent.click(screen.getByRole('dialog').previousSibling as Element);
+    fireEvent.click(screen.getByTestId('modal-backdrop'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -53,7 +53,7 @@ describe('Modal', () => {
         <div>Modal Content</div>
       </Modal>
     );
-    fireEvent.click(screen.getByRole('dialog').previousSibling as Element);
+    fireEvent.click(screen.getByTestId('modal-backdrop'));
     expect(onClose).not.toHaveBeenCalled();
   });
 

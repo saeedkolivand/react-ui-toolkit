@@ -89,28 +89,27 @@ export const Accordion: React.FC<AccordionProps> = ({
                   isExpanded && 'rotate-180'
                 )}
                 fill="none"
-                viewBox="0 0 24 24"
                 stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
+                  d="M19 9l-7 7-7-7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
                 />
               </svg>
             </button>
-            <div
-              id={`panel-${index}`}
-              role="tabpanel"
-              aria-hidden={!isExpanded}
-              className={twMerge(
-                'transition-all duration-200 overflow-hidden',
-                isExpanded ? 'max-h-96' : 'max-h-0'
-              )}
-            >
-              <div className="px-4 py-2">{item.content}</div>
-            </div>
+            {isExpanded && (
+              <div
+                id={`panel-${index}`}
+                role="tabpanel"
+                aria-hidden={!isExpanded}
+                className="px-4 py-2"
+              >
+                {item.content}
+              </div>
+            )}
           </div>
         );
       })}

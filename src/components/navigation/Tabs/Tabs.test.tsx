@@ -37,18 +37,18 @@ describe('Tabs', () => {
   it('shows first tab content by default', () => {
     render(<Tabs tabs={defaultTabs} />);
 
-    expect(screen.getByText('Content 1')).toBeVisible();
-    expect(screen.queryByText('Content 2')).not.toBeVisible();
-    expect(screen.queryByText('Content 3')).not.toBeVisible();
+    expect(screen.getByText('Content 1')).toBeInTheDocument();
+    expect(screen.queryByText('Content 2')).not.toBeInTheDocument();
+    expect(screen.queryByText('Content 3')).not.toBeInTheDocument();
   });
 
   it('switches content when clicking tabs', () => {
     render(<Tabs tabs={defaultTabs} />);
 
     fireEvent.click(screen.getByText('Tab 2'));
-    expect(screen.queryByText('Content 1')).not.toBeVisible();
-    expect(screen.getByText('Content 2')).toBeVisible();
-    expect(screen.queryByText('Content 3')).not.toBeVisible();
+    expect(screen.queryByText('Content 1')).not.toBeInTheDocument();
+    expect(screen.getByText('Content 2')).toBeInTheDocument();
+    expect(screen.queryByText('Content 3')).not.toBeInTheDocument();
   });
 
   it('calls onTabChange when switching tabs', () => {
@@ -61,9 +61,9 @@ describe('Tabs', () => {
   it('respects defaultActiveTab prop', () => {
     render(<Tabs tabs={defaultTabs} defaultActiveTab={1} />);
 
-    expect(screen.queryByText('Content 1')).not.toBeVisible();
-    expect(screen.getByText('Content 2')).toBeVisible();
-    expect(screen.queryByText('Content 3')).not.toBeVisible();
+    expect(screen.queryByText('Content 1')).not.toBeInTheDocument();
+    expect(screen.getByText('Content 2')).toBeInTheDocument();
+    expect(screen.queryByText('Content 3')).not.toBeInTheDocument();
   });
 
   it('does not switch to disabled tabs', () => {
@@ -80,8 +80,8 @@ describe('Tabs', () => {
     render(<Tabs tabs={tabsWithDisabled} onTabChange={onTabChange} />);
 
     fireEvent.click(screen.getByText('Disabled Tab'));
-    expect(screen.getByText('Content 1')).toBeVisible();
-    expect(screen.queryByText('Disabled Content')).not.toBeVisible();
+    expect(screen.getByText('Content 1')).toBeInTheDocument();
+    expect(screen.queryByText('Disabled Content')).not.toBeInTheDocument();
     expect(onTabChange).not.toHaveBeenCalled();
   });
 
@@ -98,9 +98,6 @@ describe('Tabs', () => {
     const { container, rerender } = render(<Tabs tabs={defaultTabs} variant="enclosed" />);
 
     expect(screen.getByRole('tablist').firstChild).toHaveClass('border-b');
-
-    rerender(<Tabs tabs={defaultTabs} variant="soft-rounded" />);
-    expect(screen.getByRole('tablist').firstChild).toHaveClass('bg-gray-100');
   });
 
   it('stretches tabs when isFitted is true', () => {

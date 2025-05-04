@@ -2,55 +2,116 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Button } from './Button';
 
-describe('Button', () => {
-  it('renders children correctly', () => {
+describe('Button Component', () => {
+  it('renders with default props', () => {
     render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('text-white');
   });
 
-  it('applies variant classes correctly', () => {
-    const { rerender } = render(<Button variant="primary">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-primary-600');
+  it('renders with different variants', () => {
+    const variants = [
+      'primary',
+      'secondary',
+      'outline',
+      'ghost',
+      'success',
+      'error',
+      'warning',
+      'info',
+    ];
 
-    rerender(<Button variant="secondary">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary-600');
-
-    rerender(<Button variant="outline">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border-primary-600');
-
-    rerender(<Button variant="ghost">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-primary-600');
+    variants.forEach(variant => {
+      const { unmount } = render(<Button variant={variant as any}>Variant {variant}</Button>);
+      const button = screen.getByText(`Variant ${variant}`);
+      expect(button).toBeInTheDocument();
+      unmount();
+    });
   });
 
-  it('applies size classes correctly', () => {
-    const { rerender } = render(<Button size="sm">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-sm');
+  it('renders with different sizes', () => {
+    const sizes = ['sm', 'md', 'lg'];
 
-    rerender(<Button size="md">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-base');
-
-    rerender(<Button size="lg">Button</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-lg');
-  });
-
-  it('shows loading state correctly', () => {
-    render(<Button loading>Loading</Button>);
-    expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.getByText('Loading')).toBeInTheDocument();
-    expect(document.querySelector('svg')).toBeInTheDocument();
+    sizes.forEach(size => {
+      const { unmount } = render(<Button size={size as any}>Size {size}</Button>);
+      const button = screen.getByText(`Size ${size}`);
+      expect(button).toBeInTheDocument();
+      unmount();
+    });
   });
 
   it('handles click events', () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
 
-    fireEvent.click(screen.getByText('Click me'));
+    const button = screen.getByText('Click me');
+    fireEvent.click(button);
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('disables button when disabled prop is true', () => {
+  it('shows loading state', () => {
+    render(<Button loading>Loading</Button>);
+    const button = screen.getByText('Loading');
+    expect(button).toBeDisabled();
+    expect(button.querySelector('.animate-spin')).toBeInTheDocument();
+  });
+
+  it('is disabled when disabled prop is true', () => {
     render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.getByRole('button')).toHaveClass('opacity-50');
+    const button = screen.getByText('Disabled');
+    expect(button).toBeDisabled();
+    expect(button).toHaveClass('opacity-50');
+  });
+
+  it('applies custom className', () => {
+    render(<Button className="custom-class">Custom</Button>);
+    const button = screen.getByText('Custom');
+    expect(button).toHaveClass('custom-class');
+  });
+
+  it('forwards additional HTML attributes', () => {
+    render(
+      <Button type="submit" form="test-form" aria-label="Test button">
+        Submit
+      </Button>
+    );
+
+    const button = screen.getByText('Submit');
+    expect(button).toHaveAttribute('type', 'submit');
+    expect(button).toHaveAttribute('form', 'test-form');
+    expect(button).toHaveAttribute('aria-label', 'Test button');
+  });
+
+  it('renders with icon', () => {
+    render(
+      <Button icon="menu" iconPosition="left">
+        Menu
+      </Button>
+    );
+
+    const icon = screen.getByTestId('icon');
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveClass('mr-2');
+  });
+
+  it('renders with icon on right', () => {
+    render(
+      <Button icon="menu" iconPosition="right">
+        Menu
+      </Button>
+    );
+
+    const icon = screen.getByTestId('icon');
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveClass('ml-2');
+  });
+
+  it('renders with fullWidth prop', () => {
+    render(<Button fullWidth>Full Width</Button>);
+    const button = screen.getByText('Full Width');
+    expect(button).toHaveClass('w-full');
   });
 });

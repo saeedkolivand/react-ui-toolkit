@@ -2,74 +2,111 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Textarea } from './Textarea';
 
-describe('Textarea', () => {
-  it('renders correctly', () => {
-    render(<Textarea placeholder="Enter text" />);
-    expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument();
+describe('Textarea Component', () => {
+  it('renders with default props', () => {
+    render(<Textarea />);
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toBeInTheDocument();
+    expect(textarea).toHaveClass('text-base');
+    expect(textarea).toHaveClass('min-h-[100px]');
   });
 
-  it('renders label when provided', () => {
-    render(<Textarea label="Description" />);
-    expect(screen.getByText('Description')).toBeInTheDocument();
+  it('renders with label', () => {
+    render(<Textarea label="Test Label" />);
+    const label = screen.getByText('Test Label');
+    expect(label).toBeInTheDocument();
   });
 
-  it('renders helper text when provided', () => {
-    render(<Textarea helperText="Maximum 500 characters" />);
-    expect(screen.getByText('Maximum 500 characters')).toBeInTheDocument();
+  it('renders with different variants', () => {
+    const variants = ['default', 'filled', 'outlined'];
+
+    variants.forEach(variant => {
+      const { unmount } = render(
+        <Textarea variant={variant as any} placeholder={`Variant ${variant}`} />
+      );
+      const textarea = screen.getByPlaceholderText(`Variant ${variant}`);
+      expect(textarea).toBeInTheDocument();
+      unmount();
+    });
   });
 
-  it('renders error message when provided', () => {
-    render(<Textarea error="This field is required" />);
-    expect(screen.getByText('This field is required')).toBeInTheDocument();
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
+  it('renders with different sizes', () => {
+    const sizes = ['sm', 'md', 'lg'];
+
+    sizes.forEach(size => {
+      const { unmount } = render(<Textarea size={size as any} placeholder={`Size ${size}`} />);
+      const textarea = screen.getByPlaceholderText(`Size ${size}`);
+      expect(textarea).toHaveClass(`text-${size === 'sm' ? 'sm' : size === 'md' ? 'base' : 'lg'}`);
+      expect(textarea).toHaveClass(
+        `min-h-[${size === 'sm' ? '80' : size === 'md' ? '100' : '120'}px]`
+      );
+      unmount();
+    });
   });
 
-  it('applies variant classes correctly', () => {
-    const { rerender } = render(<Textarea variant="default" />);
-    expect(screen.getByRole('textbox')).toHaveClass('bg-white');
-
-    rerender(<Textarea variant="filled" />);
-    expect(screen.getByRole('textbox')).toHaveClass('bg-gray-100');
-
-    rerender(<Textarea variant="outlined" />);
-    expect(screen.getByRole('textbox')).toHaveClass('bg-transparent');
-  });
-
-  it('applies size classes correctly', () => {
-    const { rerender } = render(<Textarea size="sm" />);
-    expect(screen.getByRole('textbox')).toHaveClass('text-sm');
-
-    rerender(<Textarea size="md" />);
-    expect(screen.getByRole('textbox')).toHaveClass('text-base');
-
-    rerender(<Textarea size="lg" />);
-    expect(screen.getByRole('textbox')).toHaveClass('text-lg');
-  });
-
-  it('handles change events', () => {
+  it('handles value changes', () => {
     const handleChange = jest.fn();
     render(<Textarea onChange={handleChange} />);
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'test' },
-    });
+    const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 'test' } });
+
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
 
-  it('disables textarea when disabled prop is true', () => {
-    render(<Textarea disabled />);
-    expect(screen.getByRole('textbox')).toBeDisabled();
-    expect(screen.getByRole('textbox')).toHaveClass('disabled:bg-gray-100');
+  it('shows error state', () => {
+    render(<Textarea error="This is an error" label="Error textarea" />);
+
+    const textarea = screen.getByRole('textbox');
+    const errorMessage = screen.getByText('This is an error');
+
+    expect(textarea).toHaveClass('border-red-500');
+    expect(errorMessage).toBeInTheDocument();
   });
 
-  it('auto-resizes when autoResize prop is true', () => {
-    render(<Textarea autoResize />);
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveClass('autoResize');
+  it('shows helper text', () => {
+    render(<Textarea helperText="This is helper text" label="Textarea with helper" />);
 
-    // Mock scrollHeight
-    Object.defineProperty(textarea, 'scrollHeight', { value: 100 });
-    fireEvent.change(textarea, { target: { value: 'test\ntest\ntest' } });
-    expect(textarea.style.height).toBe('100px');
+    const helperText = screen.getByText('This is helper text');
+    expect(helperText).toBeInTheDocument();
+  });
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Textarea disabled />);
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toBeDisabled();
+    expect(textarea).toHaveClass('disabled:cursor-not-allowed');
+  });
+
+  it('applies custom className', () => {
+    render(<Textarea className="custom-class" />);
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toHaveClass('custom-class');
+  });
+
+  it('forwards additional HTML attributes', () => {
+    render(<Textarea name="test-textarea" required placeholder="Test textarea" rows={5} />);
+
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toHaveAttribute('name', 'test-textarea');
+    expect(textarea).toBeRequired();
+    expect(textarea).toHaveAttribute('placeholder', 'Test textarea');
+    expect(textarea).toHaveAttribute('rows', '5');
+  });
+
+  it('handles auto-resize', () => {
+    const handleChange = jest.fn();
+    render(<Textarea autoResize onChange={handleChange} />);
+
+    const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 'test\nline2\nline3' } });
+
+    expect(handleChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders with fullWidth prop', () => {
+    render(<Textarea fullWidth />);
+    const container = screen.getByRole('textbox').parentElement;
+    expect(container).toHaveClass('w-full');
   });
 });

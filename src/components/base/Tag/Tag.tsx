@@ -20,9 +20,9 @@ const colorClasses = {
     solid: 'bg-gray-600 text-white',
   },
   primary: {
-    default: 'bg-blue-100 text-blue-700 border-blue-200',
-    outline: 'border-blue-500 text-blue-600',
-    solid: 'bg-blue-600 text-white',
+    default: 'bg-primary-100 text-primary-700 border-primary-200',
+    outline: 'border-primary-500 text-primary-600',
+    solid: 'bg-primary-600 text-white',
   },
   success: {
     default: 'bg-green-100 text-green-700 border-green-200',
@@ -68,6 +68,7 @@ export function Tag({
           type="button"
           className="ml-1.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-current hover:bg-current hover:bg-opacity-20 focus:outline-none"
           onClick={onClose}
+          aria-label="Remove tag"
         >
           <span className="sr-only">Remove tag</span>
           <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">

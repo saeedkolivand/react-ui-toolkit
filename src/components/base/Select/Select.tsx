@@ -2,7 +2,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Option as OptionComponent, OptionProps } from './Option';
+import { Option as OptionComponent } from './Option';
 
 export interface SelectOption {
   value: string;
@@ -21,6 +21,9 @@ export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectE
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
+  placeholder?: string;
+  name?: string;
+  required?: boolean;
 }
 
 export function Select({
@@ -34,6 +37,9 @@ export function Select({
   disabled = false,
   className,
   children,
+  placeholder = 'Select an option',
+  name,
+  required,
   ...props
 }: SelectProps) {
   const [isFocused, setIsFocused] = React.useState(false);
@@ -105,6 +111,8 @@ export function Select({
             maxHeight: '200px',
             overflowY: 'auto',
           }}
+          role="listbox"
+          aria-label="Select options"
         >
           {options?.map((option, index) => (
             <motion.div
@@ -123,6 +131,9 @@ export function Select({
                   setIsOpen(false);
                 }
               }}
+              role="option"
+              aria-selected={option.value === value}
+              aria-disabled={option.disabled}
             >
               {option.label}
             </motion.div>
@@ -131,6 +142,39 @@ export function Select({
       )}
     </AnimatePresence>
   );
+
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!disabled) {
+        setIsOpen(!isOpen);
+      }
+    },
+    [disabled, isOpen]
+  );
+
+  const handleFocus = React.useCallback((e: React.FocusEvent<HTMLDivElement>) => {
+    setIsFocused(true);
+  }, []);
+
+  const handleBlur = React.useCallback((e: React.FocusEvent<HTMLDivElement>) => {
+    setIsFocused(false);
+  }, []);
+
+  // Filter out select-specific props that shouldn't be passed to the div
+  const { onClick, onFocus, onBlur, ...divProps } = props as any;
+
+  const buttonClasses = twMerge(
+    'block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none',
+    'bg-white dark:bg-gray-800',
+    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700',
+    'text-base px-3 py-2',
+    'border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0',
+    'dark:border-gray-600 dark:hover:border-gray-500',
+    'pr-10',
+    className
+  );
+
+  const ariaLabel = label || 'Select an option';
 
   return (
     <div className="relative" ref={selectRef}>
@@ -141,20 +185,33 @@ export function Select({
       )}
       <div className="relative">
         <motion.div whileFocus={{ scale: 1.01 }} className="relative">
-          <div
+          <input
+            type="text"
+            readOnly
             className={selectClasses}
-            onClick={() => !disabled && setIsOpen(!isOpen)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onClick={handleClick}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             tabIndex={0}
-          >
-            {selectedOption?.label || 'Select an option'}
-          </div>
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            aria-controls="select-options"
+            aria-label={ariaLabel}
+            disabled={disabled}
+            aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={error && errorMessage ? `${props.id}-error` : undefined}
+            value={selectedOption?.label || placeholder}
+            name={name}
+            required={required}
+            {...divProps}
+          />
         </motion.div>
         <motion.div
           className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
+          aria-hidden="true"
         >
           <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <path d="M7 7l3 3 3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -172,6 +229,8 @@ export function Select({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             className="mt-1 text-sm text-red-600 dark:text-red-400"
+            role="alert"
+            id={`${props.id}-error`}
           >
             {errorMessage}
           </motion.p>

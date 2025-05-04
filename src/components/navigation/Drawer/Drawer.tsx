@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, HTMLMotionProps, Variants } from 'framer-motion';
+import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
 import { Button } from '../../base/Button/Button';
 import { Icon } from '../../base/Icon';
 
@@ -19,7 +19,7 @@ export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'child
    */
   position?: 'left' | 'right' | 'top' | 'bottom';
   /**
-   * The size of the drawer (width for left/right, height for top/bottom)
+   * The size of the drawer
    */
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   /**
@@ -37,7 +37,7 @@ export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'child
   /**
    * The content of the drawer
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
@@ -80,11 +80,11 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
     }, [isOpen]);
 
     const sizeClasses = {
-      sm: position === 'left' || position === 'right' ? 'w-72' : 'h-72',
-      md: position === 'left' || position === 'right' ? 'w-96' : 'h-96',
-      lg: position === 'left' || position === 'right' ? 'w-[32rem]' : 'h-[32rem]',
-      xl: position === 'left' || position === 'right' ? 'w-[40rem]' : 'h-[40rem]',
-      full: position === 'left' || position === 'right' ? 'w-screen' : 'h-screen',
+      sm: 'w-72',
+      md: 'w-96',
+      lg: 'w-[32rem]',
+      xl: 'w-[40rem]',
+      full: 'w-screen',
     };
 
     const positionClasses = {
@@ -94,74 +94,64 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       bottom: 'bottom-0 left-0 right-0',
     };
 
-    const drawerVariants: Variants = {
-      open: {
-        x: position === 'left' ? 0 : position === 'right' ? 0 : 0,
-        y: position === 'top' ? 0 : position === 'bottom' ? 0 : 0,
-        opacity: 1,
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 30,
-        },
-      },
-      closed: {
-        x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
-        y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
-        opacity: 0,
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 30,
-        },
-      },
-    };
-
-    const backdropVariants: Variants = {
-      open: {
-        opacity: 1,
-        transition: {
-          duration: 0.2,
-        },
-      },
-      closed: {
-        opacity: 0,
-        transition: {
-          duration: 0.2,
-        },
-      },
-    };
-
     const drawerClasses = twMerge(
-      'fixed bg-white shadow-xl',
-      sizeClasses[size],
+      'fixed bg-white dark:bg-gray-800 shadow-xl',
+      position === 'left' || position === 'right' ? sizeClasses[size] : '',
+      position === 'left' || position === 'right' ? 'h-full' : 'w-full',
       positionClasses[position],
       className
     );
 
+    const backdropClasses = twMerge('fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70');
+
+    const handleBackdropClick = (e: React.MouseEvent) => {
+      if (closeOnBackdropClick && e.target === e.currentTarget) {
+        onClose();
+      }
+    };
+
     return createPortal(
       <AnimatePresence>
         {isOpen && (
-          <div className="relative z-50" role="dialog" aria-modal="true">
+          <div
+            data-testid="drawer-dialog"
+            className="relative z-50"
+            aria-labelledby="drawer-title"
+            role="dialog"
+            aria-modal="true"
+          >
             {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 bg-black bg-opacity-50"
-              variants={backdropVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              onClick={closeOnBackdropClick ? onClose : undefined}
+              data-testid="drawer-backdrop"
+              className={backdropClasses}
+              onClick={handleBackdropClick}
               aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             />
 
             {/* Drawer */}
             <motion.div
               ref={ref}
               className={drawerClasses}
-              variants={drawerVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
+              initial={{
+                opacity: 0,
+                x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
+                y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
+                y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
+              }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               {...props}
             >
               {showCloseButton && (

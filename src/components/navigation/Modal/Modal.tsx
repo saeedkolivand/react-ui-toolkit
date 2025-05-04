@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
 import { Button } from '../../base/Button/Button';
-import { Icon } from '../../base/Icon/Icon';
+import { Icon } from '../../base/Icon';
 
 export interface ModalProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'children'> {
   /**
@@ -107,10 +107,17 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       'p-4 sm:p-6 md:p-8'
     );
 
+    const handleBackdropClick = (e: React.MouseEvent) => {
+      if (closeOnBackdropClick && e.target === e.currentTarget) {
+        onClose();
+      }
+    };
+
     return createPortal(
       <AnimatePresence>
         {isOpen && (
           <div
+            data-testid="modal-dialog"
             className="relative z-50"
             aria-labelledby="modal-title"
             role="dialog"
@@ -118,8 +125,9 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           >
             {/* Backdrop */}
             <motion.div
+              data-testid="modal-backdrop"
               className={backdropClasses}
-              onClick={closeOnBackdropClick ? onClose : undefined}
+              onClick={handleBackdropClick}
               aria-hidden="true"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

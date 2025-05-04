@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Tag, TagVariant, TagColor } from './Tag';
+import { Tag } from './Tag';
 
 const meta: Meta<typeof Tag> = {
   title: 'Base/Tag',

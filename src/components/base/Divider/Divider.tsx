@@ -40,6 +40,7 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
       return (
         <div className="flex items-center w-full my-4">
           <div
+            data-testid="divider-line"
             className={twMerge(
               'flex-1 h-px',
               dashed ? 'border-dashed' : 'border-solid',
@@ -49,6 +50,7 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
           />
           <span className="px-4 text-gray-500 text-sm whitespace-nowrap">{children}</span>
           <div
+            data-testid="divider-line"
             className={twMerge(
               'flex-1 h-px',
               dashed ? 'border-dashed' : 'border-solid',
@@ -60,7 +62,7 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
       );
     }
 
-    return <div ref={ref} className={baseClasses} {...props} />;
+    return <div ref={ref} data-testid="divider" className={baseClasses} {...props} />;
   }
 );
 

@@ -824,27 +824,35 @@ export const Icon: React.FC<IconProps> = ({
     xl: 'w-8 h-8',
   };
 
-  const classes = twMerge('inline-block', sizeClasses[size], className);
-
   if (customIcon) {
     return (
-      <span className={classes} style={{ color }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={color}
+        className={twMerge(sizeClasses[size], className)}
+        data-testid="icon"
+        {...props}
+      >
         {customIcon}
-      </span>
+      </svg>
     );
   }
 
-  if (!name) {
+  if (!name || !icons[name]) {
+    console.warn(`Icon "${name}" not found`);
     return null;
   }
 
   return (
     <svg
-      className={classes}
-      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
+      fill="none"
       stroke={color}
-      data-testid={`icon-${name || 'custom'}`}
+      className={twMerge(sizeClasses[size], className)}
+      data-testid="icon"
       {...props}
     >
       {icons[name]}

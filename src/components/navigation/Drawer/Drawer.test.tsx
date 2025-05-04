@@ -45,7 +45,7 @@ describe('Drawer', () => {
         <div>Drawer Content</div>
       </Drawer>
     );
-    fireEvent.click(screen.getByRole('dialog').previousSibling as Element);
+    fireEvent.click(screen.getByTestId('drawer-backdrop'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -55,7 +55,7 @@ describe('Drawer', () => {
         <div>Drawer Content</div>
       </Drawer>
     );
-    fireEvent.click(screen.getByRole('dialog').previousSibling as Element);
+    fireEvent.click(screen.getByTestId('drawer-backdrop'));
     expect(onClose).not.toHaveBeenCalled();
   });
 

@@ -35,7 +35,18 @@ export interface SwitchProps
 
 export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
   (
-    { className, label, helperText, error, size = 'md', disabled, checked, loading, onChange },
+    {
+      className,
+      label,
+      helperText,
+      error,
+      size = 'md',
+      disabled,
+      checked,
+      loading,
+      onChange,
+      ...props
+    },
     _ref
   ) => {
     const switchSizes = {
@@ -93,7 +104,7 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
       loading && 'opacity-70'
     );
 
-    const handleChange = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleChange = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!disabled && !loading && onChange) {
         const syntheticEvent = {
           target: { checked: !checked },
@@ -105,16 +116,23 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
     return (
       <div className="relative">
         <div className="flex items-center">
-          <button
-            type="button"
+          <div
             className={switchClasses}
             role="switch"
             aria-checked={checked}
-            disabled={disabled || loading}
             onClick={handleChange}
           >
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={checked}
+              disabled={disabled || loading}
+              onChange={onChange}
+              name={props.name}
+              {...props}
+            />
             <span className={thumbClasses}>{loading && <div className={spinnerClasses} />}</span>
-          </button>
+          </div>
           {label && <span className={labelClasses}>{label}</span>}
         </div>
         {(helperText || error) && (

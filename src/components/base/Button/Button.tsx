@@ -27,6 +27,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    * Whether the button is full width
    */
   fullWidth?: boolean;
+  /**
+   * Icon to display in the button
+   */
+  icon?: string;
+  /**
+   * Position of the icon relative to the text
+   */
+  iconPosition?: 'left' | 'right';
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -37,6 +45,8 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   fullWidth = false,
   disabled,
+  icon,
+  iconPosition = 'left',
   ...props
 }) => {
   const baseClasses =
@@ -44,7 +54,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-primary-400',
+      'bg-primary text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-primary-400',
     secondary:
       'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 dark:bg-secondary-500 dark:hover:bg-secondary-600 dark:focus:ring-secondary-400',
     outline:
@@ -76,6 +86,15 @@ export const Button: React.FC<ButtonProps> = ({
     className
   );
 
+  const renderIcon = () => {
+    if (!icon) return null;
+    return (
+      <span data-testid="icon" className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>
+        {icon}
+      </span>
+    );
+  };
+
   return (
     <button className={classes} disabled={disabled || loading} {...props}>
       {loading ? (
@@ -101,7 +120,11 @@ export const Button: React.FC<ButtonProps> = ({
           {children}
         </>
       ) : (
-        children
+        <>
+          {iconPosition === 'left' && renderIcon()}
+          {children}
+          {iconPosition === 'right' && renderIcon()}
+        </>
       )}
     </button>
   );
