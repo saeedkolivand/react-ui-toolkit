@@ -1,6 +1,5 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import styles from './Radio.module.scss';
 
 export type RadioSize = 'sm' | 'md' | 'lg';
 
@@ -89,3 +88,5 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
     );
   }
 );
+
+Radio.displayName = 'Radio';

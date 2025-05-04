@@ -107,7 +107,7 @@ const data: User[] = [
   },
 ];
 
-const meta: Meta<typeof Table> = {
+const meta: Meta<typeof Table<User>> = {
   title: 'Base/Table',
   component: Table,
   parameters: {
@@ -132,7 +132,7 @@ const meta: Meta<typeof Table> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Table>;
+type Story = StoryObj<typeof Table<User>>;
 
 export const Default: Story = {
   args: {
@@ -184,7 +184,7 @@ export const WithPagination: Story = {
     const [pageSize, setPageSize] = useState(3);
 
     return (
-      <Table
+      <Table<User>
         dataSource={data}
         columns={columns}
         rowKey="id"
@@ -211,7 +211,7 @@ export const WithSortingAndPagination: Story = {
     const [pageSize, setPageSize] = useState(3);
 
     return (
-      <Table
+      <Table<User>
         dataSource={data}
         columns={columns}
         rowKey="id"

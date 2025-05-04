@@ -1,4 +1,42 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
-npx --no -- commitlint --edit $1
+getUnStagedFilesCount()
+{
+unStagedFilesCount_=$(git diff --stat | tail -n1 | cut -b 1-2)
+if [ -z "$unStagedFilesCount_" ]
+then
+  echo 0
+else
+  echo $unStagedFilesCount_
+fi
+}
+
+# Get initial count of unstaged files
+unStagedFilesCount=$(getUnStagedFilesCount)
+
+# Run commitlint to validate commit message
+npx commitlint --edit $1
+
+# Run type checking
+npm run typecheck
+
+npm run lint:fix
+
+# Run linting and formatting through lint-staged
+npx lint-staged
+
+# Get new count of unstaged files after lint-staged
+newUnStagedFilesCount=$(getUnStagedFilesCount)
+
+# Calculate the difference
+filesChanged=$((newUnStagedFilesCount - unStagedFilesCount))
+
+if [ $filesChanged -ne 0 ]
+then
+    printf '\e[1;31m%-6s\e[m' "Commit aborted: Linter/formatter fixed '${filesChanged}' files"
+    echo '\n'
+    printf '\e[1;31m%-6s\e[m' "Please stage the changes and try committing again"
+    echo '\n'
+    exit 1
+fi

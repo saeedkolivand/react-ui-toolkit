@@ -24,13 +24,25 @@ const meta: Meta<typeof Modal> = {
       options: ['sm', 'md', 'lg', 'xl', 'full'],
       description: 'Size of the modal',
     },
-    closeOnOverlayClick: {
+    showCloseButton: {
+      control: 'boolean',
+      description: 'Whether to show the close button',
+    },
+    closeOnBackdropClick: {
       control: 'boolean',
       description: 'Whether to close modal when clicking outside',
     },
     closeOnEsc: {
       control: 'boolean',
       description: 'Whether to close modal when pressing ESC',
+    },
+    centered: {
+      control: 'boolean',
+      description: 'Whether to center the modal vertically',
+    },
+    scrollable: {
+      control: 'boolean',
+      description: 'Whether to show a scrollbar when content overflows',
     },
   },
 };
@@ -66,8 +78,11 @@ export const Default: Story = {
   },
   args: {
     size: 'md',
-    closeOnOverlayClick: true,
+    closeOnBackdropClick: true,
     closeOnEsc: true,
+    showCloseButton: true,
+    centered: true,
+    scrollable: true,
   },
 };
 

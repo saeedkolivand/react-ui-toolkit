@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Button } from '../Button/Button';
-import { Container } from '../../layout/Container/Container';
-import { Icon } from '../Icon/Icon';
+import { Container } from '../../layout/Container';
+import { Icon } from '../Icon';
 import { Select, Option } from '../Select/Select';
 
 export type SortOrder = 'ascend' | 'descend' | null;

@@ -15,6 +15,4 @@ export type {
   SpinnerSize,
 } from './components/feedback/Spinner/Spinner';
 
-export type { ToastProps, ToastVariant, ToastPosition } from './components/feedback/Toast/Toast';
-
 export type { AvatarProps, AvatarSize, AvatarStatus } from './components/feedback/Avatar/Avatar';

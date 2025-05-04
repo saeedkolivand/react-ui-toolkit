@@ -9,12 +9,14 @@ import { Switch } from '../components/base/Switch/Switch';
 import { Alert } from '../components/feedback/Alert/Alert';
 import { Badge } from '../components/feedback/Badge/Badge';
 import { Progress } from '../components/feedback/Progress/Progress';
-import { Container } from '../components/layout/Container/Container';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { Container } from '../components/layout/Container';
+import { ThemeToggle } from '../components/theme/ThemeToggle/ThemeToggle';
 
 const IndexPage = () => {
   const [switchState, setSwitchState] = useState(false);
   const [selectedRadio, setSelectedRadio] = useState('1');
+  const [selectedValue, setSelectedValue] = useState('1');
+  const [disabledSelectedValue, setDisabledSelectedValue] = useState('1');
 
   return (
     <>
@@ -89,6 +91,8 @@ const IndexPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <Select
               label="Default Select"
+              value={selectedValue}
+              onChange={e => setSelectedValue(e.target.value)}
               options={[
                 { value: '1', label: 'Option 1' },
                 { value: '2', label: 'Option 2' },
@@ -97,6 +101,8 @@ const IndexPage = () => {
             />
             <Select
               label="Disabled Select"
+              value={disabledSelectedValue}
+              onChange={e => setDisabledSelectedValue(e.target.value)}
               disabled
               options={[
                 { value: '1', label: 'Option 1' },

@@ -99,9 +99,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       className
     );
 
-    const backdropClasses = twMerge(
-      'fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70'
-    );
+    const backdropClasses = twMerge('fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70');
 
     const containerClasses = twMerge(
       'fixed inset-0 z-50 overflow-y-auto',
@@ -112,7 +110,12 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     return createPortal(
       <AnimatePresence>
         {isOpen && (
-          <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <div
+            className="relative z-50"
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+          >
             {/* Backdrop */}
             <motion.div
               className={backdropClasses}
@@ -157,3 +160,5 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     );
   }
 );
+
+Modal.displayName = 'Modal';

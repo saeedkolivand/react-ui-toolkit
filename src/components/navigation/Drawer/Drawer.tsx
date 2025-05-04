@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
+import { motion, AnimatePresence, HTMLMotionProps, Variants } from 'framer-motion';
 import { Button } from '../../base/Button/Button';
-import { Icon } from '../../base/Icon/Icon';
+import { Icon } from '../../base/Icon';
 
-export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
+export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'children'> {
   /**
    * Whether the drawer is open
    */
@@ -34,6 +34,10 @@ export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
    * Whether to close the drawer when pressing escape
    */
   closeOnEsc?: boolean;
+  /**
+   * The content of the drawer
+   */
+  children: React.ReactNode;
 }
 
 export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
@@ -90,7 +94,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       bottom: 'bottom-0 left-0 right-0',
     };
 
-    const drawerVariants = {
+    const drawerVariants: Variants = {
       open: {
         x: position === 'left' ? 0 : position === 'right' ? 0 : 0,
         y: position === 'top' ? 0 : position === 'bottom' ? 0 : 0,
@@ -113,7 +117,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       },
     };
 
-    const backdropVariants = {
+    const backdropVariants: Variants = {
       open: {
         opacity: 1,
         transition: {

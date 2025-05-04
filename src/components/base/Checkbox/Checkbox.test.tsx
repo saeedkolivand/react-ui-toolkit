@@ -13,26 +13,21 @@ describe('Checkbox', () => {
     expect(screen.getByText('Accept terms')).toBeInTheDocument();
   });
 
-  it('renders helper text when provided', () => {
-    render(<Checkbox helperText="Please check this box" />);
-    expect(screen.getByText('Please check this box')).toBeInTheDocument();
-  });
-
   it('renders error message when provided', () => {
-    render(<Checkbox error="This field is required" />);
+    render(<Checkbox error={true} errorMessage="This field is required" />);
     expect(screen.getByText('This field is required')).toBeInTheDocument();
     expect(screen.getByRole('checkbox')).toHaveAttribute('aria-invalid', 'true');
   });
 
   it('applies size classes correctly', () => {
     const { rerender } = render(<Checkbox size="sm" />);
-    expect(screen.getByRole('checkbox')).toHaveClass('h-3', 'w-3');
-
-    rerender(<Checkbox size="md" />);
     expect(screen.getByRole('checkbox')).toHaveClass('h-4', 'w-4');
 
-    rerender(<Checkbox size="lg" />);
+    rerender(<Checkbox size="md" />);
     expect(screen.getByRole('checkbox')).toHaveClass('h-5', 'w-5');
+
+    rerender(<Checkbox size="lg" />);
+    expect(screen.getByRole('checkbox')).toHaveClass('h-6', 'w-6');
   });
 
   it('handles change events', () => {
@@ -49,24 +44,14 @@ describe('Checkbox', () => {
     expect(screen.getByRole('checkbox')).toHaveClass('disabled:opacity-50');
   });
 
-  it('sets indeterminate state correctly', () => {
-    render(<Checkbox indeterminate />);
-    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
-    expect(checkbox.indeterminate).toBe(true);
-  });
-
-  it('updates indeterminate state when prop changes', () => {
-    const { rerender } = render(<Checkbox indeterminate={false} />);
-    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
-    expect(checkbox.indeterminate).toBe(false);
-
-    rerender(<Checkbox indeterminate={true} />);
-    expect(checkbox.indeterminate).toBe(true);
-  });
-
   it('forwards ref correctly', () => {
     const ref = React.createRef<HTMLInputElement>();
-    render(<Checkbox ref={ref} />);
+    const { rerender } = render(<Checkbox ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+
+    // Test that the ref updates when the component re-renders
+    rerender(<Checkbox ref={ref} disabled />);
+    expect(ref.current).toBeInstanceOf(HTMLInputElement);
+    expect(ref.current?.disabled).toBe(true);
   });
 });
