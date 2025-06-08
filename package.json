@@ -1,13 +1,14 @@
 {
-  "name": "react-ui-toolkit",
-  "version": "0.1.0",
+  "name": "@saeedkolivand/react-ui-toolkit",
+  "version": "0.1.5",
   "description": "A modern React UI toolkit with TypeScript support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "dist/styles.css"
   ],
   "scripts": {
     "build": "rollup -c",
@@ -17,11 +18,14 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss}\"",
-    "storybook": "npm run prepare && storybook dev -p 6006",
-    "build-storybook": "npm run prepare && storybook build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "prepare": "husky install",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "postinstall": "echo \"Either import CSS directly: import '@saeedkolivand/react-ui-toolkit/dist/styles.css' OR use StylesProvider component to auto-load styles.\"",
+    "prepublishOnly": "npm run clean && npm run build",
+    "release": "npm run prepublishOnly && npm publish --access public"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

@@ -7,6 +7,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import { readFileSync } from 'fs';
+import path from 'path';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
@@ -37,10 +38,18 @@ export default [
       }),
       postcss({
         plugins: [tailwindcss('./tailwind.config.js'), autoprefixer()],
-        extract: false,
-        modules: true,
-        use: ['sass'],
+        extract: path.resolve('dist/styles.css'),
         minimize: true,
+        inject: false,
+        extensions: ['.css'],
+        config: {
+          path: './postcss.config.js',
+        },
+        modules: false,
+        autoModules: false,
+        use: ['sass'],
+        writeDefinitions: false,
+        sourceMap: true,
       }),
     ],
     external: ['react', 'react-dom', 'tailwind-merge'],
@@ -49,6 +58,6 @@ export default [
     input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
     plugins: [dts()],
-    external: [/\.scss$/],
+    external: [/\.css$/],
   },
 ];

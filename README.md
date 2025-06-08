@@ -62,7 +62,103 @@ npm run build
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+# React UI Toolkit
 
+A modern React UI toolkit with TypeScript support.
+
+## Installation
+
+```bash
+npm install @saeedkolivand/react-ui-toolkit
+# or
+yarn add @saeedkolivand/react-ui-toolkit
+```
+
+## Usage
+
+### Importing Styles
+
+You have two options for importing styles:
+
+#### Option 1: Direct CSS Import
+
+Import the CSS file in your application entry point (e.g., `index.js` or `App.js`):
+
+```javascript
+import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+```
+
+#### Option 2: Use the StylesProvider (Recommended)
+
+Wrap your application with the StylesProvider which will automatically load the styles:
+
+```jsx
+import { StylesProvider } from '@saeedkolivand/react-ui-toolkit';
+
+function App() {
+  return (
+    <StylesProvider>
+      <YourApplication />
+    </StylesProvider>
+  );
+}
+```
+
+For Next.js or other SSR frameworks, use the SSR-compatible provider:
+
+```jsx
+import { StylesProviderSSR } from '@saeedkolivand/react-ui-toolkit';
+
+function App() {
+  return (
+    <StylesProviderSSR>
+      <YourApplication />
+    </StylesProviderSSR>
+  );
+}
+```
+
+#### Option 3: Higher-Order Component
+
+Alternatively, you can use the withStyles HOC to wrap your root component:
+
+```jsx
+import { withStyles } from '@saeedkolivand/react-ui-toolkit';
+
+function YourApp() {
+  return <div>Your application content</div>;
+}
+
+export default withStyles(YourApp);
+```
+
+### Using Components
+
+```jsx
+import { Button, Input } from '@saeedkolivand/react-ui-toolkit';
+
+function App() {
+  return (
+    <div>
+      <Input placeholder="Enter your name" />
+      <Button>Click me</Button>
+    </div>
+  );
+}
+```
+
+## Components
+
+The library includes the following component categories:
+
+- Base Components (Button, Input, Textarea, Select, Checkbox, Radio, Switch)
+- Layout Components (Container, Row, Col)
+- Feedback Components (Alert, Badge, Progress, Spinner, Avatar)
+- Navigation Components (Modal, Drawer, Dropdown, Accordion, Tabs)
+
+## License
+
+MIT
 ### Development Workflow
 
 1. Create a feature branch

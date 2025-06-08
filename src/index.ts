@@ -1,45 +1,25 @@
-// Base Components
-export * from './components/base/Button/Button';
-export * from './components/base/Input/Input';
-export * from './components/base/Textarea/Textarea';
-export * from './components/base/Select/Select';
-export * from './components/base/Checkbox/Checkbox';
-export * from './components/base/Radio/Radio';
-export * from './components/base/Switch/Switch';
+// Import global styles
+import './styles/global.css';
+// Import test component styles
+import './styles/test-components.css';
 
-// Layout Components
-export * from './components/layout/Container/Container';
-export * from './components/layout/Row/Row';
-export * from './components/layout/Col/Col';
+// Export all components through the barrel files
+export * from './components';
 
-// Feedback Components
-export * from './components/feedback/Alert/Alert';
-export * from './components/feedback/Badge/Badge';
-export * from './components/feedback/Progress/Progress';
-export * from './components/feedback/Spinner/Spinner';
-export * from './components/feedback/Avatar/Avatar';
+// Export hooks
+export * from './hooks';
 
-// Navigation Components
-export * from './components/navigation/Modal/Modal';
-export * from './components/navigation/Drawer/Drawer';
-export * from './components/navigation/Dropdown/Dropdown';
-export * from './components/navigation/Accordion/Accordion';
-export * from './components/navigation/Tabs/Tabs';
+// Export context
+export * from './context';
 
-// Types
-export type {
-  AlertProps,
-  AlertVariant,
-  BadgeProps,
-  BadgeVariant,
-  BadgeSize,
-  ProgressProps,
-  ProgressVariant,
-  ProgressSize,
-  SpinnerProps,
-  SpinnerVariant,
-  SpinnerSize,
-  AvatarProps,
-  AvatarSize,
-  AvatarStatus,
-} from './types';
+// Export HOCs for style injection
+export * from './hoc';
+
+// Export providers
+export * from './providers';
+
+// Export hooks
+export * from './hooks';
+
+// Export types
+export * from './types';

@@ -1,5 +1,5 @@
 import type { Preview } from '@storybook/react';
-import '../src/styles/globals.css';
+import '../src/styles/global.css';
 
 const preview: Preview = {
   parameters: {
@@ -7,7 +7,51 @@ const preview: Preview = {
     controls: {
       matchers: {
         color: /(background|color)$/i,
-        date: /Date$/,
+        date: /Date$/i,
+      },
+    },
+    options: {
+      storySort: {
+        order: [
+          'Introduction',
+          'Getting Started',
+          'Theme',
+          'Components',
+          ['Base', 
+            [
+              'Button',
+              'Input',
+              'Textarea',
+              'Select',
+              'Checkbox',
+              'Radio',
+              'Switch',
+              'Tooltip',
+              'Icon',
+              'Divider',
+              'Tag',
+              'Table',
+              '*'
+            ]
+          ],
+          ['Feedback', 
+            [
+              'Alert',
+              'Badge',
+              'Progress',
+              'Spinner',
+              'Avatar',
+              '*'
+            ]
+          ],
+          ['Layout', '*'],
+          ['Navigation', '*'],
+          'Form',
+          'Hooks',
+          'Utilities',
+          'Examples',
+          '*'
+        ],
       },
     },
   },

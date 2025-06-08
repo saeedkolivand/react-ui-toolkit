@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Icon } from '../src/components/base/Icon';
+import { Icon } from '../src';
 
 const meta: Meta = {
   title: 'Welcome',

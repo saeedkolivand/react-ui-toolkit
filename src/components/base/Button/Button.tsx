@@ -1,6 +1,5 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import styles from './Button.module.scss';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
@@ -81,7 +80,8 @@ export const Button: React.FC<ButtonProps> = ({
     variantClasses[variant],
     sizeClasses[size],
     fullWidth && 'w-full',
-    loading && styles.loading,
+    loading &&
+      'relative cursor-wait after:content-[""] after:absolute after:inset-0 after:bg-white/15 after:rounded-md',
     disabled && 'opacity-50 cursor-not-allowed',
     className
   );
