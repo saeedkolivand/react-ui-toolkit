@@ -1,19 +1,13 @@
-import React, { useState } from 'react';
-import {
-  Button,
-  Input,
-  Card,
-  ThemeToggle,
-  StylesProvider
-} from '@saeedkolivand/react-ui-toolkit';
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import React, { useState } from "react";
+import { Button, Input, Card, ThemeToggle, StylesProvider } from "@saeedkolivand/react-ui-toolkit";
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 
 function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -45,7 +39,7 @@ function App() {
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                 />
 
@@ -54,17 +48,12 @@ function App() {
                   type="password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                 />
 
                 <div className="pt-2">
-                  <Button 
-                    type="submit" 
-                    variant="primary" 
-                    fullWidth 
-                    loading={isLoading}
-                  >
+                  <Button type="submit" variant="primary" fullWidth loading={isLoading}>
                     Sign In
                   </Button>
                 </div>
@@ -73,8 +62,10 @@ function App() {
 
             <Card.Footer>
               <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                Don't have an account? 
-                <Button variant="ghost" size="sm">Create Account</Button>
+                Don't have an account?
+                <Button variant="ghost" size="sm">
+                  Create Account
+                </Button>
               </div>
             </Card.Footer>
           </Card>
