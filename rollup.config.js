@@ -42,12 +42,9 @@ export default [
         minimize: true,
         inject: false,
         extensions: ['.css'],
-        config: {
-          path: './postcss.config.js',
-        },
+        include: ['**/*.css'], // This will include your global.css
         modules: false,
         autoModules: false,
-        use: ['sass'],
         writeDefinitions: false,
         sourceMap: true,
       }),

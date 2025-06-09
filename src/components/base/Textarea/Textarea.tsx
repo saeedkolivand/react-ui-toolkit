@@ -1,6 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import styles from './Textarea.module.scss';
+import styles from './Textarea.module.css';
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
