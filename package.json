@@ -20,6 +20,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss}\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "build-storybook:prod": "NODE_ENV=production STORYBOOK_BASE_PATH=/react-ui-toolkit/ storybook build",
     "prepare": "husky install",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist",
@@ -29,7 +30,7 @@
     "release:patch": "node scripts/release.js patch",
     "release:minor": "node scripts/release.js minor",
     "release:major": "node scripts/release.js major",
-    "deploy-storybook": "STORYBOOK_BASE_PATH=/react-ui-toolkit/ npm run build-storybook && gh-pages -d storybook-static"
+    "deploy-storybook": "npm run build-storybook:prod && gh-pages -d storybook-static"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

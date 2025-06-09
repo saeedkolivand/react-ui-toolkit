@@ -36,6 +36,7 @@ jobs:
         run: npm run build-storybook
         env:
           STORYBOOK_BASE_PATH: /react-ui-toolkit/
+          NODE_ENV: production
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4

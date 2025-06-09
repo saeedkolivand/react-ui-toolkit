@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { resolve } from 'path';
 
 // Get the repository name from package.json or environment
 const getBasePath = () => {
@@ -23,6 +24,21 @@ const config: StorybookConfig = {
   viteFinal: async (config) => {
     // Add base path for GitHub Pages
     config.base = getBasePath();
+
+    // Add alias resolution for '@/' path
+    if (config.resolve) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': resolve(__dirname, '../src')
+      };
+    } else {
+      config.resolve = {
+        alias: {
+          '@': resolve(__dirname, '../src')
+        }
+      };
+    }
+
     return config;
   },
 };
