@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components";
 import { ThemeProvider } from "@/context";
 
 const meta: Meta<typeof ThemeToggle> = {
-  title: "Components/Theme/ThemeToggle",
+  title: "Utils/Theme/ThemeToggle",
   component: ThemeToggle,
   decorators: [
     Story => (

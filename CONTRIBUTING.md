@@ -47,10 +47,10 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 
 ## Use a Consistent Coding Style
 
-* Use TypeScript for all code files
-* Use Prettier for code formatting
-* Follow the existing code style
+- Use TypeScript for all code files
+- Use Prettier for code formatting
+- Follow the existing code style
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under its MIT License. 
+By contributing, you agree that your contributions will be licensed under its MIT License.

@@ -1,4 +1,5 @@
 # React UI Toolkit
+
 # React UI Toolkit
 
 A modern, accessible, and customizable React component library built with TypeScript and Tailwind CSS.
@@ -23,9 +24,9 @@ yarn add @saeedkolivand/react-ui-toolkit
 ## Quick Start
 
 ```jsx
-import React from 'react';
-import { Button, StylesProvider } from '@saeedkolivand/react-ui-toolkit';
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import React from "react";
+import { Button, StylesProvider } from "@saeedkolivand/react-ui-toolkit";
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 
 function App() {
   return (
@@ -141,7 +142,7 @@ You have two options for importing styles:
 Import the CSS file in your application entry point (e.g., `index.js` or `App.js`):
 
 ```javascript
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 ```
 
 #### Option 2: Use the StylesProvider (Recommended)
@@ -149,7 +150,7 @@ import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
 Wrap your application with the StylesProvider which will automatically load the styles:
 
 ```jsx
-import { StylesProvider } from '@saeedkolivand/react-ui-toolkit';
+import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
 
 function App() {
   return (
@@ -163,7 +164,7 @@ function App() {
 For Next.js or other SSR frameworks, use the SSR-compatible provider:
 
 ```jsx
-import { StylesProviderSSR } from '@saeedkolivand/react-ui-toolkit';
+import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
 
 function App() {
   return (
@@ -179,7 +180,7 @@ function App() {
 Alternatively, you can use the withStyles HOC to wrap your root component:
 
 ```jsx
-import { withStyles } from '@saeedkolivand/react-ui-toolkit';
+import { withStyles } from "@saeedkolivand/react-ui-toolkit";
 
 function YourApp() {
   return <div>Your application content</div>;
@@ -191,7 +192,7 @@ export default withStyles(YourApp);
 ### Using Components
 
 ```jsx
-import { Button, Input } from '@saeedkolivand/react-ui-toolkit';
+import { Button, Input } from "@saeedkolivand/react-ui-toolkit";
 
 function App() {
   return (
@@ -215,6 +216,7 @@ The library includes the following component categories:
 ## License
 
 MIT
+
 ### Development Workflow
 
 1. Create a feature branch
@@ -226,6 +228,7 @@ MIT
 ### Pre-commit Hooks
 
 This project uses Husky for pre-commit hooks. Before each commit, it will:
+
 - Check TypeScript types
 - Run ESLint
 - Run Prettier
@@ -234,4 +237,4 @@ This project uses Husky for pre-commit hooks. Before each commit, it will:
 
 ## License
 
-MIT © [Saeed Kolivand](https://github.com/saeedkolivand) 
+MIT © [Saeed Kolivand](https://github.com/saeedkolivand)

@@ -13,7 +13,7 @@ After installing the package, you may find that styles are not being applied to 
    Explicitly import the CSS file in your application entry point:
 
    ```javascript
-   import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+   import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
    ```
 
 2. **Use the StylesProvider Component**
@@ -21,7 +21,7 @@ After installing the package, you may find that styles are not being applied to 
    Wrap your application with the StylesProvider:
 
    ```jsx
-   import { StylesProvider } from '@saeedkolivand/react-ui-toolkit';
+   import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
 
    function App() {
      return (
@@ -35,7 +35,7 @@ After installing the package, you may find that styles are not being applied to 
 3. **Use the withStyles HOC**
 
    ```jsx
-   import { withStyles } from '@saeedkolivand/react-ui-toolkit';
+   import { withStyles } from "@saeedkolivand/react-ui-toolkit";
 
    function App() {
      return <YourApplication />;
@@ -49,13 +49,16 @@ After installing the package, you may find that styles are not being applied to 
    You can also manually include the CSS file in your HTML:
 
    ```html
-   <link rel="stylesheet" href="node_modules/@saeedkolivand/react-ui-toolkit/dist/styles.css">
+   <link rel="stylesheet" href="node_modules/@saeedkolivand/react-ui-toolkit/dist/styles.css" />
    ```
 
    Or use a CDN:
 
    ```html
-   <link rel="stylesheet" href="https://unpkg.com/@saeedkolivand/react-ui-toolkit@latest/dist/styles.css">
+   <link
+     rel="stylesheet"
+     href="https://unpkg.com/@saeedkolivand/react-ui-toolkit@latest/dist/styles.css"
+   />
    ```
 
 ## Troubleshooting CSS in Next.js
@@ -63,7 +66,7 @@ After installing the package, you may find that styles are not being applied to 
 For Next.js projects, use the SSR-compatible provider:
 
 ```jsx
-import { StylesProviderSSR } from '@saeedkolivand/react-ui-toolkit';
+import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -79,7 +82,7 @@ export default MyApp;
 Alternatively, you can import the CSS file in your `_app.js` file:
 
 ```jsx
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
@@ -103,10 +106,10 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
-  }
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
 };
 ```
 
