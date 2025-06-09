@@ -80,6 +80,7 @@ export default {
           700: '#0369a1',
           800: '#075985',
           900: '#0c4a6e',
+          DEFAULT: '#0284c7', /* Adding default color for primary */
         },
         secondary: {
           50: '#f8fafc',

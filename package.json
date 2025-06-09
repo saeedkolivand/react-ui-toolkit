@@ -1,6 +1,6 @@
 {
   "name": "@saeedkolivand/react-ui-toolkit",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A modern React UI toolkit with TypeScript support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -25,7 +25,10 @@
     "clean": "rimraf dist",
     "postinstall": "echo \"Either import CSS directly: import '@saeedkolivand/react-ui-toolkit/dist/styles.css' OR use StylesProvider component to auto-load styles.\"",
     "prepublishOnly": "npm run clean && npm run build",
-    "release": "npm run prepublishOnly && npm publish --access public"
+    "release": "npm run prepublishOnly && npm publish --access public",
+    "release:patch": "node scripts/release.js patch",
+    "release:minor": "node scripts/release.js minor",
+    "release:major": "node scripts/release.js major"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
