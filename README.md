@@ -1,5 +1,125 @@
 # React UI Toolkit
+# React UI Toolkit
 
+A modern, accessible, and customizable React component library built with TypeScript and Tailwind CSS.
+
+## Features
+
+- **Modern Design** - Clean and professional component designs
+- **TypeScript Support** - Full type definitions for all components
+- **Accessibility** - WCAG 2.1 compliant components
+- **Customizable** - Easily customize using Tailwind CSS
+- **Dark Mode** - Built-in dark mode support
+- **Responsive** - Mobile-first design approach
+
+## Installation
+
+```bash
+npm install @saeedkolivand/react-ui-toolkit
+# or
+yarn add @saeedkolivand/react-ui-toolkit
+```
+
+## Quick Start
+
+```jsx
+import React from 'react';
+import { Button, StylesProvider } from '@saeedkolivand/react-ui-toolkit';
+import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+
+function App() {
+  return (
+    <StylesProvider>
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Hello React UI Toolkit</h1>
+        <Button variant="primary">Click Me</Button>
+      </div>
+    </StylesProvider>
+  );
+}
+
+export default App;
+```
+
+## Documentation
+
+For detailed documentation, see the following resources:
+
+- [Usage Guide](./docs/usage-guide.md)
+- [API Reference](./docs/api-reference.md)
+- [Examples](./examples/README.md)
+
+## Available Components
+
+### Base Components
+
+- Button
+- Input
+- Textarea
+- Select
+- Checkbox
+- Radio
+- Switch
+- Tooltip
+- Tag
+- Icon
+- Divider
+
+### Layout Components
+
+- Container
+- Row
+- Col
+
+### Feedback Components
+
+- Card
+- Alert
+- Badge
+- Avatar
+- Spinner
+- Progress
+- Notification
+
+### Navigation Components
+
+- Tabs
+- Modal
+- Drawer
+- Dropdown
+- Accordion
+
+### Theme Components
+
+- ThemeToggle
+
+## Development
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/react-ui-toolkit.git
+cd react-ui-toolkit
+
+# Install dependencies
+npm install
+
+# Start Storybook for development
+npm run storybook
+
+# Run tests
+npm test
+
+# Build the library
+npm run build
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT
 A modern React UI toolkit with TypeScript support.
 
 ## Installation
@@ -106,40 +226,11 @@ MIT
 ### Pre-commit Hooks
 
 This project uses Husky for pre-commit hooks. Before each commit, it will:
+- Check TypeScript types
 - Run ESLint
 - Run Prettier
 - Run tests
-- Check TypeScript types
 - Build the project
-
-## TODO
-
-1. ESLint Configuration
-   - [x] Move to JSON configuration
-   - [ ] Fix module system conflicts
-   - [ ] Add proper React 18 rules
-
-2. Jest Configuration
-   - [ ] Fix ESM module handling
-   - [ ] Add proper test environment setup
-   - [ ] Add test coverage reporting
-
-3. Build System
-   - [ ] Verify Rollup configuration
-   - [ ] Add TypeScript path aliases
-   - [ ] Improve CSS/SCSS module handling
-
-4. Husky Integration
-   - [ ] Add back test running
-   - [ ] Add type checking
-   - [ ] Add build verification
-   - [ ] Add commit message linting
-
-5. Documentation
-   - [x] Add basic README
-   - [ ] Add contributing guidelines
-   - [ ] Add component documentation
-   - [ ] Add changelog
 
 ## License
 
