@@ -1,7 +1,5 @@
 # React UI Toolkit
 
-# React UI Toolkit
-
 A modern, accessible, and customizable React component library built with TypeScript and Tailwind CSS.
 
 ## Features
