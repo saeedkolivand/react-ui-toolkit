@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { ThemeToggle } from './ThemeToggle';
-import { ThemeProvider } from '../../../context/ThemeContext';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ThemeToggle } from "@/components";
+import { ThemeProvider } from "@/context";
 
 const meta: Meta<typeof ThemeToggle> = {
-  title: 'Components/Theme/ThemeToggle',
+  title: "Components/Theme/ThemeToggle",
   component: ThemeToggle,
   decorators: [
     Story => (
@@ -15,9 +15,9 @@ const meta: Meta<typeof ThemeToggle> = {
     ),
   ],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;

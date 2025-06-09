@@ -1,130 +1,127 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Icon, IconName } from './Icon';
-import { useState } from 'react';
-import { Container } from '../../layout/Container';
-import { Row } from '../../layout/Row';
-import { Col } from '../../layout/Col';
-import { Input } from '../Input/Input';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Icon, IconName } from "./Icon";
+import { useState } from "react";
+import { Container, Row, Col, Input } from "@/components";
 
 const iconNames: IconName[] = [
   // Navigation
-  'chevronLeft',
-  'chevronRight',
-  'chevronUp',
-  'chevronDown',
-  'arrowUp',
-  'arrowDown',
-  'arrowLeft',
-  'arrowRight',
-  'arrowUpRight',
-  'arrowUpLeft',
-  'arrowDownRight',
-  'arrowDownLeft',
-  'menu',
-  'close',
-  'home',
-  'externalLink',
-  'globe',
+  "chevronLeft",
+  "chevronRight",
+  "chevronUp",
+  "chevronDown",
+  "arrowUp",
+  "arrowDown",
+  "arrowLeft",
+  "arrowRight",
+  "arrowUpRight",
+  "arrowUpLeft",
+  "arrowDownRight",
+  "arrowDownLeft",
+  "menu",
+  "close",
+  "home",
+  "externalLink",
+  "globe",
   // Media & Controls
-  'play',
-  'pause',
-  'volumeUp',
-  'volumeDown',
-  'volumeOff',
-  'fastForward',
-  'rewind',
-  'skipForward',
-  'skipBackward',
+  "play",
+  "pause",
+  "volumeUp",
+  "volumeDown",
+  "volumeOff",
+  "fastForward",
+  "rewind",
+  "skipForward",
+  "skipBackward",
   // Actions
-  'search',
-  'plus',
-  'minus',
-  'edit',
-  'trash',
-  'download',
-  'upload',
-  'copy',
-  'cut',
-  'paste',
-  'refresh',
+  "search",
+  "plus",
+  "minus",
+  "edit",
+  "trash",
+  "download",
+  "upload",
+  "copy",
+  "cut",
+  "paste",
+  "refresh",
   // Status
-  'check',
-  'error',
-  'warning',
-  'info',
-  'eye',
-  'eyeOff',
-  'shield',
-  'flag',
-  'thumbsUp',
-  'thumbsDown',
+  "check",
+  "error",
+  "warning",
+  "info",
+  "eye",
+  "eyeOff",
+  "shield",
+  "flag",
+  "thumbsUp",
+  "thumbsDown",
   // Social
-  'github',
-  'twitter',
-  'linkedin',
-  'facebook',
-  'instagram',
-  'youtube',
+  "github",
+  "twitter",
+  "linkedin",
+  "facebook",
+  "instagram",
+  "youtube",
   // File & Document
-  'file',
-  'folder',
-  'document',
-  'documentText',
-  'documentDuplicate',
+  "file",
+  "folder",
+  "document",
+  "documentText",
+  "documentDuplicate",
   // UI Elements
-  'user',
-  'settings',
-  'bell',
-  'heart',
-  'star',
-  'filter',
-  'sort',
-  'grid',
-  'list',
-  'bookmark',
+  "user",
+  "settings",
+  "bell",
+  "heart",
+  "star",
+  "filter",
+  "sort",
+  "grid",
+  "list",
+  "bookmark",
   // Communication
-  'mail',
-  'phone',
-  'chat',
-  'chatAlt',
-  'at',
+  "mail",
+  "phone",
+  "chat",
+  "chatAlt",
+  "at",
   // Tools
-  'wrench',
-  'cog',
-  'scissors',
-  'pencil',
+  "wrench",
+  "cog",
+  "scissors",
+  "pencil",
   // Weather
-  'sun',
-  'moon',
-  'cloud',
-  'umbrella',
+  "sun",
+  "moon",
+  "cloud",
+  "umbrella",
   // Shopping
-  'cart',
-  'tag',
-  'shoppingBag',
+  "cart",
+  "tag",
+  "shoppingBag",
 ];
 
 const meta: Meta<typeof Icon> = {
-  title: 'Base/Icon',
+  title: "Base/Icon",
   component: Icon,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     name: {
-      control: 'select',
+      control: "select",
       options: iconNames,
-      description: 'The name of the built-in icon to use',
+      description: "The name of the built-in icon to use",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg', 'xl'],
-      description: 'The size of the icon',
+      control: "select",
+      options: ["sm", "md", "lg", "xl"],
+      description: "The size of the icon",
     },
     color: {
-      control: 'color',
-      description: 'The color of the icon',
+      control: "color",
+      description: "The color of the icon",
     },
   },
 };
@@ -134,35 +131,35 @@ type Story = StoryObj<typeof Icon>;
 
 export const Default: Story = {
   args: {
-    name: 'menu',
+    name: "menu",
   },
 };
 
 export const Small: Story = {
   args: {
-    name: 'menu',
-    size: 'sm',
+    name: "menu",
+    size: "sm",
   },
 };
 
 export const Large: Story = {
   args: {
-    name: 'menu',
-    size: 'lg',
+    name: "menu",
+    size: "lg",
   },
 };
 
 export const ExtraLarge: Story = {
   args: {
-    name: 'menu',
-    size: 'xl',
+    name: "menu",
+    size: "xl",
   },
 };
 
 export const Colored: Story = {
   args: {
-    name: 'menu',
-    color: '#FF0000',
+    name: "menu",
+    color: "#FF0000",
   },
 };
 
@@ -174,7 +171,7 @@ export const CustomIcon: Story = {
 
 const IconGrid = () => {
   const [copiedIcon, setCopiedIcon] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const copyToClipboard = async (name: IconName) => {
     const code = `<Icon name="${name}" />`;

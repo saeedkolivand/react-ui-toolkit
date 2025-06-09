@@ -1,29 +1,29 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Spinner } from './Spinner';
-import { Button } from '../../base/Button/Button';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Spinner } from "./Spinner";
+import { Button } from "@/components";
 
 const meta = {
-  title: 'Feedback/Spinner',
+  title: "Feedback/Spinner",
   component: Spinner,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The size of the spinner',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The size of the spinner",
     },
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'success', 'warning', 'error'],
-      description: 'The variant of the spinner',
+      control: "select",
+      options: ["primary", "secondary", "success", "warning", "error"],
+      description: "The variant of the spinner",
     },
     label: {
-      control: 'text',
-      description: 'The label for screen readers',
+      control: "text",
+      description: "The label for screen readers",
     },
   },
 } satisfies Meta<typeof Spinner>;
@@ -33,62 +33,62 @@ type Story = StoryObj<typeof Spinner>;
 
 export const Default: Story = {
   args: {
-    label: 'Loading...',
+    label: "Loading...",
   },
 };
 
 export const Small: Story = {
   args: {
-    size: 'sm',
-    label: 'Loading...',
+    size: "sm",
+    label: "Loading...",
   },
 };
 
 export const Large: Story = {
   args: {
-    size: 'lg',
-    label: 'Loading...',
+    size: "lg",
+    label: "Loading...",
   },
 };
 
 export const Primary: Story = {
   args: {
-    variant: 'primary',
-    label: 'Loading...',
+    variant: "primary",
+    label: "Loading...",
   },
 };
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
-    label: 'Loading...',
+    variant: "secondary",
+    label: "Loading...",
   },
 };
 
 export const Success: Story = {
   args: {
-    variant: 'success',
-    label: 'Loading...',
+    variant: "success",
+    label: "Loading...",
   },
 };
 
 export const Warning: Story = {
   args: {
-    variant: 'warning',
-    label: 'Loading...',
+    variant: "warning",
+    label: "Loading...",
   },
 };
 
 export const Error: Story = {
   args: {
-    variant: 'error',
-    label: 'Loading...',
+    variant: "error",
+    label: "Loading...",
   },
 };
 
 export const WithCustomLabel: Story = {
   args: {
-    label: 'Processing your request...',
+    label: "Processing your request...",
   },
 };
 

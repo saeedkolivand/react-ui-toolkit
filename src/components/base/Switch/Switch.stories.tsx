@@ -1,43 +1,43 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Switch, SwitchProps } from './Switch';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Switch, SwitchProps } from "./Switch";
 
 const meta: Meta<typeof Switch> = {
-  title: 'Base/Switch',
+  title: "Base/Switch",
   component: Switch,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     label: {
-      control: 'text',
-      description: 'Label text for the switch',
+      control: "text",
+      description: "Label text for the switch",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The size of the switch',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The size of the switch",
     },
     error: {
-      control: 'text',
-      description: 'Error message to display',
+      control: "text",
+      description: "Error message to display",
     },
     helperText: {
-      control: 'text',
-      description: 'Helper text to display below the switch',
+      control: "text",
+      description: "Helper text to display below the switch",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the switch is disabled',
+      control: "boolean",
+      description: "Whether the switch is disabled",
     },
     checked: {
-      control: 'boolean',
-      description: 'Whether the switch is checked',
+      control: "boolean",
+      description: "Whether the switch is checked",
     },
     loading: {
-      control: 'boolean',
-      description: 'Whether the switch is in loading state',
+      control: "boolean",
+      description: "Whether the switch is in loading state",
     },
   },
 };
@@ -64,14 +64,14 @@ const InteractiveTemplate = (args: SwitchProps) => {
 export const Default: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Switch',
+    label: "Switch",
   },
 };
 
 export const Checked: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Checked',
+    label: "Checked",
     checked: true,
   },
 };
@@ -79,7 +79,7 @@ export const Checked: Story = {
 export const Loading: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Loading',
+    label: "Loading",
     loading: true,
   },
 };
@@ -87,7 +87,7 @@ export const Loading: Story = {
 export const LoadingChecked: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Loading Checked',
+    label: "Loading Checked",
     checked: true,
     loading: true,
   },
@@ -96,39 +96,39 @@ export const LoadingChecked: Story = {
 export const Small: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Small',
-    size: 'sm',
+    label: "Small",
+    size: "sm",
   },
 };
 
 export const Large: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Large',
-    size: 'lg',
+    label: "Large",
+    size: "lg",
   },
 };
 
 export const WithHelperText: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'With Helper Text',
-    helperText: 'This is a helper text',
+    label: "With Helper Text",
+    helperText: "This is a helper text",
   },
 };
 
 export const WithError: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'With Error',
-    error: 'This field is required',
+    label: "With Error",
+    error: "This field is required",
   },
 };
 
 export const Disabled: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Disabled',
+    label: "Disabled",
     disabled: true,
   },
 };
@@ -136,7 +136,7 @@ export const Disabled: Story = {
 export const DisabledChecked: Story = {
   render: InteractiveTemplate,
   args: {
-    label: 'Disabled Checked',
+    label: "Disabled Checked",
     disabled: true,
     checked: true,
   },
@@ -186,39 +186,39 @@ export const AllVariants: Story = {
             label="Default"
             checked={states.default}
             loading={loadingStates.default}
-            onChange={handleChange('default')}
+            onChange={handleChange("default")}
           />
           <Switch
             label="Checked"
             checked={states.checked}
             loading={loadingStates.checked}
-            onChange={handleChange('checked')}
+            onChange={handleChange("checked")}
           />
           <Switch
             label="Loading"
             checked={states.loading}
             loading={loadingStates.loading}
-            onChange={handleChange('loading')}
+            onChange={handleChange("loading")}
           />
           <Switch
             label="Loading Checked"
             checked={states.loadingChecked}
             loading={loadingStates.loadingChecked}
-            onChange={handleChange('loadingChecked')}
+            onChange={handleChange("loadingChecked")}
           />
           <Switch
             label="Small"
             size="sm"
             checked={states.small}
             loading={loadingStates.small}
-            onChange={handleChange('small')}
+            onChange={handleChange("small")}
           />
           <Switch
             label="Large"
             size="lg"
             checked={states.large}
             loading={loadingStates.large}
-            onChange={handleChange('large')}
+            onChange={handleChange("large")}
           />
         </div>
         <div className="space-y-2">
@@ -227,28 +227,28 @@ export const AllVariants: Story = {
             helperText="This is a helper text"
             checked={states.helper}
             loading={loadingStates.helper}
-            onChange={handleChange('helper')}
+            onChange={handleChange("helper")}
           />
           <Switch
             label="With Error"
             error="This field is required"
             checked={states.error}
             loading={loadingStates.error}
-            onChange={handleChange('error')}
+            onChange={handleChange("error")}
           />
           <Switch
             label="Disabled"
             disabled
             checked={states.disabled}
             loading={loadingStates.disabled}
-            onChange={handleChange('disabled')}
+            onChange={handleChange("disabled")}
           />
           <Switch
             label="Disabled Checked"
             disabled
             checked={states.disabledChecked}
             loading={loadingStates.disabledChecked}
-            onChange={handleChange('disabledChecked')}
+            onChange={handleChange("disabledChecked")}
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Table, ColumnType, SortOrder } from './Table';
-import { Tag } from '../Tag/Tag';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Table, ColumnType, SortOrder } from "./Table";
+import { Tag } from "../Tag/Tag";
 
 interface User {
   id: number;
@@ -13,29 +13,29 @@ interface User {
 
 const columns: ColumnType<User>[] = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
     render: text => <a>{text}</a>,
     sorter: (a, b) => a.name.localeCompare(b.name),
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: "Age",
+    dataIndex: "age",
+    key: "age",
     sorter: (a, b) => a.age - b.age,
-    defaultSortOrder: 'descend' as SortOrder,
+    defaultSortOrder: "descend" as SortOrder,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
     sorter: (a, b) => a.address.localeCompare(b.address),
   },
   {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
+    title: "Tags",
+    key: "tags",
+    dataIndex: "tags",
     render: (tags: string[]) => (
       <span className="flex flex-wrap gap-1">
         {tags.map(tag => (
@@ -51,82 +51,82 @@ const columns: ColumnType<User>[] = [
 const data: User[] = [
   {
     id: 1,
-    name: 'John Brown',
+    name: "John Brown",
     age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
+    address: "New York No. 1 Lake Park",
+    tags: ["nice", "developer"],
   },
   {
     id: 2,
-    name: 'Jim Green',
+    name: "Jim Green",
     age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
+    address: "London No. 1 Lake Park",
+    tags: ["loser"],
   },
   {
     id: 3,
-    name: 'Joe Black',
+    name: "Joe Black",
     age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
+    address: "Sidney No. 1 Lake Park",
+    tags: ["cool", "teacher"],
   },
   {
     id: 4,
-    name: 'Alice White',
+    name: "Alice White",
     age: 28,
-    address: 'Paris No. 1 Lake Park',
-    tags: ['nice', 'designer'],
+    address: "Paris No. 1 Lake Park",
+    tags: ["nice", "designer"],
   },
   {
     id: 5,
-    name: 'Bob Red',
+    name: "Bob Red",
     age: 35,
-    address: 'Tokyo No. 1 Lake Park',
-    tags: ['cool', 'developer'],
+    address: "Tokyo No. 1 Lake Park",
+    tags: ["cool", "developer"],
   },
   {
     id: 6,
-    name: 'Charlie Blue',
+    name: "Charlie Blue",
     age: 29,
-    address: 'Berlin No. 1 Lake Park',
-    tags: ['nice', 'developer'],
+    address: "Berlin No. 1 Lake Park",
+    tags: ["nice", "developer"],
   },
   {
     id: 7,
-    name: 'David Yellow',
+    name: "David Yellow",
     age: 31,
-    address: 'Rome No. 1 Lake Park',
-    tags: ['cool', 'designer'],
+    address: "Rome No. 1 Lake Park",
+    tags: ["cool", "designer"],
   },
   {
     id: 8,
-    name: 'Eve Purple',
+    name: "Eve Purple",
     age: 27,
-    address: 'Madrid No. 1 Lake Park',
-    tags: ['nice', 'teacher'],
+    address: "Madrid No. 1 Lake Park",
+    tags: ["nice", "teacher"],
   },
 ];
 
 const meta: Meta<typeof Table<User>> = {
-  title: 'Base/Table',
+  title: "Base/Table",
   component: Table,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['small', 'middle', 'large'],
-      description: 'The size of the table',
+      control: "select",
+      options: ["small", "middle", "large"],
+      description: "The size of the table",
     },
     bordered: {
-      control: 'boolean',
-      description: 'Whether to show all table borders',
+      control: "boolean",
+      description: "Whether to show all table borders",
     },
     loading: {
-      control: 'boolean',
-      description: 'Loading state of table',
+      control: "boolean",
+      description: "Loading state of table",
     },
   },
 };
@@ -138,7 +138,7 @@ export const Default: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
+    rowKey: "id",
   },
 };
 
@@ -146,7 +146,7 @@ export const Bordered: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
+    rowKey: "id",
     bordered: true,
   },
 };
@@ -155,8 +155,8 @@ export const Small: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
-    size: 'small',
+    rowKey: "id",
+    size: "small",
   },
 };
 
@@ -164,8 +164,8 @@ export const Large: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
-    size: 'large',
+    rowKey: "id",
+    size: "large",
   },
 };
 
@@ -173,7 +173,7 @@ export const Loading: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
+    rowKey: "id",
     loading: true,
   },
 };
@@ -228,8 +228,8 @@ export const WithSortingAndPagination: Story = {
           },
         }}
         onChange={params => {
-          console.log('Sort changed:', params.sorter);
-          console.log('Pagination changed:', params.pagination);
+          console.log("Sort changed:", params.sorter);
+          console.log("Pagination changed:", params.pagination);
         }}
       />
     );
@@ -240,7 +240,7 @@ export const Scrollable: Story = {
   args: {
     dataSource: data,
     columns,
-    rowKey: 'id',
+    rowKey: "id",
     scroll: { x: 800 },
   },
 };

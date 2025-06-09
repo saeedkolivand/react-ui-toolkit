@@ -1,11 +1,10 @@
-import React, { useEffect, ReactNode } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
-import { Button } from '../../base/Button/Button';
-import { Icon } from '../../base/Icon';
+import React, { useEffect, ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
+import { Button, Icon } from "@/components";
 
-export interface ModalProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'children'> {
+export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref" | "children"> {
   /**
    * Whether the modal is open
    */
@@ -17,7 +16,7 @@ export interface ModalProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'childr
   /**
    * The size of the modal
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   /**
    * Whether to show the close button
    */
@@ -51,7 +50,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       children,
       isOpen,
       onClose,
-      size = 'md',
+      size = "md",
       showCloseButton = true,
       closeOnBackdropClick = true,
       closeOnEsc = true,
@@ -64,47 +63,47 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     useEffect(() => {
       if (isOpen && closeOnEsc) {
         const handleEsc = (event: KeyboardEvent) => {
-          if (event.key === 'Escape') {
+          if (event.key === "Escape") {
             onClose();
           }
         };
-        document.addEventListener('keydown', handleEsc);
+        document.addEventListener("keydown", handleEsc);
         return () => {
-          document.removeEventListener('keydown', handleEsc);
+          document.removeEventListener("keydown", handleEsc);
         };
       }
     }, [isOpen, closeOnEsc, onClose]);
 
     useEffect(() => {
       if (isOpen) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
         return () => {
-          document.body.style.overflow = '';
+          document.body.style.overflow = "";
         };
       }
     }, [isOpen]);
 
     const sizeClasses = {
-      sm: 'sm:max-w-sm',
-      md: 'sm:max-w-md',
-      lg: 'sm:max-w-lg',
-      xl: 'sm:max-w-xl',
-      full: 'sm:max-w-full sm:m-4',
+      sm: "sm:max-w-sm",
+      md: "sm:max-w-md",
+      lg: "sm:max-w-lg",
+      xl: "sm:max-w-xl",
+      full: "sm:max-w-full sm:m-4",
     };
 
     const modalClasses = twMerge(
-      'relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full mx-auto',
+      "relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full mx-auto",
       sizeClasses[size],
-      scrollable && 'max-h-[calc(100vh-2rem)] overflow-y-auto',
+      scrollable && "max-h-[calc(100vh-2rem)] overflow-y-auto",
       className
     );
 
-    const backdropClasses = twMerge('fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70');
+    const backdropClasses = twMerge("fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70");
 
     const containerClasses = twMerge(
-      'fixed inset-0 z-50 overflow-y-auto',
-      centered ? 'flex items-center justify-center' : 'flex items-start',
-      'p-4 sm:p-6 md:p-8'
+      "fixed inset-0 z-50 overflow-y-auto",
+      centered ? "flex items-center justify-center" : "flex items-start",
+      "p-4 sm:p-6 md:p-8"
     );
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -144,7 +143,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                 animate={{ opacity: 1, scale: 1, y: -10 }}
                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
                 transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                style={{ transform: 'translateY(-10%)' }}
+                style={{ transform: "translateY(-10%)" }}
                 {...props}
               >
                 {showCloseButton && (
@@ -169,4 +168,4 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
   }
 );
 
-Modal.displayName = 'Modal';
+Modal.displayName = "Modal";

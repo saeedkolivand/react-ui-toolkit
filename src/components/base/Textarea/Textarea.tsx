@@ -1,16 +1,16 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
-import styles from './Textarea.module.css';
+import React from "react";
+import { twMerge } from "tailwind-merge";
+import styles from "./Textarea.module.css";
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
    * The variant of the textarea
    */
-  variant?: 'default' | 'filled' | 'outlined';
+  variant?: "default" | "filled" | "outlined";
   /**
    * The size of the textarea
    */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   /**
    * Label for the textarea
    */
@@ -37,8 +37,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       className,
-      variant = 'default',
-      size = 'md',
+      variant = "default",
+      size = "md",
       label,
       helperText,
       error,
@@ -51,36 +51,36 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const baseClasses =
-      'block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-400 dark:text-white dark:shadow-none';
+      "block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-400 dark:text-white dark:shadow-none";
 
     const variantClasses = {
-      default: 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800',
+      default: "border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800",
       filled:
-        'border-transparent bg-gray-100 focus:bg-white dark:bg-gray-700 dark:focus:bg-gray-800',
-      outlined: 'border-gray-300 bg-transparent dark:border-gray-600',
+        "border-transparent bg-gray-100 focus:bg-white dark:bg-gray-700 dark:focus:bg-gray-800",
+      outlined: "border-gray-300 bg-transparent dark:border-gray-600",
     };
 
     const sizeClasses = {
-      sm: 'px-3 py-1.5 text-sm min-h-[80px]',
-      md: 'px-4 py-2 text-base min-h-[100px]',
-      lg: 'px-6 py-3 text-lg min-h-[120px]',
+      sm: "px-3 py-1.5 text-sm min-h-[80px]",
+      md: "px-4 py-2 text-base min-h-[100px]",
+      lg: "px-6 py-3 text-lg min-h-[120px]",
     };
 
-    const containerClasses = twMerge('relative', fullWidth && 'w-full', className);
+    const containerClasses = twMerge("relative", fullWidth && "w-full", className);
 
     const textareaClasses = twMerge(
       baseClasses,
       variantClasses[variant],
       sizeClasses[size],
       error &&
-        'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400',
+        "border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:border-red-400 dark:focus:ring-red-400",
       autoResize && styles.autoResize,
       className
     );
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (autoResize) {
-        e.target.style.height = 'auto';
+        e.target.style.height = "auto";
         e.target.style.height = `${e.target.scrollHeight}px`;
       }
       onChange?.(e);
@@ -98,7 +98,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={textareaClasses}
           disabled={disabled}
           onChange={handleChange}
-          aria-invalid={error ? 'true' : 'false'}
+          aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${props.id}-error` : undefined}
           aria-disabled={disabled}
           {...props}
@@ -106,8 +106,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {(helperText || error) && (
           <p
             className={twMerge(
-              'mt-1 text-sm',
-              error ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
+              "mt-1 text-sm",
+              error ? "text-red-500 dark:text-red-400" : "text-gray-500 dark:text-gray-400"
             )}
             id={error ? `${props.id}-error` : undefined}
           >
@@ -119,4 +119,4 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   }
 );
 
-Textarea.displayName = 'Textarea';
+Textarea.displayName = "Textarea";

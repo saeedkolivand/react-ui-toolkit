@@ -1,43 +1,43 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Avatar } from './Avatar';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Avatar } from "./Avatar";
 
 const meta: Meta<typeof Avatar> = {
-  title: 'Feedback/Avatar',
+  title: "Feedback/Avatar",
   component: Avatar,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['xs', 'sm', 'md', 'lg', 'xl'],
-      description: 'The size of the avatar',
+      control: "select",
+      options: ["xs", "sm", "md", "lg", "xl"],
+      description: "The size of the avatar",
     },
     status: {
-      control: 'select',
-      options: ['online', 'offline', 'away', 'busy'],
-      description: 'The status indicator of the avatar',
+      control: "select",
+      options: ["online", "offline", "away", "busy"],
+      description: "The status indicator of the avatar",
     },
     squared: {
-      control: 'boolean',
-      description: 'Whether the avatar is squared',
+      control: "boolean",
+      description: "Whether the avatar is squared",
     },
     bordered: {
-      control: 'boolean',
-      description: 'Whether to show a border',
+      control: "boolean",
+      description: "Whether to show a border",
     },
     src: {
-      control: 'text',
-      description: 'The source URL of the avatar image',
+      control: "text",
+      description: "The source URL of the avatar image",
     },
     alt: {
-      control: 'text',
-      description: 'Alt text for the avatar image',
+      control: "text",
+      description: "Alt text for the avatar image",
     },
     initials: {
-      control: 'text',
-      description: 'The initials to display when no image is available',
+      control: "text",
+      description: "The initials to display when no image is available",
     },
   },
 };
@@ -47,37 +47,37 @@ type Story = StoryObj<typeof Avatar>;
 
 // Using reliable placeholder image URLs
 const AVATAR_IMAGES = {
-  male1: 'https://xsgames.co/randomusers/assets/avatars/male/1.jpg',
-  female1: 'https://xsgames.co/randomusers/assets/avatars/female/1.jpg',
-  male2: 'https://xsgames.co/randomusers/assets/avatars/male/2.jpg',
-  female2: 'https://xsgames.co/randomusers/assets/avatars/female/2.jpg',
+  male1: "https://xsgames.co/randomusers/assets/avatars/male/1.jpg",
+  female1: "https://xsgames.co/randomusers/assets/avatars/female/1.jpg",
+  male2: "https://xsgames.co/randomusers/assets/avatars/male/2.jpg",
+  female2: "https://xsgames.co/randomusers/assets/avatars/female/2.jpg",
 };
 
 export const Default: Story = {
   args: {
     src: AVATAR_IMAGES.male1,
-    alt: 'User Avatar',
+    alt: "User Avatar",
   },
 };
 
 export const WithInitials: Story = {
   args: {
-    initials: 'John Doe',
+    initials: "John Doe",
   },
 };
 
 export const WithStatus: Story = {
   args: {
     src: AVATAR_IMAGES.female1,
-    alt: 'User Avatar',
-    status: 'online',
+    alt: "User Avatar",
+    status: "online",
   },
 };
 
 export const Squared: Story = {
   args: {
     src: AVATAR_IMAGES.male2,
-    alt: 'User Avatar',
+    alt: "User Avatar",
     squared: true,
   },
 };
@@ -85,7 +85,7 @@ export const Squared: Story = {
 export const Bordered: Story = {
   args: {
     src: AVATAR_IMAGES.female2,
-    alt: 'User Avatar',
+    alt: "User Avatar",
     bordered: true,
   },
 };
@@ -93,32 +93,32 @@ export const Bordered: Story = {
 export const ExtraSmall: Story = {
   args: {
     src: AVATAR_IMAGES.male1,
-    alt: 'User Avatar',
-    size: 'xs',
+    alt: "User Avatar",
+    size: "xs",
   },
 };
 
 export const Small: Story = {
   args: {
     src: AVATAR_IMAGES.female1,
-    alt: 'User Avatar',
-    size: 'sm',
+    alt: "User Avatar",
+    size: "sm",
   },
 };
 
 export const Large: Story = {
   args: {
     src: AVATAR_IMAGES.male2,
-    alt: 'User Avatar',
-    size: 'lg',
+    alt: "User Avatar",
+    size: "lg",
   },
 };
 
 export const ExtraLarge: Story = {
   args: {
     src: AVATAR_IMAGES.female2,
-    alt: 'User Avatar',
-    size: 'xl',
+    alt: "User Avatar",
+    size: "xl",
   },
 };
 

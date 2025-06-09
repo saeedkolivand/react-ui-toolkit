@@ -1,44 +1,44 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Tooltip } from './Tooltip';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Tooltip } from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
-  title: 'Components/Base/Tooltip',
+  title: "Components/Base/Tooltip",
   component: Tooltip,
   parameters: {
-    layout: 'centered',
-    componentSubtitle: 'Displays informative text when users hover over or click an element',
+    layout: "centered",
+    componentSubtitle: "Displays informative text when users hover over or click an element",
     docs: {
       description: {
         component:
-          'A tooltip component that provides additional information when interacting with an element.',
+          "A tooltip component that provides additional information when interacting with an element.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     placement: {
-      description: 'The position of the tooltip relative to the target',
+      description: "The position of the tooltip relative to the target",
       table: {
-        defaultValue: { summary: 'top' },
+        defaultValue: { summary: "top" },
       },
     },
     width: {
-      control: { type: 'radio' },
-      options: ['auto', 150, 200, 300],
-      description: 'The width of the tooltip',
+      control: { type: "radio" },
+      options: ["auto", 150, 200, 300],
+      description: "The width of the tooltip",
       table: {
-        defaultValue: { summary: 'auto' },
+        defaultValue: { summary: "auto" },
       },
     },
     maxWidth: {
-      control: { type: 'radio' },
+      control: { type: "radio" },
       options: [undefined, 150, 200, 300],
-      description: 'The maximum width of the tooltip',
+      description: "The maximum width of the tooltip",
     },
     trigger: {
-      description: 'How the tooltip is activated',
+      description: "How the tooltip is activated",
       table: {
-        defaultValue: { summary: 'hover' },
+        defaultValue: { summary: "hover" },
       },
     },
   },
@@ -51,7 +51,7 @@ type Story = StoryObj<typeof Tooltip>;
 
 export const Default: Story = {
   args: {
-    content: 'This is a simple tooltip',
+    content: "This is a simple tooltip",
     children: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover Me</button>,
   },
 };
@@ -78,8 +78,8 @@ export const WithRichContent: Story = {
 
 export const ClickTrigger: Story = {
   args: {
-    content: 'Click again to close this tooltip',
-    trigger: 'click',
+    content: "Click again to close this tooltip",
+    trigger: "click",
     children: <button className="px-4 py-2 bg-purple-500 text-white rounded">Click Me</button>,
   },
 };
@@ -195,8 +195,8 @@ export const InContainers: Story = {
 
 export const CustomStyling: Story = {
   args: {
-    content: 'Custom styled tooltip',
-    className: 'bg-indigo-600 text-yellow-200 font-medium',
+    content: "Custom styled tooltip",
+    className: "bg-indigo-600 text-yellow-200 font-medium",
     children: <button className="px-4 py-2 bg-indigo-500 text-white rounded">Custom Style</button>,
   },
 };

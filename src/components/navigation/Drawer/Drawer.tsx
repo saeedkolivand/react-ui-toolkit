@@ -1,11 +1,10 @@
-import React, { useEffect, ReactNode } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
-import { Button } from '../../base/Button/Button';
-import { Icon } from '../../base/Icon';
+import React, { useEffect, ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
+import { Button, Icon } from "@/components";
 
-export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'children'> {
+export interface DrawerProps extends Omit<HTMLMotionProps<"div">, "ref" | "children"> {
   /**
    * Whether the drawer is open
    */
@@ -17,11 +16,11 @@ export interface DrawerProps extends Omit<HTMLMotionProps<'div'>, 'ref' | 'child
   /**
    * The position of the drawer
    */
-  position?: 'left' | 'right' | 'top' | 'bottom';
+  position?: "left" | "right" | "top" | "bottom";
   /**
    * The size of the drawer
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   /**
    * Whether to show the close button
    */
@@ -47,8 +46,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
       children,
       isOpen,
       onClose,
-      position = 'right',
-      size = 'md',
+      position = "right",
+      size = "md",
       showCloseButton = true,
       closeOnBackdropClick = true,
       closeOnEsc = true,
@@ -59,50 +58,50 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
     useEffect(() => {
       if (isOpen && closeOnEsc) {
         const handleEsc = (event: KeyboardEvent) => {
-          if (event.key === 'Escape') {
+          if (event.key === "Escape") {
             onClose();
           }
         };
-        document.addEventListener('keydown', handleEsc);
+        document.addEventListener("keydown", handleEsc);
         return () => {
-          document.removeEventListener('keydown', handleEsc);
+          document.removeEventListener("keydown", handleEsc);
         };
       }
     }, [isOpen, closeOnEsc, onClose]);
 
     useEffect(() => {
       if (isOpen) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
         return () => {
-          document.body.style.overflow = '';
+          document.body.style.overflow = "";
         };
       }
     }, [isOpen]);
 
     const sizeClasses = {
-      sm: 'w-72',
-      md: 'w-96',
-      lg: 'w-[32rem]',
-      xl: 'w-[40rem]',
-      full: 'w-screen',
+      sm: "w-72",
+      md: "w-96",
+      lg: "w-[32rem]",
+      xl: "w-[40rem]",
+      full: "w-screen",
     };
 
     const positionClasses = {
-      left: 'left-0 top-0 bottom-0',
-      right: 'right-0 top-0 bottom-0',
-      top: 'top-0 left-0 right-0',
-      bottom: 'bottom-0 left-0 right-0',
+      left: "left-0 top-0 bottom-0",
+      right: "right-0 top-0 bottom-0",
+      top: "top-0 left-0 right-0",
+      bottom: "bottom-0 left-0 right-0",
     };
 
     const drawerClasses = twMerge(
-      'fixed bg-white dark:bg-gray-800 shadow-xl',
-      position === 'left' || position === 'right' ? sizeClasses[size] : '',
-      position === 'left' || position === 'right' ? 'h-full' : 'w-full',
+      "fixed bg-white dark:bg-gray-800 shadow-xl",
+      position === "left" || position === "right" ? sizeClasses[size] : "",
+      position === "left" || position === "right" ? "h-full" : "w-full",
       positionClasses[position],
       className
     );
 
-    const backdropClasses = twMerge('fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70');
+    const backdropClasses = twMerge("fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70");
 
     const handleBackdropClick = (e: React.MouseEvent) => {
       if (closeOnBackdropClick && e.target === e.currentTarget) {
@@ -138,8 +137,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
               className={drawerClasses}
               initial={{
                 opacity: 0,
-                x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
-                y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
+                x: position === "left" ? "-100%" : position === "right" ? "100%" : 0,
+                y: position === "top" ? "-100%" : position === "bottom" ? "100%" : 0,
               }}
               animate={{
                 opacity: 1,
@@ -148,8 +147,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
               }}
               exit={{
                 opacity: 0,
-                x: position === 'left' ? '-100%' : position === 'right' ? '100%' : 0,
-                y: position === 'top' ? '-100%' : position === 'bottom' ? '100%' : 0,
+                x: position === "left" ? "-100%" : position === "right" ? "100%" : 0,
+                y: position === "top" ? "-100%" : position === "bottom" ? "100%" : 0,
               }}
               transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               {...props}
@@ -175,4 +174,4 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
   }
 );
 
-Drawer.displayName = 'Drawer';
+Drawer.displayName = "Drawer";

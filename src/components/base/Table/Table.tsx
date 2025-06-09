@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
-import { Button } from '../Button/Button';
-import { Container } from '../../layout/Container';
-import { Icon } from '../Icon';
-import { Select, Option } from '../Select/Select';
+import React, { useState } from "react";
+import classNames from "classnames";
+import { Button, Container, Select, Icon, Option } from "@/components";
 
-export type SortOrder = 'ascend' | 'descend' | null;
+export type SortOrder = "ascend" | "descend" | null;
 
 export interface ColumnType<T> {
   title: React.ReactNode;
@@ -31,7 +28,7 @@ export interface TableProps<T> {
   dataSource: T[];
   columns: ColumnType<T>[];
   rowKey: keyof T;
-  size?: 'small' | 'middle' | 'large';
+  size?: "small" | "middle" | "large";
   bordered?: boolean;
   loading?: boolean;
   pagination?: TablePagination | false;
@@ -49,7 +46,7 @@ export function Table<T extends object>({
   dataSource,
   columns,
   rowKey,
-  size = 'middle',
+  size = "middle",
   bordered = false,
   loading = false,
   pagination,
@@ -67,21 +64,21 @@ export function Table<T extends object>({
     };
   });
 
-  const tableClasses = classNames('w-full', {
-    'border border-gray-200': bordered,
-    'text-sm': size === 'small',
-    'text-base': size === 'middle',
-    'text-lg': size === 'large',
+  const tableClasses = classNames("w-full", {
+    "border border-gray-200": bordered,
+    "text-sm": size === "small",
+    "text-base": size === "middle",
+    "text-lg": size === "large",
   });
 
   const handleSort = (column: ColumnType<T>) => {
     if (!column.sorter) return;
 
-    let newOrder: SortOrder = 'ascend';
+    let newOrder: SortOrder = "ascend";
     if (sortState.column === column.dataIndex) {
-      if (sortState.order === 'ascend') {
-        newOrder = 'descend';
-      } else if (sortState.order === 'descend') {
+      if (sortState.order === "ascend") {
+        newOrder = "descend";
+      } else if (sortState.order === "descend") {
         newOrder = null;
       }
     }
@@ -116,7 +113,7 @@ export function Table<T extends object>({
 
     return [...dataSource].sort((a, b) => {
       const result = column.sorter!(a, b);
-      return sortState.order === 'ascend' ? result : -result;
+      return sortState.order === "ascend" ? result : -result;
     });
   };
 
@@ -124,23 +121,23 @@ export function Table<T extends object>({
     if (!column.sorter) return null;
 
     const isActive = sortState.column === column.dataIndex;
-    const isAscend = isActive && sortState.order === 'ascend';
-    const isDescend = isActive && sortState.order === 'descend';
+    const isAscend = isActive && sortState.order === "ascend";
+    const isDescend = isActive && sortState.order === "descend";
 
     return (
       <span className="ml-1 flex flex-col">
         <Icon
           name="chevronUp"
-          className={classNames('h-3 w-3', {
-            'text-primary-600': isAscend,
-            'text-gray-400': !isAscend,
+          className={classNames("h-3 w-3", {
+            "text-primary-600": isAscend,
+            "text-gray-400": !isAscend,
           })}
         />
         <Icon
           name="chevronDown"
-          className={classNames('h-3 w-3 -mt-1', {
-            'text-primary-600': isDescend,
-            'text-gray-400': !isDescend,
+          className={classNames("h-3 w-3 -mt-1", {
+            "text-primary-600": isDescend,
+            "text-gray-400": !isDescend,
           })}
         />
       </span>
@@ -154,9 +151,9 @@ export function Table<T extends object>({
           <th
             key={column.key}
             className={classNames(
-              'px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+              "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
               {
-                'cursor-pointer hover:bg-gray-100': column.sorter,
+                "cursor-pointer hover:bg-gray-100": column.sorter,
               }
             )}
             style={{ width: column.width }}
@@ -231,7 +228,7 @@ export function Table<T extends object>({
           )}
           <span className="text-sm text-gray-600">
             {(pagination.current - 1) * pagination.pageSize + 1}-
-            {Math.min(pagination.current * pagination.pageSize, pagination.total)} of{' '}
+            {Math.min(pagination.current * pagination.pageSize, pagination.total)} of{" "}
             {pagination.total}
           </span>
         </div>
@@ -249,11 +246,11 @@ export function Table<T extends object>({
             {pages.map(page => (
               <Button
                 key={page}
-                variant={page === pagination.current ? 'primary' : 'outline'}
+                variant={page === pagination.current ? "primary" : "outline"}
                 size="sm"
                 onClick={() => pagination.onChange(page)}
-                className={classNames('min-w-[32px]', {
-                  'z-10': page === pagination.current,
+                className={classNames("min-w-[32px]", {
+                  "z-10": page === pagination.current,
                 })}
               >
                 {page}

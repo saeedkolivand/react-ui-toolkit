@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 
 // Import the CSS directly for SSR compatibility
-import '../styles/index.css';
+import "../styles/index.css";
 
 interface StylesProviderSSRProps {
   children: ReactNode;

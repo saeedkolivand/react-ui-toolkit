@@ -1,28 +1,28 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Tag } from './Tag';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Tag } from "./Tag";
 
 const meta: Meta<typeof Tag> = {
-  title: 'Base/Tag',
+  title: "Base/Tag",
   component: Tag,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'outline', 'solid'],
-      description: 'The visual style of the tag',
+      control: "select",
+      options: ["default", "outline", "solid"],
+      description: "The visual style of the tag",
     },
     color: {
-      control: 'select',
-      options: ['default', 'primary', 'success', 'warning', 'error', 'info'],
-      description: 'The color scheme of the tag',
+      control: "select",
+      options: ["default", "primary", "success", "warning", "error", "info"],
+      description: "The color scheme of the tag",
     },
     closable: {
-      control: 'boolean',
-      description: 'Whether the tag can be closed',
+      control: "boolean",
+      description: "Whether the tag can be closed",
     },
   },
 };
@@ -32,13 +32,13 @@ type Story = StoryObj<typeof Tag>;
 
 export const Default: Story = {
   args: {
-    children: 'Default Tag',
+    children: "Default Tag",
   },
 };
 
 export const Closable: Story = {
   args: {
-    children: 'Closable Tag',
+    children: "Closable Tag",
     closable: true,
   },
 };
@@ -112,7 +112,7 @@ export const Colors: Story = {
 
 export const Interactive: Story = {
   render: () => {
-    const [tags, setTags] = React.useState(['Tag 1', 'Tag 2', 'Tag 3']);
+    const [tags, setTags] = React.useState(["Tag 1", "Tag 2", "Tag 3"]);
 
     const handleClose = (tagToRemove: string) => {
       setTags(tags.filter(tag => tag !== tagToRemove));

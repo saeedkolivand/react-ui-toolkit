@@ -1,31 +1,31 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Badge } from './Badge';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Badge } from "./Badge";
 
 const meta: Meta<typeof Badge> = {
-  title: 'Feedback/Badge',
+  title: "Feedback/Badge",
   component: Badge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'success', 'warning', 'error'],
-      description: 'The variant of the badge',
+      control: "select",
+      options: ["primary", "secondary", "success", "warning", "error"],
+      description: "The variant of the badge",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The size of the badge',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The size of the badge",
     },
     rounded: {
-      control: 'boolean',
-      description: 'Whether the badge is rounded',
+      control: "boolean",
+      description: "Whether the badge is rounded",
     },
     outlined: {
-      control: 'boolean',
-      description: 'Whether the badge is outlined',
+      control: "boolean",
+      description: "Whether the badge is outlined",
     },
   },
 };
@@ -35,75 +35,75 @@ type Story = StoryObj<typeof Badge>;
 
 export const Default: Story = {
   args: {
-    children: 'Badge',
-    variant: 'primary',
+    children: "Badge",
+    variant: "primary",
   },
 };
 
 export const Primary: Story = {
   args: {
-    children: 'Primary',
-    variant: 'primary',
+    children: "Primary",
+    variant: "primary",
   },
 };
 
 export const Secondary: Story = {
   args: {
-    children: 'Secondary',
-    variant: 'secondary',
+    children: "Secondary",
+    variant: "secondary",
   },
 };
 
 export const Success: Story = {
   args: {
-    children: 'Success',
-    variant: 'success',
+    children: "Success",
+    variant: "success",
   },
 };
 
 export const Warning: Story = {
   args: {
-    children: 'Warning',
-    variant: 'warning',
+    children: "Warning",
+    variant: "warning",
   },
 };
 
 export const Error: Story = {
   args: {
-    children: 'Error',
-    variant: 'error',
+    children: "Error",
+    variant: "error",
   },
 };
 
 export const Outlined: Story = {
   args: {
-    children: 'Outlined',
-    variant: 'primary',
+    children: "Outlined",
+    variant: "primary",
     outlined: true,
   },
 };
 
 export const Rounded: Story = {
   args: {
-    children: 'Rounded',
-    variant: 'primary',
+    children: "Rounded",
+    variant: "primary",
     rounded: true,
   },
 };
 
 export const Small: Story = {
   args: {
-    children: 'Small',
-    variant: 'primary',
-    size: 'sm',
+    children: "Small",
+    variant: "primary",
+    size: "sm",
   },
 };
 
 export const Large: Story = {
   args: {
-    children: 'Large',
-    variant: 'primary',
-    size: 'lg',
+    children: "Large",
+    variant: "primary",
+    size: "lg",
   },
 };
 

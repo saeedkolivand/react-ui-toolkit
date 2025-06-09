@@ -1,19 +1,19 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-getUnStagedFilesCount()
+# Function to get git status of working directory
+hasUnstagedChanges()
 {
-unStagedFilesCount_=$(git diff --stat | tail -n1 | cut -b 1-2)
-if [ -z "$unStagedFilesCount_" ]
-then
-  echo 0
-else
-  echo $unStagedFilesCount_
-fi
+    # Check if there are any unstaged changes
+    if [ -n "$(git diff --name-only)" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
 }
 
-# Get initial count of unstaged files
-unStagedFilesCount=$(getUnStagedFilesCount)
+# Check initial state
+initialChanges=$(hasUnstagedChanges)
 
 # Run commitlint to validate commit message
 npx commitlint --edit $1
@@ -26,17 +26,24 @@ npm run lint:fix
 # Run linting and formatting through lint-staged
 npx lint-staged
 
-# Get new count of unstaged files after lint-staged
-newUnStagedFilesCount=$(getUnStagedFilesCount)
+# Check if there are new unstaged changes after lint-staged
+finalChanges=$(hasUnstagedChanges)
 
-# Calculate the difference
-filesChanged=$((newUnStagedFilesCount - unStagedFilesCount))
-
-if [ $filesChanged -ne 0 ]
-then
-    printf '\e[1;31m%-6s\e[m' "Commit aborted: Linter/formatter fixed '${filesChanged}' files"
-    echo '\n'
+# If there were no initial changes but there are changes now, or if changes were introduced
+if [ "$initialChanges" = "false" ] && [ "$finalChanges" = "true" ]; then
+    printf '\e[1;31m%-6s\e[m' "Commit aborted: Linter/formatter made changes to files"
+    echo ''
     printf '\e[1;31m%-6s\e[m' "Please stage the changes and try committing again"
-    echo '\n'
+    echo ''
+    exit 1
+elif [ "$finalChanges" = "true" ]; then
+    # Get the list of changed files for better error message
+    changedFiles=$(git diff --name-only)
+    printf '\e[1;31m%-6s\e[m' "Commit aborted: The following files have unstaged changes:"
+    echo ''
+    echo "$changedFiles"
+    echo ''
+    printf '\e[1;31m%-6s\e[m' "Please stage the changes and try committing again"
+    echo ''
     exit 1
 fi

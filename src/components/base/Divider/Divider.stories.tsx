@@ -1,28 +1,28 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Divider } from './Divider';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Divider } from "./Divider";
 
 const meta: Meta<typeof Divider> = {
-  title: 'Base/Divider',
+  title: "Base/Divider",
   component: Divider,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     type: {
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-      description: 'The direction of the divider',
+      control: "select",
+      options: ["horizontal", "vertical"],
+      description: "The direction of the divider",
     },
     orientation: {
-      control: 'select',
-      options: ['left', 'right', 'center'],
-      description: 'The orientation of the divider text',
+      control: "select",
+      options: ["left", "right", "center"],
+      description: "The orientation of the divider text",
     },
     dashed: {
-      control: 'boolean',
-      description: 'Whether the divider is dashed',
+      control: "boolean",
+      description: "Whether the divider is dashed",
     },
   },
 };
@@ -32,7 +32,7 @@ type Story = StoryObj<typeof Divider>;
 
 export const Horizontal: Story = {
   args: {
-    type: 'horizontal',
+    type: "horizontal",
   },
   render: args => (
     <div className="w-96 p-8 bg-white rounded-lg shadow">
@@ -45,7 +45,7 @@ export const Horizontal: Story = {
 
 export const Vertical: Story = {
   args: {
-    type: 'vertical',
+    type: "vertical",
   },
   render: args => (
     <div className="flex items-center h-32 p-8 bg-white rounded-lg shadow">
@@ -58,8 +58,8 @@ export const Vertical: Story = {
 
 export const WithText: Story = {
   args: {
-    type: 'horizontal',
-    orientation: 'center',
+    type: "horizontal",
+    orientation: "center",
   },
   render: args => (
     <div className="w-96 p-8 bg-white rounded-lg shadow">
@@ -72,8 +72,8 @@ export const WithText: Story = {
 
 export const WithTextLeft: Story = {
   args: {
-    type: 'horizontal',
-    orientation: 'left',
+    type: "horizontal",
+    orientation: "left",
   },
   render: args => (
     <div className="w-96 p-8 bg-white rounded-lg shadow">
@@ -86,8 +86,8 @@ export const WithTextLeft: Story = {
 
 export const WithTextRight: Story = {
   args: {
-    type: 'horizontal',
-    orientation: 'right',
+    type: "horizontal",
+    orientation: "right",
   },
   render: args => (
     <div className="w-96 p-8 bg-white rounded-lg shadow">
@@ -100,7 +100,7 @@ export const WithTextRight: Story = {
 
 export const Dashed: Story = {
   args: {
-    type: 'horizontal',
+    type: "horizontal",
     dashed: true,
   },
   render: args => (
@@ -114,9 +114,9 @@ export const Dashed: Story = {
 
 export const DashedWithText: Story = {
   args: {
-    type: 'horizontal',
+    type: "horizontal",
     dashed: true,
-    orientation: 'center',
+    orientation: "center",
   },
   render: args => (
     <div className="w-96 p-8 bg-white rounded-lg shadow">

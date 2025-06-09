@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
-import { Button } from '../components/base/Button/Button';
-import { Input } from '../components/base/Input/Input';
-import { Textarea } from '../components/base/Textarea/Textarea';
-import { Select } from '../components/base/Select/Select';
-import { Checkbox } from '../components/base/Checkbox/Checkbox';
-import { Radio } from '../components/base/Radio/Radio';
-import { Switch } from '../components/base/Switch/Switch';
-import { Alert } from '../components/feedback/Alert/Alert';
-import { Badge } from '../components/feedback/Badge/Badge';
-import { Progress } from '../components/feedback/Progress/Progress';
-import { Container } from '../components/layout/Container';
-import { ThemeToggle } from '../components/theme/ThemeToggle/ThemeToggle';
+import React, { useState } from "react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Select,
+  Checkbox,
+  Radio,
+  ThemeToggle,
+  Container,
+  Switch,
+  Alert,
+  Badge,
+  Progress,
+} from "@/components";
 
 const IndexPage = () => {
   const [switchState, setSwitchState] = useState(false);
-  const [selectedRadio, setSelectedRadio] = useState('1');
-  const [selectedValue, setSelectedValue] = useState('1');
-  const [disabledSelectedValue, setDisabledSelectedValue] = useState('1');
+  const [selectedRadio, setSelectedRadio] = useState("1");
+  const [selectedValue, setSelectedValue] = useState("1");
+  const [disabledSelectedValue, setDisabledSelectedValue] = useState("1");
 
   return (
     <>
@@ -94,9 +96,9 @@ const IndexPage = () => {
               value={selectedValue}
               onChange={e => setSelectedValue(e.target.value)}
               options={[
-                { value: '1', label: 'Option 1' },
-                { value: '2', label: 'Option 2' },
-                { value: '3', label: 'Option 3' },
+                { value: "1", label: "Option 1" },
+                { value: "2", label: "Option 2" },
+                { value: "3", label: "Option 3" },
               ]}
             />
             <Select
@@ -105,8 +107,8 @@ const IndexPage = () => {
               onChange={e => setDisabledSelectedValue(e.target.value)}
               disabled
               options={[
-                { value: '1', label: 'Option 1' },
-                { value: '2', label: 'Option 2' },
+                { value: "1", label: "Option 1" },
+                { value: "2", label: "Option 2" },
               ]}
             />
           </div>
@@ -125,14 +127,14 @@ const IndexPage = () => {
               name="radio-group"
               value="1"
               label="Option 1"
-              checked={selectedRadio === '1'}
+              checked={selectedRadio === "1"}
               onChange={e => setSelectedRadio(e.target.value)}
             />
             <Radio
               name="radio-group"
               value="2"
               label="Option 2"
-              checked={selectedRadio === '2'}
+              checked={selectedRadio === "2"}
               onChange={e => setSelectedRadio(e.target.value)}
             />
             <Radio name="radio-group" value="3" label="Disabled Option" disabled />

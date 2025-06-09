@@ -1,5 +1,5 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
+import React from "react";
+import { twMerge } from "tailwind-merge";
 
 export interface ColProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -13,7 +13,7 @@ export interface ColProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Order of the column
    */
-  order?: number | 'first' | 'last';
+  order?: number | "first" | "last";
   /**
    * Responsive column spans
    */
@@ -31,26 +31,26 @@ export interface ColProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Responsive column order
    */
-  smOrder?: number | 'first' | 'last';
-  mdOrder?: number | 'first' | 'last';
-  lgOrder?: number | 'first' | 'last';
-  xlOrder?: number | 'first' | 'last';
+  smOrder?: number | "first" | "last";
+  mdOrder?: number | "first" | "last";
+  lgOrder?: number | "first" | "last";
+  xlOrder?: number | "first" | "last";
 }
 
 const getWidthClass = (span?: number) => {
-  if (!span) return '';
+  if (!span) return "";
   return `w-${span}/12`;
 };
 
 const getOffsetClass = (offset?: number) => {
-  if (!offset) return '';
+  if (!offset) return "";
   return `ml-${offset}/12`;
 };
 
-const getOrderClass = (order?: number | 'first' | 'last') => {
-  if (!order) return '';
-  if (order === 'first') return 'order-first';
-  if (order === 'last') return 'order-last';
+const getOrderClass = (order?: number | "first" | "last") => {
+  if (!order) return "";
+  if (order === "first") return "order-first";
+  if (order === "last") return "order-last";
   return `order-${order}`;
 };
 
@@ -78,7 +78,7 @@ export const Col = React.forwardRef<HTMLDivElement, ColProps>(
     ref
   ) => {
     const colClasses = twMerge(
-      'flex-shrink-0',
+      "flex-shrink-0",
       getWidthClass(span),
       getOffsetClass(offset),
       getOrderClass(order),
@@ -101,4 +101,4 @@ export const Col = React.forwardRef<HTMLDivElement, ColProps>(
   }
 );
 
-Col.displayName = 'Col';
+Col.displayName = "Col";

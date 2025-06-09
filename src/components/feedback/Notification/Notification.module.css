@@ -173,46 +173,46 @@
   color: var(--notification-color);
 }
 
-[data-theme='dark'] .notification {
+[data-theme="dark"] .notification {
   background: var(--dark-background-color);
   border-color: var(--dark-border-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme='dark'] .notification:hover {
+[data-theme="dark"] .notification:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-[data-theme='dark'] .description {
+[data-theme="dark"] .description {
   color: var(--dark-text-secondary-color);
 }
 
-[data-theme='dark'] .closeButton {
+[data-theme="dark"] .closeButton {
   color: var(--dark-text-secondary-color);
 }
 
-[data-theme='dark'] .closeButton:hover {
+[data-theme="dark"] .closeButton:hover {
   color: var(--dark-text-color);
   background: rgba(255, 255, 255, 0.1);
 }
 
 /* Dark mode variants */
-[data-theme='dark'] .success {
+[data-theme="dark"] .success {
   --notification-bg: rgba(34, 197, 94, 0.2);
   --notification-icon-bg: rgba(34, 197, 94, 0.3);
 }
 
-[data-theme='dark'] .error {
+[data-theme="dark"] .error {
   --notification-bg: rgba(239, 68, 68, 0.2);
   --notification-icon-bg: rgba(239, 68, 68, 0.3);
 }
 
-[data-theme='dark'] .warning {
+[data-theme="dark"] .warning {
   --notification-bg: rgba(234, 179, 8, 0.2);
   --notification-icon-bg: rgba(234, 179, 8, 0.3);
 }
 
-[data-theme='dark'] .info {
+[data-theme="dark"] .info {
   --notification-bg: rgba(59, 130, 246, 0.2);
   --notification-icon-bg: rgba(59, 130, 246, 0.3);
 }

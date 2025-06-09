@@ -1,19 +1,19 @@
-import { useTheme } from '../context';
+import { useTheme } from "@/context";
 
 export const useChangeTheme = () => {
   const { theme, toggleTheme } = useTheme();
 
-  const isDarkMode = theme === 'dark';
-  const isLightMode = theme === 'light';
+  const isDarkMode = theme === "dark";
+  const isLightMode = theme === "light";
 
   const setDarkMode = () => {
-    if (theme !== 'dark') {
+    if (theme !== "dark") {
       toggleTheme();
     }
   };
 
   const setLightMode = () => {
-    if (theme !== 'light') {
+    if (theme !== "light") {
       toggleTheme();
     }
   };

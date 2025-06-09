@@ -1,38 +1,38 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Row } from './Row';
-import { Col } from '../Col';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Row } from "./Row";
+import { Col } from "../Col";
 
 const meta: Meta<typeof Row> = {
-  title: 'Layout/Row',
+  title: "Layout/Row",
   component: Row,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     justify: {
-      control: 'select',
-      options: ['start', 'end', 'center', 'between', 'around', 'evenly'],
-      description: 'Horizontal alignment of columns',
+      control: "select",
+      options: ["start", "end", "center", "between", "around", "evenly"],
+      description: "Horizontal alignment of columns",
     },
     align: {
-      control: 'select',
-      options: ['start', 'end', 'center', 'baseline', 'stretch'],
-      description: 'Vertical alignment of columns',
+      control: "select",
+      options: ["start", "end", "center", "baseline", "stretch"],
+      description: "Vertical alignment of columns",
     },
     spacing: {
-      control: 'select',
+      control: "select",
       options: [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16],
-      description: 'Space between columns',
+      description: "Space between columns",
     },
     wrap: {
-      control: 'boolean',
-      description: 'Whether to wrap columns to multiple lines',
+      control: "boolean",
+      description: "Whether to wrap columns to multiple lines",
     },
     reverse: {
-      control: 'boolean',
-      description: 'Whether to reverse the order of columns',
+      control: "boolean",
+      description: "Whether to reverse the order of columns",
     },
   },
 };
@@ -46,21 +46,21 @@ interface ContentBoxProps {
   color?: string;
 }
 
-const ContentBox = ({ children, className = '', color = 'gray' }: ContentBoxProps) => {
+const ContentBox = ({ children, className = "", color = "gray" }: ContentBoxProps) => {
   const getColorClass = () => {
     switch (color) {
-      case 'blue':
-        return 'bg-blue-500';
-      case 'green':
-        return 'bg-green-500';
-      case 'purple':
-        return 'bg-purple-500';
-      case 'orange':
-        return 'bg-orange-500';
-      case 'pink':
-        return 'bg-pink-500';
+      case "blue":
+        return "bg-blue-500";
+      case "green":
+        return "bg-green-500";
+      case "purple":
+        return "bg-purple-500";
+      case "orange":
+        return "bg-orange-500";
+      case "pink":
+        return "bg-pink-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
@@ -77,8 +77,8 @@ const Section = ({ children }: { children: React.ReactNode }) => (
 
 export const Default: Story = {
   args: {
-    justify: 'start',
-    align: 'stretch',
+    justify: "start",
+    align: "stretch",
     spacing: 4,
     wrap: true,
     reverse: false,
@@ -225,8 +225,8 @@ export const AlignExamples: Story = {
 
 export const InteractiveExample: Story = {
   args: {
-    justify: 'start',
-    align: 'stretch',
+    justify: "start",
+    align: "stretch",
     spacing: 4,
     wrap: true,
     reverse: false,

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { AnimatePresence } from 'framer-motion';
-import Notification, { NotificationProps } from './Notification';
-import styles from './Notification.module.css';
+import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence } from "framer-motion";
+import Notification, { NotificationProps } from "./Notification";
+import styles from "./Notification.module.css";
 
-export type NotificationPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+export type NotificationPosition = "top-right" | "top-left" | "bottom-right" | "bottom-left";
 
 interface NotificationContainerProps {
   position?: NotificationPosition;
@@ -32,28 +32,28 @@ export const useNotification = () => {
 
   const success = React.useCallback(
     (message: string, description?: string) => {
-      return addNotification({ type: 'success', message, description });
+      return addNotification({ type: "success", message, description });
     },
     [addNotification]
   );
 
   const error = React.useCallback(
     (message: string, description?: string) => {
-      return addNotification({ type: 'error', message, description });
+      return addNotification({ type: "error", message, description });
     },
     [addNotification]
   );
 
   const info = React.useCallback(
     (message: string, description?: string) => {
-      return addNotification({ type: 'info', message, description });
+      return addNotification({ type: "info", message, description });
     },
     [addNotification]
   );
 
   const warning = React.useCallback(
     (message: string, description?: string) => {
-      return addNotification({ type: 'warning', message, description });
+      return addNotification({ type: "warning", message, description });
     },
     [addNotification]
   );
@@ -69,7 +69,7 @@ export const useNotification = () => {
 };
 
 const NotificationContainer: React.FC<NotificationContainerProps> = ({
-  position = 'top-right',
+  position = "top-right",
   maxCount = 5,
   notifications = [],
   onRemove,

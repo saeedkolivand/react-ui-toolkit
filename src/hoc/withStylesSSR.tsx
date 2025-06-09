@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 // Import the CSS directly, which works with bundlers like webpack
 // This approach is more SSR-friendly
-import '../styles/index.css';
+import "../styles/index.css";
 
 /**
  * A version of the styles HOC that's compatible with SSR frameworks like Next.js
@@ -14,7 +14,7 @@ export const withStylesSSR = <P extends object>(Component: React.ComponentType<P
   };
 
   WithStylesSSR.displayName = `withStylesSSR(${
-    Component.displayName || Component.name || 'Component'
+    Component.displayName || Component.name || "Component"
   })`;
 
   return WithStylesSSR;

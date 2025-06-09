@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { useTheme } from '../../../context/ThemeContext';
-import styles from './Notification.module.css';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useTheme } from "@/context";
+import styles from "./Notification.module.css";
 
-export type NotificationType = 'success' | 'error' | 'info' | 'warning';
+export type NotificationType = "success" | "error" | "info" | "warning";
 
 export interface NotificationProps {
   type?: NotificationType;
@@ -15,12 +15,12 @@ export interface NotificationProps {
 }
 
 const Notification: React.FC<NotificationProps> = ({
-  type = 'info',
+  type = "info",
   message,
   description,
   duration = 4500,
   onClose,
-  className = '',
+  className = "",
 }) => {
   const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(true);
@@ -44,14 +44,14 @@ const Notification: React.FC<NotificationProps> = ({
 
   const getIcon = () => {
     switch (type) {
-      case 'success':
-        return '✓';
-      case 'error':
-        return '✕';
-      case 'warning':
-        return '⚠';
+      case "success":
+        return "✓";
+      case "error":
+        return "✕";
+      case "warning":
+        return "⚠";
       default:
-        return 'ℹ';
+        return "ℹ";
     }
   };
 
@@ -64,7 +64,7 @@ const Notification: React.FC<NotificationProps> = ({
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.3 }}
       className={`${styles.notification} ${styles[type]} ${className} ${
-        isExiting ? styles.exit : ''
+        isExiting ? styles.exit : ""
       }`}
       data-theme={theme}
     >

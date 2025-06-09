@@ -1,6 +1,6 @@
-import React from 'react';
-import { useChangeTheme } from '../../../hooks/useChangeTheme';
-import { Button } from '../../base/Button/Button';
+import React from "react";
+import { useChangeTheme } from "@/hooks";
+import { Button } from "../../base";
 
 export const ThemeToggle: React.FC = () => {
   const { isDarkMode, toggleTheme } = useChangeTheme();

@@ -1,50 +1,50 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Col } from './Col';
-import { Row } from '../Row/Row';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Col } from "./Col";
+import { Row } from "../Row/Row";
 
 const meta: Meta<typeof Col> = {
-  title: 'Layout/Col',
+  title: "Layout/Col",
   component: Col,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     span: {
-      control: 'select',
+      control: "select",
       options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      description: 'Number of columns to span',
+      description: "Number of columns to span",
     },
     sm: {
-      control: 'select',
+      control: "select",
       options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      description: 'Number of columns to span on small screens',
+      description: "Number of columns to span on small screens",
     },
     md: {
-      control: 'select',
+      control: "select",
       options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      description: 'Number of columns to span on medium screens',
+      description: "Number of columns to span on medium screens",
     },
     lg: {
-      control: 'select',
+      control: "select",
       options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      description: 'Number of columns to span on large screens',
+      description: "Number of columns to span on large screens",
     },
     xl: {
-      control: 'select',
+      control: "select",
       options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      description: 'Number of columns to span on extra large screens',
+      description: "Number of columns to span on extra large screens",
     },
     offset: {
-      control: 'select',
+      control: "select",
       options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-      description: 'Number of columns to offset',
+      description: "Number of columns to offset",
     },
     order: {
-      control: 'select',
-      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'first', 'last'],
-      description: 'Order of the column',
+      control: "select",
+      options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, "first", "last"],
+      description: "Order of the column",
     },
   },
 };
@@ -58,20 +58,20 @@ interface ContentBoxProps {
   color?: string;
 }
 
-const ContentBox = ({ children, className = '', color = 'gray' }: ContentBoxProps) => (
+const ContentBox = ({ children, className = "", color = "gray" }: ContentBoxProps) => (
   <div
     className={`p-8 rounded-lg text-white text-lg ${
-      color === 'blue'
-        ? 'bg-blue-500'
-        : color === 'green'
-        ? 'bg-green-500'
-        : color === 'purple'
-        ? 'bg-purple-500'
-        : color === 'orange'
-        ? 'bg-orange-500'
-        : color === 'pink'
-        ? 'bg-pink-500'
-        : 'bg-gray-500'
+      color === "blue"
+        ? "bg-blue-500"
+        : color === "green"
+        ? "bg-green-500"
+        : color === "purple"
+        ? "bg-purple-500"
+        : color === "orange"
+        ? "bg-orange-500"
+        : color === "pink"
+        ? "bg-pink-500"
+        : "bg-gray-500"
     } ${className}`}
   >
     {children}

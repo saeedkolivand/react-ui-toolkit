@@ -1,38 +1,38 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
+import React from "react";
+import { twMerge } from "tailwind-merge";
 
-export type ProgressSize = 'sm' | 'md' | 'lg';
-export type ProgressVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+export type ProgressSize = "sm" | "md" | "lg";
+export type ProgressVariant = "primary" | "secondary" | "success" | "warning" | "error";
 
 const sizeClasses: Record<ProgressSize, string> = {
-  sm: 'h-1.5',
-  md: 'h-2.5',
-  lg: 'h-4',
+  sm: "h-1.5",
+  md: "h-2.5",
+  lg: "h-4",
 };
 
 const sizeTextClasses: Record<ProgressSize, string> = {
-  sm: 'text-[8px] leading-3',
-  md: 'text-[10px] leading-4',
-  lg: 'text-xs leading-5',
+  sm: "text-[8px] leading-3",
+  md: "text-[10px] leading-4",
+  lg: "text-xs leading-5",
 };
 
 const variantClasses: Record<ProgressVariant, string> = {
-  primary: 'bg-primary-600',
-  secondary: 'bg-gray-600',
-  success: 'bg-green-600',
-  warning: 'bg-yellow-600',
-  error: 'bg-red-600',
+  primary: "bg-primary-600",
+  secondary: "bg-gray-600",
+  success: "bg-green-600",
+  warning: "bg-yellow-600",
+  error: "bg-red-600",
 };
 
 const variantTrackClasses: Record<ProgressVariant, string> = {
-  primary: 'bg-primary-100',
-  secondary: 'bg-gray-200',
-  success: 'bg-green-100',
-  warning: 'bg-yellow-100',
-  error: 'bg-red-100',
+  primary: "bg-primary-100",
+  secondary: "bg-gray-200",
+  success: "bg-green-100",
+  warning: "bg-yellow-100",
+  error: "bg-red-100",
 };
 
-export interface ProgressProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface ProgressProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
   /**
    * The current value of the progress bar (0-100)
    */
@@ -75,8 +75,8 @@ export const Progress: React.FC<ProgressProps> = ({
   className,
   value,
   max = 100,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   showValue = false,
   striped = false,
   animated = false,
@@ -84,11 +84,11 @@ export const Progress: React.FC<ProgressProps> = ({
   label,
   ...props
 }): JSX.Element => {
-  const isIndeterminate = indeterminate || typeof value !== 'number';
+  const isIndeterminate = indeterminate || typeof value !== "number";
   const percentage = isIndeterminate ? 0 : Math.min(100, Math.max(0, (value! / max) * 100));
 
   const baseClasses =
-    'relative w-full min-w-[8rem] overflow-hidden rounded-full transition-all duration-300';
+    "relative w-full min-w-[8rem] overflow-hidden rounded-full transition-all duration-300";
   const containerClasses = twMerge(
     baseClasses,
     variantTrackClasses[variant],
@@ -98,33 +98,33 @@ export const Progress: React.FC<ProgressProps> = ({
 
   const stripedClasses =
     striped && !isIndeterminate
-      ? 'bg-[length:1rem_100%] bg-gradient-to-r from-white/20 via-white/20 to-transparent bg-repeat-x'
-      : '';
+      ? "bg-[length:1rem_100%] bg-gradient-to-r from-white/20 via-white/20 to-transparent bg-repeat-x"
+      : "";
 
   const animationClasses = animated
     ? isIndeterminate
-      ? 'relative before:absolute before:inset-0 before:w-1/3 before:animate-indeterminate before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent'
+      ? "relative before:absolute before:inset-0 before:w-1/3 before:animate-indeterminate before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"
       : striped
-      ? 'animate-progress-stripes'
-      : ''
-    : '';
+      ? "animate-progress-stripes"
+      : ""
+    : "";
 
   const progressClasses = twMerge(
-    'absolute inset-0 flex items-center transition-all duration-300 ease-out',
+    "absolute inset-0 flex items-center transition-all duration-300 ease-out",
     variantClasses[variant],
     stripedClasses,
     animationClasses,
-    isIndeterminate ? 'w-full' : undefined
+    isIndeterminate ? "w-full" : undefined
   );
 
   const valueClasses = twMerge(
-    'absolute inset-0 flex items-center justify-center font-medium text-white whitespace-nowrap',
+    "absolute inset-0 flex items-center justify-center font-medium text-white whitespace-nowrap",
     sizeTextClasses[size]
   );
 
-  const valueLabel = isIndeterminate ? 'Loading...' : `${Math.round(percentage)}%`;
+  const valueLabel = isIndeterminate ? "Loading..." : `${Math.round(percentage)}%`;
   const ariaLabel =
-    label || `Progress ${isIndeterminate ? 'loading' : `${Math.round(percentage)}%`}`;
+    label || `Progress ${isIndeterminate ? "loading" : `${Math.round(percentage)}%`}`;
 
   return (
     <div
@@ -141,7 +141,7 @@ export const Progress: React.FC<ProgressProps> = ({
         className={progressClasses}
         style={isIndeterminate ? undefined : { width: `${percentage}%` }}
       >
-        {showValue && !isIndeterminate && size !== 'sm' && (
+        {showValue && !isIndeterminate && size !== "sm" && (
           <span className={valueClasses}>{valueLabel}</span>
         )}
       </div>

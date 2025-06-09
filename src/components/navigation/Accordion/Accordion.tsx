@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+import React, { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export interface AccordionItem {
   /**
@@ -58,7 +58,7 @@ export const Accordion: React.FC<AccordionProps> = ({
   };
 
   const accordionClasses = twMerge(
-    'divide-y divide-gray-200 border-t border-b border-gray-200',
+    "divide-y divide-gray-200 border-t border-b border-gray-200",
     className
   );
 
@@ -71,10 +71,10 @@ export const Accordion: React.FC<AccordionProps> = ({
           <div key={index} className="py-2">
             <button
               className={twMerge(
-                'w-full flex justify-between items-center py-2 px-4 text-left',
-                'focus:outline-none',
-                item.disabled && 'opacity-50 cursor-not-allowed',
-                !item.disabled && 'hover:bg-gray-50'
+                "w-full flex justify-between items-center py-2 px-4 text-left",
+                "focus:outline-none",
+                item.disabled && "opacity-50 cursor-not-allowed",
+                !item.disabled && "hover:bg-gray-50"
               )}
               onClick={() => togglePanel(index)}
               disabled={item.disabled}
@@ -85,8 +85,8 @@ export const Accordion: React.FC<AccordionProps> = ({
               <span className="font-medium">{item.title}</span>
               <svg
                 className={twMerge(
-                  'w-5 h-5 transform transition-transform duration-200',
-                  isExpanded && 'rotate-180'
+                  "w-5 h-5 transform transition-transform duration-200",
+                  isExpanded && "rotate-180"
                 )}
                 fill="none"
                 stroke="currentColor"

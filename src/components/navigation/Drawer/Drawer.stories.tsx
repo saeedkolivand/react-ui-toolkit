@@ -1,45 +1,45 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Drawer } from './Drawer';
-import { Button } from '../../base/Button/Button';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Drawer } from "./Drawer";
+import { Button } from "@/components";
 
 const meta: Meta<typeof Drawer> = {
-  title: 'Navigation/Drawer',
+  title: "Navigation/Drawer",
   component: Drawer,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     isOpen: {
-      control: 'boolean',
-      description: 'Controls the visibility of the drawer',
+      control: "boolean",
+      description: "Controls the visibility of the drawer",
     },
     onClose: {
-      action: 'closed',
-      description: 'Callback when drawer is closed',
+      action: "closed",
+      description: "Callback when drawer is closed",
     },
     position: {
-      control: 'select',
-      options: ['left', 'right', 'top', 'bottom'],
-      description: 'Position of the drawer',
+      control: "select",
+      options: ["left", "right", "top", "bottom"],
+      description: "Position of the drawer",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg', 'xl', 'full'],
-      description: 'Size of the drawer',
+      control: "select",
+      options: ["sm", "md", "lg", "xl", "full"],
+      description: "Size of the drawer",
     },
     closeOnBackdropClick: {
-      control: 'boolean',
-      description: 'Whether to close drawer when clicking outside',
+      control: "boolean",
+      description: "Whether to close drawer when clicking outside",
     },
     closeOnEsc: {
-      control: 'boolean',
-      description: 'Whether to close drawer when pressing ESC',
+      control: "boolean",
+      description: "Whether to close drawer when pressing ESC",
     },
     showCloseButton: {
-      control: 'boolean',
-      description: 'Whether to show the close button',
+      control: "boolean",
+      description: "Whether to show the close button",
     },
   },
 };
@@ -74,8 +74,8 @@ export const Left: Story = {
     );
   },
   args: {
-    position: 'left',
-    size: 'md',
+    position: "left",
+    size: "md",
     closeOnBackdropClick: true,
     closeOnEsc: true,
     showCloseButton: true,
@@ -95,8 +95,8 @@ export const Right: Story = {
     );
   },
   args: {
-    position: 'right',
-    size: 'md',
+    position: "right",
+    size: "md",
     closeOnBackdropClick: true,
     closeOnEsc: true,
     showCloseButton: true,
@@ -116,8 +116,8 @@ export const Top: Story = {
     );
   },
   args: {
-    position: 'top',
-    size: 'md',
+    position: "top",
+    size: "md",
     closeOnBackdropClick: true,
     closeOnEsc: true,
     showCloseButton: true,
@@ -137,8 +137,8 @@ export const Bottom: Story = {
     );
   },
   args: {
-    position: 'bottom',
-    size: 'md',
+    position: "bottom",
+    size: "md",
     closeOnBackdropClick: true,
     closeOnEsc: true,
     showCloseButton: true,

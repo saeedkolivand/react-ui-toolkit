@@ -1,29 +1,29 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Dropdown, Menu } from './Dropdown';
-import { Button } from '../../base/Button/Button';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Dropdown, Menu } from "./Dropdown";
+import { Button } from "@/components";
 
 const meta: Meta<typeof Dropdown> = {
-  title: 'Navigation/Dropdown',
+  title: "Navigation/Dropdown",
   component: Dropdown,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     trigger: {
-      control: 'select',
-      options: ['hover', 'click'],
-      description: 'How the dropdown is triggered',
+      control: "select",
+      options: ["hover", "click"],
+      description: "How the dropdown is triggered",
     },
     placement: {
-      control: 'select',
-      options: ['top', 'bottom', 'left', 'right'],
-      description: 'Where the dropdown menu appears',
+      control: "select",
+      options: ["top", "bottom", "left", "right"],
+      description: "Where the dropdown menu appears",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the dropdown is disabled',
+      control: "boolean",
+      description: "Whether the dropdown is disabled",
     },
   },
 };
@@ -36,7 +36,7 @@ export const Default: Story = {
     <Dropdown
       overlay={
         <Menu>
-          <Menu.Item key="1" onClick={() => console.log('Clicked item 1')}>
+          <Menu.Item key="1" onClick={() => console.log("Clicked item 1")}>
             Item 1
           </Menu.Item>
           <Menu.Item key="2" disabled>

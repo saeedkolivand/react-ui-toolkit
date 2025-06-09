@@ -1,2 +1,2 @@
-export * from './withStyles';
-export * from './withStylesSSR';
+export * from "./withStyles";
+export * from "./withStylesSSR";

@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect, ReactNode } from "react";
 
 interface StylesProviderProps {
   children: ReactNode;
@@ -23,18 +23,18 @@ interface StylesProviderProps {
  */
 export const StylesProvider: React.FC<StylesProviderProps> = ({ children }) => {
   useEffect(() => {
-    const styleId = 'react-ui-toolkit-styles';
+    const styleId = "react-ui-toolkit-styles";
 
     if (!document.getElementById(styleId)) {
       try {
         // Create a style tag and inject the CSS content
-        const link = document.createElement('link');
+        const link = document.createElement("link");
         link.id = styleId;
-        link.rel = 'stylesheet';
-        link.href = '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+        link.rel = "stylesheet";
+        link.href = "@saeedkolivand/react-ui-toolkit/dist/styles.css";
         document.head.appendChild(link);
       } catch (error) {
-        console.warn('Failed to load React UI Toolkit styles:', error);
+        console.warn("Failed to load React UI Toolkit styles:", error);
       }
     }
   }, []);

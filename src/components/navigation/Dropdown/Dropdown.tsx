@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { twMerge } from 'tailwind-merge';
+import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { twMerge } from "tailwind-merge";
 
 export interface DropdownProps {
   children: React.ReactNode;
   overlay: React.ReactNode;
-  trigger?: 'hover' | 'click';
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  trigger?: "hover" | "click";
+  placement?: "top" | "bottom" | "left" | "right";
   disabled?: boolean;
   className?: string;
   overlayClassName?: string;
@@ -28,7 +28,7 @@ export interface MenuProps {
 }
 
 export function Menu({ children, className }: MenuProps) {
-  return <div className={twMerge('py-1 min-w-[120px]', className)}>{children}</div>;
+  return <div className={twMerge("py-1 min-w-[120px]", className)}>{children}</div>;
 }
 
 export function MenuItem({
@@ -40,12 +40,12 @@ export function MenuItem({
   onClick,
 }: MenuItemProps) {
   const baseClasses =
-    'px-4 py-2 text-sm transition-colors duration-200 ease-in-out cursor-pointer flex items-center';
+    "px-4 py-2 text-sm transition-colors duration-200 ease-in-out cursor-pointer flex items-center";
 
   const stateClasses = {
-    default: 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700',
-    disabled: 'text-gray-400 cursor-not-allowed dark:text-gray-500',
-    danger: 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
+    default: "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700",
+    disabled: "text-gray-400 cursor-not-allowed dark:text-gray-500",
+    danger: "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20",
   };
 
   const classes = twMerge(
@@ -66,8 +66,8 @@ Menu.Item = MenuItem;
 export function Dropdown({
   children,
   overlay,
-  trigger = 'hover',
-  placement = 'bottom',
+  trigger = "hover",
+  placement = "bottom",
   disabled = false,
   className,
   overlayClassName,
@@ -78,19 +78,19 @@ export function Dropdown({
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = () => {
-    if (trigger === 'hover' && !disabled) {
+    if (trigger === "hover" && !disabled) {
       setIsOpen(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (trigger === 'hover' && !disabled) {
+    if (trigger === "hover" && !disabled) {
       setIsOpen(false);
     }
   };
 
   const handleClick = () => {
-    if (trigger === 'click' && !disabled) {
+    if (trigger === "click" && !disabled) {
       setIsOpen(!isOpen);
     }
   };
@@ -108,11 +108,11 @@ export function Dropdown({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -126,13 +126,13 @@ export function Dropdown({
       let left = rect.left + window.scrollX;
 
       switch (placement) {
-        case 'top':
+        case "top":
           top = rect.top + window.scrollY - overlayRect.height - spacing;
           break;
-        case 'left':
+        case "left":
           left = rect.left + window.scrollX - overlayRect.width - spacing;
           break;
-        case 'right':
+        case "right":
           left = rect.right + window.scrollX + spacing;
           break;
         default:
@@ -153,7 +153,7 @@ export function Dropdown({
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.2 }}
           className={twMerge(
-            'fixed z-50 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700',
+            "fixed z-50 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700",
             overlayClassName
           )}
           style={{
@@ -170,7 +170,7 @@ export function Dropdown({
   return (
     <div
       ref={dropdownRef}
-      className={twMerge('relative inline-block', className)}
+      className={twMerge("relative inline-block", className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

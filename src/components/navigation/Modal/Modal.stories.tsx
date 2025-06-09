@@ -1,48 +1,48 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Modal } from './Modal';
-import { Button } from '../../base/Button/Button';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Modal } from "./Modal";
+import { Button } from "@/components";
 
 const meta: Meta<typeof Modal> = {
-  title: 'Navigation/Modal',
+  title: "Navigation/Modal",
   component: Modal,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     isOpen: {
-      control: 'boolean',
-      description: 'Controls the visibility of the modal',
+      control: "boolean",
+      description: "Controls the visibility of the modal",
     },
     onClose: {
-      action: 'closed',
-      description: 'Callback when modal is closed',
+      action: "closed",
+      description: "Callback when modal is closed",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg', 'xl', 'full'],
-      description: 'Size of the modal',
+      control: "select",
+      options: ["sm", "md", "lg", "xl", "full"],
+      description: "Size of the modal",
     },
     showCloseButton: {
-      control: 'boolean',
-      description: 'Whether to show the close button',
+      control: "boolean",
+      description: "Whether to show the close button",
     },
     closeOnBackdropClick: {
-      control: 'boolean',
-      description: 'Whether to close modal when clicking outside',
+      control: "boolean",
+      description: "Whether to close modal when clicking outside",
     },
     closeOnEsc: {
-      control: 'boolean',
-      description: 'Whether to close modal when pressing ESC',
+      control: "boolean",
+      description: "Whether to close modal when pressing ESC",
     },
     centered: {
-      control: 'boolean',
-      description: 'Whether to center the modal vertically',
+      control: "boolean",
+      description: "Whether to center the modal vertically",
     },
     scrollable: {
-      control: 'boolean',
-      description: 'Whether to show a scrollbar when content overflows',
+      control: "boolean",
+      description: "Whether to show a scrollbar when content overflows",
     },
   },
 };
@@ -77,7 +77,7 @@ export const Default: Story = {
     );
   },
   args: {
-    size: 'md',
+    size: "md",
     closeOnBackdropClick: true,
     closeOnEsc: true,
     showCloseButton: true,
@@ -99,7 +99,7 @@ export const Small: Story = {
     );
   },
   args: {
-    size: 'sm',
+    size: "sm",
   },
 };
 
@@ -116,7 +116,7 @@ export const Large: Story = {
     );
   },
   args: {
-    size: 'lg',
+    size: "lg",
   },
 };
 
@@ -133,6 +133,6 @@ export const FullScreen: Story = {
     );
   },
   args: {
-    size: 'full',
+    size: "full",
   },
 };

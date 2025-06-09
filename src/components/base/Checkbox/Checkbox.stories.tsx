@@ -1,39 +1,39 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Checkbox } from './Checkbox';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Checkbox } from "./Checkbox";
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'Base/Checkbox',
+  title: "Base/Checkbox",
   component: Checkbox,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     label: {
-      control: 'text',
-      description: 'Label text for the checkbox',
+      control: "text",
+      description: "Label text for the checkbox",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The size of the checkbox',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The size of the checkbox",
     },
     error: {
-      control: 'boolean',
-      description: 'Whether the checkbox is in an error state',
+      control: "boolean",
+      description: "Whether the checkbox is in an error state",
     },
     errorMessage: {
-      control: 'text',
-      description: 'Error message to display when error is true',
+      control: "text",
+      description: "Error message to display when error is true",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the checkbox is disabled',
+      control: "boolean",
+      description: "Whether the checkbox is disabled",
     },
     checked: {
-      control: 'boolean',
-      description: 'Whether the checkbox is checked',
+      control: "boolean",
+      description: "Whether the checkbox is checked",
     },
   },
 };
@@ -43,49 +43,49 @@ type Story = StoryObj<typeof Checkbox>;
 
 export const Default: Story = {
   args: {
-    label: 'Checkbox',
+    label: "Checkbox",
   },
 };
 
 export const Checked: Story = {
   args: {
-    label: 'Checked',
+    label: "Checked",
     checked: true,
   },
 };
 
 export const Small: Story = {
   args: {
-    label: 'Small',
-    size: 'sm',
+    label: "Small",
+    size: "sm",
   },
 };
 
 export const Large: Story = {
   args: {
-    label: 'Large',
-    size: 'lg',
+    label: "Large",
+    size: "lg",
   },
 };
 
 export const Error: Story = {
   args: {
-    label: 'Error',
+    label: "Error",
     error: true,
-    errorMessage: 'This field is required',
+    errorMessage: "This field is required",
   },
 };
 
 export const Disabled: Story = {
   args: {
-    label: 'Disabled',
+    label: "Disabled",
     disabled: true,
   },
 };
 
 export const DisabledChecked: Story = {
   args: {
-    label: 'Disabled Checked',
+    label: "Disabled Checked",
     disabled: true,
     checked: true,
   },

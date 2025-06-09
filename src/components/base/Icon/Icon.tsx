@@ -1,5 +1,5 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
+import React from "react";
+import { twMerge } from "tailwind-merge";
 
 // Built-in icons
 const icons = {
@@ -802,7 +802,7 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
   /**
    * The size of the icon
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: "sm" | "md" | "lg" | "xl";
   /**
    * The color of the icon
    */
@@ -812,16 +812,16 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 export const Icon: React.FC<IconProps> = ({
   name,
   customIcon,
-  size = 'md',
-  color = 'currentColor',
+  size = "md",
+  color = "currentColor",
   className,
   ...props
 }) => {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
-    xl: 'w-8 h-8',
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+    xl: "w-8 h-8",
   };
 
   if (customIcon) {

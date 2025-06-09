@@ -1,23 +1,23 @@
-import React, { useState, useRef, ReactNode, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import cn from 'classnames';
+import React, { useState, useRef, ReactNode, useEffect } from "react";
+import ReactDOM from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import cn from "classnames";
 
 export type TooltipPlacement =
-  | 'top'
-  | 'left'
-  | 'right'
-  | 'bottom'
-  | 'topLeft'
-  | 'topRight'
-  | 'bottomLeft'
-  | 'bottomRight'
-  | 'leftTop'
-  | 'leftBottom'
-  | 'rightTop'
-  | 'rightBottom';
+  | "top"
+  | "left"
+  | "right"
+  | "bottom"
+  | "topLeft"
+  | "topRight"
+  | "bottomLeft"
+  | "bottomRight"
+  | "leftTop"
+  | "leftBottom"
+  | "rightTop"
+  | "rightBottom";
 
-export type TooltipTrigger = 'hover' | 'focus' | 'click' | 'contextMenu';
+export type TooltipTrigger = "hover" | "focus" | "click" | "contextMenu";
 
 export interface TooltipProps {
   /** The content to display inside the tooltip */
@@ -45,7 +45,7 @@ export interface TooltipProps {
   /** CSS style for the tooltip inner content */
   overlayInnerStyle?: React.CSSProperties;
   /** Width of the tooltip - 'auto' or specific pixel value */
-  width?: 'auto' | number;
+  width?: "auto" | number;
   /** Max width of the tooltip in pixels */
   maxWidth?: number;
   /** Whether the tooltip should have an arrow */
@@ -73,18 +73,18 @@ const TooltipPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     // Create portal container if it doesn't exist
-    const portalId = 'tooltip-portal-container';
+    const portalId = "tooltip-portal-container";
     let portalContainer = document.getElementById(portalId) as HTMLDivElement;
 
     if (!portalContainer) {
-      portalContainer = document.createElement('div');
+      portalContainer = document.createElement("div");
       portalContainer.id = portalId;
-      portalContainer.style.position = 'fixed';
-      portalContainer.style.zIndex = '1050'; // Match Ant Design's default z-index
-      portalContainer.style.top = '0';
-      portalContainer.style.left = '0';
-      portalContainer.style.width = '0';
-      portalContainer.style.height = '0';
+      portalContainer.style.position = "fixed";
+      portalContainer.style.zIndex = "1050"; // Match Ant Design's default z-index
+      portalContainer.style.top = "0";
+      portalContainer.style.left = "0";
+      portalContainer.style.width = "0";
+      portalContainer.style.height = "0";
       document.body.appendChild(portalContainer);
     }
 
@@ -109,8 +109,8 @@ const TooltipPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
 export const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
-  placement = 'top',
-  trigger = 'hover',
+  placement = "top",
+  trigger = "hover",
   defaultVisible = false,
   showDelay = 50, // Ant Design uses 50ms by default
   hideDelay = 50, // Ant Design uses 50ms by default
@@ -119,8 +119,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   overlayInnerClassName,
   overlayStyle,
   overlayInnerStyle,
-  width = 'auto',
-  maxWidth = 'auto' === width ? undefined : 250,
+  width = "auto",
+  maxWidth = "auto" === width ? undefined : 250,
   arrow = true,
   visible: controlledVisible,
   onVisibleChange,
@@ -174,28 +174,28 @@ export const Tooltip: React.FC<TooltipProps> = ({
     // Calculate position based on placement
     switch (placement) {
       // Basic placements
-      case 'top':
+      case "top":
         top = triggerRect.top - tooltipRect.height - gap;
         left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
         arrowTop = tooltipRect.height;
         arrowLeft = tooltipRect.width / 2;
         break;
 
-      case 'bottom':
+      case "bottom":
         top = triggerRect.bottom + gap;
         left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
         arrowTop = -4;
         arrowLeft = tooltipRect.width / 2;
         break;
 
-      case 'left':
+      case "left":
         top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
         left = triggerRect.left - tooltipRect.width - gap;
         arrowTop = tooltipRect.height / 2;
         arrowLeft = tooltipRect.width;
         break;
 
-      case 'right':
+      case "right":
         top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
         left = triggerRect.right + gap;
         arrowTop = tooltipRect.height / 2;
@@ -203,56 +203,56 @@ export const Tooltip: React.FC<TooltipProps> = ({
         break;
 
       // Advanced placements
-      case 'topLeft':
+      case "topLeft":
         top = triggerRect.top - tooltipRect.height - gap;
         left = triggerRect.left;
         arrowTop = tooltipRect.height;
         arrowLeft = Math.min(triggerRect.width / 2, 20);
         break;
 
-      case 'topRight':
+      case "topRight":
         top = triggerRect.top - tooltipRect.height - gap;
         left = triggerRect.right - tooltipRect.width;
         arrowTop = tooltipRect.height;
         arrowLeft = tooltipRect.width - Math.min(triggerRect.width / 2, 20);
         break;
 
-      case 'bottomLeft':
+      case "bottomLeft":
         top = triggerRect.bottom + gap;
         left = triggerRect.left;
         arrowTop = -4;
         arrowLeft = Math.min(triggerRect.width / 2, 20);
         break;
 
-      case 'bottomRight':
+      case "bottomRight":
         top = triggerRect.bottom + gap;
         left = triggerRect.right - tooltipRect.width;
         arrowTop = -4;
         arrowLeft = tooltipRect.width - Math.min(triggerRect.width / 2, 20);
         break;
 
-      case 'leftTop':
+      case "leftTop":
         top = triggerRect.top;
         left = triggerRect.left - tooltipRect.width - gap;
         arrowTop = Math.min(triggerRect.height / 2, 10);
         arrowLeft = tooltipRect.width;
         break;
 
-      case 'leftBottom':
+      case "leftBottom":
         top = triggerRect.bottom - tooltipRect.height;
         left = triggerRect.left - tooltipRect.width - gap;
         arrowTop = tooltipRect.height - Math.min(triggerRect.height / 2, 10);
         arrowLeft = tooltipRect.width;
         break;
 
-      case 'rightTop':
+      case "rightTop":
         top = triggerRect.top;
         left = triggerRect.right + gap;
         arrowTop = Math.min(triggerRect.height / 2, 10);
         arrowLeft = -4;
         break;
 
-      case 'rightBottom':
+      case "rightBottom":
         top = triggerRect.bottom - tooltipRect.height;
         left = triggerRect.right + gap;
         arrowTop = tooltipRect.height - Math.min(triggerRect.height / 2, 10);
@@ -269,14 +269,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
       const offset = left - 10;
       left = 10;
       // Adjust arrow position accordingly
-      if (placement.includes('top') || placement.includes('bottom')) {
+      if (placement.includes("top") || placement.includes("bottom")) {
         arrowLeft += offset;
       }
     } else if (left + tooltipRect.width > viewportWidth - 10) {
       const offset = left + tooltipRect.width - (viewportWidth - 10);
       left -= offset;
       // Adjust arrow position accordingly
-      if (placement.includes('top') || placement.includes('bottom')) {
+      if (placement.includes("top") || placement.includes("bottom")) {
         arrowLeft += offset;
       }
     }
@@ -286,14 +286,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
       const offset = top - 10;
       top = 10;
       // Adjust arrow position accordingly
-      if (placement.includes('left') || placement.includes('right')) {
+      if (placement.includes("left") || placement.includes("right")) {
         arrowTop += offset;
       }
     } else if (top + tooltipRect.height > viewportHeight - 10) {
       const offset = top + tooltipRect.height - (viewportHeight - 10);
       top -= offset;
       // Adjust arrow position accordingly
-      if (placement.includes('left') || placement.includes('right')) {
+      if (placement.includes("left") || placement.includes("right")) {
         arrowTop += offset;
       }
     }
@@ -340,13 +340,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }, 0);
 
       // Recalculate on resize and scroll
-      window.addEventListener('resize', calculatePosition);
-      window.addEventListener('scroll', calculatePosition, true); // Use capture phase
+      window.addEventListener("resize", calculatePosition);
+      window.addEventListener("scroll", calculatePosition, true); // Use capture phase
 
       return () => {
         clearTimeout(timer);
-        window.removeEventListener('resize', calculatePosition);
-        window.removeEventListener('scroll', calculatePosition, true);
+        window.removeEventListener("resize", calculatePosition);
+        window.removeEventListener("scroll", calculatePosition, true);
       };
     }
   }, [visible, placement]);
@@ -363,17 +363,17 @@ export const Tooltip: React.FC<TooltipProps> = ({
   const getEventHandlers = () => {
     const handlers: Record<string, any> = {};
 
-    if (triggers.includes('hover')) {
+    if (triggers.includes("hover")) {
       handlers.onMouseEnter = showTooltip;
       handlers.onMouseLeave = hideTooltip;
     }
 
-    if (triggers.includes('focus')) {
+    if (triggers.includes("focus")) {
       handlers.onFocus = showTooltip;
       handlers.onBlur = hideTooltip;
     }
 
-    if (triggers.includes('click')) {
+    if (triggers.includes("click")) {
       handlers.onClick = (e: React.MouseEvent) => {
         e.preventDefault();
         if (visible) {
@@ -384,7 +384,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       };
     }
 
-    if (triggers.includes('contextMenu')) {
+    if (triggers.includes("contextMenu")) {
       handlers.onContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         if (visible) {
@@ -400,27 +400,27 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   // Get arrow class names based on placement
   const getArrowClassNames = () => {
-    const baseClasses = 'absolute w-2 h-2';
+    const baseClasses = "absolute w-2 h-2";
 
     switch (placement) {
-      case 'top':
-      case 'topLeft':
-      case 'topRight':
+      case "top":
+      case "topLeft":
+      case "topRight":
         return `${baseClasses} rotate-[-135deg] bottom-[-5px]`;
 
-      case 'bottom':
-      case 'bottomLeft':
-      case 'bottomRight':
+      case "bottom":
+      case "bottomLeft":
+      case "bottomRight":
         return `${baseClasses} rotate-45 top-[-5px]`;
 
-      case 'left':
-      case 'leftTop':
-      case 'leftBottom':
+      case "left":
+      case "leftTop":
+      case "leftBottom":
         return `${baseClasses} rotate-[-45deg] right-[-5px]`;
 
-      case 'right':
-      case 'rightTop':
-      case 'rightBottom':
+      case "right":
+      case "rightTop":
+      case "rightBottom":
         return `${baseClasses} rotate-[135deg] left-[-5px]`;
 
       default:
@@ -434,32 +434,32 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
     // Check if it's a predefined color
     switch (color) {
-      case 'pink':
-        return '#eb2f96';
-      case 'red':
-        return '#f5222d';
-      case 'yellow':
-        return '#faad14';
-      case 'orange':
-        return '#fa8c16';
-      case 'cyan':
-        return '#13c2c2';
-      case 'green':
-        return '#52c41a';
-      case 'blue':
-        return '#1890ff';
-      case 'purple':
-        return '#722ed1';
-      case 'geekblue':
-        return '#2f54eb';
-      case 'magenta':
-        return '#eb2f96';
-      case 'volcano':
-        return '#fa541c';
-      case 'gold':
-        return '#faad14';
-      case 'lime':
-        return '#a0d911';
+      case "pink":
+        return "#eb2f96";
+      case "red":
+        return "#f5222d";
+      case "yellow":
+        return "#faad14";
+      case "orange":
+        return "#fa8c16";
+      case "cyan":
+        return "#13c2c2";
+      case "green":
+        return "#52c41a";
+      case "blue":
+        return "#1890ff";
+      case "purple":
+        return "#722ed1";
+      case "geekblue":
+        return "#2f54eb";
+      case "magenta":
+        return "#eb2f96";
+      case "volcano":
+        return "#fa541c";
+      case "gold":
+        return "#faad14";
+      case "lime":
+        return "#a0d911";
       default:
         return color; // Use as custom color
     }
@@ -472,7 +472,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     // Handle special case for disabled elements
     if (
       React.isValidElement(children) &&
-      (children.props.disabled || (children.type === 'button' && children.props.disabled))
+      (children.props.disabled || (children.type === "button" && children.props.disabled))
     ) {
       // If children is disabled, we need to wrap it in a span to trigger events
       return (
@@ -502,13 +502,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
         <TooltipPortal>
           <div
             ref={tooltipRef}
-            className={cn('absolute z-[1050] pointer-events-none', overlayClassName)}
+            className={cn("absolute z-[1050] pointer-events-none", overlayClassName)}
             style={{
               ...overlayStyle,
               top: `${tooltipPosition.top}px`,
               left: `${tooltipPosition.left}px`,
               zIndex: zIndex,
-              visibility: visible ? 'visible' : 'hidden',
+              visibility: visible ? "visible" : "hidden",
               opacity: visible ? 1 : 0,
             }}
           >
@@ -518,19 +518,19 @@ export const Tooltip: React.FC<TooltipProps> = ({
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
                   className={cn(
-                    'py-1 px-2 rounded-sm shadow-md text-white text-sm border border-gray-200 inline-block',
+                    "py-1 px-2 rounded-sm shadow-md text-white text-sm border border-gray-200 inline-block",
                     overlayInnerClassName,
-                    { 'bg-gray-800': !color }
+                    { "bg-gray-800": !color }
                   )}
                   style={{
                     ...overlayInnerStyle,
-                    width: width === 'auto' ? 'auto' : `${width}px`,
+                    width: width === "auto" ? "auto" : `${width}px`,
                     maxWidth: maxWidth !== undefined ? `${maxWidth}px` : undefined,
-                    whiteSpace: width === 'auto' ? 'nowrap' : 'normal',
-                    backgroundColor: getBackgroundColor() || (color ? undefined : '#1f2937'), // Explicit gray-800 value
-                    borderColor: 'rgba(229, 231, 235, 0.8)', // More subtle border
+                    whiteSpace: width === "auto" ? "nowrap" : "normal",
+                    backgroundColor: getBackgroundColor() || (color ? undefined : "#1f2937"), // Explicit gray-800 value
+                    borderColor: "rgba(229, 231, 235, 0.8)", // More subtle border
                   }}
                 >
                   {tooltipContent}
@@ -541,11 +541,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
                       style={{
                         top: `${arrowPosition.top}px`,
                         left: `${arrowPosition.left}px`,
-                        backgroundColor: getBackgroundColor() || (color ? undefined : '#1f2937'), // Use gray-800 default if no color
-                        boxShadow: '1px 1px 0 0 rgba(0, 0, 0, 0.05)',
-                        border: '1px solid rgba(229, 231, 235, 0.8)', // Gray-200 with opacity
-                        borderRight: 'none',
-                        borderBottom: 'none',
+                        backgroundColor: getBackgroundColor() || (color ? undefined : "#1f2937"), // Use gray-800 default if no color
+                        boxShadow: "1px 1px 0 0 rgba(0, 0, 0, 0.05)",
+                        border: "1px solid rgba(229, 231, 235, 0.8)", // Gray-200 with opacity
+                        borderRight: "none",
+                        borderBottom: "none",
                       }}
                     />
                   )}

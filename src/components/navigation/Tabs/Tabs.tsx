@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { twMerge } from 'tailwind-merge';
+import React, { useState, useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 
 export interface TabItem {
   /**
@@ -28,11 +28,11 @@ export interface TabsProps {
   /**
    * The orientation of the tabs
    */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   /**
    * The variant of the tabs
    */
-  variant?: 'line' | 'enclosed' | 'soft-rounded' | 'solid-rounded';
+  variant?: "line" | "enclosed" | "soft-rounded" | "solid-rounded";
   /**
    * Whether to stretch the tabs to full width
    */
@@ -50,8 +50,8 @@ export interface TabsProps {
 export const Tabs: React.FC<TabsProps> = ({
   tabs,
   defaultActiveTab = 0,
-  orientation = 'horizontal',
-  variant = 'line',
+  orientation = "horizontal",
+  variant = "line",
   isFitted = false,
   className,
   onTabChange,
@@ -72,17 +72,17 @@ export const Tabs: React.FC<TabsProps> = ({
   };
 
   const containerClasses = twMerge(
-    'flex',
-    orientation === 'vertical' ? 'flex-row' : 'flex-col',
+    "flex",
+    orientation === "vertical" ? "flex-row" : "flex-col",
     className
   );
 
   const tabListClasses = twMerge(
-    'flex',
-    orientation === 'vertical' ? 'flex-col' : 'flex-row',
-    variant === 'enclosed' && 'border-b border-gray-200 dark:border-gray-700',
-    variant === 'soft-rounded' && 'bg-gray-100 dark:bg-gray-800 p-1 rounded-lg',
-    variant === 'solid-rounded' && 'bg-gray-100 dark:bg-gray-800 p-1 rounded-lg'
+    "flex",
+    orientation === "vertical" ? "flex-col" : "flex-row",
+    variant === "enclosed" && "border-b border-gray-200 dark:border-gray-700",
+    variant === "soft-rounded" && "bg-gray-100 dark:bg-gray-800 p-1 rounded-lg",
+    variant === "solid-rounded" && "bg-gray-100 dark:bg-gray-800 p-1 rounded-lg"
   );
 
   const getTabClasses = (index: number) => {
@@ -90,40 +90,40 @@ export const Tabs: React.FC<TabsProps> = ({
     const isDisabled = tabs[index].disabled;
 
     return twMerge(
-      'px-4 py-2 text-sm font-medium transition-colors duration-200',
-      isFitted && 'flex-1 text-center',
-      isDisabled && 'opacity-50 cursor-not-allowed',
-      !isDisabled && 'cursor-pointer hover:text-primary-600 dark:hover:text-primary-400',
-      variant === 'line' && [
-        'border-b-2',
+      "px-4 py-2 text-sm font-medium transition-colors duration-200",
+      isFitted && "flex-1 text-center",
+      isDisabled && "opacity-50 cursor-not-allowed",
+      !isDisabled && "cursor-pointer hover:text-primary-600 dark:hover:text-primary-400",
+      variant === "line" && [
+        "border-b-2",
         isActive
-          ? 'border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400'
-          : 'border-transparent text-gray-500 dark:text-gray-400',
+          ? "border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400"
+          : "border-transparent text-gray-500 dark:text-gray-400",
       ],
-      variant === 'enclosed' && [
-        'border-b-2 -mb-px',
+      variant === "enclosed" && [
+        "border-b-2 -mb-px",
         isActive
-          ? 'border-primary-600 border-t border-l border-r rounded-t-lg bg-white text-primary-600 dark:bg-gray-800 dark:border-gray-700 dark:text-primary-400'
-          : 'border-transparent text-gray-500 dark:text-gray-400',
+          ? "border-primary-600 border-t border-l border-r rounded-t-lg bg-white text-primary-600 dark:bg-gray-800 dark:border-gray-700 dark:text-primary-400"
+          : "border-transparent text-gray-500 dark:text-gray-400",
       ],
-      variant === 'soft-rounded' && [
-        'rounded-md',
+      variant === "soft-rounded" && [
+        "rounded-md",
         isActive
-          ? 'bg-white text-primary-600 shadow dark:bg-gray-700 dark:text-primary-400'
-          : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700',
+          ? "bg-white text-primary-600 shadow dark:bg-gray-700 dark:text-primary-400"
+          : "text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700",
       ],
-      variant === 'solid-rounded' && [
-        'rounded-md',
+      variant === "solid-rounded" && [
+        "rounded-md",
         isActive
-          ? 'bg-primary-600 text-white dark:bg-primary-500'
-          : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700',
+          ? "bg-primary-600 text-white dark:bg-primary-500"
+          : "text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700",
       ]
     );
   };
 
   const panelClasses = twMerge(
-    'mt-4 text-gray-900 dark:text-gray-100',
-    orientation === 'vertical' && 'mt-0 ml-4'
+    "mt-4 text-gray-900 dark:text-gray-100",
+    orientation === "vertical" && "mt-0 ml-4"
   );
 
   return (

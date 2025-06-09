@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}', './src/**/*.css', './.storybook/**/*.{js,ts,jsx,tsx}'],
-  dakMode: 'class',
+  darkMode: 'class',
   theme: {
     extend: {
       gridTemplateColumns: {

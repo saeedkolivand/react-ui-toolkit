@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { NotificationContainer, useNotification } from './index';
-import { Button } from '../../base/Button/Button';
-import { ThemeProvider } from '../../../context/ThemeContext';
+import type { Meta, StoryObj } from "@storybook/react";
+import { NotificationContainer, useNotification } from "./index";
+import { Button } from "@/components";
+import { ThemeProvider } from "@/context";
 
 const meta: Meta<typeof NotificationContainer> = {
-  title: 'Feedback/Notification',
+  title: "Feedback/Notification",
   component: NotificationContainer,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   decorators: [
     Story => (
       <ThemeProvider>
@@ -30,21 +30,21 @@ const NotificationDemo = ({
   const { success, error, info, warning } = showNotification;
 
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: "flex", gap: "8px" }}>
       <Button
-        onClick={() => success('Success', 'This is a success notification')}
+        onClick={() => success("Success", "This is a success notification")}
         variant="success"
       >
         Success
       </Button>
-      <Button onClick={() => error('Error', 'This is an error notification')} variant="error">
+      <Button onClick={() => error("Error", "This is an error notification")} variant="error">
         Error
       </Button>
-      <Button onClick={() => info('Info', 'This is an info notification')} variant="info">
+      <Button onClick={() => info("Info", "This is an info notification")} variant="info">
         Info
       </Button>
       <Button
-        onClick={() => warning('Warning', 'This is a warning notification')}
+        onClick={() => warning("Warning", "This is a warning notification")}
         variant="warning"
       >
         Warning

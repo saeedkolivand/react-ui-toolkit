@@ -41,7 +41,7 @@ export const adjustPositionToViewport = (
 export const calculatePosition = (
   referenceRect: DOMRect,
   floatingRect: DOMRect,
-  placement: 'top' | 'right' | 'bottom' | 'left',
+  placement: "top" | "right" | "bottom" | "left",
   gap = 8
 ): {
   floatingPosition: { top: number; left: number };
@@ -54,28 +54,28 @@ export const calculatePosition = (
 
   // Calculate position based on placement
   switch (placement) {
-    case 'top':
+    case "top":
       top = referenceRect.top - floatingRect.height - gap;
       left = referenceRect.left + referenceRect.width / 2 - floatingRect.width / 2;
       arrowTop = floatingRect.height;
       arrowLeft = floatingRect.width / 2;
       break;
 
-    case 'bottom':
+    case "bottom":
       top = referenceRect.bottom + gap;
       left = referenceRect.left + referenceRect.width / 2 - floatingRect.width / 2;
       arrowTop = -4;
       arrowLeft = floatingRect.width / 2;
       break;
 
-    case 'left':
+    case "left":
       top = referenceRect.top + referenceRect.height / 2 - floatingRect.height / 2;
       left = referenceRect.left - floatingRect.width - gap;
       arrowTop = floatingRect.height / 2;
       arrowLeft = floatingRect.width;
       break;
 
-    case 'right':
+    case "right":
       top = referenceRect.top + referenceRect.height / 2 - floatingRect.height / 2;
       left = referenceRect.right + gap;
       arrowTop = floatingRect.height / 2;
@@ -92,9 +92,9 @@ export const calculatePosition = (
   );
 
   // Adjust arrow position if the floating element position was adjusted
-  if (placement === 'top' || placement === 'bottom') {
+  if (placement === "top" || placement === "bottom") {
     arrowLeft += left - adjustedPosition.left;
-  } else if (placement === 'left' || placement === 'right') {
+  } else if (placement === "left" || placement === "right") {
     arrowTop += top - adjustedPosition.top;
   }
 

@@ -1,26 +1,26 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Accordion } from './Accordion';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Accordion } from "./Accordion";
 
 const meta: Meta<typeof Accordion> = {
-  title: 'Navigation/Accordion',
+  title: "Navigation/Accordion",
   component: Accordion,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     items: {
-      control: 'object',
-      description: 'Array of accordion items',
+      control: "object",
+      description: "Array of accordion items",
     },
     defaultExpanded: {
-      control: 'number',
-      description: 'Index of the item to be open by default',
+      control: "number",
+      description: "Index of the item to be open by default",
     },
     allowMultiple: {
-      control: 'boolean',
-      description: 'Whether multiple items can be open at once',
+      control: "boolean",
+      description: "Whether multiple items can be open at once",
     },
   },
 };
@@ -30,19 +30,19 @@ type Story = StoryObj<typeof Accordion>;
 
 const defaultItems = [
   {
-    title: 'What is React?',
+    title: "What is React?",
     content:
-      'React is a JavaScript library for building user interfaces. It is maintained by Facebook and a community of individual developers and companies.',
+      "React is a JavaScript library for building user interfaces. It is maintained by Facebook and a community of individual developers and companies.",
   },
   {
-    title: 'What is TypeScript?',
+    title: "What is TypeScript?",
     content:
-      'TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.',
+      "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.",
   },
   {
-    title: 'What is Tailwind CSS?',
+    title: "What is Tailwind CSS?",
     content:
-      'Tailwind CSS is a utility-first CSS framework for rapidly building custom user interfaces.',
+      "Tailwind CSS is a utility-first CSS framework for rapidly building custom user interfaces.",
   },
 ];
 
@@ -70,7 +70,7 @@ export const CustomContent: Story = {
   args: {
     items: [
       {
-        title: 'Custom Styled Content',
+        title: "Custom Styled Content",
         content: (
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold mb-2">Custom Content</h3>
@@ -85,7 +85,7 @@ export const CustomContent: Story = {
         ),
       },
       {
-        title: 'Another Custom Item',
+        title: "Another Custom Item",
         content: (
           <div className="p-4 bg-gray-50 rounded-lg">
             <ul className="list-disc list-inside">
@@ -105,8 +105,8 @@ export const WithDisabledPanel: Story = {
     items: [
       ...defaultItems.slice(0, 1),
       {
-        title: 'Disabled Section',
-        content: 'This section cannot be expanded because it is disabled.',
+        title: "Disabled Section",
+        content: "This section cannot be expanded because it is disabled.",
         disabled: true,
       },
       ...defaultItems.slice(2),
@@ -152,8 +152,8 @@ export const WithRichContent: Story = {
         ),
       },
       {
-        title: 'Regular Section',
-        content: 'This is a regular section for comparison.',
+        title: "Regular Section",
+        content: "This is a regular section for comparison.",
       },
     ],
   },
@@ -163,7 +163,7 @@ export const WithLongContent: Story = {
   args: {
     items: [
       {
-        title: 'Long Content Section',
+        title: "Long Content Section",
         content: (
           <div>
             {Array.from({ length: 5 }).map((_, i) => (

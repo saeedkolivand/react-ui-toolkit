@@ -1,8 +1,8 @@
-import React from 'react';
-import { twMerge } from 'tailwind-merge';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createPortal } from 'react-dom';
-import { Option as OptionComponent } from './Option';
+import React from "react";
+import { twMerge } from "tailwind-merge";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import { Option as OptionComponent } from "./Option";
 
 export interface SelectOption {
   value: string;
@@ -10,11 +10,11 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size"> {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options?: SelectOption[];
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   error?: boolean;
   errorMessage?: string;
   label?: string;
@@ -30,14 +30,14 @@ export function Select({
   value,
   onChange,
   options,
-  size = 'md',
+  size = "md",
   error = false,
   errorMessage,
   label,
   disabled = false,
   className,
   children,
-  placeholder = 'Select an option',
+  placeholder = "Select an option",
   name,
   required,
   ...props
@@ -48,26 +48,26 @@ export function Select({
   const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0, width: 0 });
 
   const baseClasses =
-    'block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none bg-white dark:bg-gray-800 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700';
+    "block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none bg-white dark:bg-gray-800 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700";
 
   const sizeClasses = {
-    sm: 'text-sm px-2 py-1.5',
-    md: 'text-base px-3 py-2',
-    lg: 'text-lg px-4 py-3',
+    sm: "text-sm px-2 py-1.5",
+    md: "text-base px-3 py-2",
+    lg: "text-lg px-4 py-3",
   };
 
   const stateClasses = {
     default:
-      'border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0 dark:border-gray-600 dark:hover:border-gray-500',
+      "border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0 dark:border-gray-600 dark:hover:border-gray-500",
     error:
-      'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-0 dark:border-red-400 dark:hover:border-red-300',
+      "border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-0 dark:border-red-400 dark:hover:border-red-300",
   };
 
   const selectClasses = twMerge(
     baseClasses,
     sizeClasses[size],
     error ? stateClasses.error : stateClasses.default,
-    'pr-10', // Space for the custom dropdown indicator
+    "pr-10", // Space for the custom dropdown indicator
     className
   );
 
@@ -78,8 +78,8 @@ export function Select({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   React.useEffect(() => {
@@ -108,8 +108,8 @@ export function Select({
             top: dropdownPosition.top,
             left: dropdownPosition.left,
             width: dropdownPosition.width,
-            maxHeight: '200px',
-            overflowY: 'auto',
+            maxHeight: "200px",
+            overflowY: "auto",
           }}
           role="listbox"
           aria-label="Select options"
@@ -121,8 +121,8 @@ export function Select({
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2, delay: index * 0.05 }}
               className={`px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                option.value === value ? 'bg-gray-100 dark:bg-gray-700' : ''
-              } ${option.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                option.value === value ? "bg-gray-100 dark:bg-gray-700" : ""
+              } ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={() => {
                 if (!option.disabled) {
                   onChange({
@@ -164,17 +164,17 @@ export function Select({
   const { onClick, onFocus, onBlur, ...divProps } = props as any;
 
   const buttonClasses = twMerge(
-    'block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none',
-    'bg-white dark:bg-gray-800',
-    'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700',
-    'text-base px-3 py-2',
-    'border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0',
-    'dark:border-gray-600 dark:hover:border-gray-500',
-    'pr-10',
+    "block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none",
+    "bg-white dark:bg-gray-800",
+    "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700",
+    "text-base px-3 py-2",
+    "border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0",
+    "dark:border-gray-600 dark:hover:border-gray-500",
+    "pr-10",
     className
   );
 
-  const ariaLabel = label || 'Select an option';
+  const ariaLabel = label || "Select an option";
 
   return (
     <div className="relative" ref={selectRef}>
@@ -199,7 +199,7 @@ export function Select({
             aria-controls="select-options"
             aria-label={ariaLabel}
             disabled={disabled}
-            aria-invalid={error ? 'true' : 'false'}
+            aria-invalid={error ? "true" : "false"}
             aria-describedby={error && errorMessage ? `${props.id}-error` : undefined}
             value={selectedOption?.label || placeholder}
             name={name}

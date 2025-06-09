@@ -1,44 +1,44 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from './Input';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Input } from "./Input";
 
 const meta: Meta<typeof Input> = {
-  title: 'Base/Input',
+  title: "Base/Input",
   component: Input,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'filled', 'outline'],
-      description: 'The visual style of the input',
+      control: "select",
+      options: ["default", "filled", "outline"],
+      description: "The visual style of the input",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The size of the input',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The size of the input",
     },
     error: {
-      control: 'boolean',
-      description: 'Whether the input is in an error state',
+      control: "boolean",
+      description: "Whether the input is in an error state",
     },
     errorMessage: {
-      control: 'text',
-      description: 'Error message to display when error is true',
+      control: "text",
+      description: "Error message to display when error is true",
     },
     label: {
-      control: 'text',
-      description: 'Label text for the input',
+      control: "text",
+      description: "Label text for the input",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the input is disabled',
+      control: "boolean",
+      description: "Whether the input is disabled",
     },
     placeholder: {
-      control: 'text',
-      description: 'Placeholder text for the input',
+      control: "text",
+      description: "Placeholder text for the input",
     },
   },
 };
@@ -48,57 +48,57 @@ type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
   args: {
-    placeholder: 'Enter text...',
+    placeholder: "Enter text...",
   },
 };
 
 export const WithLabel: Story = {
   args: {
-    label: 'Username',
-    placeholder: 'Enter your username',
+    label: "Username",
+    placeholder: "Enter your username",
   },
 };
 
 export const Filled: Story = {
   args: {
-    variant: 'filled',
-    placeholder: 'Filled input...',
+    variant: "filled",
+    placeholder: "Filled input...",
   },
 };
 
 export const Outline: Story = {
   args: {
-    variant: 'outline',
-    placeholder: 'Outline input...',
+    variant: "outline",
+    placeholder: "Outline input...",
   },
 };
 
 export const Small: Story = {
   args: {
-    size: 'sm',
-    placeholder: 'Small input...',
+    size: "sm",
+    placeholder: "Small input...",
   },
 };
 
 export const Large: Story = {
   args: {
-    size: 'lg',
-    placeholder: 'Large input...',
+    size: "lg",
+    placeholder: "Large input...",
   },
 };
 
 export const Error: Story = {
   args: {
     error: true,
-    errorMessage: 'This field is required',
-    placeholder: 'Error state...',
+    errorMessage: "This field is required",
+    placeholder: "Error state...",
   },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    placeholder: 'Disabled input...',
+    placeholder: "Disabled input...",
   },
 };
 

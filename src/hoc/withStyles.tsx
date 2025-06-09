@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 
 /**
  * Injects the component library styles automatically
@@ -10,18 +10,18 @@ export const withStyles = <P extends object>(Component: React.ComponentType<P>):
     useEffect(() => {
       // We only need to load the styles once, and this ensures they're loaded
       // when the component mounts
-      const styleId = 'react-ui-toolkit-styles';
+      const styleId = "react-ui-toolkit-styles";
 
       if (!document.getElementById(styleId)) {
         try {
           // Dynamically import the CSS
-          const link = document.createElement('link');
+          const link = document.createElement("link");
           link.id = styleId;
-          link.rel = 'stylesheet';
-          link.href = '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+          link.rel = "stylesheet";
+          link.href = "@saeedkolivand/react-ui-toolkit/dist/styles.css";
           document.head.appendChild(link);
         } catch (error) {
-          console.warn('Failed to load React UI Toolkit styles:', error);
+          console.warn("Failed to load React UI Toolkit styles:", error);
         }
       }
     }, []);
@@ -29,7 +29,7 @@ export const withStyles = <P extends object>(Component: React.ComponentType<P>):
     return <Component {...props} />;
   };
 
-  WithStyles.displayName = `withStyles(${Component.displayName || Component.name || 'Component'})`;
+  WithStyles.displayName = `withStyles(${Component.displayName || Component.name || "Component"})`;
 
   return WithStyles;
 };

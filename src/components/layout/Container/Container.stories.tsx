@@ -1,27 +1,27 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Container } from './Container';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Container } from "./Container";
 
 const meta: Meta<typeof Container> = {
-  title: 'Layout/Container',
+  title: "Layout/Container",
   component: Container,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     maxWidth: {
-      control: 'select',
-      options: ['sm', 'md', 'lg', 'xl', '2xl', 'full', 'none'],
-      description: 'Maximum width of the container',
+      control: "select",
+      options: ["sm", "md", "lg", "xl", "2xl", "full", "none"],
+      description: "Maximum width of the container",
     },
     padding: {
-      control: 'boolean',
-      description: 'Whether to add padding to the container',
+      control: "boolean",
+      description: "Whether to add padding to the container",
     },
     center: {
-      control: 'boolean',
-      description: 'Whether the container should be centered',
+      control: "boolean",
+      description: "Whether the container should be centered",
     },
   },
 };
@@ -31,24 +31,24 @@ type Story = StoryObj<typeof Container>;
 
 const ContentBox = ({
   children,
-  color = 'gray',
+  color = "gray",
 }: {
   children: React.ReactNode;
   color?: string;
 }) => (
   <div
     className={`p-6 rounded-lg text-white ${
-      color === 'blue'
-        ? 'bg-blue-500'
-        : color === 'green'
-        ? 'bg-green-500'
-        : color === 'purple'
-        ? 'bg-purple-500'
-        : color === 'orange'
-        ? 'bg-orange-500'
-        : color === 'pink'
-        ? 'bg-pink-500'
-        : 'bg-gray-500'
+      color === "blue"
+        ? "bg-blue-500"
+        : color === "green"
+        ? "bg-green-500"
+        : color === "purple"
+        ? "bg-purple-500"
+        : color === "orange"
+        ? "bg-orange-500"
+        : color === "pink"
+        ? "bg-pink-500"
+        : "bg-gray-500"
     }`}
   >
     {children}
@@ -71,7 +71,7 @@ export const Default: Story = {
 
 export const Small: Story = {
   args: {
-    maxWidth: 'sm',
+    maxWidth: "sm",
     children: (
       <Section>
         <ContentBox color="blue">Small container (max-width: 640px)</ContentBox>
@@ -82,7 +82,7 @@ export const Small: Story = {
 
 export const Medium: Story = {
   args: {
-    maxWidth: 'md',
+    maxWidth: "md",
     children: (
       <Section>
         <ContentBox color="green">Medium container (max-width: 768px)</ContentBox>
@@ -93,7 +93,7 @@ export const Medium: Story = {
 
 export const Large: Story = {
   args: {
-    maxWidth: 'lg',
+    maxWidth: "lg",
     children: (
       <Section>
         <ContentBox color="purple">Large container (max-width: 1024px)</ContentBox>
@@ -104,7 +104,7 @@ export const Large: Story = {
 
 export const ExtraLarge: Story = {
   args: {
-    maxWidth: 'xl',
+    maxWidth: "xl",
     children: (
       <Section>
         <ContentBox color="orange">Extra large container (max-width: 1280px)</ContentBox>
@@ -115,7 +115,7 @@ export const ExtraLarge: Story = {
 
 export const TwoExtraLarge: Story = {
   args: {
-    maxWidth: '2xl',
+    maxWidth: "2xl",
     children: (
       <Section>
         <ContentBox color="pink">Two extra large container (max-width: 1536px)</ContentBox>
@@ -126,7 +126,7 @@ export const TwoExtraLarge: Story = {
 
 export const FullWidth: Story = {
   args: {
-    maxWidth: 'full',
+    maxWidth: "full",
     children: (
       <Section>
         <ContentBox color="blue">Full width container</ContentBox>
