@@ -1,18 +1,13 @@
-import React from "react";
-import Head from "next/head";
-import { Button, Card, ThemeToggle } from "@saeedkolivand/react-ui-toolkit";
+import { Card } from "@saeedkolivand/react-ui-toolkit";
+import ThemeProvider from "./ThemeProvider";
+import ButtonsSection from "../components/ButtonsSection";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col p-4">
-      <Head>
-        <title>React UI Toolkit - Next.js Example</title>
-        <meta name="description" content="Next.js example using React UI Toolkit" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <header className="w-full max-w-4xl mx-auto flex justify-end mb-8">
-        <ThemeToggle />
+        <ThemeProvider />
       </header>
 
       <main className="flex-1 flex items-center justify-center">
@@ -25,21 +20,16 @@ export default function Home() {
           <Card.Body>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               This example demonstrates how to use React UI Toolkit components in a Next.js
-              application. The StylesProviderSSR component is used in _app.jsx for proper
-              server-side rendering support.
+              application with the App Router. The StylesProviderSSR component is used in the root
+              layout for proper server-side rendering support.
             </p>
 
-            <div className="space-y-2">
-              <Button variant="primary" fullWidth>
-                Primary Action
-              </Button>
-              <Button variant="outline" fullWidth>
-                Secondary Action
-              </Button>
-            </div>
+            <ButtonsSection />
           </Card.Body>
         </Card>
       </main>
+
+      <Footer />
     </div>
   );
 }

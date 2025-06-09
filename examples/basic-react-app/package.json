@@ -1,0 +1,21 @@
+{
+  "name": "basic-react-app-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@saeedkolivand/react-ui-toolkit": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.5.4",
+    "tailwindcss": "^3.3.0",
+    "vite": "^4.3.9",
+    "@vitejs/plugin-react": "^4.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
