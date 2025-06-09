@@ -5,7 +5,7 @@ import postcss from 'rollup-plugin-postcss';
 import dts from 'rollup-plugin-dts';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
-import tailwindcss from 'tailwindcss';
+import tailwindcss from '@tailwindcss/postcss';
 import { readFileSync } from 'fs';
 import path from 'path';
 
@@ -42,7 +42,7 @@ export default [
         minimize: true,
         inject: false,
         extensions: ['.css'],
-        include: ['**/*.css'], // This will include your global.css
+        include: ['**/*.css'], // This will include your index.css
         modules: false,
         autoModules: false,
         writeDefinitions: false,

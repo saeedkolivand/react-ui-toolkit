@@ -2,7 +2,7 @@ import React from 'react';
 
 // Import the CSS directly, which works with bundlers like webpack
 // This approach is more SSR-friendly
-import '../styles/direct-import.css';
+import '../styles/index.css';
 
 /**
  * A version of the styles HOC that's compatible with SSR frameworks like Next.js

@@ -1,7 +1,6 @@
 // Import global styles
-import './styles/global.css';
+import './styles/index.css';
 // Import test component styles
-import './styles/test-components.css';
 
 // Export all components through the barrel files
 export * from './components';
