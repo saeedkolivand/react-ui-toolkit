@@ -6,7 +6,13 @@ const { exit } = require("process");
 // Get command line arguments
 const args = process.argv.slice(2);
 const versionType = args[0];
-const commitMessage = args[1] || "fix: button visibility and CSS loading issues";
+const commitMessage = args[1];
+
+if (!commitMessage) {
+  console.error("Error: Please provide a commit message");
+  console.error('Usage: node scripts/release.js patch|minor|major ["commit message"]');
+  exit(1);
+}
 
 if (!versionType || !["patch", "minor", "major"].includes(versionType)) {
   console.error("Error: Please provide a valid version argument (patch, minor, or major)");
