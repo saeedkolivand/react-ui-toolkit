@@ -116,11 +116,6 @@ npm run build
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
-
-MIT
-A modern React UI toolkit with TypeScript support.
-
 ## Installation
 
 ```bash
@@ -201,15 +196,6 @@ function App() {
   );
 }
 ```
-
-## Components
-
-The library includes the following component categories:
-
-- Base Components (Button, Input, Textarea, Select, Checkbox, Radio, Switch)
-- Layout Components (Container, Row, Col)
-- Feedback Components (Alert, Badge, Progress, Spinner, Avatar)
-- Navigation Components (Modal, Drawer, Dropdown, Accordion, Tabs)
 
 ## License
 
