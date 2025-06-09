@@ -16,6 +16,9 @@ const config: StorybookConfig = {
     '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
+  docs: {
+    defaultName: 'Introduction',
+  },
   addons: ['@storybook/addon-onboarding', '@storybook/addon-docs'],
   framework: {
     name: '@storybook/react-vite',

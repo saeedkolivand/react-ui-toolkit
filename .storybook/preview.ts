@@ -15,7 +15,6 @@ const preview: Preview = {
         order: [
           'Introduction',
           'Getting Started',
-          'Theme',
           'Components',
           ['Base', 
             [
@@ -50,6 +49,7 @@ const preview: Preview = {
           'Hooks',
           'Utilities',
           'Examples',
+          'Theme',
           '*'
         ],
       },
