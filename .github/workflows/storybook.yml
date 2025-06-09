@@ -1,0 +1,35 @@
+name: Deploy Storybook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # or your default branch
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  deploy-storybook:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push to gh-pages branch
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 🔧
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # Use a compatible Node.js version
+          cache: 'npm'
+
+      - name: Install dependencies 📦
+        run: npm ci
+
+      - name: Build Storybook 📚
+        run: npm run build-storybook
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: storybook-static # Default output folder for Storybook build
+          branch: gh-pages # The branch the action should deploy to

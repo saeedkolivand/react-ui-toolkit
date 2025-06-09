@@ -1,0 +1,44 @@
+name: Manual Storybook Deployment
+
+# This workflow allows you to manually trigger a Storybook deployment
+# without having to push to the main branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'github-pages'
+        type: choice
+        options:
+          - github-pages
+
+jobs:
+  deploy-storybook:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 🔧
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies 📦
+        run: npm ci
+
+      - name: Build Storybook 📚
+        run: npm run build-storybook
+        env:
+          STORYBOOK_BASE_PATH: /react-ui-toolkit/
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: storybook-static
+          branch: gh-pages

@@ -28,7 +28,8 @@
     "release": "npm run prepublishOnly && npm publish --access public",
     "release:patch": "node scripts/release.js patch",
     "release:minor": "node scripts/release.js minor",
-    "release:major": "node scripts/release.js major"
+    "release:major": "node scripts/release.js major",
+    "deploy-storybook": "STORYBOOK_BASE_PATH=/react-ui-toolkit/ npm run build-storybook && gh-pages -d storybook-static"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
@@ -59,6 +60,7 @@
     "@storybook/addon-onboarding": "^9.0.6",
     "@storybook/mdx2-csf": "^1.1.0",
     "@storybook/react-vite": "^9.0.6",
+    "gh-pages": "^6.3.0",
     "@tailwindcss/postcss": "^4.1.8",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
