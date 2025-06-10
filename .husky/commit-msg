@@ -26,6 +26,9 @@ npm run lint:fix
 # Run linting and formatting through lint-staged
 npx lint-staged
 
+# Run tests
+npm run test
+
 # Check if there are new unstaged changes after lint-staged
 finalChanges=$(hasUnstagedChanges)
 

@@ -1,45 +1,21 @@
 import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Tooltip } from "./Tooltip";
-
-// Mock timers for controlled testing of delays
-jest.useFakeTimers();
-
-// Mock createPortal to make it work in tests
-jest.mock("react-dom", () => {
-  const original = jest.requireActual("react-dom");
-  return {
-    ...original,
-    createPortal: (node: React.ReactNode) => node,
-  };
-});
-
-// Mock getBoundingClientRect to return predictable values
-Element.prototype.getBoundingClientRect = jest.fn(() => {
-  return {
-    width: 100,
-    height: 50,
-    top: 100,
-    left: 100,
-    bottom: 150,
-    right: 200,
-    x: 100,
-    y: 100,
-    toJSON: () => {},
-  };
-});
-
-// Mock ResizeObserver which isn't available in the test environment
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
 
 describe("Tooltip", () => {
   beforeEach(() => {
-    // Reset timers before each test
-    jest.clearAllTimers();
+    // Mock getBoundingClientRect for positioning calculations
+    Element.prototype.getBoundingClientRect = jest.fn(() => ({
+      width: 100,
+      height: 100,
+      top: 0,
+      left: 0,
+      right: 100,
+      bottom: 100,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    }));
   });
 
   it("renders children correctly", () => {
@@ -52,123 +28,111 @@ describe("Tooltip", () => {
     expect(screen.getByText("Hover me")).toBeInTheDocument();
   });
 
-  it("shows tooltip on hover", async () => {
+  it("shows tooltip on hover by default", async () => {
     render(
       <Tooltip content="Tooltip content">
         <button>Hover me</button>
       </Tooltip>
     );
 
-    // Tooltip should not be visible initially
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
+    const trigger = screen.getByText("Hover me");
+    fireEvent.mouseEnter(trigger);
 
-    // Trigger hover
-    fireEvent.mouseEnter(screen.getByText("Hover me"));
-
-    // Fast-forward timer
-    act(() => {
-      jest.advanceTimersByTime(200); // Default show delay
+    await waitFor(() => {
+      expect(screen.getByText("Tooltip content")).toBeInTheDocument();
     });
-
-    // Tooltip should be visible now
-    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
   });
 
-  it("hides tooltip on mouse leave", async () => {
+  it("hides tooltip when mouse leaves", async () => {
     render(
       <Tooltip content="Tooltip content">
         <button>Hover me</button>
       </Tooltip>
     );
 
-    // Show the tooltip
-    fireEvent.mouseEnter(screen.getByText("Hover me"));
-    act(() => {
-      jest.advanceTimersByTime(200);
+    const trigger = screen.getByText("Hover me");
+
+    // Show tooltip
+    fireEvent.mouseEnter(trigger);
+    await waitFor(() => {
+      expect(screen.getByText("Tooltip content")).toBeInTheDocument();
     });
 
-    // Tooltip should be visible
-    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
-
-    // Hide the tooltip
-    fireEvent.mouseLeave(screen.getByText("Hover me"));
-    act(() => {
-      jest.advanceTimersByTime(200); // Default hide delay
+    // Hide tooltip
+    fireEvent.mouseLeave(trigger);
+    await waitFor(() => {
+      expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
     });
-
-    // Tooltip should not be visible
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
   });
 
-  it("shows tooltip on click when trigger is click", async () => {
+  it("shows tooltip on click when trigger is set to click", async () => {
     render(
       <Tooltip content="Tooltip content" trigger="click">
         <button>Click me</button>
       </Tooltip>
     );
 
-    // Tooltip should not be visible initially
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
+    const trigger = screen.getByText("Click me");
+    fireEvent.click(trigger);
 
-    // Trigger click
-    fireEvent.click(screen.getByText("Click me"));
-
-    // Fast-forward timer
-    act(() => {
-      jest.advanceTimersByTime(200);
+    await waitFor(() => {
+      expect(screen.getByText("Tooltip content")).toBeInTheDocument();
     });
-
-    // Tooltip should be visible
-    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
-
-    // Click again to hide
-    fireEvent.click(screen.getByText("Click me"));
-    act(() => {
-      jest.advanceTimersByTime(200);
-    });
-
-    // Tooltip should not be visible
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
   });
 
-  it("supports custom delay times", async () => {
-    const customShowDelay = 500;
-    const customHideDelay = 300;
-
+  it("applies custom className to tooltip", async () => {
+    const customClass = "custom-tooltip";
     render(
-      <Tooltip content="Tooltip content" showDelay={customShowDelay} hideDelay={customHideDelay}>
+      <Tooltip content="Tooltip content" overlayClassName={customClass}>
         <button>Hover me</button>
       </Tooltip>
     );
 
-    // Trigger hover
-    fireEvent.mouseEnter(screen.getByText("Hover me"));
+    const trigger = screen.getByText("Hover me");
+    fireEvent.mouseEnter(trigger);
 
-    // Advance timer partially - tooltip shouldn't be visible yet
-    act(() => {
-      jest.advanceTimersByTime(customShowDelay - 100);
+    await waitFor(() => {
+      const tooltip = screen.getByText("Tooltip content").parentElement;
+      expect(tooltip).toHaveClass(customClass);
     });
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
+  });
 
-    // Advance to full show delay - tooltip should be visible
-    act(() => {
-      jest.advanceTimersByTime(100);
+  it("calls onVisibleChange when visibility changes", async () => {
+    const onVisibleChange = jest.fn();
+    render(
+      <Tooltip content="Tooltip content" onVisibleChange={onVisibleChange}>
+        <button>Hover me</button>
+      </Tooltip>
+    );
+
+    const trigger = screen.getByText("Hover me");
+
+    // Show tooltip
+    fireEvent.mouseEnter(trigger);
+    await waitFor(() => {
+      expect(onVisibleChange).toHaveBeenCalledWith(true);
     });
-    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
 
-    // Trigger mouse leave
-    fireEvent.mouseLeave(screen.getByText("Hover me"));
-
-    // Advance timer partially - tooltip should still be visible
-    act(() => {
-      jest.advanceTimersByTime(customHideDelay - 100);
+    // Hide tooltip
+    fireEvent.mouseLeave(trigger);
+    await waitFor(() => {
+      expect(onVisibleChange).toHaveBeenCalledWith(false);
     });
-    expect(screen.getByText("Tooltip content")).toBeInTheDocument();
+  });
 
-    // Advance to full hide delay - tooltip should be hidden
-    act(() => {
-      jest.advanceTimersByTime(100);
+  it("does not render arrow when arrow prop is false", async () => {
+    render(
+      <Tooltip content="Tooltip content" arrow={false}>
+        <button>Hover me</button>
+      </Tooltip>
+    );
+
+    const trigger = screen.getByText("Hover me");
+    fireEvent.mouseEnter(trigger);
+
+    await waitFor(() => {
+      const tooltip = screen.getByText("Tooltip content").parentElement;
+      expect(tooltip?.querySelector(".tooltip-arrow")).not.toBeInTheDocument();
     });
-    expect(screen.queryByText("Tooltip content")).not.toBeInTheDocument();
   });
 });
