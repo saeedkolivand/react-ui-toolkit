@@ -10,7 +10,7 @@ on:
       should_release:
         description: 'Whether to bump version and create a GitHub release'
         required: true
-        default: false
+        default: true
         type: boolean
       version:
         description: 'Version to release (patch, minor, major)'
