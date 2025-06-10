@@ -96,7 +96,7 @@ For detailed documentation, see the following resources:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/react-ui-toolkit.git
+git clone https://github.com/saeedkolivand/react-ui-toolkit.git
 cd react-ui-toolkit
 
 # Install dependencies
