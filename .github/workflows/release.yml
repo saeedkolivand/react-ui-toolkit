@@ -16,6 +16,11 @@ on:
         description: 'Commit message'
         required: true
         default: 'fix: release bug fixes'
+      should_release:
+        description: 'Whether to bump version and create a GitHub release'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   release:
@@ -47,11 +52,26 @@ jobs:
         run: npm run build
 
       - name: Bump version and publish
+        if: ${{ github.event.inputs.should_release }}
+        id: bump_version
         run: |
           npm version ${{ github.event.inputs.version }} -m "chore(release): bump version to %s"
           npm publish --access public
+          echo "new_version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes
+        if: ${{ github.event.inputs.should_release }}
         run: git push --follow-tags
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.should_release }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump_version.outputs.new_version }}
+          release_name: Release v${{ steps.bump_version.outputs.new_version }}
+          draft: false
+          prerelease: false
