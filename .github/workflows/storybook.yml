@@ -6,6 +6,26 @@ on:
       - main # or your default branch
   # Allow manual trigger
   workflow_dispatch:
+    inputs:
+      should_release:
+        description: 'Whether to bump version and create a GitHub release'
+        required: true
+        default: false
+        type: boolean
+      version:
+        description: 'Version to release (patch, minor, major)'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      message:
+        description: 'Commit message'
+        required: true
+        default: 'chore(release): bump version to %s'
+        type: string
 
 jobs:
   deploy-storybook:
@@ -36,3 +56,34 @@ jobs:
         with:
           folder: storybook-static # Default output folder for Storybook build
           branch: gh-pages # The branch the action should deploy to
+
+      - name: Configure Git
+        if: ${{ github.event.inputs.should_release }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Bump version and publish
+        if: ${{ github.event.inputs.should_release }}
+        id: bump_version
+        run: |
+          npm version ${{ github.event.inputs.version }} -m "chore(release): bump version to %s"
+          npm publish --access public
+          echo "new_version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push changes
+        if: ${{ github.event.inputs.should_release }}
+        run: git push --follow-tags
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.should_release }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump_version.outputs.new_version }}
+          release_name: Release v${{ steps.bump_version.outputs.new_version }}
+          draft: false
+          prerelease: false
