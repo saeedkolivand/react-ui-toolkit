@@ -15,7 +15,7 @@ on:
       message:
         description: 'Commit message'
         required: true
-        default: 'fix: release bug fixes'
+        default: 'chore: new release'
       should_release:
         description: 'Whether to bump version and create a GitHub release'
         required: true
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
@@ -52,7 +52,6 @@ jobs:
         run: npm run build
 
       - name: Bump version and publish
-        if: ${{ github.event.inputs.should_release }}
         id: bump_version
         run: |
           npm version ${{ github.event.inputs.version }} -m "chore(release): bump version to %s"
