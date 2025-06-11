@@ -110,9 +110,10 @@
     "ui",
     "components",
     "typescript",
-    "tailwind"
+    "tailwind",
+    "storybook"
   ],
-  "author": "",
+  "author": "Saeed Kolivand",
   "license": "MIT",
   "overrides": {
     "storybook": "$storybook"
