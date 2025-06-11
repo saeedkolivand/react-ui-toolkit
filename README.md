@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/assets/images/banner.png" alt="React UI Toolkit Banner" width="100%">
+  <img src="https://github.com/saeedkolivand/react-ui-toolkit/raw/main/assets/images/banner.png" alt="React UI Toolkit Banner" width="100%">
 </p>
 
 ## Features
