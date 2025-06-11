@@ -1,15 +1,15 @@
-# React UI Toolkit
-
-A modern, accessible, and customizable React component library built with TypeScript and Tailwind CSS.
+<p align="center">
+  <img src="/assets/images/banner.png" alt="React UI Toolkit Banner" width="100%">
+</p>
 
 ## Features
 
-- **Modern Design** - Clean and professional component designs
-- **TypeScript Support** - Full type definitions for all components
-- **Accessibility** - WCAG 2.1 compliant components
-- **Customizable** - Easily customize using Tailwind CSS
-- **Dark Mode** - Built-in dark mode support
-- **Responsive** - Mobile-first design approach
+- **Modern Design** - Clean and professional component designs  
+- **TypeScript Support** - Full type definitions for all components  
+- **Accessibility** - WCAG 2.1 compliant components  
+- **Customizable** - Easily customize using Tailwind CSS  
+- **Dark Mode** - Built-in dark mode support  
+- **Responsive** - Mobile-first design approach  
 
 ## Installation
 
@@ -17,7 +17,7 @@ A modern, accessible, and customizable React component library built with TypeSc
 npm install @saeedkolivand/react-ui-toolkit
 # or
 yarn add @saeedkolivand/react-ui-toolkit
-```
+````
 
 ## Quick Start
 
@@ -44,53 +44,53 @@ export default App;
 
 For detailed documentation, see the following resources:
 
-- [Usage Guide](./docs/usage-guide.md)
-- [API Reference](./docs/api-reference.md)
-- [Examples](./examples/README.md)
+* [Usage Guide](./docs/usage-guide.md)
+* [API Reference](./docs/api-reference.md)
+* [Examples](./examples/README.md)
 
 ## Available Components
 
 ### Base Components
 
-- Button
-- Input
-- Textarea
-- Select
-- Checkbox
-- Radio
-- Switch
-- Tooltip
-- Tag
-- Icon
-- Divider
+* Button
+* Input
+* Textarea
+* Select
+* Checkbox
+* Radio
+* Switch
+* Tooltip
+* Tag
+* Icon
+* Divider
 
 ### Layout Components
 
-- Container
-- Row
-- Col
+* Container
+* Row
+* Col
 
 ### Feedback Components
 
-- Card
-- Alert
-- Badge
-- Avatar
-- Spinner
-- Progress
-- Notification
+* Card
+* Alert
+* Badge
+* Avatar
+* Spinner
+* Progress
+* Notification
 
 ### Navigation Components
 
-- Tabs
-- Modal
-- Drawer
-- Dropdown
-- Accordion
+* Tabs
+* Modal
+* Drawer
+* Dropdown
+* Accordion
 
 ### Theme Components
 
-- ThemeToggle
+* ThemeToggle
 
 ## Development
 
@@ -116,31 +116,19 @@ npm run build
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Installation
-
-```bash
-npm install @saeedkolivand/react-ui-toolkit
-# or
-yarn add @saeedkolivand/react-ui-toolkit
-```
-
 ## Usage
 
 ### Importing Styles
 
-You have two options for importing styles:
+You have three options for importing styles:
 
 #### Option 1: Direct CSS Import
 
-Import the CSS file in your application entry point (e.g., `index.js` or `App.js`):
-
-```javascript
+```js
 import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 ```
 
-#### Option 2: Use the StylesProvider (Recommended)
-
-Wrap your application with the StylesProvider which will automatically load the styles:
+#### Option 2: StylesProvider (Recommended)
 
 ```jsx
 import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
@@ -154,7 +142,7 @@ function App() {
 }
 ```
 
-For Next.js or other SSR frameworks, use the SSR-compatible provider:
+#### Option 3: SSR-Compatible Provider (Next.js)
 
 ```jsx
 import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
@@ -168,18 +156,16 @@ function App() {
 }
 ```
 
-#### Option 3: Higher-Order Component
-
-Alternatively, you can use the withStyles HOC to wrap your root component:
+#### Option 4: Higher-Order Component
 
 ```jsx
-import { withStyles } from "@saeedkolivand/react-ui-toolkit";
+import { withStylesProvider } from "@saeedkolivand/react-ui-toolkit";
 
 function YourApp() {
   return <div>Your application content</div>;
 }
 
-export default withStyles(YourApp);
+export default withStylesProvider(YourApp);
 ```
 
 ### Using Components
@@ -197,10 +183,6 @@ function App() {
 }
 ```
 
-## License
-
-MIT
-
 ### Development Workflow
 
 1. Create a feature branch
@@ -211,13 +193,13 @@ MIT
 
 ### Pre-commit Hooks
 
-This project uses Husky for pre-commit hooks. Before each commit, it will:
+Before each commit, the following will run automatically:
 
-- Check TypeScript types
-- Run ESLint
-- Run Prettier
-- Run tests
-- Build the project
+* TypeScript type checking
+* ESLint
+* Prettier
+* Tests
+* Project build
 
 ## License
 
