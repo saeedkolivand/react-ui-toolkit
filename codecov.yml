@@ -1,0 +1,40 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%    # Minimum coverage target for the entire project
+        threshold: 1%  # Allow 1% deviation from target
+    patch:
+      default:
+        target: 80%    # Minimum coverage target for new code
+        threshold: 1%  # Allow 1% deviation from target
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "**/*.test.tsx"
+  - "**/*.test.ts"
+  - "**/*.stories.tsx"
+  - "**/*.stories.ts"
+  - "**/__tests__/**"
+  - "**/__mocks__/**"
+  - "**/coverage/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/node_modules/**"
+  - "**/.storybook/**"
+  - "**/stories/**"
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+github_checks:
+  annotations: true 
