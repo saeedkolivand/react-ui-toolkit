@@ -14,18 +14,6 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@saeedkolivand/react-ui-toolkit">
-    <img src="https://img.shields.io/npm/v/@saeedkolivand/react-ui-toolkit.svg" alt="NPM Version" />
-  </a>
-  <a href="https://github.com/saeedkolivand/react-ui-toolkit/actions">
-    <img src="https://github.com/saeedkolivand/react-ui-toolkit/workflows/CI/badge.svg" alt="CI Status" />
-  </a>
-  <a href="https://codecov.io/gh/saeedkolivand/react-ui-toolkit">
-    <img src="https://codecov.io/gh/saeedkolivand/react-ui-toolkit/branch/main/graph/badge.svg" alt="Code Coverage" />
-  </a>
-</p>
-
 ## Features
 
 - **Modern Design** - Clean and professional component designs  
