@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { NotificationContainer, useNotification } from "./index";
 import { Button } from "@/components";
 import { ThemeProvider } from "@/context";
+import { NotificationProvider, useNotification } from "./NotificationProvider";
 
-const meta: Meta<typeof NotificationContainer> = {
+const meta: Meta<typeof NotificationProvider> = {
   title: "Feedback/Notification",
-  component: NotificationContainer,
+  component: NotificationProvider,
   parameters: {
     layout: "centered",
   },
@@ -13,21 +13,19 @@ const meta: Meta<typeof NotificationContainer> = {
   decorators: [
     Story => (
       <ThemeProvider>
-        <Story />
+        <NotificationProvider>
+          <Story />
+        </NotificationProvider>
       </ThemeProvider>
     ),
   ],
 };
 
 export default meta;
-type Story = StoryObj<typeof NotificationContainer>;
+type Story = StoryObj<typeof NotificationProvider>;
 
-const NotificationDemo = ({
-  showNotification,
-}: {
-  showNotification: ReturnType<typeof useNotification>;
-}) => {
-  const { success, error, info, warning } = showNotification;
+const NotificationDemo = () => {
+  const { success, error, info, warning } = useNotification();
 
   return (
     <div style={{ display: "flex", gap: "8px" }}>
@@ -54,48 +52,31 @@ const NotificationDemo = ({
 };
 
 export const Default: Story = {
-  render: () => {
-    const notification = useNotification();
-    return (
-      <>
-        <NotificationContainer
-          notifications={notification.notifications}
-          onRemove={notification.removeNotification}
-        />
-        <NotificationDemo showNotification={notification} />
-      </>
-    );
-  },
+  render: () => <NotificationDemo />,
 };
 
 export const BottomRight: Story = {
-  render: () => {
-    const notification = useNotification();
-    return (
-      <>
-        <NotificationContainer
-          position="bottom-right"
-          notifications={notification.notifications}
-          onRemove={notification.removeNotification}
-        />
-        <NotificationDemo showNotification={notification} />
-      </>
-    );
-  },
+  decorators: [
+    Story => (
+      <ThemeProvider>
+        <NotificationProvider position="bottom-right">
+          <Story />
+        </NotificationProvider>
+      </ThemeProvider>
+    ),
+  ],
+  render: () => <NotificationDemo />,
 };
 
 export const MaxCount: Story = {
-  render: () => {
-    const notification = useNotification();
-    return (
-      <>
-        <NotificationContainer
-          maxCount={2}
-          notifications={notification.notifications}
-          onRemove={notification.removeNotification}
-        />
-        <NotificationDemo showNotification={notification} />
-      </>
-    );
-  },
+  decorators: [
+    Story => (
+      <ThemeProvider>
+        <NotificationProvider maxCount={2}>
+          <Story />
+        </NotificationProvider>
+      </ThemeProvider>
+    ),
+  ],
+  render: () => <NotificationDemo />,
 };

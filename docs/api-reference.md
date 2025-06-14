@@ -56,6 +56,23 @@ import { Card } from '@saeedkolivand/react-ui-toolkit';
 - `Card.Body` - Card body section
 - `Card.Footer` - Card footer section
 
+### Notification
+
+```jsx
+import { Notification } from '@saeedkolivand/react-ui-toolkit';
+```
+
+**Props**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| type | `'success' \| 'error' \| 'warning' \| 'info'` | `'info'` | The type of notification which affects styling |
+| message | `string` | - | The main message to display (required) |
+| description | `string` | - | Optional secondary text with additional details |
+| duration | `number` | `4500` | Time in milliseconds before auto-dismissal |
+| onClose | `() => void` | - | Callback function triggered when notification closes |
+| className | `string` | - | Additional CSS class for custom styling |
+
 ## Providers
 
 ### StylesProvider
