@@ -66,7 +66,7 @@ function LoginForm() {
 }
 ```
 
-## Documentation
+[## Documentation
 
 Each component has its own detailed README file with:
 
