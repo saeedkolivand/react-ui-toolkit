@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Icon, IconName } from "./Icon";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Container, Row, Col, Input } from "@/components";
+import { ThemeProvider } from "@/context";
+import {
+  NotificationProvider,
+  useNotification,
+} from "@/components/feedback/Notification/NotificationProvider";
 
 const iconNames: IconName[] = [
   // Navigation
@@ -101,12 +106,61 @@ const iconNames: IconName[] = [
   "shoppingBag",
 ];
 
+const IconGrid = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const { success } = useNotification();
+
+  const copyToClipboard = useCallback((name: IconName) => {
+    const code = `<Icon name="${name}" />`;
+    const textArea = document.createElement("textarea");
+    textArea.value = code;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+    success("Copied!", `<Icon name="${name}" />`);
+  }, []);
+
+  const filteredIcons = iconNames.filter(name =>
+    name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <Container maxWidth="full">
+      <Col span={12} className="mb-6 mt-2 w-full">
+        <Row justify="center" spacing={4} className="flex-wrap">
+          <Input
+            placeholder="Search icons..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            variant="filled"
+            size="lg"
+            className="w-full max-w-2xl mx-auto block"
+          />
+        </Row>
+      </Col>
+      <Row justify="center" spacing={4} className="flex-wrap">
+        {filteredIcons.map(name => (
+          <Col key={name} span={2} sm={4} md={3} lg={2}>
+            <div
+              className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+              onClick={() => copyToClipboard(name)}
+            >
+              <div className="w-10 h-10 flex items-center justify-center mb-2">
+                <Icon name={name} size="lg" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">{name}</span>
+            </div>
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
+};
+
 const meta: Meta<typeof Icon> = {
   title: "Base/Icon",
   component: Icon,
-  parameters: {
-    layout: "centered",
-  },
   tags: ["autodocs"],
   argTypes: {
     name: {
@@ -124,6 +178,15 @@ const meta: Meta<typeof Icon> = {
       description: "The color of the icon",
     },
   },
+  decorators: [
+    Story => (
+      <ThemeProvider>
+        <NotificationProvider position="bottom-right" maxCount={3}>
+          <Story />
+        </NotificationProvider>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export default meta;
@@ -167,52 +230,6 @@ export const CustomIcon: Story = {
   args: {
     customIcon: <span>Custom Icon</span>,
   },
-};
-
-const IconGrid = () => {
-  const [copiedIcon, setCopiedIcon] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const copyToClipboard = async (name: IconName) => {
-    const code = `<Icon name="${name}" />`;
-    await navigator.clipboard.writeText(code);
-    setCopiedIcon(name);
-    setTimeout(() => setCopiedIcon(null), 2000);
-  };
-
-  const filteredIcons = iconNames.filter(name =>
-    name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  return (
-    <Container maxWidth="2xl" className="overflow-hidden">
-      <div className="mb-6">
-        <Input
-          placeholder="Search icons..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          variant="filled"
-          size="lg"
-        />
-      </div>
-      <Row justify="center" spacing={4} className="flex-wrap">
-        {filteredIcons.map(name => (
-          <Col key={name} span={2} sm={4} md={3} lg={2}>
-            <div
-              className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-              onClick={() => copyToClipboard(name)}
-            >
-              <div className="w-10 h-10 flex items-center justify-center mb-2">
-                <Icon name={name} size="lg" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">{name}</span>
-              {copiedIcon === name && <span className="text-xs text-green-600 mt-1">Copied!</span>}
-            </div>
-          </Col>
-        ))}
-      </Row>
-    </Container>
-  );
 };
 
 export const AllIcons: Story = {
