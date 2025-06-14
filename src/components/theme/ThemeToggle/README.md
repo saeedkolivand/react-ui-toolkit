@@ -1,8 +1,25 @@
 # ThemeToggle Component
 
-## Usage
+The ThemeToggle component provides an easy way for users to switch between light and dark themes in your application. It automatically detects the current theme, displays the appropriate toggle state, and handles theme switching with a single click.
 
-The ThemeToggle component provides an easy way to switch between light and dark themes.
+## Features
+
+- Simple, intuitive toggle between light and dark modes
+- Automatically persists user's preference in local storage
+- Respects system preference by default
+- Smooth transitions between themes
+- Accessible design with proper ARIA attributes
+- Multiple style variants and size options
+
+## Installation
+
+The ThemeToggle component is part of the React UI Toolkit and can be imported directly:
+
+```jsx
+import { ThemeToggle } from '@saeedkolivand/react-ui-toolkit';
+```
+
+## Basic Usage
 
 ```jsx
 import { ThemeToggle } from '@saeedkolivand/react-ui-toolkit';
