@@ -124,7 +124,11 @@ describe("Button Component", () => {
     });
 
     it("renders with icon on the right when specified", () => {
-      render(<Button icon="search" iconPosition="right">Search</Button>);
+      render(
+        <Button icon="search" iconPosition="right">
+          Search
+        </Button>
+      );
       const icon = screen.getByTestId("icon");
       expect(icon).toBeInTheDocument();
       expect(icon).toHaveClass("ml-2");
@@ -132,11 +136,9 @@ describe("Button Component", () => {
 
     it("renders different icons correctly", () => {
       const icons = ["search", "plus", "trash", "edit", "close"];
-      
+
       icons.forEach(iconName => {
-        const { unmount } = render(
-          <Button icon={iconName as any}>Button with {iconName}</Button>
-        );
+        const { unmount } = render(<Button icon={iconName as any}>Button with {iconName}</Button>);
         const icon = screen.getByTestId("icon");
         expect(icon).toBeInTheDocument();
         unmount();
@@ -145,19 +147,25 @@ describe("Button Component", () => {
 
     it("adjusts icon size based on button size", () => {
       const { rerender } = render(
-        <Button icon="search" size="sm">Small</Button>
+        <Button icon="search" size="sm">
+          Small
+        </Button>
       );
       let icon = screen.getByTestId("icon");
       expect(icon).toHaveClass("w-4 h-4");
 
       rerender(
-        <Button icon="search" size="md">Medium</Button>
+        <Button icon="search" size="md">
+          Medium
+        </Button>
       );
       icon = screen.getByTestId("icon");
       expect(icon).toHaveClass("w-5 h-5");
 
       rerender(
-        <Button icon="search" size="lg">Large</Button>
+        <Button icon="search" size="lg">
+          Large
+        </Button>
       );
       icon = screen.getByTestId("icon");
       expect(icon).toHaveClass("w-6 h-6");
@@ -172,7 +180,7 @@ describe("Button Component", () => {
       const button = screen.getByText("Loading");
       const loadingSpinner = button.querySelector(".animate-spin");
       const icon = screen.getByTestId("icon");
-      
+
       expect(button).toBeDisabled();
       expect(loadingSpinner).toBeInTheDocument();
       expect(icon).toBeInTheDocument();
@@ -186,7 +194,7 @@ describe("Button Component", () => {
       );
       const button = screen.getByText("Disabled");
       const icon = screen.getByTestId("icon");
-      
+
       expect(button).toBeDisabled();
       expect(icon).toBeInTheDocument();
     });

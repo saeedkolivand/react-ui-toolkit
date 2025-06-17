@@ -16,10 +16,18 @@ import { Button } from '@saeedkolivand/react-ui-toolkit';
 | size | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
 | loading | `boolean` | `false` | Shows loading spinner when true |
 | fullWidth | `boolean` | `false` | Makes button take full width of container |
-| icon | `string` | - | Icon to display in button |
+| icon | `IconName` | - | Name of the icon to display in button (uses built-in Icon component) |
 | iconPosition | `'left' \| 'right'` | `'left'` | Position of icon relative to text |
 
 Additionally, the Button component accepts all standard HTML button attributes.
+
+**Icon Usage Example**
+
+```jsx
+<Button icon="search" iconPosition="left">Search</Button>
+<Button icon="plus" variant="primary">Add New</Button>
+<Button icon="trash" variant="error" iconPosition="right">Delete</Button>
+```
 
 ### Input
 
