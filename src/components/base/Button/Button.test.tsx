@@ -114,4 +114,89 @@ describe("Button Component", () => {
     const button = screen.getByText("Full Width");
     expect(button).toHaveClass("w-full");
   });
+
+  describe("Icon functionality", () => {
+    it("renders with icon on the left by default", () => {
+      render(<Button icon="search">Search</Button>);
+      const icon = screen.getByTestId("icon");
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveClass("mr-2");
+    });
+
+    it("renders with icon on the right when specified", () => {
+      render(
+        <Button icon="search" iconPosition="right">
+          Search
+        </Button>
+      );
+      const icon = screen.getByTestId("icon");
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveClass("ml-2");
+    });
+
+    it("renders different icons correctly", () => {
+      const icons = ["search", "plus", "trash", "edit", "close"];
+
+      icons.forEach(iconName => {
+        const { unmount } = render(<Button icon={iconName as any}>Button with {iconName}</Button>);
+        const icon = screen.getByTestId("icon");
+        expect(icon).toBeInTheDocument();
+        unmount();
+      });
+    });
+
+    it("adjusts icon size based on button size", () => {
+      const { rerender } = render(
+        <Button icon="search" size="sm">
+          Small
+        </Button>
+      );
+      let icon = screen.getByTestId("icon");
+      expect(icon).toHaveClass("w-4 h-4");
+
+      rerender(
+        <Button icon="search" size="md">
+          Medium
+        </Button>
+      );
+      icon = screen.getByTestId("icon");
+      expect(icon).toHaveClass("w-5 h-5");
+
+      rerender(
+        <Button icon="search" size="lg">
+          Large
+        </Button>
+      );
+      icon = screen.getByTestId("icon");
+      expect(icon).toHaveClass("w-6 h-6");
+    });
+
+    it("maintains icon visibility in loading state", () => {
+      render(
+        <Button icon="search" loading>
+          Loading
+        </Button>
+      );
+      const button = screen.getByText("Loading");
+      const loadingSpinner = button.querySelector(".animate-spin");
+      const icon = screen.getByTestId("icon");
+
+      expect(button).toBeDisabled();
+      expect(loadingSpinner).toBeInTheDocument();
+      expect(icon).toBeInTheDocument();
+    });
+
+    it("maintains icon visibility in disabled state", () => {
+      render(
+        <Button icon="search" disabled>
+          Disabled
+        </Button>
+      );
+      const button = screen.getByText("Disabled");
+      const icon = screen.getByTestId("icon");
+
+      expect(button).toBeDisabled();
+      expect(icon).toBeInTheDocument();
+    });
+  });
 });

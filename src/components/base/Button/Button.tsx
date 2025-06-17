@@ -1,5 +1,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import { Icon, IconName } from "../Icon/Icon";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
@@ -27,9 +28,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    */
   fullWidth?: boolean;
   /**
-   * Icon to display in the button
+   * Icon name to display in the button
    */
-  icon?: string;
+  icon?: IconName;
   /**
    * Position of the icon relative to the text
    */
@@ -75,6 +76,12 @@ export const Button: React.FC<ButtonProps> = ({
     lg: "px-6 py-3 text-lg",
   };
 
+  const iconSizeMap: Record<"sm" | "md" | "lg", "sm" | "md" | "lg"> = {
+    sm: "sm",
+    md: "md",
+    lg: "lg",
+  };
+
   const classes = twMerge(
     baseClasses,
     variantClasses[variant],
@@ -89,9 +96,11 @@ export const Button: React.FC<ButtonProps> = ({
   const renderIcon = () => {
     if (!icon) return null;
     return (
-      <span data-testid="icon" className={iconPosition === "left" ? "mr-2" : "ml-2"}>
-        {icon}
-      </span>
+      <Icon
+        name={icon}
+        size={iconSizeMap[size]}
+        className={iconPosition === "left" ? "mr-2" : "ml-2"}
+      />
     );
   };
 
@@ -117,6 +126,7 @@ export const Button: React.FC<ButtonProps> = ({
               />
             </svg>
           </span>
+          {renderIcon()}
           {children}
         </>
       ) : (

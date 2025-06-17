@@ -2,7 +2,7 @@
 
 ## Usage
 
-The Button component provides a standard button with various styling options.
+The Button component provides a standard button with various styling options, including built-in icon support.
 
 ```jsx
 import { Button } from '@saeedkolivand/react-ui-toolkit';
@@ -13,6 +13,19 @@ function App() {
   );
 }
 ```
+
+## Icon Support
+
+You can add an icon to your button using the `icon` prop. The icon is rendered using the built-in `Icon` component and accepts any valid `IconName`.
+
+```jsx
+<Button icon="search">Search</Button>
+<Button icon="plus" variant="primary">Add New</Button>
+<Button icon="trash" variant="error" iconPosition="right">Delete</Button>
+```
+
+- `icon`: The name of the icon to display (see the Icon component for available names)
+- `iconPosition`: Set to 'left' (default) or 'right' to control icon placement relative to the button text
 
 ## Variants
 
