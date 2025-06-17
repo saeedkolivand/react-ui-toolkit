@@ -1,6 +1,6 @@
 {
   "name": "@saeedkolivand/react-ui-toolkit",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "A modern React UI toolkit with TypeScript support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
