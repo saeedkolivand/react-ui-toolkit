@@ -76,6 +76,12 @@ export const Button: React.FC<ButtonProps> = ({
     lg: "px-6 py-3 text-lg",
   };
 
+  const iconSizeMap: Record<"sm" | "md" | "lg", "sm" | "md" | "lg"> = {
+    sm: "sm",
+    md: "md",
+    lg: "lg",
+  };
+
   const classes = twMerge(
     baseClasses,
     variantClasses[variant],
@@ -92,7 +98,7 @@ export const Button: React.FC<ButtonProps> = ({
     return (
       <Icon
         name={icon}
-        size={size === "lg" ? "lg" : "md"}
+        size={iconSizeMap[size]}
         className={iconPosition === "left" ? "mr-2" : "ml-2"}
       />
     );
@@ -120,6 +126,7 @@ export const Button: React.FC<ButtonProps> = ({
               />
             </svg>
           </span>
+          {renderIcon()}
           {children}
         </>
       ) : (
