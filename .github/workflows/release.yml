@@ -1,8 +1,10 @@
 name: Release
 
+# Manual only. Merging to main does not publish — releases are cut on demand from
+# the Actions tab, so a refactor can land across many commits and ship as one
+# release when it is actually ready. semantic-release still derives the version
+# from every commit since the last tag, so batching costs nothing.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:

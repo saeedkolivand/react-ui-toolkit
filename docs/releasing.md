@@ -1,11 +1,13 @@
 # Release Process
 
-Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/). There is
-no manual version bump — **the version is derived from your commit messages**.
+Versioning is automated with [semantic-release](https://semantic-release.gitbook.io/) — there is no
+manual version bump, **the version is derived from your commit messages**. _When_ to release is not
+automated: merging to `main` publishes nothing.
 
-## How it works
+## Cutting a release
 
-Every push to `main` runs `.github/workflows/release.yml`, which:
+Actions → **Release** → _Run workflow_ (on `main`). That runs
+`.github/workflows/release.yml`, which:
 
 1. Runs lint, typecheck and the test suite.
 2. Reads the commits since the last git tag and decides the next version.
@@ -15,6 +17,11 @@ Every push to `main` runs `.github/workflows/release.yml`, which:
 5. Commits `CHANGELOG.md` + `package.json`, tags it, and creates the GitHub release.
 
 If no commit since the last release warrants one, nothing is published.
+
+Releases are deliberately manual so a refactor can land across many commits and ship as a single
+release when it is ready, rather than publishing a version per merge. The cost of that choice is that
+nothing reminds you — a merged fix stays unpublished until someone presses the button. Check
+`npm run release:dry` against `main` if you are unsure whether anything is pending.
 
 ## What bumps the version
 
