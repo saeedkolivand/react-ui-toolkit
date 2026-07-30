@@ -1,0 +1,50 @@
+/* Raw colour ramps. Not the public retheming API — see semantic.css for that. */
+:root {
+  --ck-color-primary-50: #f0f9ff;
+  --ck-color-primary-100: #e0f2fe;
+  --ck-color-primary-200: #bae6fd;
+  --ck-color-primary-300: #7dd3fc;
+  --ck-color-primary-400: #38bdf8;
+  --ck-color-primary-500: #0ea5e9;
+  --ck-color-primary-600: #0284c7;
+  --ck-color-primary-700: #0369a1;
+  --ck-color-primary-800: #075985;
+  --ck-color-primary-900: #0c4a6e;
+
+  /* Renamed from the old `secondary`: it is a slate ramp, and "secondary"
+     collides with the Button variant of the same name. */
+  --ck-color-neutral-50: #f8fafc;
+  --ck-color-neutral-100: #f1f5f9;
+  --ck-color-neutral-200: #e2e8f0;
+  --ck-color-neutral-300: #cbd5e1;
+  --ck-color-neutral-400: #94a3b8;
+  --ck-color-neutral-500: #64748b;
+  --ck-color-neutral-600: #475569;
+  --ck-color-neutral-700: #334155;
+  --ck-color-neutral-800: #1e293b;
+  --ck-color-neutral-900: #0f172a;
+
+  /* Status ramps. These MUST be Tailwind v4's OKLCH values, not the v3 hex:
+     v4 reissued its default palette in OKLCH, and the old hex equivalents are
+     visibly different colours. Verified in spike 0b by diffing computed styles
+     against the current library. */
+  --ck-color-green-400: oklch(79.2% 0.209 151.711);
+  --ck-color-green-500: oklch(72.3% 0.219 149.579);
+  --ck-color-green-600: oklch(62.7% 0.194 149.214);
+  --ck-color-green-700: oklch(52.7% 0.154 150.069);
+
+  --ck-color-red-400: oklch(70.4% 0.191 22.216);
+  --ck-color-red-500: oklch(63.7% 0.237 25.331);
+  --ck-color-red-600: oklch(57.7% 0.245 27.325);
+  --ck-color-red-700: oklch(50.5% 0.213 27.518);
+
+  --ck-color-yellow-400: oklch(85.2% 0.199 91.936);
+  --ck-color-yellow-500: oklch(79.5% 0.184 86.047);
+  --ck-color-yellow-600: oklch(68.1% 0.162 75.834);
+  --ck-color-yellow-700: oklch(55.4% 0.135 66.442);
+
+  --ck-color-blue-400: oklch(70.7% 0.165 254.624);
+  --ck-color-blue-500: oklch(62.3% 0.214 259.815);
+  --ck-color-blue-600: oklch(54.6% 0.245 262.881);
+  --ck-color-blue-700: oklch(48.8% 0.243 264.376);
+}

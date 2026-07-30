@@ -1,0 +1,45 @@
+/* THE ENTIRE DARK MODE.
+   This replaces every `dark:` utility across all 27 components — Button alone
+   carried 16 of them. Hierarchy on dark is carried by re-pointing the same
+   semantic names, so component CSS never mentions dark at all. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ck-bg: var(--ck-color-neutral-900);
+  --ck-surface: var(--ck-color-neutral-800);
+  --ck-surface-hover: var(--ck-color-neutral-700);
+  --ck-fg: var(--ck-color-neutral-50);
+  --ck-fg-muted: var(--ck-color-neutral-400);
+  --ck-border: var(--ck-color-neutral-700);
+  --ck-border-hover: var(--ck-color-neutral-600);
+  --ck-overlay: rgb(0 0 0 / 0.7);
+  --ck-ring: var(--ck-color-primary-400);
+  --ck-ring-offset: var(--ck-color-neutral-800);
+
+  --ck-accent-solid: var(--ck-color-primary-500);
+  --ck-accent-solid-hover: var(--ck-color-primary-600);
+  --ck-accent-subtle: rgb(12 74 110 / 0.3);
+  --ck-accent-muted: rgb(12 74 110 / 0.5);
+  --ck-accent-border: var(--ck-color-primary-400);
+  --ck-accent-text: var(--ck-color-primary-300);
+
+  --ck-neutral-solid: var(--ck-color-neutral-500);
+  --ck-neutral-solid-hover: var(--ck-color-neutral-600);
+  --ck-neutral-ring: var(--ck-color-neutral-400);
+
+  --ck-success-solid: var(--ck-color-green-500);
+  --ck-success-solid-hover: var(--ck-color-green-600);
+  --ck-success-ring: var(--ck-color-green-400);
+
+  --ck-danger-solid: var(--ck-color-red-500);
+  --ck-danger-solid-hover: var(--ck-color-red-600);
+  --ck-danger-ring: var(--ck-color-red-400);
+
+  --ck-warning-solid: var(--ck-color-yellow-500);
+  --ck-warning-solid-hover: var(--ck-color-yellow-600);
+  --ck-warning-ring: var(--ck-color-yellow-400);
+
+  --ck-info-solid: var(--ck-color-blue-500);
+  --ck-info-solid-hover: var(--ck-color-blue-600);
+  --ck-info-ring: var(--ck-color-blue-400);
+}

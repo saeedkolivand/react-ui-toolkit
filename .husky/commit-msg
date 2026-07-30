@@ -1,52 +1,8 @@
 #!/bin/sh
-# husky v9+ sources its own shim; the old `. .../_/husky.sh` line is removed in v10.
-
-# Function to get git status of working directory
-hasUnstagedChanges()
-{
-    # Check if there are any unstaged changes
-    if [ -n "$(git diff --name-only)" ]; then
-        echo "true"
-    else
-        echo "false"
-    fi
-}
-
-# Check initial state
-initialChanges=$(hasUnstagedChanges)
-
-# Run commitlint to validate commit message
-npx commitlint --edit $1
-
-# Run type checking
-npm run typecheck
-
-npm run lint:fix
-
-# Run linting and formatting through lint-staged
-npx lint-staged
-
-# Run tests
-npm run test
-
-# Check if there are new unstaged changes after lint-staged
-finalChanges=$(hasUnstagedChanges)
-
-# If there were no initial changes but there are changes now, or if changes were introduced
-if [ "$initialChanges" = "false" ] && [ "$finalChanges" = "true" ]; then
-    printf '\e[1;31m%-6s\e[m' "Commit aborted: Linter/formatter made changes to files"
-    echo ''
-    printf '\e[1;31m%-6s\e[m' "Please stage the changes and try committing again"
-    echo ''
-    exit 1
-elif [ "$finalChanges" = "true" ]; then
-    # Get the list of changed files for better error message
-    changedFiles=$(git diff --name-only)
-    printf '\e[1;31m%-6s\e[m' "Commit aborted: The following files have unstaged changes:"
-    echo ''
-    echo "$changedFiles"
-    echo ''
-    printf '\e[1;31m%-6s\e[m' "Please stage the changes and try committing again"
-    echo ''
-    exit 1
-fi
+# Commit message validation ONLY.
+#
+# This hook previously also ran typecheck + lint:fix + lint-staged + the full
+# test suite. Across a 7-package monorepo that makes every commit take minutes,
+# so formatting moved to pre-commit and correctness moved to CI, which runs the
+# same turbo tasks with --affected and a warm cache.
+npx commitlint --edit "$1"

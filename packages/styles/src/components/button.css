@@ -1,0 +1,142 @@
+/* Verified in spike 0b: 15/15 cases pixel-identical to the old utility-class
+   Button, including box dimensions. The only intentional delta is
+   `cursor: pointer` (Tailwind v4's preflight sets buttons to `default`). */
+@layer ck.components {
+  [data-scope="button"][data-part="root"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: var(--ck-radius-md);
+    cursor: pointer;
+    background-color: var(--ck-button-bg);
+    color: var(--ck-button-fg);
+    /* width defaults to 0 and is raised only by `outline`; a uniform 1px
+       transparent border would make every other variant 2px larger than today */
+    border-width: var(--ck-button-border-width, 0);
+    border-style: solid;
+    border-color: var(--ck-button-border, transparent);
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-duration: var(--ck-duration-md);
+    transition-timing-function: var(--ck-ease-in-out);
+  }
+
+  [data-scope="button"][data-part="root"]:hover:not(:disabled) {
+    background-color: var(--ck-button-bg-hover);
+  }
+
+  /* matches the old focus:ring-2 focus:ring-offset-2 exactly */
+  [data-scope="button"][data-part="root"]:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow:
+      0 0 0 2px var(--ck-ring-offset),
+      0 0 0 4px var(--ck-button-ring);
+  }
+
+  [data-scope="button"][data-part="root"][data-size="sm"] {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    --ck-button-gap: 0.5rem;
+  }
+  [data-scope="button"][data-part="root"][data-size="md"] {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    --ck-button-gap: 0.5rem;
+  }
+  [data-scope="button"][data-part="root"][data-size="lg"] {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    --ck-button-gap: 0.625rem;
+  }
+
+  /* Eight variants, five lines each, and NO dark: twins — the semantic tokens
+     already flipped in themes/dark.css. */
+  [data-scope="button"][data-part="root"][data-variant="primary"] {
+    --ck-button-bg: var(--ck-accent-solid);
+    --ck-button-bg-hover: var(--ck-accent-solid-hover);
+    --ck-button-fg: var(--ck-accent-fg);
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="secondary"] {
+    --ck-button-bg: var(--ck-neutral-solid);
+    --ck-button-bg-hover: var(--ck-neutral-solid-hover);
+    --ck-button-fg: var(--ck-neutral-fg);
+    --ck-button-ring: var(--ck-neutral-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="outline"] {
+    --ck-button-bg: transparent;
+    --ck-button-bg-hover: var(--ck-accent-subtle);
+    --ck-button-fg: var(--ck-accent-text);
+    --ck-button-border: var(--ck-accent-border);
+    --ck-button-border-width: 1px;
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="ghost"] {
+    --ck-button-bg: transparent;
+    --ck-button-bg-hover: var(--ck-accent-subtle);
+    --ck-button-fg: var(--ck-accent-text);
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="success"] {
+    --ck-button-bg: var(--ck-success-solid);
+    --ck-button-bg-hover: var(--ck-success-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-success-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="error"] {
+    --ck-button-bg: var(--ck-danger-solid);
+    --ck-button-bg-hover: var(--ck-danger-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-danger-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="warning"] {
+    --ck-button-bg: var(--ck-warning-solid);
+    --ck-button-bg-hover: var(--ck-warning-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-warning-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="info"] {
+    --ck-button-bg: var(--ck-info-solid);
+    --ck-button-bg-hover: var(--ck-info-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-info-ring);
+  }
+
+  [data-scope="button"][data-part="root"][data-full-width] {
+    width: 100%;
+  }
+  [data-scope="button"][data-part="root"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  [data-scope="button"][data-part="root"][data-loading] {
+    position: relative;
+    cursor: wait;
+  }
+  [data-scope="button"][data-part="root"][data-loading]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgb(255 255 255 / 0.15);
+    border-radius: inherit;
+  }
+
+  /* the old `mr-2`/`ml-2` on the icon element */
+  [data-scope="button"] [data-part="icon"],
+  [data-scope="button"] [data-part="spinner"] {
+    flex-shrink: 0;
+  }
+  [data-scope="button"][data-icon-position="left"] [data-part="icon"] {
+    margin-right: var(--ck-button-gap);
+  }
+  [data-scope="button"][data-icon-position="right"] [data-part="icon"] {
+    margin-left: var(--ck-button-gap);
+  }
+  [data-scope="button"] [data-part="spinner"] {
+    margin-right: var(--ck-button-gap);
+  }
+}

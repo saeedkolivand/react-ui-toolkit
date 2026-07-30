@@ -1,0 +1,2 @@
+/* Shared by index.css AND theme.css so both agree on what "dark" means. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

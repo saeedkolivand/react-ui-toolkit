@@ -1,0 +1,31 @@
+:root {
+  --ck-radius-sm: 0.125rem;
+  --ck-radius-base: 0.25rem;
+  --ck-radius-md: 0.375rem;
+  --ck-radius-lg: 0.5rem;
+  --ck-radius-xl: 0.75rem;
+  --ck-radius-2xl: 1rem;
+  --ck-radius-full: 9999px;
+
+  --ck-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ck-shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --ck-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ck-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* Not in the old tailwind.config — Modal used `shadow-xl` from Tailwind's own
+     scale, so it is transcribed from there (bug 0.10). */
+  --ck-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  --ck-duration-sm: 120ms;
+  --ck-duration-md: 200ms;
+  --ck-duration-lg: 300ms;
+  --ck-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ck-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ck-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ck-z-overlay: 1000;
+  --ck-z-modal: 1000;
+  --ck-z-popover: 1050;
+  --ck-z-toast: 1100;
+
+  --ck-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}

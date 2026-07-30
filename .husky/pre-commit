@@ -1,0 +1,3 @@
+#!/bin/sh
+# Formatting and lint autofix on staged files only. Fast by construction.
+npx lint-staged

@@ -1,0 +1,47 @@
+/* THE RETHEMING API. Components reference only these names, never the raw ramps.
+   Override any of them in a stylesheet loaded after ours to retheme with no
+   rebuild — every value is a real runtime custom property. */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --ck-bg: #fff;
+  --ck-surface: #fff;
+  --ck-surface-hover: var(--ck-color-neutral-50);
+  --ck-fg: var(--ck-color-neutral-900);
+  --ck-fg-muted: var(--ck-color-neutral-500);
+  --ck-border: var(--ck-color-neutral-200);
+  --ck-border-hover: var(--ck-color-neutral-300);
+  --ck-overlay: rgb(0 0 0 / 0.5);
+  --ck-ring: var(--ck-color-primary-500);
+  --ck-ring-offset: #fff;
+
+  --ck-accent-solid: var(--ck-color-primary-600);
+  --ck-accent-solid-hover: var(--ck-color-primary-700);
+  --ck-accent-fg: #fff;
+  --ck-accent-subtle: var(--ck-color-primary-50);
+  --ck-accent-muted: var(--ck-color-primary-100);
+  --ck-accent-border: var(--ck-color-primary-600);
+  --ck-accent-text: var(--ck-color-primary-600);
+
+  --ck-neutral-solid: var(--ck-color-neutral-600);
+  --ck-neutral-solid-hover: var(--ck-color-neutral-700);
+  --ck-neutral-fg: #fff;
+  --ck-neutral-ring: var(--ck-color-neutral-500);
+
+  --ck-success-solid: var(--ck-color-green-600);
+  --ck-success-solid-hover: var(--ck-color-green-700);
+  --ck-success-ring: var(--ck-color-green-500);
+
+  --ck-danger-solid: var(--ck-color-red-600);
+  --ck-danger-solid-hover: var(--ck-color-red-700);
+  --ck-danger-ring: var(--ck-color-red-500);
+
+  --ck-warning-solid: var(--ck-color-yellow-600);
+  --ck-warning-solid-hover: var(--ck-color-yellow-700);
+  --ck-warning-ring: var(--ck-color-yellow-500);
+
+  --ck-info-solid: var(--ck-color-blue-600);
+  --ck-info-solid-hover: var(--ck-color-blue-700);
+  --ck-info-ring: var(--ck-color-blue-500);
+}
