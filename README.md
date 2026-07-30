@@ -198,6 +198,39 @@ function YourApp() {
 export default withStylesProvider(YourApp);
 ```
 
+### Dark Mode
+
+Components ship `dark:` variants throughout. Tailwind is configured with `darkMode: "class"`, so
+they activate when a `dark` class is present on `<html>` — which `ThemeProvider` manages for you:
+
+```jsx
+import { ThemeProvider, ThemeToggle } from "@saeedkolivand/react-ui-toolkit";
+
+function App() {
+  return (
+    <ThemeProvider>
+      <ThemeToggle />
+      <YourApplication />
+    </ThemeProvider>
+  );
+}
+```
+
+Without `ThemeProvider` nothing sets that class and every `dark:` variant stays inert.
+
+The provider follows the OS `prefers-color-scheme` on first load, remembers an explicit choice in
+`localStorage`, and applies it on the next visit. To drive the theme yourself:
+
+```jsx
+import { useTheme } from "@saeedkolivand/react-ui-toolkit";
+
+const { theme, toggleTheme, setTheme } = useTheme();
+```
+
+> **SSR note:** the class is applied after hydration, so a server-rendered page can show one frame of
+> light theme before switching. To avoid it, set the class in a small blocking script in your
+> document `<head>` before React mounts.
+
 ### Using Components
 
 ```jsx
