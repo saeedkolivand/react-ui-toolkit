@@ -49,6 +49,30 @@ npm run release:dry
 | `NPM_TOKEN`    | publishing to npm — must be an **automation** token so it bypasses 2FA |
 | `GITHUB_TOKEN` | provided automatically; creates the tag, release and comments          |
 
+`NPM_TOKEN` really must be the **Automation** kind. A classic _Publish_ token has the same
+read/write access but still enforces 2FA, so the run reaches `npm publish` and then dies with
+`EOTP`. A granular access token with _Read and write_ on the package works too. Alternatively,
+configure this repo as a [trusted publisher](https://docs.npmjs.com/trusted-publishers) on npmjs.com
+and drop the secret entirely — the workflow already requests `id-token: write`.
+
+## Required repository label
+
+When a release fails, `@semantic-release/github` opens an issue labelled **`semantic-release`**.
+GitHub rejects issue creation that references a label which does not exist, so if that label is ever
+deleted the failure report fails too — and a broken release goes unreported:
+
+```
+Validation Failed: {"value":"semantic-release","resource":"Label","field":"name","code":"invalid"}
+```
+
+Recreate it with:
+
+```bash
+gh api -X POST repos/saeedkolivand/react-ui-toolkit/labels \
+  -f name='semantic-release' -f color='2b7489' \
+  -f description='Automated release failure reports opened by semantic-release'
+```
+
 ## Manual release
 
 Not supported, deliberately. The previous flow bumped the version and published to npm
