@@ -1,3 +1,26 @@
+# [1.0.0](https://github.com/saeedkolivand/react-ui-toolkit/compare/v0.1.18...v1.0.0) (2026-07-30)
+
+
+* feat(react19)!: drop React 18 and lint strict ([fec81d4](https://github.com/saeedkolivand/react-ui-toolkit/commit/fec81d4fdf5744ce95d2ae3c66c0d92afab3ef60))
+
+
+### Bug Fixes
+
+* **a11y:** give Tabs and Accordion items real reconciliation identity ([a690b0c](https://github.com/saeedkolivand/react-ui-toolkit/commit/a690b0c25b868ec48d20d0592cae1df1e8a12ebf))
+* **deps:** drop vite-tsconfig-paths, resolve the Storybook alias directly ([cffeae9](https://github.com/saeedkolivand/react-ui-toolkit/commit/cffeae949888b00569c0c06638627bc4c4c44588))
+* **gitattributes:** normalise .mjs, .css, .html and .yml to LF ([fb0cc7e](https://github.com/saeedkolivand/react-ui-toolkit/commit/fb0cc7ea5a8a62a8576f154620d6d9b9702a29ca))
+* **lint:** make eslint-plugin-react-hooks the authority on hook rules ([e07f571](https://github.com/saeedkolivand/react-ui-toolkit/commit/e07f5718a3ef22e8cfa098c7ca8b676a09cc5bc5)), closes [#10](https://github.com/saeedkolivand/react-ui-toolkit/issues/10)
+* **lint:** replace eslint-plugin-react with [@eslint-react](https://github.com/eslint-react) for ESLint 10 ([5ecc18c](https://github.com/saeedkolivand/react-ui-toolkit/commit/5ecc18ce68936fb0cec1e5f29e6cd81d64f30613))
+* **theme:** apply the dark class so dark mode actually works ([45b51c2](https://github.com/saeedkolivand/react-ui-toolkit/commit/45b51c26f206866a2874eee4d83fa609488cbc9c))
+
+
+### BREAKING CHANGES
+
+* React 18 is no longer supported. peerDependencies now require
+react and react-dom ^19.0.0. Components receive `ref` as a normal prop instead
+of through forwardRef, and the providers use React 19's <Context> and use().
+React 18 consumers should pin 0.x.
+
 # Changelog
 
 ## 0.1.8 (2025-06-09)
