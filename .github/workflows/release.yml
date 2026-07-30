@@ -1,9 +1,12 @@
 name: Release
 
-# Manual only. Merging to main does not publish — releases are cut on demand from
-# the Actions tab, so a refactor can land across many commits and ship as one
-# release when it is actually ready. semantic-release still derives the version
-# from every commit since the last tag, so batching costs nothing.
+# Manual only. Merging to main updates the "Version Packages" PR; publishing
+# happens when you press the button here. A refactor can land across many
+# commits and ship as one release when it is actually ready.
+#
+# The FILENAME of this workflow is load-bearing: npm's trusted-publisher config
+# pins it (as the bare name `release.yml`, never a path). Renaming this file
+# breaks publishing with a misleading E404 until the config is re-registered.
 on:
   workflow_dispatch:
 
@@ -13,43 +16,48 @@ concurrency:
 
 jobs:
   release:
-    name: Release
+    name: Publish to npm
     runs-on: ubuntu-latest
     permissions:
-      contents: write # push the release commit + tag
-      issues: write # comment on released issues
-      pull-requests: write # comment on released PRs
+      contents: write # push git tags
+      issues: write
+      pull-requests: write
       id-token: write # OIDC — npm trusted publishing + provenance
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0 # semantic-release needs full history to read tags
-          persist-credentials: false
+          fetch-depth: 0
 
-      # Node 24 ships npm 11.x, which is what performs the OIDC token exchange
-      # at publish time. No dependency cache: this job produces the published
-      # artifact, so it installs from the lockfile and nothing else.
+      - uses: pnpm/action-setup@v4
+
+      # Node 24 ships npm >= 11.5.1, which performs the OIDC token exchange at
+      # publish time. Trusted publishing requires npm >= 11.5.1 and Node >= 22.14.
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          registry-url: https://registry.npmjs.org
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Verify before releasing
-        run: |
-          npm run lint
-          npm run typecheck
-          npm test
+        run: pnpm turbo run lint typecheck test build check:exports
 
       # Authenticates to npm via OIDC trusted publishing — there is deliberately
       # no NPM_TOKEN. A token is not just unnecessary here, it is harmful: if the
-      # OIDC exchange ever fails, semantic-release falls back to token auth, and
-      # a token that enforces 2FA dies at `npm publish` — which runs *after*
-      # semantic-release has already pushed the tag. That is exactly how v1.0.0
-      # ended up tagged on main while npm stayed at 0.1.18, twice. With no token
-      # to fall back to, a broken OIDC setup fails in verifyConditions instead,
-      # before anything is tagged or committed.
-      - name: Release
+      # OIDC exchange ever fails, the publisher falls back to token auth, and a
+      # token that enforces 2FA dies at `npm publish` — which runs *after* the
+      # tag has been pushed. That is exactly how v1.0.0 ended up tagged on main
+      # while npm stayed at 0.1.18, twice. With no token to fall back to, a
+      # broken OIDC setup fails before anything is tagged or published.
+      #
+      # If this ever 404s on a package that demonstrably exists, the two causes
+      # are (a) the workflow filename not matching the trusted-publisher config,
+      # or (b) a pnpm regression in the OIDC exchange (pnpm#11513, fixed in 11.x
+      # — the documented fallback is an `npm publish --prefix packages/$p` loop,
+      # which is safe because lockstep versioning gives every package the same
+      # version; publish core and styles before the adapters, zag-angular before
+      # angular).
+      - name: Publish
+        run: pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release

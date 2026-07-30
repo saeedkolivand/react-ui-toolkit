@@ -5,19 +5,10 @@
 // The stale-attribute removal is NOT optional: `data-state`, `aria-expanded` and
 // `data-highlighted` toggling IS the CSS system. An add-only spread leaves
 // data-state="open" stuck forever and every exit animation breaks.
-import {
-  Directive,
-  ElementRef,
-  DestroyRef,
-  effect,
-  inject,
-  input,
-  Renderer2,
-  RendererStyleFlags2,
-} from '@angular/core';
-import { DOM_PROPERTY_KEYS } from './normalize-props';
+import { Directive, ElementRef, DestroyRef, effect, inject, input, Renderer2 } from "@angular/core";
+import { DOM_PROPERTY_KEYS } from "./normalize-props";
 
-@Directive({ selector: '[zagSpread]', standalone: true })
+@Directive({ selector: "[zagSpread]", standalone: true })
 export class ZagSpread {
   readonly zagSpread = input.required<Record<string, any>>();
 
@@ -32,7 +23,7 @@ export class ZagSpread {
   }
 
   private dropListeners() {
-    this.listeners.forEach((off) => off());
+    this.listeners.forEach(off => off());
     this.listeners = [];
   }
 
@@ -45,16 +36,16 @@ export class ZagSpread {
       const value = next[key];
 
       // normalize-props lowercases everything, so handlers arrive as `onclick`.
-      if (key.startsWith('on') && typeof value === 'function') {
+      if (key.startsWith("on") && typeof value === "function") {
         this.listeners.push(this.renderer.listen(node, key.slice(2), value));
         continue;
       }
       if (value === undefined) continue;
 
-      if (key === 'style' && typeof value === 'string') {
+      if (key === "style" && typeof value === "string") {
         // normalize-props already stringified it
-        node.setAttribute('style', value);
-        nextKeys.add('style');
+        node.setAttribute("style", value);
+        nextKeys.add("style");
         continue;
       }
 
@@ -68,7 +59,7 @@ export class ZagSpread {
         this.renderer.removeAttribute(node, key);
         continue;
       }
-      this.renderer.setAttribute(node, key, value === true ? '' : String(value));
+      this.renderer.setAttribute(node, key, value === true ? "" : String(value));
     }
 
     // remove attributes that vanished since the previous render

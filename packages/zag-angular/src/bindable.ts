@@ -13,8 +13,8 @@ import {
   signal,
   untracked,
   type Injector,
-} from '@angular/core';
-import { isFunction } from '@zag-js/utils';
+} from "@angular/core";
+import { isFunction } from "@zag-js/utils";
 
 export interface BindableParams<T> {
   value?: T;
@@ -47,7 +47,7 @@ export function bindable<T>(props: () => BindableParams<T>, injector?: Injector)
         prevValue.current = v;
       });
     },
-    injector ? { injector } : undefined,
+    injector ? { injector } : undefined
   );
 
   const setValueFn = (v: T | ((prev: T) => T)) => {
@@ -93,7 +93,7 @@ bindable.cleanup = (fn: VoidFunction) => {
   inject(DestroyRef).onDestroy(fn);
 };
 
-bindable.ref = <T,>(defaultValue: T) => {
+bindable.ref = <T>(defaultValue: T) => {
   let val = defaultValue;
   return { get: () => val, set: (next: T) => void (val = next) };
 };

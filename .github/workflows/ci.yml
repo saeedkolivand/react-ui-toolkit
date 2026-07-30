@@ -14,45 +14,51 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
-  build-and-test:
-    name: Build and Test
+  verify:
+    name: Lint, typecheck, build, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # turbo --affected diffs against the merge base; without full history
+          # it silently falls back to running everything (slow, not wrong).
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4 # reads packageManager from package.json
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
+          node-version-file: .nvmrc
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: npm run lint
+      # Local turbo cache across runs. Remote caching (TURBO_TOKEN) is the
+      # upgrade path; deliberately deferred past v1.0 for a solo maintainer.
+      - uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
 
-      - name: Type check
-        run: npm run typecheck
+      - name: Lint, typecheck, build, test
+        run: pnpm turbo run lint typecheck build test --affected
 
-      - name: Test with coverage
-        run: npm test -- --coverage
+      # Catches broken exports maps, missing files and type-resolution problems
+      # before they reach npm, where they are unfixable without a new version.
+      - name: Validate published package shape
+        run: pnpm turbo run check:exports --affected
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage/
           # Not fatal: forks and Dependabot PRs cannot read CODECOV_TOKEN.
           fail_ci_if_error: false
-
-      - name: Build package
-        run: npm run build
-
-      - name: Build landing page
-        run: npm run build:landing
-
-      - name: Build Storybook
-        run: npm run build-storybook
 
   commitlint:
     name: Commit messages
@@ -63,14 +69,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
+          node-version-file: .nvmrc
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      # semantic-release derives the next version from these messages,
-      # so a malformed one silently breaks releases.
+      # Versions now come from changeset files, NOT from commit messages —
+      # changesets replaced semantic-release. Conventional Commits are still
+      # enforced because the changelog and the history read better for it.
       - name: Validate commit messages
-        run: npx commitlint --from origin/${{ github.base_ref }} --to HEAD --verbose
+        run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD --verbose

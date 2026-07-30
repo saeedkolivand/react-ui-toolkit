@@ -16,7 +16,7 @@ describe("Button", () => {
     render(
       <Button variant="outline" size="lg">
         Click
-      </Button>,
+      </Button>
     );
     const el = screen.getByRole("button");
     expect(el).toHaveAttribute("data-variant", "outline");
@@ -26,7 +26,7 @@ describe("Button", () => {
   // The single highest-value assertion in the suite: a raw boolean would render
   // data-loading="false", which still MATCHES [data-loading] in CSS and silently
   // applies the wrong styles. This is the #1 cross-framework divergence.
-  it("renders booleans as present-or-absent attributes, never =\"false\"", () => {
+  it('renders booleans as present-or-absent attributes, never ="false"', () => {
     const { rerender } = render(<Button>Click</Button>);
     expect(screen.getByRole("button")).not.toHaveAttribute("data-loading");
 

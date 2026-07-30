@@ -17,7 +17,7 @@ const props = withDefaults(
     fullWidth: false,
     type: "button",
     disabled: false,
-  },
+  }
 );
 
 // inheritAttrs defaults to true, and THAT is the className passthrough: a

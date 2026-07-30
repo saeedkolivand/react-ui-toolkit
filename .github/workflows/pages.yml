@@ -9,13 +9,16 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
   deploy:
     name: Build and deploy site
     runs-on: ubuntu-latest
     permissions:
-      contents: read # only reads the repo — the site is no longer a branch
-      pages: write # deploy to the Pages service
+      contents: read
+      pages: write
       id-token: write # OIDC, required by actions/deploy-pages
     environment:
       name: github-pages
@@ -23,35 +26,36 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
+          node-version-file: .nvmrc
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
-      # The landing page imports the library's own components, so build the
-      # library (and therefore dist/styles.css) first.
-      - name: Build library
-        run: npm run build
-
-      - name: Build landing page
-        run: npm run build:landing
-
-      - name: Build Storybook
-        run: npm run build-storybook
+      # turbo resolves the graph: every package builds before docs and Storybook.
+      # Base paths are "/" and "/storybook/" because the site is served from the
+      # custom domain crosskit.iamsaeed.dev, not a github.io subpath.
+      - name: Build site
+        run: pnpm turbo run build
         env:
+          DOCS_BASE: /
           STORYBOOK_BASE_PATH: /storybook/
 
-      # Landing page at the site root, Storybook one level down. No .nojekyll
-      # needed: artifact deploys skip Jekyll entirely, so Vite's _-prefixed
-      # asset directories survive on their own.
+      # No .nojekyll needed: artifact deploys skip Jekyll entirely, so Vite's
+      # _-prefixed asset directories survive on their own.
       - name: Assemble site
         run: |
           mkdir -p site
-          cp -r landing-dist/. site/
-          mkdir -p site/storybook
-          cp -r storybook-static/. site/storybook/
+          if [ -d apps/docs/dist ]; then cp -r apps/docs/dist/. site/; fi
+          if [ -d apps/storybook/storybook-static ]; then
+            mkdir -p site/storybook
+            cp -r apps/storybook/storybook-static/. site/storybook/
+          fi
+          # Fail loudly rather than deploying an empty site.
+          test -n "$(ls -A site)" || { echo "::error::site/ is empty — no docs or storybook build output"; exit 1; }
 
       - uses: actions/upload-pages-artifact@v5
         with:

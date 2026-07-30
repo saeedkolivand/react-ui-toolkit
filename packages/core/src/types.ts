@@ -3,14 +3,7 @@ export type IconSize = Size | "xl";
 export type ModalSize = Size | "xl" | "full";
 
 export type Variant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "success"
-  | "error"
-  | "warning"
-  | "info";
+  "primary" | "secondary" | "outline" | "ghost" | "success" | "error" | "warning" | "info";
 
 export type Status = "success" | "error" | "warning" | "info";
 

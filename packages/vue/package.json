@@ -12,18 +12,27 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/saeedkolivand/crosskit.git",
     "directory": "packages/vue"
   },
   "homepage": "https://crosskit.iamsaeed.dev/",
-  "bugs": { "url": "https://github.com/saeedkolivand/crosskit/issues" },
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
   "author": "Saeed Kolivand",
   "license": "MIT",
-  "publishConfig": { "access": "public", "provenance": true },
-  "engines": { "node": ">=22.14" },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
   "scripts": {
     "build": "vite build && vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",

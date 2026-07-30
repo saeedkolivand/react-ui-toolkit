@@ -19,6 +19,11 @@ export { ZagSpread } from "./spread.directive";
 export { CkPortal } from "./portal";
 export { usePresence } from "./presence";
 
-/** Angular removes an attribute on null, not undefined. */
-export const ckDataAttr = (guard: boolean | undefined): "" | null => (guard ? "" : null);
-export const ckAriaAttr = (guard: boolean | undefined): "true" | null => (guard ? "true" : null);
+/**
+ * Angular removes an attribute when the bound value is `null`, not `undefined`
+ * — which is the one place the shared `dataAttr` from @crosskit-ui/core cannot
+ * be reused directly.
+ */
+export const ckDataAttr = (guard: boolean | null | undefined): "" | null => (guard ? "" : null);
+export const ckAriaAttr = (guard: boolean | null | undefined): "true" | null =>
+  guard ? "true" : null;

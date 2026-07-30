@@ -13,11 +13,11 @@ import {
   TemplateRef,
   ViewContainerRef,
   viewChild,
-} from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+} from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 
 @Component({
-  selector: 'ck-portal',
+  selector: "ck-portal",
   standalone: true,
   template: `<ng-template #tpl><ng-content /></ng-template>`,
 })
@@ -25,7 +25,7 @@ export class CkPortal implements AfterViewInit, OnDestroy {
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly container = input<HTMLElement>();
 
-  private readonly tpl = viewChild.required<TemplateRef<unknown>>('tpl');
+  private readonly tpl = viewChild.required<TemplateRef<unknown>>("tpl");
   private readonly vcr = inject(ViewContainerRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private view?: EmbeddedViewRef<unknown>;

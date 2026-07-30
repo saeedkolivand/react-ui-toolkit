@@ -3,14 +3,18 @@
   "version": "0.0.0",
   "description": "The CrossKit stylesheet. Precompiled CSS keyed to data-scope/data-part/data-state; consumers do not need Tailwind.",
   "type": "module",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": "./dist/index.css",
     "./theme.css": "./dist/theme.css",
     "./themes/*.css": "./dist/themes/*.css",
     "./package.json": "./package.json"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/saeedkolivand/crosskit.git",

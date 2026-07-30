@@ -6,10 +6,10 @@
 // so the isEqual comparison is load-bearing: without it the machine receives
 // spurious transitions (observed as a presence node that either unmounts
 // instantly or never unmounts at all).
-import { effect, untracked, type Injector } from '@angular/core';
-import { isEqual } from '@zag-js/utils';
+import { effect, untracked, type Injector } from "@angular/core";
+import { isEqual } from "@zag-js/utils";
 
-const access = (value: any) => (typeof value === 'function' ? value() : value);
+const access = (value: any) => (typeof value === "function" ? value() : value);
 
 export function track(deps: Array<() => any>, fn: VoidFunction, injector?: Injector) {
   let prevDeps: any[] = [];
@@ -18,7 +18,7 @@ export function track(deps: Array<() => any>, fn: VoidFunction, injector?: Injec
   effect(
     () => {
       // read every dep so Angular registers the dependencies
-      const current = deps.map((d) => access(d));
+      const current = deps.map(d => access(d));
 
       if (isFirstRun) {
         prevDeps = current;
@@ -39,6 +39,6 @@ export function track(deps: Array<() => any>, fn: VoidFunction, injector?: Injec
         untracked(fn);
       }
     },
-    injector ? { injector } : undefined,
+    injector ? { injector } : undefined
   );
 }
