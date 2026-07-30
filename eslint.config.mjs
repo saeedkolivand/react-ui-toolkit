@@ -1,6 +1,8 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
-import react from "eslint-plugin-react";
+// @eslint-react replaces eslint-plugin-react, which does not support ESLint 10
+// (it calls context.getFilename(), removed in v10) and has no release that does.
+import react from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
 import storybook from "eslint-plugin-storybook";
 import prettierPlugin from "eslint-plugin-prettier";
@@ -22,7 +24,7 @@ export default tseslint.config(
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  react.configs.flat.recommended,
+  react.configs.recommended,
   reactHooks.configs.flat.recommended,
   ...storybook.configs["flat/recommended"],
   prettierConfig,
@@ -32,11 +34,13 @@ export default tseslint.config(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node, ...globals.jest },
     },
-    settings: { react: { version: "detect" } },
     rules: {
       "prettier/prettier": "error",
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
+
+      // Both React plugins ship rules-of-hooks. Keep eslint-plugin-react-hooks'
+      // version — it is the canonical one and understands Storybook's `render`
+      // functions, which @eslint-react's flags as non-components.
+      "@eslint-react/rules-of-hooks": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "off",
