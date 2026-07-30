@@ -19,10 +19,10 @@ describe("Radio Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Radio size={size as any} label={`Size ${size}`} />);
+      const { unmount } = render(<Radio size={size} label={`Size ${size}`} />);
       const radio = screen.getByRole("radio");
       expect(radio).toHaveClass(
         `h-${size === "sm" ? "3" : size === "md" ? "4" : "5"} w-${

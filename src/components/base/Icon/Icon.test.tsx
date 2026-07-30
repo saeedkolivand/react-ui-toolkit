@@ -11,10 +11,10 @@ describe("Icon Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg", "xl"];
+    const sizes = ["sm", "md", "lg", "xl"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Icon name="menu" size={size as any} />);
+      const { unmount } = render(<Icon name="menu" size={size} />);
       const icon = screen.getByTestId("icon");
       expect(icon).toHaveClass(
         `h-${size === "sm" ? "4" : size === "md" ? "5" : size === "lg" ? "6" : "8"} w-${
@@ -38,10 +38,10 @@ describe("Icon Component", () => {
   });
 
   it("renders different built-in icons", () => {
-    const icons = ["menu", "close", "search", "check", "error", "warning", "info"];
+    const icons = ["menu", "close", "search", "check", "error", "warning", "info"] as const;
 
     icons.forEach(iconName => {
-      const { unmount } = render(<Icon name={iconName as any} />);
+      const { unmount } = render(<Icon name={iconName} />);
       const icon = screen.getByTestId("icon");
       expect(icon).toBeInTheDocument();
       unmount();

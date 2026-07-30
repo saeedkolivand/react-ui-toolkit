@@ -110,16 +110,19 @@ const IconGrid = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { success } = useNotification();
 
-  const copyToClipboard = useCallback((name: IconName) => {
-    const code = `<Icon name="${name}" />`;
-    const textArea = document.createElement("textarea");
-    textArea.value = code;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-    success("Copied!", `<Icon name="${name}" />`);
-  }, []);
+  const copyToClipboard = useCallback(
+    (name: IconName) => {
+      const code = `<Icon name="${name}" />`;
+      const textArea = document.createElement("textarea");
+      textArea.value = code;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      success("Copied!", `<Icon name="${name}" />`);
+    },
+    [success]
+  );
 
   const filteredIcons = iconNames.filter(name =>
     name.toLowerCase().includes(searchQuery.toLowerCase())

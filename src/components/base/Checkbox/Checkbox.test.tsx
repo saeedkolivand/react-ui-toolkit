@@ -19,10 +19,10 @@ describe("Checkbox Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Checkbox size={size as any} label={`Size ${size}`} />);
+      const { unmount } = render(<Checkbox size={size} label={`Size ${size}`} />);
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toHaveClass(
         `h-${size === "sm" ? "4" : size === "md" ? "5" : "6"} w-${

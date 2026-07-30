@@ -17,12 +17,10 @@ describe("Input Component", () => {
   });
 
   it("renders with different variants", () => {
-    const variants = ["default", "filled", "outline"];
+    const variants = ["default", "filled", "outline"] as const;
 
     variants.forEach(variant => {
-      const { unmount } = render(
-        <Input variant={variant as any} placeholder={`Variant ${variant}`} />
-      );
+      const { unmount } = render(<Input variant={variant} placeholder={`Variant ${variant}`} />);
       const input = screen.getByPlaceholderText(`Variant ${variant}`);
       expect(input).toBeInTheDocument();
       unmount();
@@ -30,10 +28,10 @@ describe("Input Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Input size={size as any} placeholder={`Size ${size}`} />);
+      const { unmount } = render(<Input size={size} placeholder={`Size ${size}`} />);
       const input = screen.getByPlaceholderText(`Size ${size}`);
       expect(input).toHaveClass(`text-${size === "sm" ? "sm" : size === "md" ? "base" : "lg"}`);
       unmount();

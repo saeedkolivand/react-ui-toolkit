@@ -6,7 +6,13 @@ import { Table } from "./Table";
 // Mocked per-module (not via the "@/components" barrel) because Table imports its
 // dependencies directly — a barrel mock would no longer intercept them.
 jest.mock("../Button", () => ({
-  Button: ({ children, onClick, disabled, variant, ...props }: any) => {
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    variant,
+    ...props
+  }: React.ComponentProps<"button"> & { variant?: string }) => {
     // Create a more descriptive testid based on the button content or variant
     const content = typeof children === "string" ? children : "";
     const testId =
@@ -24,7 +30,7 @@ jest.mock("../Button", () => ({
 }));
 
 jest.mock("../../layout/Container", () => ({
-  Container: ({ children, className, ...props }: any) => {
+  Container: ({ children, className, ...props }: React.ComponentProps<"div">) => {
     // Use pagination-container testid specifically for the pagination container
     const testId = className?.includes("flex items-center justify-end")
       ? "pagination-container"
@@ -38,12 +44,18 @@ jest.mock("../../layout/Container", () => ({
 }));
 
 jest.mock("../Select", () => ({
-  Select: ({ children, value, onChange, size: _size, ...props }: any) => (
+  Select: ({
+    children,
+    value,
+    onChange,
+    size: _size,
+    ...props
+  }: React.ComponentProps<"select"> & { size?: string }) => (
     <select data-testid="page-size-select" value={value} onChange={onChange} {...props}>
       {children}
     </select>
   ),
-  Option: ({ children, value }: any) => (
+  Option: ({ children, value }: React.ComponentProps<"option">) => (
     <option value={value} data-testid={`page-size-option-${value}`}>
       {children}
     </option>
@@ -51,7 +63,7 @@ jest.mock("../Select", () => ({
 }));
 
 jest.mock("../Icon", () => ({
-  Icon: ({ name, className }: any) => (
+  Icon: ({ name, className }: { name: string; className?: string }) => (
     <span data-testid={`icon-${name}`} className={className}>
       {name}
     </span>
@@ -140,7 +152,7 @@ describe("Table Component", () => {
         title: "Actions",
         dataIndex: "id" as keyof TestData,
         key: "actions",
-        render: (value: any, record: TestData) => (
+        render: (_value: TestData[keyof TestData], record: TestData) => (
           <button data-testid={`edit-${record.id}`}>Edit {record.name}</button>
         ),
       },

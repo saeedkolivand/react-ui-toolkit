@@ -17,10 +17,10 @@ describe("Switch Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Switch size={size as any} label={`Size ${size}`} />);
+      const { unmount } = render(<Switch size={size} label={`Size ${size}`} />);
 
       const switchElement = screen.getByRole("switch");
       expect(switchElement).toHaveClass(
