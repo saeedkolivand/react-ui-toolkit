@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { useIsHydrated } from "../../../hooks/useIsHydrated";
 import { AnimatePresence } from "framer-motion";
 import Notification, { NotificationProps } from "./Notification";
 import styles from "./Notification.module.css";
@@ -31,12 +32,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   maxCount = 5,
 }) => {
   const [notifications, setNotifications] = React.useState<NotificationItem[]>([]);
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
+  // Gate the portal on hydration instead of a `mounted` flag set from an effect,
+  // which costs a cascading render on every mount.
+  const mounted = useIsHydrated();
 
   const addNotification = React.useCallback((props: NotificationProps) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -77,7 +75,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   );
 
   return (
-    <NotificationContext.Provider value={{ success, error, info, warning }}>
+    <NotificationContext value={{ success, error, info, warning }}>
       {children}
       {mounted &&
         createPortal(
@@ -94,12 +92,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           </div>,
           document.body
         )}
-    </NotificationContext.Provider>
+    </NotificationContext>
   );
 };
 
 export const useNotification = () => {
-  const context = React.useContext(NotificationContext);
+  const context = React.use(NotificationContext);
   if (!context) {
     throw new Error("useNotification must be used within a NotificationProvider");
   }

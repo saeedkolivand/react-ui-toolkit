@@ -22,6 +22,11 @@ export interface RowProps extends React.HTMLAttributes<HTMLDivElement> {
    * Whether to reverse the order of columns
    */
   reverse?: boolean;
+  /**
+   * Ref forwarded to the underlying element. React 19 passes `ref` as a
+   * regular prop, so no forwardRef wrapper is needed.
+   */
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const getJustifyClass = (justify?: string) => {
@@ -62,20 +67,25 @@ const getAlignClass = (align?: string) => {
   }
 };
 
-export const Row = React.forwardRef<HTMLDivElement, RowProps>(
-  ({ justify, align, spacing, wrap, reverse, className, ...props }, ref) => {
-    const rowClasses = twMerge(
-      "flex flex-wrap",
-      getJustifyClass(justify),
-      getAlignClass(align),
-      spacing && `gap-${spacing}`,
-      wrap ? "flex-wrap" : "flex-nowrap",
-      reverse && "flex-row-reverse",
-      className
-    );
+export const Row = ({
+  justify,
+  align,
+  spacing,
+  wrap,
+  reverse,
+  className,
+  ref,
+  ...props
+}: RowProps) => {
+  const rowClasses = twMerge(
+    "flex flex-wrap",
+    getJustifyClass(justify),
+    getAlignClass(align),
+    spacing && `gap-${spacing}`,
+    wrap ? "flex-wrap" : "flex-nowrap",
+    reverse && "flex-row-reverse",
+    className
+  );
 
-    return <div ref={ref} className={rowClasses} {...props} />;
-  }
-);
-
-Row.displayName = "Row";
+  return <div ref={ref} className={rowClasses} {...props} />;
+};

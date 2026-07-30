@@ -56,8 +56,8 @@
     "release:dry": "semantic-release --dry-run --no-ci"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "classnames": "^2.5.1",

@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 export interface TabItem {
+  /**
+   * A stable identifier for this tab. Supply it when the tab list can be
+   * reordered, inserted into or filtered — React reconciles by key, so without
+   * one the panel state follows the position rather than the tab.
+   */
+  id?: string;
   /**
    * The label of the tab
    */
@@ -58,11 +64,19 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(defaultActiveTab);
 
-  useEffect(() => {
-    if (defaultActiveTab !== undefined && defaultActiveTab !== activeTab) {
-      setActiveTab(defaultActiveTab);
-    }
-  }, [defaultActiveTab]);
+  // Re-sync when the caller changes defaultActiveTab. Compared during render
+  // rather than in an effect: an effect would paint the stale tab first and
+  // then immediately re-render.
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [previousDefaultActiveTab, setPreviousDefaultActiveTab] = useState(defaultActiveTab);
+  if (defaultActiveTab !== previousDefaultActiveTab) {
+    setPreviousDefaultActiveTab(defaultActiveTab);
+    setActiveTab(defaultActiveTab);
+  }
+
+  // Reconciliation identity for each tab: the caller's id when given, otherwise
+  // a positional fallback. `label` cannot serve as one — it is a ReactNode.
+  const tabKeys = useMemo(() => tabs.map((tab, index) => tab.id ?? `tab-${index}`), [tabs]);
 
   const handleTabClick = (index: number) => {
     if (!tabs[index].disabled) {
@@ -131,7 +145,7 @@ export const Tabs: React.FC<TabsProps> = ({
       <div className={tabListClasses}>
         {tabs.map((tab, index) => (
           <button
-            key={index}
+            key={tabKeys[index]}
             className={getTabClasses(index)}
             onClick={() => handleTabClick(index)}
             role="tab"
@@ -146,7 +160,7 @@ export const Tabs: React.FC<TabsProps> = ({
       <div className={panelClasses}>
         {tabs.map((tab, index) => (
           <div
-            key={index}
+            key={tabKeys[index]}
             id={`panel-${index}`}
             role="tabpanel"
             aria-labelledby={`tab-${index}`}

@@ -94,7 +94,7 @@ describe("Tabs", () => {
   });
 
   it("applies variant styles correctly", () => {
-    const { container, rerender } = render(<Tabs tabs={defaultTabs} variant="enclosed" />);
+    render(<Tabs tabs={defaultTabs} variant="enclosed" />);
 
     expect(screen.getByRole("tablist").firstChild).toHaveClass("border-b");
   });

@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 export interface AccordionItem {
+  /**
+   * A stable identifier for this item. Supply it when the list can be reordered,
+   * inserted into or filtered — React reconciles by key, so without one the
+   * expanded state follows the position rather than the item.
+   */
+  id?: string;
   /**
    * The title of the accordion item
    */
@@ -57,6 +63,10 @@ export const Accordion: React.FC<AccordionProps> = ({
     });
   };
 
+  // Reconciliation identity for each item: the caller's id when given, otherwise
+  // a positional fallback. `title` cannot serve as one — it is a ReactNode.
+  const itemKeys = useMemo(() => items.map((item, index) => item.id ?? `item-${index}`), [items]);
+
   const accordionClasses = twMerge(
     "divide-y divide-gray-200 border-t border-b border-gray-200",
     className
@@ -68,7 +78,7 @@ export const Accordion: React.FC<AccordionProps> = ({
         const isExpanded = expandedPanels.includes(index);
 
         return (
-          <div key={index} className="py-2">
+          <div key={itemKeys[index]} className="py-2">
             <button
               className={twMerge(
                 "w-full flex justify-between items-center py-2 px-4 text-left",

@@ -37,10 +37,29 @@ export default tseslint.config(
     rules: {
       "prettier/prettier": "error",
 
-      // Both React plugins ship rules-of-hooks. Keep eslint-plugin-react-hooks'
-      // version — it is the canonical one and understands Storybook's `render`
-      // functions, which @eslint-react's flags as non-components.
+      // @eslint-react and eslint-plugin-react-hooks ship 12 rules under identical
+      // names, so every hook problem was being reported twice. eslint-plugin-react-hooks
+      // is the authority here: it is the canonical React implementation, and its
+      // rules-of-hooks understands Storybook's `render` functions, which
+      // @eslint-react's flags as non-components.
+      //
+      // Listed explicitly rather than derived from the plugin's own
+      // disable-conflict config — that one turns off the react-hooks rules instead,
+      // i.e. the opposite of what is wanted, and a literal list cannot silently
+      // change what is enforced when the plugin is bumped.
+      "@eslint-react/error-boundaries": "off",
+      "@eslint-react/exhaustive-deps": "off",
+      "@eslint-react/globals": "off",
+      "@eslint-react/immutability": "off",
+      "@eslint-react/purity": "off",
+      "@eslint-react/refs": "off",
       "@eslint-react/rules-of-hooks": "off",
+      "@eslint-react/set-state-in-effect": "off",
+      "@eslint-react/set-state-in-render": "off",
+      "@eslint-react/static-components": "off",
+      "@eslint-react/unsupported-syntax": "off",
+      "@eslint-react/use-memo": "off",
+
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "off",
@@ -49,20 +68,6 @@ export default tseslint.config(
         "warn",
         { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
       ],
-
-      // ponytail: eslint-plugin-react-hooks v7 ships the React Compiler ruleset on top of the
-      // two rules v4 enforced. The new ones fire on the standard portal-`mounted` and
-      // derived-state-sync patterns in Tooltip/NotificationProvider/Tabs, which are correct.
-      // Kept at "warn" so they stay visible without blocking CI; promote to "error" if/when
-      // those components are reworked for the compiler.
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/refs": "warn",
-      "react-hooks/immutability": "warn",
-      "react-hooks/purity": "warn",
-      "react-hooks/static-components": "warn",
-      "react-hooks/use-memo": "warn",
-      "react-hooks/preserve-manual-memoization": "warn",
-      "react-hooks/set-state-in-render": "warn",
     },
   },
 
