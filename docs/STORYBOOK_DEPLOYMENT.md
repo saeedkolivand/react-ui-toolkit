@@ -40,7 +40,7 @@ Then serve the parent directory so the page sits under `/react-ui-toolkit/`.
 
 ## Base paths
 
-- **Landing page**: `base` in `vite.landing.config.ts`, overridable with `LANDING_BASE`.
+- **Landing page**: `base` in `vite.landing.config.mts`, overridable with `LANDING_BASE`.
 - **Storybook**: `STORYBOOK_BASE_PATH` in `.storybook/main.ts`, defaulting to `/` so local dev works
   unchanged. The Pages workflow sets it to `/react-ui-toolkit/storybook/`.
 

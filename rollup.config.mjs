@@ -40,7 +40,7 @@ export default [
         outDir: "./dist",
       }),
       postcss({
-        plugins: [tailwindcss("./tailwind.config.js"), autoprefixer()],
+        plugins: [tailwindcss("./tailwind.config.mjs"), autoprefixer()],
         extract: path.resolve("dist/styles.css"),
         minimize: true,
         inject: false,
