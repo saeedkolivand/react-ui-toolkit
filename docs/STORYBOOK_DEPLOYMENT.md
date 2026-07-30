@@ -1,56 +1,58 @@
-# Deploying Storybook to GitHub Pages
+# Deploying the site to GitHub Pages
 
-## Automatic Deployment
+One workflow publishes both halves of the site: the landing page at the root and Storybook one level
+down.
 
-This project is configured to automatically deploy the Storybook to GitHub Pages whenever changes are pushed to the `main` branch. The deployment is handled by a GitHub Actions workflow defined in `.github/workflows/storybook.yml`.
+| Path                                                          | Content      | Built by                  |
+| ------------------------------------------------------------- | ------------ | ------------------------- |
+| `https://saeedkolivand.github.io/react-ui-toolkit/`           | Landing page | `npm run build:landing`   |
+| `https://saeedkolivand.github.io/react-ui-toolkit/storybook/` | Storybook    | `npm run build-storybook` |
 
-## Manual Deployment
+## Automatic deployment
 
-You can manually trigger a Storybook deployment in two ways:
+`.github/workflows/pages.yml` runs on every push to `main`. It builds the library (the landing page
+imports the library's own components, so `dist/styles.css` has to exist first), then the landing
+page, then Storybook, assembles them into `site/` and pushes that to the `gh-pages` branch as a
+single commit.
 
-### 1. Using GitHub Actions UI
+It can also be run by hand from the Actions tab → "Deploy Pages" → "Run workflow".
 
-1. Go to the GitHub repository
-2. Click on the "Actions" tab
-3. Select the "Manual Storybook Deployment" workflow
-4. Click "Run workflow"
-5. Select the branch you want to deploy from and click "Run workflow"
-
-### 2. Using npm script
-
-To manually deploy from your local machine:
+## Local preview
 
 ```bash
-npm run deploy-storybook
+npm run landing:dev     # landing page with HMR, served at "/"
+npm run storybook       # Storybook at :6006, served at "/"
 ```
 
-This command will build the Storybook with the correct base path and deploy it to the `gh-pages` branch.
+To reproduce the deployed layout exactly:
 
-## Viewing the Deployed Storybook
+```bash
+npm run build && npm run build:landing
+STORYBOOK_BASE_PATH=/react-ui-toolkit/storybook/ npm run build-storybook
+mkdir -p site/storybook && cp -r landing-dist/. site/ && cp -r storybook-static/. site/storybook/
+```
 
-Once deployed, the Storybook will be available at:
+Then serve the parent directory so the page sits under `/react-ui-toolkit/`.
 
-https://[your-github-username].github.io/react-ui-toolkit/
+> On Windows Git Bash, prefix the Storybook command with `MSYS_NO_PATHCONV=1`. Otherwise MSYS
+> rewrites the leading `/` of the base path into your Git install directory and every asset URL comes
+> out as `/Program Files/Git/react-ui-toolkit/...`. This does not affect CI, which runs on Linux.
+
+## Base paths
+
+- **Landing page**: `base` in `vite.landing.config.mts`, overridable with `LANDING_BASE`.
+- **Storybook**: `STORYBOOK_BASE_PATH` in `.storybook/main.ts`, defaulting to `/` so local dev works
+  unchanged. The Pages workflow sets it to `/react-ui-toolkit/storybook/`.
+
+## Repository settings
+
+GitHub Pages must be enabled and set to deploy from the **`gh-pages` branch**, root folder. The
+workflow writes a `.nojekyll` file so Pages does not strip Vite's `_`-prefixed asset directories.
 
 ## Troubleshooting
 
-### Base URL Issues
+**Assets 404 after deploy** — the base path and the actual URL disagree. Check the two settings
+above.
 
-If assets are not loading correctly, check that the `base` property in `.storybook/main.ts` is correctly set. The default configuration uses `/react-ui-toolkit/` as the base path for GitHub Pages.
-
-### Repository Settings
-
-Ensure that in your repository settings:
-
-1. GitHub Pages is enabled
-2. It's configured to deploy from the `gh-pages` branch
-3. The custom domain is properly set (if applicable)
-
-### Permissions
-
-If the workflow fails with permission errors, make sure the GitHub Actions workflow has write permissions to the repository. This is configured in the workflow file with:
-
-```yaml
-permissions:
-  contents: write
-```
+**Workflow fails with a permission error** — `pages.yml` needs `contents: write`, which it declares.
+Confirm Actions has write permission in repository settings.

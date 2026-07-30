@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context";
 import styles from "./Notification.module.css";
@@ -26,21 +26,19 @@ const Notification: React.FC<NotificationProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleClose();
-    }, duration);
-
-    return () => clearTimeout(timer);
-  }, [duration]);
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
       setIsVisible(false);
       onClose?.();
     }, 300); // Match the animation duration
-  };
+  }, [onClose]);
+
+  useEffect(() => {
+    const timer = setTimeout(handleClose, duration);
+
+    return () => clearTimeout(timer);
+  }, [duration, handleClose]);
 
   const getIcon = () => {
     switch (type) {

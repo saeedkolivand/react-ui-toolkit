@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/storybook.yml">
-    <img src="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/storybook.yml/badge.svg" alt="CI/CD Status">
+  <a href="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/ci.yml">
+    <img src="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   </a>
   <a href="https://codecov.io/gh/saeedkolivand/react-ui-toolkit">
     <img src="https://codecov.io/gh/saeedkolivand/react-ui-toolkit/branch/main/graph/badge.svg" alt="Code Coverage">
@@ -16,12 +16,17 @@
 
 ## Features
 
-- **Modern Design** - Clean and professional component designs  
-- **TypeScript Support** - Full type definitions for all components  
-- **Accessibility** - WCAG 2.1 compliant components  
-- **Customizable** - Easily customize using Tailwind CSS  
-- **Dark Mode** - Built-in dark mode support  
-- **Responsive** - Mobile-first design approach  
+- **Modern Design** - Clean and professional component designs
+- **TypeScript Support** - Full type definitions for all components
+- **Accessibility** - WCAG 2.1 compliant components
+- **Customizable** - Easily customize using Tailwind CSS
+- **Dark Mode** - Built-in dark mode support
+- **Responsive** - Mobile-first design approach
+
+## Links
+
+- **[Landing page](https://saeedkolivand.github.io/react-ui-toolkit/)** — overview with live components
+- **[Storybook](https://saeedkolivand.github.io/react-ui-toolkit/storybook/)** — every component and variant
 
 ## Installation
 
@@ -29,7 +34,17 @@
 npm install @saeedkolivand/react-ui-toolkit
 # or
 yarn add @saeedkolivand/react-ui-toolkit
-````
+```
+
+Requires React 18 or newer.
+
+Styles ship as a single stylesheet. Either import it once at your app entry:
+
+```js
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
+```
+
+...or wrap your app in `StylesProvider`, which injects it for you.
 
 ## Quick Start
 
@@ -56,53 +71,56 @@ export default App;
 
 For detailed documentation, see the following resources:
 
-* [Usage Guide](./docs/usage-guide.md)
-* [API Reference](./docs/api-reference.md)
-* [Examples](./examples/README.md)
+- [Usage Guide](./docs/usage-guide.md)
+- [API Reference](./docs/api-reference.md)
+- [Examples](./examples/README.md)
+- [Releasing](./docs/releasing.md)
+- [Deploying the site](./docs/STORYBOOK_DEPLOYMENT.md)
+- [Audit — July 2026](./docs/audit-2026-07.md)
 
 ## Available Components
 
 ### Base Components
 
-* Button
-* Input
-* Textarea
-* Select
-* Checkbox
-* Radio
-* Switch
-* Tooltip
-* Tag
-* Icon
-* Divider
+- Button
+- Input
+- Textarea
+- Select
+- Checkbox
+- Radio
+- Switch
+- Tooltip
+- Tag
+- Icon
+- Divider
 
 ### Layout Components
 
-* Container
-* Row
-* Col
+- Container
+- Row
+- Col
 
 ### Feedback Components
 
-* Card
-* Alert
-* Badge
-* Avatar
-* Spinner
-* Progress
-* Notification
+- Card
+- Alert
+- Badge
+- Avatar
+- Spinner
+- Progress
+- Notification
 
 ### Navigation Components
 
-* Tabs
-* Modal
-* Drawer
-* Dropdown
-* Accordion
+- Tabs
+- Modal
+- Drawer
+- Dropdown
+- Accordion
 
 ### Theme Components
 
-* ThemeToggle
+- ThemeToggle
 
 ## Development
 
@@ -207,11 +225,11 @@ function App() {
 
 Before each commit, the following will run automatically:
 
-* TypeScript type checking
-* ESLint
-* Prettier
-* Tests
-* Project build
+- TypeScript type checking
+- ESLint
+- Prettier
+- Tests
+- Project build
 
 ## License
 

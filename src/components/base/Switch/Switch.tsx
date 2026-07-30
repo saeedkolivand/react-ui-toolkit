@@ -1,8 +1,10 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-export interface SwitchProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+export interface SwitchProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "size"
+> {
   /**
    * Label for the switch
    */

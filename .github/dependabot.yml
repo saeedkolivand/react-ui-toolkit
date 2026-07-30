@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    # Grouped so a toolchain bump arrives as one reviewable PR instead of
+    # fifteen. Letting these drift independently is how this repo ended up
+    # ~20 majors behind.
+    groups:
+      storybook:
+        patterns: ["storybook", "@storybook/*", "eslint-plugin-storybook"]
+      eslint:
+        patterns: ["eslint", "eslint-*", "@typescript-eslint/*", "typescript-eslint"]
+      babel:
+        patterns: ["@babel/*"]
+      jest:
+        patterns: ["jest", "jest-*", "@types/jest", "@testing-library/*"]
+      rollup:
+        patterns: ["rollup", "rollup-plugin-*", "@rollup/*"]
+      types:
+        patterns: ["@types/*"]
+      semantic-release:
+        patterns: ["semantic-release", "@semantic-release/*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    groups:
+      actions:
+        patterns: ["*"]

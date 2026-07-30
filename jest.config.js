@@ -15,7 +15,8 @@ const config = {
     "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
     "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}",
   ],
-  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  // ponytail: no extensionsToTreatAsEsm — the transform below is babel-jest emitting CJS,
+  // so declaring the sources as ESM was contradictory.
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 };
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { Icon, Button } from "@/components";
+import { Icon } from "../../base/Icon";
+import { Button } from "../../base/Button";
 
 export type AlertVariant = "info" | "success" | "warning" | "error";
 

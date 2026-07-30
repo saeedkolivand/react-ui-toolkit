@@ -2,7 +2,8 @@ import React, { useEffect, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
-import { Button, Icon } from "@/components";
+import { Button } from "../../base/Button";
+import { Icon } from "../../base/Icon";
 
 export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref" | "children"> {
   /**

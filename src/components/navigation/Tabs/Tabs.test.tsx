@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, it, expect, jest } from "@jest/globals";
 import { Tabs } from "./Tabs";
 
 describe("Tabs", () => {

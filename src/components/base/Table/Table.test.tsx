@@ -2,8 +2,10 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Table } from "./Table";
 
-// Mock the component imports to avoid test complexities
-jest.mock("@/components", () => ({
+// Mock the component imports to avoid test complexities.
+// Mocked per-module (not via the "@/components" barrel) because Table imports its
+// dependencies directly — a barrel mock would no longer intercept them.
+jest.mock("../Button", () => ({
   Button: ({ children, onClick, disabled, variant, ...props }: any) => {
     // Create a more descriptive testid based on the button content or variant
     const content = typeof children === "string" ? children : "";
@@ -11,14 +13,17 @@ jest.mock("@/components", () => ({
       content === "→"
         ? "next-page-button"
         : content === "←"
-        ? "prev-page-button"
-        : `button-${content || variant || "default"}`;
+          ? "prev-page-button"
+          : `button-${content || variant || "default"}`;
     return (
       <button onClick={onClick} disabled={disabled} data-testid={testId} {...props}>
         {children}
       </button>
     );
   },
+}));
+
+jest.mock("../../layout/Container", () => ({
   Container: ({ children, className, ...props }: any) => {
     // Use pagination-container testid specifically for the pagination container
     const testId = className?.includes("flex items-center justify-end")
@@ -30,20 +35,26 @@ jest.mock("@/components", () => ({
       </div>
     );
   },
+}));
+
+jest.mock("../Select", () => ({
   Select: ({ children, value, onChange, size, ...props }: any) => (
     <select data-testid="page-size-select" value={value} onChange={onChange} {...props}>
       {children}
     </select>
   ),
-  Icon: ({ name, className }: any) => (
-    <span data-testid={`icon-${name}`} className={className}>
-      {name}
-    </span>
-  ),
   Option: ({ children, value }: any) => (
     <option value={value} data-testid={`page-size-option-${value}`}>
       {children}
     </option>
+  ),
+}));
+
+jest.mock("../Icon", () => ({
+  Icon: ({ name, className }: any) => (
+    <span data-testid={`icon-${name}`} className={className}>
+      {name}
+    </span>
   ),
 }));
 

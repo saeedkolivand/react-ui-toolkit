@@ -1,5 +1,5 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# husky v9+ sources its own shim; the old `. .../_/husky.sh` line is removed in v10.
 
 # Function to get git status of working directory
 hasUnstagedChanges()

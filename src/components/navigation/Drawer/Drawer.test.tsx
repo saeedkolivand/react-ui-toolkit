@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { Drawer } from "./Drawer";
 
 describe("Drawer", () => {

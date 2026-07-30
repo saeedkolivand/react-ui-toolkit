@@ -32,12 +32,15 @@ export default [
       commonjs(),
       typescript({
         tsconfig: "./tsconfig.json",
-        exclude: ["**/*.stories.tsx", "**/*.test.tsx"],
-        declaration: true,
-        declarationDir: "./dist/types",
+        exclude: ["**/*.stories.tsx", "**/*.test.tsx", "landing/**"],
+        // ponytail: no declaration here — the second rollup pass below bundles
+        // dist/index.d.ts via rollup-plugin-dts. Emitting dist/types/ too was dead output.
+        declaration: false,
+        rootDir: "./src",
+        outDir: "./dist",
       }),
       postcss({
-        plugins: [tailwindcss("./tailwind.config.js"), autoprefixer()],
+        plugins: [tailwindcss("./tailwind.config.mjs"), autoprefixer()],
         extract: path.resolve("dist/styles.css"),
         minimize: true,
         inject: false,
@@ -49,7 +52,15 @@ export default [
         sourceMap: true,
       }),
     ],
-    external: ["react", "react-dom", "tailwind-merge"],
+    // Every runtime dependency must be external, or it gets inlined into the bundle
+    // *and* installed again from "dependencies" — consumers paid for framer-motion twice.
+    external: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      ...Object.keys(packageJson.dependencies),
+      ...Object.keys(packageJson.peerDependencies),
+    ],
   },
   {
     input: "src/index.ts",

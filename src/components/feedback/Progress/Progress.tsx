@@ -83,7 +83,7 @@ export const Progress: React.FC<ProgressProps> = ({
   indeterminate = false,
   label,
   ...props
-}): JSX.Element => {
+}): React.JSX.Element => {
   const isIndeterminate = indeterminate || typeof value !== "number";
   const percentage = isIndeterminate ? 0 : Math.min(100, Math.max(0, (value! / max) * 100));
 
@@ -105,8 +105,8 @@ export const Progress: React.FC<ProgressProps> = ({
     ? isIndeterminate
       ? "relative before:absolute before:inset-0 before:w-1/3 before:animate-indeterminate before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"
       : striped
-      ? "animate-progress-stripes"
-      : ""
+        ? "animate-progress-stripes"
+        : ""
     : "";
 
   const progressClasses = twMerge(

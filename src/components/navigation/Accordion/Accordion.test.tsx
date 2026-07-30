@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, it, expect } from "@jest/globals";
 import { Accordion } from "./Accordion";
 
 describe("Accordion", () => {
