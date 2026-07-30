@@ -1,0 +1,57 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push to the gh-pages branch
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The landing page imports the library's own components, so build the
+      # library (and therefore dist/styles.css) first.
+      - name: Build library
+        run: npm run build
+
+      - name: Build landing page
+        run: npm run build:landing
+
+      - name: Build Storybook
+        run: npm run build-storybook
+        env:
+          STORYBOOK_BASE_PATH: /react-ui-toolkit/storybook/
+
+      # Landing page at the site root, Storybook one level down.
+      - name: Assemble site
+        run: |
+          mkdir -p site
+          cp -r landing-dist/. site/
+          mkdir -p site/storybook
+          cp -r storybook-static/. site/storybook/
+          # Tell GitHub Pages not to run the output through Jekyll,
+          # which would drop Vite's _-prefixed asset directories.
+          touch site/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: site
+          branch: gh-pages
+          single-commit: true

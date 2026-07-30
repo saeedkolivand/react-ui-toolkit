@@ -3,8 +3,10 @@ import { twMerge } from "tailwind-merge";
 
 export type CheckboxSize = "sm" | "md" | "lg";
 
-export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+export interface CheckboxProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "size"
+> {
   /**
    * Label for the checkbox
    */

@@ -1,0 +1,639 @@
+/*
+ * Landing page styling — tokens transcribed from DESIGN-figma.md.
+ *
+ * Deliberately plain CSS rather than Tailwind utilities: tailwind.config.js only
+ * scans ./src, so utilities written here would never be generated. Plain CSS also
+ * suits the editorial look better than utility soup.
+ */
+
+:root {
+  /* Colors */
+  --ink: #000000;
+  --canvas: #ffffff;
+  --inverse-canvas: #000000;
+  --inverse-ink: #ffffff;
+  --hairline: #e6e6e6;
+  --hairline-soft: #f1f1f1;
+  --surface-soft: #f7f7f5;
+  --block-lime: #dceeb1;
+  --block-lilac: #c5b0f4;
+  --block-cream: #f4ecd6;
+  --block-pink: #efd4d4;
+  --block-mint: #c8e6cd;
+  --block-coral: #f3c9b6;
+  --block-navy: #1f1d3d;
+  --accent-magenta: #ff3d8b;
+
+  /* Radii */
+  --r-xs: 2px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 50px;
+  --r-full: 9999px;
+
+  /* Spacing */
+  --s-xxs: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 32px;
+  --s-xxl: 48px;
+  --s-section: 96px;
+
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", helvetica, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", menlo, monospace;
+
+  --container: 1280px;
+}
+
+/* ---------- base ---------- */
+
+.lp {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.lp * {
+  box-sizing: border-box;
+}
+
+.lp-container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding-inline: var(--s-xxl);
+}
+
+/* ---------- type scale (line-heights pulled ~0.02 for Inter's x-height) ---------- */
+
+.t-display-xl {
+  font-size: 86px;
+  font-weight: 340;
+  line-height: 0.98;
+  letter-spacing: -1.72px;
+  margin: 0;
+}
+
+.t-display-lg {
+  font-size: 64px;
+  font-weight: 340;
+  line-height: 1.08;
+  letter-spacing: -0.96px;
+  margin: 0;
+}
+
+.t-headline {
+  font-size: 26px;
+  font-weight: 540;
+  line-height: 1.33;
+  letter-spacing: -0.26px;
+  margin: 0;
+}
+
+.t-subhead {
+  font-size: 26px;
+  font-weight: 340;
+  line-height: 1.33;
+  letter-spacing: -0.26px;
+  margin: 0;
+}
+
+.t-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.43;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.t-body-lg {
+  font-size: 20px;
+  font-weight: 330;
+  line-height: 1.38;
+  letter-spacing: -0.14px;
+  margin: 0;
+}
+
+.t-body {
+  font-size: 18px;
+  font-weight: 320;
+  line-height: 1.43;
+  letter-spacing: -0.26px;
+  margin: 0;
+}
+
+.t-body-sm {
+  font-size: 16px;
+  font-weight: 330;
+  line-height: 1.43;
+  letter-spacing: -0.14px;
+  margin: 0;
+}
+
+.t-eyebrow {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.54px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.t-caption {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ---------- buttons: pill is the only shape ---------- */
+
+.btn {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 480;
+  line-height: 1.4;
+  letter-spacing: -0.1px;
+  border-radius: var(--r-pill);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-xs);
+  text-decoration: none;
+  min-height: 44px; /* touch target holds at every viewport */
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97); /* pressed state is micro-scale, not a darker fill */
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--canvas);
+  padding: 10px 20px;
+}
+
+.btn-secondary {
+  background: var(--canvas);
+  color: var(--ink);
+  padding: 8px 18px 10px;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-soft);
+}
+
+.btn-text {
+  background: transparent;
+  color: var(--ink);
+  padding: var(--s-xs) var(--s-sm);
+  border-radius: var(--r-full);
+}
+
+.btn-text:hover {
+  background: var(--surface-soft);
+}
+
+.btn-on-dark {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+/* ---------- nav ---------- */
+
+.lp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.lp-nav-inner {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-lg);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding-inline: var(--s-xxl);
+}
+
+.lp-wordmark {
+  font-size: 20px;
+  font-weight: 540;
+  letter-spacing: -0.4px;
+  text-decoration: none;
+  color: var(--ink);
+  margin-right: var(--s-md);
+}
+
+.lp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xxs);
+  flex: 1;
+}
+
+.lp-nav-links a {
+  font-size: 16px;
+  font-weight: 330;
+  letter-spacing: -0.14px;
+  color: var(--ink);
+  text-decoration: none;
+  padding: var(--s-xs) var(--s-sm);
+  border-radius: var(--r-full);
+}
+
+.lp-nav-links a:hover {
+  background: var(--surface-soft);
+}
+
+.lp-nav-cta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+}
+
+.lp-burger {
+  display: none;
+  background: var(--surface-soft);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.lp-overlay {
+  display: none;
+  position: fixed;
+  inset: 56px 0 0;
+  background: var(--canvas);
+  z-index: 19;
+  padding: var(--s-xl) var(--s-lg);
+  flex-direction: column;
+  gap: var(--s-xs);
+}
+
+.lp-overlay.is-open {
+  display: flex;
+}
+
+.lp-overlay a {
+  font-size: 26px;
+  font-weight: 340;
+  letter-spacing: -0.26px;
+  color: var(--ink);
+  text-decoration: none;
+  padding: var(--s-sm) 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+/* ---------- hero ---------- */
+
+.lp-hero {
+  padding: var(--s-section) 0 var(--s-xxl);
+}
+
+.lp-hero h1 {
+  max-width: 15ch;
+}
+
+.lp-hero .lp-lede {
+  max-width: 46ch;
+  margin-top: var(--s-lg);
+}
+
+.lp-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-sm);
+  margin-top: var(--s-xl);
+}
+
+.lp-install {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-sm);
+  background: var(--surface-soft);
+  border-radius: var(--r-pill);
+  padding: 10px 10px 10px 20px;
+  font-family: var(--mono);
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+  min-height: 44px;
+}
+
+.lp-install span:last-child {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 480;
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: var(--r-pill);
+  padding: 6px 12px;
+  letter-spacing: 0.2px;
+}
+
+/* ---------- marquee ---------- */
+
+.lp-marquee {
+  background: var(--inverse-canvas);
+  color: var(--inverse-ink);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.lp-marquee-track {
+  display: flex;
+  gap: var(--s-xl);
+  padding-left: var(--s-xl);
+  animation: lp-scroll 40s linear infinite;
+  will-change: transform;
+}
+
+.lp-marquee-track span {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+@keyframes lp-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-marquee-track {
+    animation: none;
+  }
+}
+
+/* ---------- sections ---------- */
+
+.lp-section {
+  padding-block: var(--s-section);
+}
+
+.lp-section-head {
+  max-width: 34ch;
+}
+
+.lp-section-head .t-eyebrow {
+  margin-bottom: var(--s-md);
+}
+
+.lp-section-head p {
+  margin-top: var(--s-lg);
+}
+
+/* Color blocks: the depth device. No shadows, ever. */
+.lp-block {
+  border-radius: var(--r-lg);
+  padding: var(--s-xxl);
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+.lp-block-inner {
+  /* Type gets generous side margins so the panel reads as a poster. */
+  max-width: 62ch;
+}
+
+.lp-block-lime {
+  background: var(--block-lime);
+}
+
+.lp-block-navy {
+  background: var(--block-navy);
+  color: var(--inverse-ink);
+}
+
+.lp-block-coral {
+  background: var(--block-coral);
+}
+
+.lp-block-cream {
+  background: var(--block-cream);
+}
+
+.lp-block-demo {
+  margin-top: var(--s-xl);
+  display: grid;
+  gap: var(--s-lg);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+}
+
+.lp-demo-surface {
+  background: var(--canvas);
+  border-radius: var(--r-md);
+  padding: var(--s-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-md);
+}
+
+/* ---------- feature tiles ---------- */
+
+.lp-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--s-lg);
+  margin-top: var(--s-xl);
+}
+
+.lp-tile {
+  background: var(--surface-soft);
+  border-radius: var(--r-md);
+  padding: var(--s-lg);
+}
+
+.lp-tile .t-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  margin-bottom: var(--s-md);
+}
+
+.lp-tile p {
+  margin-top: var(--s-xs);
+}
+
+/* ---------- component gallery ---------- */
+
+.lp-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--s-md);
+  margin-top: var(--s-xl);
+}
+
+.lp-card {
+  background: var(--surface-soft);
+  border-radius: var(--r-md);
+  padding: var(--s-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+}
+
+.lp-card-stage {
+  background: var(--canvas);
+  border-radius: var(--r-sm);
+  padding: var(--s-md);
+  min-height: 92px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-xs);
+  align-items: center;
+}
+
+/* ---------- footer ---------- */
+
+.lp-footer {
+  background: var(--canvas);
+  border-top: 1px solid var(--hairline);
+  padding: var(--s-section) var(--s-xl);
+}
+
+.lp-footer-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr repeat(3, 1fr);
+  gap: var(--s-xl);
+}
+
+.lp-footer h2 {
+  font-size: 40px;
+  font-weight: 340;
+  letter-spacing: -0.8px;
+  margin: 0;
+}
+
+.lp-footer-col h3 {
+  margin: 0 0 var(--s-md);
+}
+
+.lp-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+}
+
+.lp-footer-col a {
+  font-size: 16px;
+  font-weight: 330;
+  letter-spacing: -0.14px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.lp-footer-col a:hover {
+  text-decoration: underline;
+}
+
+.lp-footer-legal {
+  max-width: var(--container);
+  margin: var(--s-xxl) auto 0;
+  padding-top: var(--s-lg);
+  border-top: 1px solid var(--hairline-soft);
+}
+
+/* ---------- responsive (breakpoints per DESIGN-figma.md) ---------- */
+
+@media (max-width: 960px) {
+  .lp-nav-links {
+    display: none;
+  }
+
+  .lp-burger {
+    display: block;
+    margin-left: auto;
+  }
+
+  .lp-footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .lp-container,
+  .lp-nav-inner {
+    padding-inline: var(--s-lg);
+  }
+
+  /* Below 768px the blocks bleed to the viewport edge for a poster effect. */
+  .lp-block {
+    border-radius: 0;
+    padding: var(--s-xl) var(--s-lg);
+  }
+
+  .t-display-xl {
+    font-size: 64px;
+    letter-spacing: -1.28px;
+  }
+
+  .t-display-lg {
+    font-size: 40px;
+    letter-spacing: -0.6px;
+  }
+
+  .t-subhead,
+  .t-headline {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .t-display-xl {
+    font-size: 48px;
+    letter-spacing: -0.96px;
+  }
+
+  .lp-hero-actions .btn,
+  .lp-hero-actions .lp-install {
+    width: 100%;
+  }
+
+  .lp-section {
+    padding-block: var(--s-xxl);
+  }
+
+  .lp-footer-inner {
+    grid-template-columns: 1fr;
+  }
+}

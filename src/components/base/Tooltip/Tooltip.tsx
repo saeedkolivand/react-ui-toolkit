@@ -143,8 +143,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
   // References
   const triggerRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const showTimeoutRef = useRef<NodeJS.Timeout>();
-  const hideTimeoutRef = useRef<NodeJS.Timeout>();
+  // React 19 types require an explicit initial value for useRef.
+  const showTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Use controlled visible prop if provided
   const visible = controlledVisible !== undefined ? controlledVisible : isVisible;
@@ -470,8 +471,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
     const eventHandlers = getEventHandlers();
 
     // Handle special case for disabled elements
+    // React 19 types ReactElement props as `unknown`, so narrow before reading `disabled`.
     if (
-      React.isValidElement(children) &&
+      React.isValidElement<{ disabled?: boolean }>(children) &&
       (children.props.disabled || (children.type === "button" && children.props.disabled))
     ) {
       // If children is disabled, we need to wrap it in a span to trigger events

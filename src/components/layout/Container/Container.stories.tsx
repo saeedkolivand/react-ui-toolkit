@@ -41,14 +41,14 @@ const ContentBox = ({
       color === "blue"
         ? "bg-blue-500"
         : color === "green"
-        ? "bg-green-500"
-        : color === "purple"
-        ? "bg-purple-500"
-        : color === "orange"
-        ? "bg-orange-500"
-        : color === "pink"
-        ? "bg-pink-500"
-        : "bg-gray-500"
+          ? "bg-green-500"
+          : color === "purple"
+            ? "bg-purple-500"
+            : color === "orange"
+              ? "bg-orange-500"
+              : color === "pink"
+                ? "bg-pink-500"
+                : "bg-gray-500"
     }`}
   >
     {children}

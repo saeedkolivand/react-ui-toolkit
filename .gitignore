@@ -44,3 +44,7 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo 
 *storybook.log
+
+# Build output
+landing-dist
+site

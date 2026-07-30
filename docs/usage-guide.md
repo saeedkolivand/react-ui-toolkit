@@ -20,7 +20,7 @@ The most reliable approach is to directly import the CSS file in your applicatio
 
 ```javascript
 // In your App.js, index.js, or _app.js (Next.js)
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 ```
 
 ### Option 2: StylesProvider Component
@@ -28,7 +28,7 @@ import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
 Wrap your application with the `StylesProvider` which will automatically load the styles:
 
 ```jsx
-import { StylesProvider } from '@saeedkolivand/react-ui-toolkit';
+import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
 
 function App() {
   return (
@@ -44,7 +44,7 @@ function App() {
 For Next.js or other SSR frameworks, use the SSR-compatible provider:
 
 ```jsx
-import { StylesProviderSSR } from '@saeedkolivand/react-ui-toolkit';
+import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -62,7 +62,7 @@ export default MyApp;
 Alternatively, you can use the withStyles HOC to wrap your root component:
 
 ```jsx
-import { withStyles } from '@saeedkolivand/react-ui-toolkit';
+import { withStyles } from "@saeedkolivand/react-ui-toolkit";
 
 function YourApp() {
   return <div>Your application content</div>;
@@ -79,11 +79,11 @@ If your project uses Tailwind CSS, ensure your configuration includes the compon
 // tailwind.config.js
 module.exports = {
   content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './node_modules/@saeedkolivand/react-ui-toolkit/**/*.{js,jsx,ts,tsx}'
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@saeedkolivand/react-ui-toolkit/**/*.{js,jsx,ts,tsx}",
   ],
   // other configuration...
-}
+};
 ```
 
 ## Basic Usage
@@ -93,7 +93,7 @@ module.exports = {
 Import components directly from the package:
 
 ```jsx
-import { Button, Input, Select } from '@saeedkolivand/react-ui-toolkit';
+import { Button, Input, Select } from "@saeedkolivand/react-ui-toolkit";
 
 function MyComponent() {
   return (
@@ -102,8 +102,8 @@ function MyComponent() {
       <Button variant="primary">Click me</Button>
       <Select
         options={[
-          { value: 'option1', label: 'Option 1' },
-          { value: 'option2', label: 'Option 2' },
+          { value: "option1", label: "Option 1" },
+          { value: "option2", label: "Option 2" },
         ]}
       />
     </div>
@@ -116,7 +116,7 @@ function MyComponent() {
 The Button component supports various variants:
 
 ```jsx
-import { Button } from '@saeedkolivand/react-ui-toolkit';
+import { Button } from "@saeedkolivand/react-ui-toolkit";
 
 function ButtonExample() {
   return (
@@ -150,7 +150,7 @@ function ButtonExample() {
 Add a theme toggle button to switch between light and dark modes:
 
 ```jsx
-import { ThemeToggle } from '@saeedkolivand/react-ui-toolkit';
+import { ThemeToggle } from "@saeedkolivand/react-ui-toolkit";
 
 function App() {
   return (
@@ -158,9 +158,7 @@ function App() {
       <header>
         <ThemeToggle />
       </header>
-      <main>
-        {/* Your application content */}
-      </main>
+      <main>{/* Your application content */}</main>
     </div>
   );
 }
@@ -171,21 +169,14 @@ function App() {
 Use form elements for collecting user input:
 
 ```jsx
-import { Input, Textarea, Checkbox, Radio, Select } from '@saeedkolivand/react-ui-toolkit';
+import { Input, Textarea, Checkbox, Radio, Select } from "@saeedkolivand/react-ui-toolkit";
 
 function FormExample() {
   return (
     <form className="space-y-4">
-      <Input 
-        label="Username" 
-        placeholder="Enter your username" 
-        required 
-      />
+      <Input label="Username" placeholder="Enter your username" required />
 
-      <Textarea 
-        label="Bio" 
-        placeholder="Tell us about yourself" 
-      />
+      <Textarea label="Bio" placeholder="Tell us about yourself" />
 
       <Checkbox label="I agree to the terms and conditions" />
 
@@ -197,9 +188,9 @@ function FormExample() {
       <Select
         label="Country"
         options={[
-          { value: 'us', label: 'United States' },
-          { value: 'ca', label: 'Canada' },
-          { value: 'uk', label: 'United Kingdom' },
+          { value: "us", label: "United States" },
+          { value: "ca", label: "Canada" },
+          { value: "uk", label: "United Kingdom" },
         ]}
       />
     </form>
@@ -214,7 +205,7 @@ function FormExample() {
 Access and manipulate theme and other global states:
 
 ```jsx
-import { useChangeTheme, useColorScheme } from '@saeedkolivand/react-ui-toolkit';
+import { useChangeTheme, useColorScheme } from "@saeedkolivand/react-ui-toolkit";
 
 function ThemeAwareComponent() {
   const { isDarkMode, toggleTheme } = useChangeTheme();
@@ -222,7 +213,7 @@ function ThemeAwareComponent() {
 
   return (
     <div>
-      <p>Current theme: {isDarkMode ? 'Dark' : 'Light'}</p>
+      <p>Current theme: {isDarkMode ? "Dark" : "Light"}</p>
       <button onClick={toggleTheme}>Toggle Theme</button>
       <p>Color scheme: {colorScheme}</p>
     </div>
@@ -235,14 +226,11 @@ function ThemeAwareComponent() {
 Customize components using className or style props:
 
 ```jsx
-import { Button } from '@saeedkolivand/react-ui-toolkit';
+import { Button } from "@saeedkolivand/react-ui-toolkit";
 
 function CustomizedButton() {
   return (
-    <Button 
-      variant="primary" 
-      className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
-    >
+    <Button variant="primary" className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
       Customized Button
     </Button>
   );
@@ -279,9 +267,9 @@ If you experience conflicts with your Tailwind configuration:
 ### Basic Example
 
 ```jsx
-import React from 'react';
-import { Button, Card, StylesProvider } from '@saeedkolivand/react-ui-toolkit';
-import '@saeedkolivand/react-ui-toolkit/dist/styles.css';
+import React from "react";
+import { Button, Card, StylesProvider } from "@saeedkolivand/react-ui-toolkit";
+import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
 
 function App() {
   return (
@@ -294,8 +282,12 @@ function App() {
           <Card.Body>
             <p className="mb-4">This is a simple example of using React UI Toolkit components.</p>
             <div className="space-y-2">
-              <Button variant="primary" fullWidth>Sign In</Button>
-              <Button variant="outline" fullWidth>Create Account</Button>
+              <Button variant="primary" fullWidth>
+                Sign In
+              </Button>
+              <Button variant="outline" fullWidth>
+                Create Account
+              </Button>
             </div>
           </Card.Body>
         </Card>

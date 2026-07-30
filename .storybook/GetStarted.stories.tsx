@@ -1,9 +1,9 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Icon } from '../src';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Icon } from "../src";
 
 const meta: Meta = {
-  title: 'Documentation/Get Started',
+  title: "Documentation/Get Started",
   parameters: {
     options: { showPanel: false },
     controls: { hideNoControlsWarning: true },

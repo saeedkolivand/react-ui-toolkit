@@ -1,9 +1,9 @@
-import type { Preview } from '@storybook/react-vite';
-import '../src/styles/index.css';
+import type { Preview } from "@storybook/react-vite";
+import "../src/styles/index.css";
 
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
+    actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -13,44 +13,36 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
-          'Introduction',
-          'Getting Started',
-          'Components',
-          ['Base', 
+          "Introduction",
+          "Getting Started",
+          "Components",
+          [
+            "Base",
             [
-              'Button',
-              'Input',
-              'Textarea',
-              'Select',
-              'Checkbox',
-              'Radio',
-              'Switch',
-              'Tooltip',
-              'Icon',
-              'Divider',
-              'Tag',
-              'Table',
-              '*'
-            ]
+              "Button",
+              "Input",
+              "Textarea",
+              "Select",
+              "Checkbox",
+              "Radio",
+              "Switch",
+              "Tooltip",
+              "Icon",
+              "Divider",
+              "Tag",
+              "Table",
+              "*",
+            ],
           ],
-          ['Feedback', 
-            [
-              'Alert',
-              'Badge',
-              'Progress',
-              'Spinner',
-              'Avatar',
-              '*'
-            ]
-          ],
-          ['Layout', '*'],
-          ['Navigation', '*'],
-          'Form',
-          'Hooks',
-          'Utilities',
-          'Examples',
-          'Theme',
-          '*'
+          ["Feedback", ["Alert", "Badge", "Progress", "Spinner", "Avatar", "*"]],
+          ["Layout", "*"],
+          ["Navigation", "*"],
+          "Form",
+          "Hooks",
+          "Utilities",
+          "Examples",
+          "Theme",
+          "*",
         ],
       },
     },

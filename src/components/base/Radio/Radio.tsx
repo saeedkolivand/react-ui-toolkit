@@ -3,8 +3,10 @@ import { twMerge } from "tailwind-merge";
 
 export type RadioSize = "sm" | "md" | "lg";
 
-export interface RadioProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+export interface RadioProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "size"
+> {
   /**
    * Label for the radio button
    */

@@ -23,10 +23,10 @@ export const Introduction: Story = {
 
         <div className="relative p-8 max-w-4xl mx-auto">
           <div className="bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 mb-8 border border-gray-700">
-            <img 
-              src={bannerImage} 
-              alt="React UI Toolkit Banner" 
-              className="w-full rounded-lg mb-6" 
+            <img
+              src={bannerImage}
+              alt="React UI Toolkit Banner"
+              className="w-full rounded-lg mb-6"
             />
             <h1 className="text-5xl text-white font-bold mb-6 bg-gradient-to-r from-red-100 via-yellow-100 to-blue-100 bg-clip-text">
               Welcome to React UI Toolkit

@@ -1,86 +1,57 @@
 # Release Process
 
-## Automated Release
+Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/). There is
+no manual version bump — **the version is derived from your commit messages**.
 
-The package includes an automated release script that handles the entire release process:
+## How it works
 
-1. Stages all changes
-2. Commits changes
-3. Pushes changes to the remote repository
-4. Bumps the version (patch, minor, or major)
-5. Builds the package
-6. Publishes to npm
-7. Pushes tags to the remote repository
+Every push to `main` runs `.github/workflows/release.yml`, which:
 
-### Using npm scripts
+1. Runs lint, typecheck and the test suite.
+2. Reads the commits since the last git tag and decides the next version.
+3. Updates `CHANGELOG.md`.
+4. Publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements)
+   (`prepublishOnly` cleans and builds first).
+5. Commits `CHANGELOG.md` + `package.json`, tags it, and creates the GitHub release.
 
-The simplest way to release is to use one of the predefined npm scripts:
+If no commit since the last release warrants one, nothing is published.
 
-```bash
-# For a patch release (0.1.7 -> 0.1.8)
-npm run release:patch
+## What bumps the version
 
-# For a minor release (0.1.7 -> 0.2.0)
-npm run release:minor
+The commit convention is enforced by commitlint — locally via the `commit-msg` hook, and on every PR
+in CI — so a malformed message is caught before it can break a release.
 
-# For a major release (0.1.7 -> 1.0.0)
-npm run release:major
+| Commit prefix                                            | Result                  | Example                                  |
+| -------------------------------------------------------- | ----------------------- | ---------------------------------------- |
+| `fix:`                                                   | patch — 0.1.18 → 0.1.19 | `fix(button): correct disabled contrast` |
+| `feat:`                                                  | minor — 0.1.18 → 0.2.0  | `feat(table): add row selection`         |
+| `feat!:` or `BREAKING CHANGE:` in the body               | major — 0.1.18 → 1.0.0  | see below                                |
+| `chore:`, `docs:`, `test:`, `refactor:`, `style:`, `ci:` | no release              | `docs: fix typo`                         |
+
+```
+feat(select)!: replace options prop with children
+
+BREAKING CHANGE: <Select options={...} /> is now <Select><Option /></Select>.
 ```
 
-### Using the script directly
+## Previewing a release
 
-You can also run the script directly and provide a custom commit message:
+To see what would be published without publishing anything:
 
 ```bash
-node scripts/release.js patch "fix: resolved button styling issue"
+npm run release:dry
 ```
 
-## Manual Release
+## Required repository secrets
 
-If you prefer to handle the release process manually, follow these steps:
+| Secret         | Used for                                                               |
+| -------------- | ---------------------------------------------------------------------- |
+| `NPM_TOKEN`    | publishing to npm — must be an **automation** token so it bypasses 2FA |
+| `GITHUB_TOKEN` | provided automatically; creates the tag, release and comments          |
 
-1. Commit your changes:
-   ```bash
-   git add .
-   git commit -m "your commit message"
-   ```
+## Manual release
 
-2. Push your changes:
-   ```bash
-   git push origin HEAD
-   ```
-
-3. Update the version:
-   ```bash
-   npm version patch -m "chore(release): bump version to %s"
-   ```
-
-4. Build and publish:
-   ```bash
-   npm run build
-   npm publish --access public
-   ```
-
-5. Push the new version tag:
-   ```bash
-   git push --follow-tags
-   ```
-
-## GitHub Actions Workflow
-
-The repository also includes a GitHub Actions workflow that can be triggered manually from the GitHub interface. To use it:
-
-1. Go to the "Actions" tab in the GitHub repository
-2. Select the "Release" workflow
-3. Click "Run workflow"
-4. Choose the version type (patch, minor, major) and provide a commit message
-5. Click "Run workflow"
-
-This will execute the release process in GitHub's CI environment.
-
-## Notes
-
-- Ensure you have the necessary permissions to publish to npm
-- Make sure you're logged in to npm (`npm login`) before releasing
-- The release script assumes you have access to push to the repository
-- Always ensure tests pass before releasing (`npm test`)
+Not supported, deliberately. The previous flow bumped the version and published to npm
+unconditionally but only pushed the tag when a `should_release` input was set — which is how
+`package.json` ended up pinned at 0.1.17 while npm and the git tags had already moved to 0.1.18. If
+you need to intervene, fix the commit history and let the workflow run.
