@@ -14,7 +14,12 @@ jobs:
     name: Build and deploy site
     runs-on: ubuntu-latest
     permissions:
-      contents: write # push to the gh-pages branch
+      contents: read # only reads the repo — the site is no longer a branch
+      pages: write # deploy to the Pages service
+      id-token: write # OIDC, required by actions/deploy-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -38,20 +43,19 @@ jobs:
         env:
           STORYBOOK_BASE_PATH: /react-ui-toolkit/storybook/
 
-      # Landing page at the site root, Storybook one level down.
+      # Landing page at the site root, Storybook one level down. No .nojekyll
+      # needed: artifact deploys skip Jekyll entirely, so Vite's _-prefixed
+      # asset directories survive on their own.
       - name: Assemble site
         run: |
           mkdir -p site
           cp -r landing-dist/. site/
           mkdir -p site/storybook
           cp -r storybook-static/. site/storybook/
-          # Tell GitHub Pages not to run the output through Jekyll,
-          # which would drop Vite's _-prefixed asset directories.
-          touch site/.nojekyll
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
-          folder: site
-          branch: gh-pages
-          single-commit: true
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

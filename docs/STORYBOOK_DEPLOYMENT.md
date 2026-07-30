@@ -12,8 +12,11 @@ down.
 
 `.github/workflows/pages.yml` runs on every push to `main`. It builds the library (the landing page
 imports the library's own components, so `dist/styles.css` has to exist first), then the landing
-page, then Storybook, assembles them into `site/` and pushes that to the `gh-pages` branch as a
-single commit.
+page, then Storybook, assembles them into `site/` and uploads that directly to the Pages service as
+a build artifact.
+
+There is no `gh-pages` branch — the built site is not stored in git at all. `main` is the only branch
+this repo keeps.
 
 It can also be run by hand from the Actions tab → "Deploy Pages" → "Run workflow".
 
@@ -46,13 +49,17 @@ Then serve the parent directory so the page sits under `/react-ui-toolkit/`.
 
 ## Repository settings
 
-GitHub Pages must be enabled and set to deploy from the **`gh-pages` branch**, root folder. The
-workflow writes a `.nojekyll` file so Pages does not strip Vite's `_`-prefixed asset directories.
+Settings → Pages → Source must be **GitHub Actions**, not a branch. Switching it back to a branch
+breaks the deploy, since nothing pushes a branch any more.
+
+No `.nojekyll` file is needed: artifact deploys bypass Jekyll entirely, so Vite's `_`-prefixed asset
+directories survive on their own.
 
 ## Troubleshooting
 
 **Assets 404 after deploy** — the base path and the actual URL disagree. Check the two settings
 above.
 
-**Workflow fails with a permission error** — `pages.yml` needs `contents: write`, which it declares.
+**Workflow fails with a permission error** — `pages.yml` needs `pages: write` and `id-token: write`,
+which it declares.
 Confirm Actions has write permission in repository settings.
