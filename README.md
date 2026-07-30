@@ -74,6 +74,9 @@ For detailed documentation, see the following resources:
 - [Usage Guide](./docs/usage-guide.md)
 - [API Reference](./docs/api-reference.md)
 - [Examples](./examples/README.md)
+- [Releasing](./docs/releasing.md)
+- [Deploying the site](./docs/STORYBOOK_DEPLOYMENT.md)
+- [Audit — July 2026](./docs/audit-2026-07.md)
 
 ## Available Components
 
