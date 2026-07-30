@@ -1,11 +1,13 @@
 # Release Process
 
-Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/). There is
-no manual version bump — **the version is derived from your commit messages**.
+Versioning is automated with [semantic-release](https://semantic-release.gitbook.io/) — there is no
+manual version bump, **the version is derived from your commit messages**. _When_ to release is not
+automated: merging to `main` publishes nothing.
 
-## How it works
+## Cutting a release
 
-Every push to `main` runs `.github/workflows/release.yml`, which:
+Actions → **Release** → _Run workflow_ (on `main`). That runs
+`.github/workflows/release.yml`, which:
 
 1. Runs lint, typecheck and the test suite.
 2. Reads the commits since the last git tag and decides the next version.
@@ -15,6 +17,11 @@ Every push to `main` runs `.github/workflows/release.yml`, which:
 5. Commits `CHANGELOG.md` + `package.json`, tags it, and creates the GitHub release.
 
 If no commit since the last release warrants one, nothing is published.
+
+Releases are deliberately manual so a refactor can land across many commits and ship as a single
+release when it is ready, rather than publishing a version per merge. The cost of that choice is that
+nothing reminds you — a merged fix stays unpublished until someone presses the button. Check
+`npm run release:dry` against `main` if you are unsure whether anything is pending.
 
 ## What bumps the version
 
@@ -42,18 +49,57 @@ To see what would be published without publishing anything:
 npm run release:dry
 ```
 
-## Required repository secrets
+## Authentication — there is no npm token
 
-| Secret         | Used for                                                               |
-| -------------- | ---------------------------------------------------------------------- |
-| `NPM_TOKEN`    | publishing to npm — must be an **automation** token so it bypasses 2FA |
-| `GITHUB_TOKEN` | provided automatically; creates the tag, release and comments          |
+npm auth uses [trusted publishing](https://docs.npmjs.com/trusted-publishers): the workflow proves
+its identity to npm over OIDC and receives a short-lived credential. **No `NPM_TOKEN` secret exists,
+and none should be added.** The only secret involved is `GITHUB_TOKEN`, which GitHub provides
+automatically for the tag, the release and the comments.
 
-`NPM_TOKEN` really must be the **Automation** kind. A classic _Publish_ token has the same
-read/write access but still enforces 2FA, so the run reaches `npm publish` and then dies with
-`EOTP`. A granular access token with _Read and write_ on the package works too. Alternatively,
-configure this repo as a [trusted publisher](https://docs.npmjs.com/trusted-publishers) on npmjs.com
-and drop the secret entirely — the workflow already requests `id-token: write`.
+The trust is configured on npmjs.com under **Package → Settings → Trusted Publisher**, and must match
+the workflow exactly:
+
+| Field             | Value                     |
+| ----------------- | ------------------------- |
+| Publisher         | GitHub Actions            |
+| Organization/user | `saeedkolivand`           |
+| Repository        | `react-ui-toolkit`        |
+| Workflow filename | `release.yml`             |
+| Environment name  | _(blank)_                 |
+| Allowed actions   | Allow `npm publish`       |
+
+Renaming `.github/workflows/release.yml` therefore breaks publishing until the trusted publisher is
+updated to match. Provenance is generated automatically under OIDC.
+
+### Why not a token
+
+A token is not merely unnecessary — adding one back reintroduces the failure mode below. If the OIDC
+exchange fails for any reason, `@semantic-release/npm` silently falls back to token auth. A token
+that enforces 2FA then passes `verifyConditions` (which only runs `npm whoami`) and dies later at
+`npm publish` with `EOTP`. npm is also
+[phasing 2FA-bypass tokens out](https://gh.io/npm-gat-bypass2fa-deprecation) for direct publishing in
+January 2027, so the token path is a dead end regardless.
+
+With no token configured, a broken OIDC setup fails in `verifyConditions` — before any tag exists.
+
+## Failure mode this replaced
+
+semantic-release creates and pushes the git tag **between the `prepare` and `publish` stages**. A
+failure at `npm publish` therefore leaves the tag, the release commit, the version bump and the
+CHANGELOG entry behind while npm never receives the package.
+
+That is not a cosmetic problem. On the next run semantic-release reads the tag, concludes that
+version already shipped, reports "no release" and **exits green** — so the pipeline looks healthy
+while publishing nothing. This happened twice with v1.0.0 in July 2026.
+
+Recovering means deleting the tag and reverting the release commit:
+
+```bash
+git push origin :refs/tags/v1.0.0
+git revert --no-commit <release-commit>
+```
+
+The token removal above is what prevents it from recurring.
 
 ## Required repository label
 
