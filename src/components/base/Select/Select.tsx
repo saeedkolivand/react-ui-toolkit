@@ -36,13 +36,12 @@ export function Select({
   label,
   disabled = false,
   className,
-  children,
+  children: _children,
   placeholder = "Select an option",
   name,
   required,
   ...props
 }: SelectProps) {
-  const [isFocused, setIsFocused] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const selectRef = React.useRef<HTMLDivElement>(null);
   const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0, width: 0 });
@@ -143,36 +142,22 @@ export function Select({
     </AnimatePresence>
   );
 
-  const handleClick = React.useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!disabled) {
-        setIsOpen(!isOpen);
-      }
-    },
-    [disabled, isOpen]
-  );
-
-  const handleFocus = React.useCallback((e: React.FocusEvent<HTMLDivElement>) => {
-    setIsFocused(true);
-  }, []);
-
-  const handleBlur = React.useCallback((e: React.FocusEvent<HTMLDivElement>) => {
-    setIsFocused(false);
-  }, []);
+  const handleClick = React.useCallback(() => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  }, [disabled, isOpen]);
 
   // Filter out select-specific props that shouldn't be passed to the div
-  const { onClick, onFocus, onBlur, ...divProps } = props as any;
-
-  const buttonClasses = twMerge(
-    "block w-full rounded-md border transition-all duration-200 ease-in-out appearance-none outline-none",
-    "bg-white dark:bg-gray-800",
-    "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700",
-    "text-base px-3 py-2",
-    "border-gray-300 hover:border-gray-400 focus:border-primary-500 focus:ring-0",
-    "dark:border-gray-600 dark:hover:border-gray-500",
-    "pr-10",
-    className
-  );
+  // Destructured only to keep select-specific handlers off the wrapper div.
+  // The remaining props land on a <div>, so narrow them to div attributes
+  // rather than casting through `any`.
+  const {
+    onClick: _onClick,
+    onFocus: _onFocus,
+    onBlur: _onBlur,
+    ...divProps
+  } = props as React.HTMLAttributes<HTMLDivElement>;
 
   const ariaLabel = label || "Select an option";
 
@@ -190,8 +175,6 @@ export function Select({
             readOnly
             className={selectClasses}
             onClick={handleClick}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
             tabIndex={0}
             role="combobox"
             aria-expanded={isOpen}

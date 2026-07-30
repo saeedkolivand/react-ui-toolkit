@@ -51,7 +51,6 @@ export function Table<T extends object>({
   rowKey,
   size = "middle",
   bordered = false,
-  loading = false,
   pagination,
   scroll,
   onChange,

@@ -36,7 +36,8 @@ npm install @saeedkolivand/react-ui-toolkit
 yarn add @saeedkolivand/react-ui-toolkit
 ```
 
-Requires React 18 or newer.
+**Requires React 19.** Components take `ref` as a regular prop rather than through
+`forwardRef`, and the providers use React 19's `<Context>` and `use()`. For React 18, pin `0.x`.
 
 Styles ship as a single stylesheet. Either import it once at your app entry:
 

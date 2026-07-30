@@ -35,6 +35,11 @@ export interface ColProps extends React.HTMLAttributes<HTMLDivElement> {
   mdOrder?: number | "first" | "last";
   lgOrder?: number | "first" | "last";
   xlOrder?: number | "first" | "last";
+  /**
+   * Ref forwarded to the underlying element. React 19 passes `ref` as a
+   * regular prop, so no forwardRef wrapper is needed.
+   */
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const getWidthClass = (span?: number) => {
@@ -54,51 +59,45 @@ const getOrderClass = (order?: number | "first" | "last") => {
   return `order-${order}`;
 };
 
-export const Col = React.forwardRef<HTMLDivElement, ColProps>(
-  (
-    {
-      span,
-      offset,
-      order,
-      sm,
-      md,
-      lg,
-      xl,
-      smOffset,
-      mdOffset,
-      lgOffset,
-      xlOffset,
-      smOrder,
-      mdOrder,
-      lgOrder,
-      xlOrder,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const colClasses = twMerge(
-      "flex-shrink-0",
-      getWidthClass(span),
-      getOffsetClass(offset),
-      getOrderClass(order),
-      sm && `sm:${getWidthClass(sm)}`,
-      md && `md:${getWidthClass(md)}`,
-      lg && `lg:${getWidthClass(lg)}`,
-      xl && `xl:${getWidthClass(xl)}`,
-      smOffset && `sm:${getOffsetClass(smOffset)}`,
-      mdOffset && `md:${getOffsetClass(mdOffset)}`,
-      lgOffset && `lg:${getOffsetClass(lgOffset)}`,
-      xlOffset && `xl:${getOffsetClass(xlOffset)}`,
-      smOrder && `sm:${getOrderClass(smOrder)}`,
-      mdOrder && `md:${getOrderClass(mdOrder)}`,
-      lgOrder && `lg:${getOrderClass(lgOrder)}`,
-      xlOrder && `xl:${getOrderClass(xlOrder)}`,
-      className
-    );
+export const Col = ({
+  span,
+  offset,
+  order,
+  sm,
+  md,
+  lg,
+  xl,
+  smOffset,
+  mdOffset,
+  lgOffset,
+  xlOffset,
+  smOrder,
+  mdOrder,
+  lgOrder,
+  xlOrder,
+  className,
+  ref,
+  ...props
+}: ColProps) => {
+  const colClasses = twMerge(
+    "flex-shrink-0",
+    getWidthClass(span),
+    getOffsetClass(offset),
+    getOrderClass(order),
+    sm && `sm:${getWidthClass(sm)}`,
+    md && `md:${getWidthClass(md)}`,
+    lg && `lg:${getWidthClass(lg)}`,
+    xl && `xl:${getWidthClass(xl)}`,
+    smOffset && `sm:${getOffsetClass(smOffset)}`,
+    mdOffset && `md:${getOffsetClass(mdOffset)}`,
+    lgOffset && `lg:${getOffsetClass(lgOffset)}`,
+    xlOffset && `xl:${getOffsetClass(xlOffset)}`,
+    smOrder && `sm:${getOrderClass(smOrder)}`,
+    mdOrder && `md:${getOrderClass(mdOrder)}`,
+    lgOrder && `lg:${getOrderClass(lgOrder)}`,
+    xlOrder && `xl:${getOrderClass(xlOrder)}`,
+    className
+  );
 
-    return <div ref={ref} className={colClasses} {...props} />;
-  }
-);
-
-Col.displayName = "Col";
+  return <div ref={ref} className={colClasses} {...props} />;
+};

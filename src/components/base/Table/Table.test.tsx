@@ -38,7 +38,7 @@ jest.mock("../../layout/Container", () => ({
 }));
 
 jest.mock("../Select", () => ({
-  Select: ({ children, value, onChange, size, ...props }: any) => (
+  Select: ({ children, value, onChange, size: _size, ...props }: any) => (
     <select data-testid="page-size-select" value={value} onChange={onChange} {...props}>
       {children}
     </select>

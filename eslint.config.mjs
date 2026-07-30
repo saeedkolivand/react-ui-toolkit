@@ -60,22 +60,6 @@ export default tseslint.config(
       "@eslint-react/unsupported-syntax": "off",
       "@eslint-react/use-memo": "off",
 
-      // These three suggest React 19-only APIs, but peerDependencies are
-      // "^18.0.0 || ^19.0.0". Adopting any of them breaks every React 18
-      // consumer, so they stay off until the peer range drops 18 — a major.
-      //   no-forward-ref     — a React 18 function component does not receive
-      //                        `ref` as a prop; dropping forwardRef silently
-      //                        hands consumers a null ref. Used by 10 components.
-      //   no-context-provider — `<Context>` as a provider is React 19 only.
-      //   no-use-context      — `use()` is React 19 only.
-      "@eslint-react/no-forward-ref": "off",
-      "@eslint-react/no-context-provider": "off",
-      "@eslint-react/no-use-context": "off",
-
-      // Tooltip clones its child to attach the trigger ref and handlers to an
-      // arbitrary element. That is the standard implementation of this pattern —
-      // the alternative, always wrapping in a span, changes consumers' DOM.
-      "@eslint-react/no-clone-element": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "off",
@@ -84,20 +68,6 @@ export default tseslint.config(
         "warn",
         { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
       ],
-
-      // ponytail: eslint-plugin-react-hooks v7 ships the React Compiler ruleset on top of the
-      // two rules v4 enforced. The new ones fire on the standard portal-`mounted` and
-      // derived-state-sync patterns in Tooltip/NotificationProvider/Tabs, which are correct.
-      // Kept at "warn" so they stay visible without blocking CI; promote to "error" if/when
-      // those components are reworked for the compiler.
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/refs": "warn",
-      "react-hooks/immutability": "warn",
-      "react-hooks/purity": "warn",
-      "react-hooks/static-components": "warn",
-      "react-hooks/use-memo": "warn",
-      "react-hooks/preserve-manual-memoization": "warn",
-      "react-hooks/set-state-in-render": "warn",
     },
   },
 

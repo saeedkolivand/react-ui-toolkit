@@ -1,4 +1,5 @@
-import React, { useState, useRef, ReactNode, useEffect } from "react";
+import React, { useState, useRef, ReactNode, useEffect, useMemo } from "react";
+import { useIsHydrated } from "../../../hooks/useIsHydrated";
 import ReactDOM from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
@@ -66,40 +67,43 @@ export interface TooltipProps {
   color?: string;
 }
 
+const PORTAL_ID = "tooltip-portal-container";
+
+const getPortalContainer = (): HTMLDivElement => {
+  const existing = document.getElementById(PORTAL_ID) as HTMLDivElement | null;
+  if (existing) return existing;
+
+  const container = document.createElement("div");
+  container.id = PORTAL_ID;
+  container.style.position = "fixed";
+  container.style.zIndex = "1050"; // Match Ant Design's default z-index
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "0";
+  container.style.height = "0";
+  document.body.appendChild(container);
+  return container;
+};
+
 // Portal component for rendering tooltip outside of parent hierarchy
 const TooltipPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mounted, setMounted] = useState(false);
-  const portalRef = useRef<HTMLDivElement | null>(null);
+  // Gate on hydration rather than a `mounted` flag set from an effect: the flag
+  // costs a cascading render, and reading the container from a ref during render
+  // is exactly what react-hooks/refs warns about.
+  const hydrated = useIsHydrated();
+  const container = useMemo(() => (hydrated ? getPortalContainer() : null), [hydrated]);
 
-  useEffect(() => {
-    // Create portal container if it doesn't exist
-    const portalId = "tooltip-portal-container";
-    let portalContainer = document.getElementById(portalId) as HTMLDivElement;
-
-    if (!portalContainer) {
-      portalContainer = document.createElement("div");
-      portalContainer.id = portalId;
-      portalContainer.style.position = "fixed";
-      portalContainer.style.zIndex = "1050"; // Match Ant Design's default z-index
-      portalContainer.style.top = "0";
-      portalContainer.style.left = "0";
-      portalContainer.style.width = "0";
-      portalContainer.style.height = "0";
-      document.body.appendChild(portalContainer);
-    }
-
-    portalRef.current = portalContainer;
-    setMounted(true);
-
-    return () => {
-      // Clean up only if empty
-      if (portalContainer.childNodes.length === 0) {
-        document.body.removeChild(portalContainer);
+  useEffect(
+    () => () => {
+      // Remove the shared container once the last tooltip has gone.
+      if (container && container.childNodes.length === 0) {
+        container.remove();
       }
-    };
-  }, []);
+    },
+    [container]
+  );
 
-  return mounted && portalRef.current ? ReactDOM.createPortal(children, portalRef.current) : null;
+  return container ? ReactDOM.createPortal(children, container) : null;
 };
 
 /**
@@ -114,7 +118,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
   defaultVisible = false,
   showDelay = 50, // Ant Design uses 50ms by default
   hideDelay = 50, // Ant Design uses 50ms by default
-  className,
   overlayClassName,
   overlayInnerClassName,
   overlayStyle,
