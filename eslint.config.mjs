@@ -37,10 +37,34 @@ export default tseslint.config(
     rules: {
       "prettier/prettier": "error",
 
-      // Both React plugins ship rules-of-hooks. Keep eslint-plugin-react-hooks'
-      // version — it is the canonical one and understands Storybook's `render`
-      // functions, which @eslint-react's flags as non-components.
+      // @eslint-react and eslint-plugin-react-hooks ship 12 rules under identical
+      // names, so every hook problem was being reported twice. eslint-plugin-react-hooks
+      // is the authority here: it is the canonical React implementation, and its
+      // rules-of-hooks understands Storybook's `render` functions, which
+      // @eslint-react's flags as non-components.
+      //
+      // Listed explicitly rather than derived from the plugin's own
+      // disable-conflict config — that one turns off the react-hooks rules instead,
+      // i.e. the opposite of what is wanted, and a literal list cannot silently
+      // change what is enforced when the plugin is bumped.
+      "@eslint-react/error-boundaries": "off",
+      "@eslint-react/exhaustive-deps": "off",
+      "@eslint-react/globals": "off",
+      "@eslint-react/immutability": "off",
+      "@eslint-react/purity": "off",
+      "@eslint-react/refs": "off",
       "@eslint-react/rules-of-hooks": "off",
+      "@eslint-react/set-state-in-effect": "off",
+      "@eslint-react/set-state-in-render": "off",
+      "@eslint-react/static-components": "off",
+      "@eslint-react/unsupported-syntax": "off",
+      "@eslint-react/use-memo": "off",
+
+      // forwardRef is redundant in React 19, but peerDependencies still allow
+      // React 18, where a function component does NOT receive `ref` as a prop —
+      // removing it there silently gives consumers a null ref. Revisit when the
+      // peer range drops 18, which is a major version bump.
+      "@eslint-react/no-forward-ref": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "off",
