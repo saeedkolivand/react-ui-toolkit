@@ -18,12 +18,10 @@ describe("Textarea Component", () => {
   });
 
   it("renders with different variants", () => {
-    const variants = ["default", "filled", "outlined"];
+    const variants = ["default", "filled", "outlined"] as const;
 
     variants.forEach(variant => {
-      const { unmount } = render(
-        <Textarea variant={variant as any} placeholder={`Variant ${variant}`} />
-      );
+      const { unmount } = render(<Textarea variant={variant} placeholder={`Variant ${variant}`} />);
       const textarea = screen.getByPlaceholderText(`Variant ${variant}`);
       expect(textarea).toBeInTheDocument();
       unmount();
@@ -31,10 +29,10 @@ describe("Textarea Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Textarea size={size as any} placeholder={`Size ${size}`} />);
+      const { unmount } = render(<Textarea size={size} placeholder={`Size ${size}`} />);
       const textarea = screen.getByPlaceholderText(`Size ${size}`);
       expect(textarea).toHaveClass(`text-${size === "sm" ? "sm" : size === "md" ? "base" : "lg"}`);
       expect(textarea).toHaveClass(

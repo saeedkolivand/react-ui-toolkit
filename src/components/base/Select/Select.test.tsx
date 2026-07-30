@@ -25,11 +25,11 @@ describe("Select Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
       const { unmount } = render(
-        <Select value="1" onChange={() => {}} options={mockOptions} size={size as any} />
+        <Select value="1" onChange={() => {}} options={mockOptions} size={size} />
       );
 
       const select = screen.getByRole("combobox");

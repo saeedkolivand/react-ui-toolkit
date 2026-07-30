@@ -13,10 +13,10 @@ describe("Tag Component", () => {
   });
 
   it("renders with different variants", () => {
-    const variants = ["default", "outline", "solid"];
+    const variants = ["default", "outline", "solid"] as const;
 
     variants.forEach(variant => {
-      const { unmount } = render(<Tag variant={variant as any}>Variant {variant}</Tag>);
+      const { unmount } = render(<Tag variant={variant}>Variant {variant}</Tag>);
       const tag = screen.getByText(`Variant ${variant}`);
       expect(tag).toBeInTheDocument();
       if (variant === "outline") {

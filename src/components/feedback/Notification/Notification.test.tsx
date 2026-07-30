@@ -5,7 +5,12 @@ import Notification from "./Notification";
 // Mock framer-motion to avoid animation issues in tests
 jest.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, className, "data-testid": testId, ...props }: any) => (
+    div: ({
+      children,
+      className,
+      "data-testid": testId,
+      ...props
+    }: React.ComponentProps<"div"> & { "data-testid"?: string }) => (
       <div className={className} data-testid={testId || "motion-div"} {...props}>
         {children}
       </div>

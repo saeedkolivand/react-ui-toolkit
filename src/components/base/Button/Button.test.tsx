@@ -21,10 +21,10 @@ describe("Button Component", () => {
       "error",
       "warning",
       "info",
-    ];
+    ] as const;
 
     variants.forEach(variant => {
-      const { unmount } = render(<Button variant={variant as any}>Variant {variant}</Button>);
+      const { unmount } = render(<Button variant={variant}>Variant {variant}</Button>);
       const button = screen.getByText(`Variant ${variant}`);
       expect(button).toBeInTheDocument();
       unmount();
@@ -32,10 +32,10 @@ describe("Button Component", () => {
   });
 
   it("renders with different sizes", () => {
-    const sizes = ["sm", "md", "lg"];
+    const sizes = ["sm", "md", "lg"] as const;
 
     sizes.forEach(size => {
-      const { unmount } = render(<Button size={size as any}>Size {size}</Button>);
+      const { unmount } = render(<Button size={size}>Size {size}</Button>);
       const button = screen.getByText(`Size ${size}`);
       expect(button).toBeInTheDocument();
       unmount();
@@ -135,10 +135,10 @@ describe("Button Component", () => {
     });
 
     it("renders different icons correctly", () => {
-      const icons = ["search", "plus", "trash", "edit", "close"];
+      const icons = ["search", "plus", "trash", "edit", "close"] as const;
 
       icons.forEach(iconName => {
-        const { unmount } = render(<Button icon={iconName as any}>Button with {iconName}</Button>);
+        const { unmount } = render(<Button icon={iconName}>Button with {iconName}</Button>);
         const icon = screen.getByTestId("icon");
         expect(icon).toBeInTheDocument();
         unmount();

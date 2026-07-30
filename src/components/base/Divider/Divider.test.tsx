@@ -12,10 +12,10 @@ describe("Divider Component", () => {
   });
 
   it("renders with different types", () => {
-    const types = ["horizontal", "vertical"];
+    const types = ["horizontal", "vertical"] as const;
 
     types.forEach(type => {
-      const { unmount } = render(<Divider type={type as any} />);
+      const { unmount } = render(<Divider type={type} />);
       const divider = screen.getByTestId("divider");
       expect(divider).toHaveClass(type === "horizontal" ? "w-full h-px" : "h-full w-px");
       unmount();
@@ -29,10 +29,10 @@ describe("Divider Component", () => {
   });
 
   it("renders with text and different orientations", () => {
-    const orientations = ["left", "center", "right"];
+    const orientations = ["left", "center", "right"] as const;
 
     orientations.forEach(orientation => {
-      const { unmount } = render(<Divider orientation={orientation as any}>Divider Text</Divider>);
+      const { unmount } = render(<Divider orientation={orientation}>Divider Text</Divider>);
       const text = screen.getByText("Divider Text");
       expect(text).toBeInTheDocument();
 

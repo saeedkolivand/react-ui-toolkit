@@ -1,4 +1,4 @@
-import React, { useState, useRef, ReactNode, useEffect, useMemo } from "react";
+import React, { useState, useRef, ReactNode, useEffect, useMemo, useCallback } from "react";
 import { useIsHydrated } from "../../../hooks/useIsHydrated";
 import ReactDOM from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -162,7 +162,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   };
 
   // Calculate the position of the tooltip
-  const calculatePosition = () => {
+  const calculatePosition = useCallback(() => {
     if (!triggerRef.current || !tooltipRef.current) return;
 
     const triggerRect = triggerRef.current.getBoundingClientRect();
@@ -304,7 +304,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
     setTooltipPosition({ top, left });
     setArrowPosition({ top: arrowTop, left: arrowLeft });
-  };
+  }, [placement]);
 
   // Show/hide handlers
   const showTooltip = () => {
@@ -353,7 +353,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         window.removeEventListener("scroll", calculatePosition, true);
       };
     }
-  }, [visible, placement]);
+  }, [visible, calculatePosition]);
 
   // Clean up timeouts on unmount
   useEffect(() => {
@@ -365,7 +365,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   // Build event handlers based on trigger type
   const getEventHandlers = () => {
-    const handlers: Record<string, any> = {};
+    const handlers: Partial<React.DOMAttributes<HTMLElement>> = {};
 
     if (triggers.includes("hover")) {
       handlers.onMouseEnter = showTooltip;
@@ -487,7 +487,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
       );
     }
 
-    // Otherwise, clone the element and attach events
+    // Attach the trigger ref and handlers to whatever element the caller passed.
+    // The only alternative is always wrapping in a span, which would change the
+    // rendered DOM for every consumer to satisfy a style heuristic — and the
+    // usual "modern" escape hatch (Radix's Slot) is itself cloneElement inside.
+    // eslint-disable-next-line @eslint-react/no-clone-element
     return React.cloneElement(React.isValidElement(children) ? children : <span>{children}</span>, {
       ref: triggerRef,
       ...eventHandlers,

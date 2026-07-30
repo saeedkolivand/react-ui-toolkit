@@ -7,15 +7,21 @@ import { Container } from "../../layout/Container";
 
 export type SortOrder = "ascend" | "descend" | null;
 
-export interface ColumnType<T> {
-  title: React.ReactNode;
-  dataIndex: keyof T;
-  key: string;
-  render?: (text: any, record: T) => React.ReactNode;
-  sorter?: (a: T, b: T) => number;
-  width?: number | string;
-  defaultSortOrder?: SortOrder;
-}
+/**
+ * Distributed over the keys of T so each column's `render` receives the value
+ * at that column's own `dataIndex` rather than a union of every field type.
+ */
+export type ColumnType<T> = {
+  [K in keyof T]: {
+    title: React.ReactNode;
+    dataIndex: K;
+    key: string;
+    render?: (text: T[K], record: T) => React.ReactNode;
+    sorter?: (a: T, b: T) => number;
+    width?: number | string;
+    defaultSortOrder?: SortOrder;
+  };
+}[keyof T];
 
 export interface TablePagination {
   current: number;
