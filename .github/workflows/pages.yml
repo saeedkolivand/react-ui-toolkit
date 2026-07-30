@@ -41,7 +41,7 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
         env:
-          STORYBOOK_BASE_PATH: /react-ui-toolkit/storybook/
+          STORYBOOK_BASE_PATH: /storybook/
 
       # Landing page at the site root, Storybook one level down. No .nojekyll
       # needed: artifact deploys skip Jekyll entirely, so Vite's _-prefixed

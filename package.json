@@ -23,11 +23,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/saeedkolivand/react-ui-toolkit.git"
+    "url": "git+https://github.com/saeedkolivand/crosskit.git"
   },
-  "homepage": "https://saeedkolivand.github.io/react-ui-toolkit/",
+  "homepage": "https://crosskit.iamsaeed.dev/",
   "bugs": {
-    "url": "https://github.com/saeedkolivand/react-ui-toolkit/issues"
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
   },
   "engines": {
     "node": ">=20"
