@@ -1,0 +1,65 @@
+{
+  "name": "@crosskit-ui/react",
+  "version": "0.0.0",
+  "description": "CrossKit components for React 19.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedkolivand/crosskit.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://crosskit.iamsaeed.dev/",
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
+  "author": "Saeed Kolivand",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "check:exports": "publint --strict && attw --pack --profile esm-only"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:^",
+    "@crosskit-ui/styles": "workspace:^",
+    "@zag-js/react": "catalog:zag",
+    "@zag-js/dialog": "catalog:zag",
+    "@zag-js/presence": "catalog:zag"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "jsdom": "catalog:",
+    "publint": "catalog:",
+    "react": "catalog:frameworks",
+    "react-dom": "catalog:frameworks",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

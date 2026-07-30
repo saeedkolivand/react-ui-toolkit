@@ -55,3 +55,6 @@ site
 # package build output
 packages/*/dist/
 apps/*/dist/
+
+# svelte-package intermediate output
+.svelte-kit/

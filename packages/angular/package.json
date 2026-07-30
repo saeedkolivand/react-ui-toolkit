@@ -1,0 +1,48 @@
+{
+  "name": "@crosskit-ui/angular",
+  "version": "0.0.0",
+  "description": "CrossKit components for Angular.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedkolivand/crosskit.git",
+    "directory": "packages/angular"
+  },
+  "homepage": "https://crosskit.iamsaeed.dev/",
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
+  "author": "Saeed Kolivand",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "directory": "dist"
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json && node ./postbuild.mjs",
+    "lint": "eslint src",
+    "check:exports": "publint --strict ./dist"
+  },
+  "peerDependencies": {
+    "@angular/common": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/core": "^20.0.0 || ^21.0.0 || ^22.0.0"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:^",
+    "@crosskit-ui/styles": "workspace:^",
+    "@crosskit-ui/zag-angular": "workspace:^",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/common": "catalog:angular",
+    "@angular/compiler": "catalog:angular",
+    "@angular/compiler-cli": "catalog:angular",
+    "@angular/core": "catalog:angular",
+    "ng-packagr": "catalog:angular",
+    "publint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

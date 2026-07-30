@@ -19,3 +19,6 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 .prettierrc text eol=lf
+*.vue text eol=lf
+*.svelte text eol=lf
+*.astro text eol=lf
