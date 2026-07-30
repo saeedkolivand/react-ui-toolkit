@@ -369,12 +369,20 @@
   white-space: nowrap;
 }
 
+/* Two identical copies sit flush against each other, so translating the track by
+   -50% lands copy 2 exactly where copy 1 began — seamless for any gap value.
+   All spacing lives on the copy (including a trailing gap) so the seam matches
+   the interior rhythm; the track itself must add none, or the loop would jump. */
 .lp-marquee-track {
   display: flex;
-  gap: var(--s-xl);
-  padding-left: var(--s-xl);
   animation: lp-scroll 40s linear infinite;
   will-change: transform;
+}
+
+.lp-marquee-copy {
+  display: flex;
+  gap: var(--s-xl);
+  padding-right: var(--s-xl);
 }
 
 .lp-marquee-track span {

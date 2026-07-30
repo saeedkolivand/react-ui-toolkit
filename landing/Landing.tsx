@@ -154,9 +154,15 @@ export const Landing = () => {
 
       {/* ---------- marquee strip: thin black ribbon ---------- */}
       <div className="lp-marquee" aria-hidden="true">
+        {/* Two copies so the -50% scroll wraps seamlessly. Rendering them as
+            separate lists keeps every key unique without reaching for the index. */}
         <div className="lp-marquee-track">
-          {[...COMPONENT_NAMES, ...COMPONENT_NAMES].map((name, i) => (
-            <span key={`${name}-${i}`}>{name}</span>
+          {["a", "b"].map(copy => (
+            <div key={copy} className="lp-marquee-copy">
+              {COMPONENT_NAMES.map(name => (
+                <span key={name}>{name}</span>
+              ))}
+            </div>
           ))}
         </div>
       </div>

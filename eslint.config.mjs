@@ -60,11 +60,22 @@ export default tseslint.config(
       "@eslint-react/unsupported-syntax": "off",
       "@eslint-react/use-memo": "off",
 
-      // forwardRef is redundant in React 19, but peerDependencies still allow
-      // React 18, where a function component does NOT receive `ref` as a prop —
-      // removing it there silently gives consumers a null ref. Revisit when the
-      // peer range drops 18, which is a major version bump.
+      // These three suggest React 19-only APIs, but peerDependencies are
+      // "^18.0.0 || ^19.0.0". Adopting any of them breaks every React 18
+      // consumer, so they stay off until the peer range drops 18 — a major.
+      //   no-forward-ref     — a React 18 function component does not receive
+      //                        `ref` as a prop; dropping forwardRef silently
+      //                        hands consumers a null ref. Used by 10 components.
+      //   no-context-provider — `<Context>` as a provider is React 19 only.
+      //   no-use-context      — `use()` is React 19 only.
       "@eslint-react/no-forward-ref": "off",
+      "@eslint-react/no-context-provider": "off",
+      "@eslint-react/no-use-context": "off",
+
+      // Tooltip clones its child to attach the trigger ref and handlers to an
+      // arbitrary element. That is the standard implementation of this pattern —
+      // the alternative, always wrapping in a span, changes consumers' DOM.
+      "@eslint-react/no-clone-element": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "off",
