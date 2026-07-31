@@ -400,7 +400,7 @@ describe("Modal", () => {
       expect(scrollLockDepth()).toBe(0);
     });
 
-    it("leaves two overlays opened in one commit both usable", async () => {
+    it("leaves the topmost of two overlays opened in one commit usable", async () => {
       // Each overlay used to sweep the background alone, treating every body
       // child that did not contain its own content as background — which is the
       // other overlay's layers. Opening one commit apart hid it, because the

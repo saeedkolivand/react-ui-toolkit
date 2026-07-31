@@ -22,12 +22,25 @@ export interface DismissableOptions {
    * Whether focus landing outside dismisses too. Defaults to true, and is
    * ignored entirely when `outside` is false — that already turns both off.
    *
-   * Set false for a layer that traps focus. Such a layer cannot legitimately
-   * lose focus outward, so every `focusin` it sees is someone else's doing —
-   * and one case is routine: closing a stacked layer restores focus to its
-   * trigger, which lands outside the layer *below* at the instant that layer
-   * becomes topmost, dismissing it too. Two nested dialogs closed on one
-   * Escape.
+   * True is for a layer that *owns* focus while it is open and has no meaning
+   * once it loses it: a menu, a popover, a combobox listbox. Tab out of one and
+   * it should close, because focus leaving is the user leaving.
+   *
+   * False for anything dialog-shaped, both with a trap and without, for two
+   * different reasons:
+   *
+   * - **Trapping.** Such a layer cannot legitimately lose focus outward, so
+   *   every `focusin` it sees is someone else's doing — and one case is
+   *   routine: closing a stacked layer restores focus to its trigger, which
+   *   lands outside the layer *below* at the instant that layer becomes
+   *   topmost, dismissing it too. Two nested dialogs closed on one Escape.
+   * - **Not trapping** — a non-modal dialog. There is no trap, so focus starts
+   *   on the trigger, which is outside the layer, and the user moving focus in
+   *   and out is the entire point of the mode. Leaving this true dismisses it
+   *   on the first Tab that reaches anything after the trigger.
+   *
+   * So the question is not "does it trap", it is "does focus leaving mean the
+   * user is done with it".
    */
   focus?: boolean;
 }
