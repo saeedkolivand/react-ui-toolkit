@@ -1,11 +1,34 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "saeedkolivand/crosskit" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "saeedkolivand/crosskit"
+    }
+  ],
   "commit": false,
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "fixed": [["@crosskit-ui/*"]],
+  "fixed": [
+    [
+      "@crosskit-ui/core",
+      "@crosskit-ui/styles",
+      "@crosskit-ui/zag-angular",
+      "@crosskit-ui/react",
+      "@crosskit-ui/vue",
+      "@crosskit-ui/svelte",
+      "@crosskit-ui/angular"
+    ]
+  ],
   "linked": [],
-  "ignore": []
+  "ignore": [
+    "@crosskit-ui/docs",
+    "@crosskit-ui/storybook",
+    "@crosskit-ui/e2e",
+    "@crosskit-ui/playground-react",
+    "@crosskit-ui/playground-vue",
+    "@crosskit-ui/playground-svelte",
+    "@crosskit-ui/playground-angular"
+  ]
 }
