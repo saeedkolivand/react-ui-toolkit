@@ -33,7 +33,7 @@
   const uid = $props.id();
   const textareaId = $derived(id ?? uid);
   const describedBy = $derived(
-    errorMessage ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined,
+    errorMessage ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined
   );
 </script>
 
@@ -65,8 +65,7 @@
       aria-invalid={ariaAttr(invalid)}
       aria-describedby={describedBy}
       bind:value
-      {...rest}
-    ></textarea>
+      {...rest}></textarea>
   </div>
   {#if errorMessage}
     <p id="{textareaId}-error" data-part="error-text">{errorMessage}</p>

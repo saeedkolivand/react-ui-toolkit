@@ -1,0 +1,166 @@
+/* Tabs and Accordion. Both come from zag machines, so both get keyboard
+   navigation (arrow keys, Home/End) that v0 had for neither. */
+@layer ck.components {
+  /* ------------------------------------------------------------------- Tabs */
+  [data-scope="tabs"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+  }
+  [data-scope="tabs"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  [data-scope="tabs"][data-part="list"] {
+    display: flex;
+    position: relative;
+    gap: 0.25rem;
+  }
+  [data-scope="tabs"][data-part="list"][data-orientation="vertical"] {
+    flex-direction: column;
+  }
+
+  [data-scope="tabs"][data-part="trigger"] {
+    appearance: none;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    color: var(--ck-fg-muted);
+    white-space: nowrap;
+    transition:
+      color var(--ck-duration-md) var(--ck-ease-in-out),
+      background-color var(--ck-duration-md) var(--ck-ease-in-out),
+      border-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="tabs"][data-part="trigger"]:hover:not([data-disabled]) {
+    color: var(--ck-fg);
+  }
+  [data-scope="tabs"][data-part="trigger"][data-selected] {
+    color: var(--ck-accent-solid);
+  }
+  [data-scope="tabs"][data-part="trigger"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  [data-scope="tabs"][data-part="trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -2px;
+    border-radius: var(--ck-radius-sm);
+  }
+
+  /* v0's four visual variants, preserved as data-variant on the root. */
+  [data-ck-variant="line"] [data-part="list"] {
+    border-bottom: 1px solid var(--ck-border);
+  }
+  [data-ck-variant="line"] [data-part="trigger"] {
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  [data-ck-variant="line"] [data-part="trigger"][data-selected] {
+    border-bottom-color: var(--ck-accent-solid);
+  }
+
+  [data-ck-variant="enclosed"] [data-part="list"] {
+    border-bottom: 1px solid var(--ck-border);
+  }
+  [data-ck-variant="enclosed"] [data-part="trigger"] {
+    border: 1px solid transparent;
+    border-top-left-radius: var(--ck-radius-md);
+    border-top-right-radius: var(--ck-radius-md);
+    margin-bottom: -1px;
+  }
+  [data-ck-variant="enclosed"] [data-part="trigger"][data-selected] {
+    border-color: var(--ck-border);
+    border-bottom-color: var(--ck-surface);
+    background-color: var(--ck-surface);
+  }
+
+  [data-ck-variant="soft-rounded"] [data-part="trigger"] {
+    border-radius: var(--ck-radius-full);
+  }
+  [data-ck-variant="soft-rounded"] [data-part="trigger"][data-selected] {
+    background-color: var(--ck-accent-subtle);
+  }
+
+  [data-ck-variant="solid-rounded"] [data-part="trigger"] {
+    border-radius: var(--ck-radius-full);
+  }
+  [data-ck-variant="solid-rounded"] [data-part="trigger"][data-selected] {
+    background-color: var(--ck-accent-solid);
+    color: var(--ck-accent-fg);
+  }
+
+  [data-scope="tabs"][data-part="content"] {
+    padding-top: 1rem;
+    flex: 1 1 auto;
+  }
+  [data-scope="tabs"][data-part="content"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 2px;
+    border-radius: var(--ck-radius-sm);
+  }
+
+  /* -------------------------------------------------------------- Accordion */
+  [data-scope="accordion"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-lg);
+    overflow: hidden;
+  }
+  [data-scope="accordion"][data-part="item"] + [data-part="item"] {
+    border-top: 1px solid var(--ck-border);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"] {
+    appearance: none;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    color: var(--ck-fg);
+    transition: background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="accordion"][data-part="item-trigger"]:hover:not([data-disabled]) {
+    background-color: var(--ck-surface-hover);
+  }
+  [data-scope="accordion"][data-part="item-trigger"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  [data-scope="accordion"][data-part="item-trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -2px;
+  }
+
+  /* The chevron rotates off the machine's own state — no JS toggling a class. */
+  [data-scope="accordion"] [data-part="item-indicator"] {
+    flex-shrink: 0;
+    transition: rotate var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="accordion"]
+    [data-part="item-trigger"][data-state="open"]
+    [data-part="item-indicator"],
+  [data-scope="accordion"] [data-part="item-indicator"][data-state="open"] {
+    rotate: 180deg;
+  }
+
+  [data-scope="accordion"][data-part="item-content"] {
+    padding: 0 1rem 1rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="accordion"][data-part="item-content"][hidden] {
+    display: none;
+  }
+}

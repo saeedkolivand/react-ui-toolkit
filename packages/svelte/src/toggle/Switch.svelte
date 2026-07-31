@@ -48,6 +48,8 @@
     <span data-part="thumb"></span>
   </span>
   {#if label || children}
-    <span data-part="label">{#if children}{@render children()}{:else}{label}{/if}</span>
+    <span data-part="label"
+      >{#if children}{@render children()}{:else}{label}{/if}</span
+    >
   {/if}
 </label>
