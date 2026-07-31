@@ -431,11 +431,19 @@ export const overlays: ComponentDoc[] = [
         description:
           "React's Dropdown takes the trigger ELEMENT and renders it as given — no generated button, so your own Button stays exactly one button.",
       },
-      { name: "items", type: "MenuEntry[]", description: "Items and `{ separator: true }` marks." },
+      {
+        name: "items",
+        reactRemoved: true,
+        type: "MenuEntry[]",
+        description:
+          "Items and `{ separator: true }` marks. v2 React: `menu.items`, with `{ type: 'divider' }`.",
+      },
       {
         name: "trigger",
+        reactRemoved: true,
         type: "ReactNode",
-        description: "Trigger *content*, not a trigger element.",
+        description:
+          "Trigger *content*, not a trigger element. React's Dropdown takes the element as `children`, and its own `trigger` is something else entirely — which gesture opens the menu.",
       },
       {
         name: "triggerVariant",
@@ -449,6 +457,14 @@ export const overlays: ComponentDoc[] = [
         reactRemoved: true,
         type: "(d: { value }) => void",
         description: "Selection callback.",
+      },
+      {
+        name: "trigger",
+        reactFirst: true,
+        type: '"hover" | "focus" | "click" | Array<…>',
+        default: '"hover"',
+        description:
+          "Which gesture opens it — the SAME name as the row above and a different thing, which is why that one is flagged. Enter, Space and the arrows open it regardless, because that belongs to the role rather than to this prop, and a tap toggles it.",
       },
       {
         name: "placement",

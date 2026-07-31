@@ -2,11 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
-  contains,
   createCollection,
   createTypeahead,
   dataAttr,
-  getTabbables,
   navigate,
   type IconName,
   type Placement,
@@ -114,6 +112,7 @@ export function Dropdown({
     trigger,
     arrow,
     disabled,
+    takeFocus: true,
     // Reset here rather than in an effect watching `open`: an effect that calls
     // setState re-renders a second time for no visible reason, and this is a
     // plain event callback where setting state is what callbacks are for.
@@ -143,7 +142,7 @@ export function Dropdown({
     scope: "menu",
     role: "menu",
   });
-  const { open, setOpen, contentId, contentNode, triggerNode } = anchored;
+  const { open, setOpen, contentId } = anchored;
 
   // Read through `open` so a closed menu never reports a highlight, whatever
   // reset the last close did or did not run — including a controlled consumer
@@ -157,31 +156,13 @@ export function Dropdown({
   // restore from — and it is what the stylesheet already assumes, since
   // `data-highlighted` is the only thing it paints.
   //
-  // Restoring is the other half, and it is not optional: taking focus on open
-  // and dropping it on close leaves `document.body` focused, so the next Tab
-  // restarts at the top of the page rather than after the menu the user was
-  // just in.
-  const wasOpenRef = useRef(false);
+  // `takeFocus` above does the moving, including declining to on a hover-open:
+  // the default trigger IS hover, so grabbing focus whenever the menu appeared
+  // would pull the caret out of whatever the user was typing in merely because
+  // the pointer crossed the button.
   useEffect(() => {
-    if (open) {
-      wasOpenRef.current = true;
-      contentNode?.focus({ preventScroll: true });
-      return;
-    }
-    typeaheadRef.current.clear();
-    // Guarded on having been open, or the first mount would pull focus to a
-    // trigger nobody touched.
-    if (!wasOpenRef.current) return;
-    wasOpenRef.current = false;
-    // Only when focus is still inside the menu — the same rule `createFocusTrap`
-    // applies, and deliberately not a looser one. A press outside has already
-    // moved focus, so restoring would take it back from wherever the user just
-    // put it. At this point the content is still mounted, because presence
-    // outlives `open`.
-    if (!contentNode || !contains(contentNode, document.activeElement)) return;
-    const target = triggerNode ? (getTabbables(triggerNode)[0] ?? triggerNode) : null;
-    target?.focus({ preventScroll: true });
-  }, [open, contentNode, triggerNode]);
+    if (!open) typeaheadRef.current.clear();
+  }, [open]);
 
   const select = (key: string) => {
     const item = menu.items.filter(isItem).find(i => i.key === key);
@@ -223,7 +204,6 @@ export function Dropdown({
       className={className}
       overlayClassName={overlayClassName}
       contentProps={{
-        tabIndex: -1,
         "aria-activedescendant": active ? itemId(active) : undefined,
         onKeyDown: onContentKeyDown,
       }}

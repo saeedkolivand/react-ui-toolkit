@@ -116,6 +116,25 @@ test("keeps the popover reachable, and its controls clickable", async ({ page })
   await expect(page.locator("#popover-button")).toBeFocused();
 });
 
+test("lets the keyboard reach what is inside the popover", async ({ page }) => {
+  await page.locator("#popover-trigger").click();
+  await expect(content(page, "popover")).toBeVisible();
+
+  // Two separate bugs met here. The layer dismissed on the first `focusin`
+  // outside it, which for a non-trapping dialog is the trigger itself — so Tab
+  // closed it. And the popup is portalled to the end of the document, so Tab
+  // order walked straight past it into the next control on the page: measured
+  // `active="menu-trigger"` with the inner button never visited.
+  await expect(content(page, "popover")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#popover-button")).toBeFocused();
+  await expect(content(page, "popover")).toHaveCount(1);
+
+  await page.keyboard.press("Escape");
+  await expect(content(page, "popover")).toHaveCount(0);
+  await expect(page.locator("#popover-trigger")).toBeFocused();
+});
+
 test("repositions when the page scrolls under the trigger", async ({ page }) => {
   const trigger = page.locator("#fits");
   await trigger.hover();

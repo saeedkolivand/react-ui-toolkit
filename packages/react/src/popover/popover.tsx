@@ -46,6 +46,11 @@ export function Popover({
     trigger,
     arrow,
     scope: "popover",
+    // The content holds controls, and it is portalled to the end of the
+    // document — so Tab from the trigger walks past it into whatever follows in
+    // the DOM, and the buttons inside are unreachable by keyboard. Moving focus
+    // in is what makes them reachable, and it declines on a hover-open.
+    takeFocus: true,
     // `dialog`, not `tooltip`: the content is reachable and may hold a link, a
     // button or a form. A `tooltip` role tells a screen reader the opposite —
     // that this is a description of the trigger — and its contents then get
@@ -53,16 +58,23 @@ export function Popover({
     role: "dialog",
   });
 
+  const hasTitle = title !== undefined && title !== null && title !== "";
+  const titleId = `${anchored.contentId}-title`;
+
   return (
     <AnchoredView
       anchored={anchored}
       arrow={arrow}
       className={className}
       overlayClassName={overlayClassName}
+      // A `dialog` with no accessible name is announced as just "dialog", which
+      // tells a screen-reader user nothing about what they have been moved
+      // into. The title is right there; this points at it.
+      contentProps={hasTitle ? { "aria-labelledby": titleId } : undefined}
       body={
         <>
-          {title !== undefined && title !== null && title !== "" && (
-            <div data-scope="popover" data-part="title">
+          {hasTitle && (
+            <div id={titleId} data-scope="popover" data-part="title">
               {title}
             </div>
           )}

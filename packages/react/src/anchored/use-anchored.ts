@@ -33,6 +33,7 @@ import {
   attachPosition,
   contains,
   createPresence,
+  getTabbables,
   isFocusVisible,
   pushDismissable,
   type Placement,
@@ -79,6 +80,20 @@ export interface AnchoredOptions {
     event: ReactKeyboardEvent<HTMLElement>,
     state: { open: boolean; setOpen: (open: boolean) => void }
   ) => void;
+  /**
+   * Move focus into the content when it opens, and hand it back on close.
+   *
+   * For the overlays whose contents are meant to be operated — a menu, a
+   * popover with controls in it. Without it a portalled popup is unreachable:
+   * Tab order follows DOM order, and the popup is a body sibling at the end of
+   * the document rather than after its trigger.
+   *
+   * Never on a hover-open, whatever this says. Moving the caret out of whatever
+   * the user was typing in because a pointer crossed a trigger is hostile, and
+   * it is not a request for focus — which is why this tracks HOW the overlay
+   * opened rather than only that it did.
+   */
+  takeFocus?: boolean;
   /** The `data-scope` all parts carry, and the CSS contract. */
   scope: string;
   /**
@@ -142,6 +157,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     arrow = true,
     offset = 8,
     onTriggerKeyDown,
+    takeFocus = false,
     scope,
     role,
     id,
@@ -204,9 +220,15 @@ export function useAnchored(options: AnchoredOptions): Anchored {
   // Every scheduled change goes through here, so opening cancels a pending
   // close and vice versa. Without that, crossing the gap between trigger and
   // popup — which fires leave then enter — would close it a beat later.
+  /**
+   * How the pending open was asked for. Read when the overlay actually opens,
+   * to decide whether taking focus would be helping or interrupting.
+   */
+  const reasonRef = useRef<"hover" | "press" | "keyboard">("press");
   const schedule = useCallback(
-    (next: boolean, delay: number) => {
+    (next: boolean, delay: number, reason: "hover" | "press" | "keyboard" = "press") => {
       cancel();
+      if (next) reasonRef.current = reason;
       if (delay === 0) return setOpen(next);
       timerRef.current = setTimeout(() => setOpen(next), delay);
     },
@@ -234,15 +256,45 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // The trigger is outside the content and must not count as outside, or
       // clicking to close would dismiss and immediately reopen.
       exclude: () => [anchor],
-      // True, unlike a dialog's: these are the layers that own focus while open
-      // and mean nothing once they lose it. Tab out of a menu and it should go.
-      focus: true,
+      // True only for the layers that OWN focus while open and mean nothing
+      // once they lose it — a menu, a tooltip. Tab out of one and it should go.
+      //
+      // False for anything dialog-shaped, which is what the option's own doc in
+      // `core` says and what this violated: a popover does not trap, so focus
+      // starts on the trigger OUTSIDE the layer, and the first Tab past it
+      // dismissed the thing before the user could reach what is in it.
+      focus: role !== "dialog",
     });
     return () => {
       stop();
       removeLayer();
     };
   }, [open, anchor, positioner, content, placement, offset, arrow, cancel, setOpen]);
+
+  // ------------------------------------------------------------- focus moves
+
+  // Taking focus on open and dropping it on close leaves <body> focused, so the
+  // next Tab restarts at the top of the page. Both halves belong together.
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (!takeFocus) return;
+    if (open) {
+      // A pointer crossing a trigger is not a request for focus.
+      if (reasonRef.current === "hover") return;
+      wasOpenRef.current = true;
+      content?.focus({ preventScroll: true });
+      return;
+    }
+    if (!wasOpenRef.current) return;
+    wasOpenRef.current = false;
+    // Only when focus is still inside — the same rule `createFocusTrap` applies.
+    // A press outside has already moved it, and restoring would take it back
+    // from wherever the user just put it. The content is still mounted here,
+    // because presence outlives `open`.
+    if (!content || !contains(content, document.activeElement)) return;
+    const target = anchor ? (getTabbables(anchor)[0] ?? anchor) : null;
+    target?.focus({ preventScroll: true });
+  }, [takeFocus, open, content, anchor]);
 
   // ------------------------------------------------------------------- props
 
@@ -282,7 +334,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
         // opening on it would produce an overlay nothing could close. Touch is
         // handled by the tap-to-toggle below instead.
         if (event.pointerType === "touch") return;
-        schedule(true, ms(mouseEnterDelay));
+        schedule(true, ms(mouseEnterDelay), "hover");
       };
       triggerProps.onPointerLeave = event => {
         if (event.pointerType === "touch") return;
@@ -313,7 +365,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
         // Only keyboard focus. Without this a click on the trigger opens it
         // twice over — once for the press, once for the focus the press moved —
         // and a hover overlay pops back up the moment the pointer leaves.
-        if (isFocusVisible(event.target)) schedule(true, 0);
+        if (isFocusVisible(event.target)) schedule(true, 0, "keyboard");
       };
       triggerProps.onBlur = event => {
         // Focus moving INTO the popup is not focus leaving. Reading
@@ -356,6 +408,11 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     ref: setContent,
     id: contentId,
     role,
+    // Focusable only programmatically, and only where something actually moves
+    // focus here. Without it `.focus()` is a no-op on a plain div, so the popup
+    // stays unreachable and the restore has nothing to restore from — and
+    // adding it unconditionally would put a tooltip in the tab order.
+    ...(takeFocus ? { tabIndex: -1 } : {}),
     "data-scope": scope,
     "data-part": "content",
     "data-state": open ? "open" : "closed",

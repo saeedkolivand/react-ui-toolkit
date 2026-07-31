@@ -306,6 +306,21 @@ describe("Dropdown", () => {
     expect(trigger()).not.toHaveFocus();
   });
 
+  it("does not take focus when a pointer merely crossed the trigger", async () => {
+    const user = userEvent.setup();
+    render(<input aria-label="typing" />);
+    setup();
+    const input = screen.getByRole("textbox", { name: "typing" });
+    input.focus();
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    // Hover is the DEFAULT trigger here, so grabbing focus whenever the menu
+    // appeared would take the caret out of an adjacent field merely because the
+    // pointer crossed the button — and the close would then hand it to the
+    // trigger rather than back.
+    expect(input).toHaveFocus();
+  });
+
   it("moves focus into the menu when it opens", async () => {
     const user = userEvent.setup();
     setup();

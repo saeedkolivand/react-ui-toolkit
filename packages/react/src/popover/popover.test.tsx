@@ -137,6 +137,63 @@ describe("Popover", () => {
     await waitFor(() => expect(content()).not.toBeInTheDocument());
   });
 
+  it("moves focus into the popup so its controls can be reached at all", async () => {
+    const user = userEvent.setup();
+    setup({ trigger: "click" });
+    await user.click(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    // The popup is portalled to the end of the document, so Tab from the
+    // trigger walks past it into whatever follows in the DOM. Without moving
+    // focus in, the button inside is unreachable by keyboard — which is the one
+    // thing separating a Popover from a Tooltip.
+    await waitFor(() => expect(content()).toHaveFocus());
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Reset" })).toHaveFocus();
+  });
+
+  it("survives a Tab that happens outside it entirely", async () => {
+    const user = userEvent.setup();
+    render(<input aria-label="typing" />);
+    setup();
+    // HOVER-opened, deliberately. A click- or keyboard-opened popover has focus
+    // moved inside it, so focus never lands outside and the dismissable layer's
+    // `focus` setting cannot be observed at all — `focus: true` passes every
+    // other test in this file. Opened by pointer, focus stays wherever the user
+    // had it, and every subsequent Tab is a `focusin` outside the layer.
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+
+    await user.tab();
+    // `focus: true` is for a layer that OWNS focus and means nothing once it
+    // loses it. A popover does not trap, so with it the popup vanished on any
+    // keyboard movement anywhere on the page — the case the option's own doc in
+    // core describes.
+    expect(content()).toHaveAttribute("data-state", "open");
+  });
+
+  it("does not take focus when a pointer merely crossed the trigger", async () => {
+    const user = userEvent.setup();
+    render(<input aria-label="typing" />);
+    setup();
+    const input = screen.getByRole("textbox", { name: "typing" });
+    input.focus();
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    // Sweeping a pointer over a trigger is not a request for focus, and taking
+    // it pulls the caret out of whatever the user was typing in.
+    expect(input).toHaveFocus();
+  });
+
+  it("names the dialog with its own title", async () => {
+    const user = userEvent.setup();
+    setup({ trigger: "click" });
+    await user.click(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    // A dialog with no accessible name is announced as just "dialog", which
+    // says nothing about what the user has been moved into.
+    expect(content()).toHaveAccessibleName("Settings");
+  });
+
   it('does not render a boolean data attribute as "false"', () => {
     setup({ open: true, onOpenChange: () => {} });
     expect(document.body.innerHTML).not.toMatch(/data-[\w-]+="false"/);
