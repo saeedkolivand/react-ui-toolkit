@@ -4,6 +4,7 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import { dataAttr, type IconName, type Size, type Variant } from "@crosskit-ui/core";
 import { Icon } from "../icon/icon";
+import { Spinner } from "../spinner/spinner";
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
   variant?: Variant;
@@ -35,7 +36,10 @@ export function Button({
   ref,
   ...rest
 }: ButtonProps) {
-  const iconEl = icon ? <Icon name={icon} size={size} data-part="icon" /> : null;
+  // No data-part override: stamping a part name onto a composed child replaces
+  // the child's own, which breaks the child's styling. The stylesheet targets
+  // it as `[data-scope="button"] > [data-scope="icon"]` instead.
+  const iconEl = icon ? <Icon name={icon} size={size} /> : null;
 
   return (
     <button
@@ -54,6 +58,7 @@ export function Button({
       // rest LAST so consumers (and composing components) can override anything
       {...rest}
     >
+      {loading && <Spinner size={size} label="" />}
       {iconPosition === "left" && iconEl}
       {children != null && <span data-part="label">{children}</span>}
       {iconPosition === "right" && iconEl}

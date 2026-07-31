@@ -1,0 +1,149 @@
+---
+// Static, authored code samples — no compilation, no four live runtimes.
+// Pure CSS tabs via radio inputs so the whole thing works with zero JavaScript.
+const id = "fx-" + Math.random().toString(36).slice(2, 8);
+
+const samples: Array<{ name: string; lang: string; code: string }> = [
+  {
+    name: "React",
+    lang: "tsx",
+    code: `import { Button } from "@crosskit-ui/react";
+import "@crosskit-ui/styles";
+
+export function Save() {
+  return (
+    <Button variant="primary" icon="check" onClick={save}>
+      Save changes
+    </Button>
+  );
+}`,
+  },
+  {
+    name: "Vue",
+    lang: "vue",
+    code: `<script setup lang="ts">
+import { Button } from "@crosskit-ui/vue";
+import "@crosskit-ui/styles";
+</script>
+
+<template>
+  <Button variant="primary" icon="check" @click="save">
+    Save changes
+  </Button>
+</template>`,
+  },
+  {
+    name: "Svelte",
+    lang: "svelte",
+    code: `<script lang="ts">
+  import { Button } from "@crosskit-ui/svelte";
+  import "@crosskit-ui/styles";
+</script>
+
+<Button variant="primary" icon="check" onclick={save}>
+  Save changes
+</Button>`,
+  },
+  {
+    name: "Angular",
+    lang: "ts",
+    code: `import { CkButton } from "@crosskit-ui/angular";
+// angular.json -> styles: ["@crosskit-ui/styles"]
+
+@Component({
+  imports: [CkButton],
+  template: \`
+    <button ckButton variant="primary" icon="check" (click)="save()">
+      Save changes
+    </button>
+  \`,
+})
+export class SaveComponent {}`,
+  },
+];
+---
+
+<div class="fx">
+  <div class="fx-tabs" role="tablist">
+    {
+      samples.map((s, i) => (
+        <>
+          <input
+            type="radio"
+            name={id}
+            id={`${id}-${i}`}
+            class="fx-radio"
+            checked={i === 0}
+          />
+          <label class="fx-tab" for={`${id}-${i}`}>
+            {s.name}
+          </label>
+        </>
+      ))
+    }
+    {samples.map((s) => <pre class="fx-panel"><code>{s.code}</code></pre>)}
+  </div>
+</div>
+
+<style>
+  .fx {
+    background: var(--site-surface-1);
+    border-radius: var(--site-radius-xl);
+    overflow: hidden;
+  }
+  .fx-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--site-xs);
+    padding: var(--site-sm);
+    border-bottom: 1px solid var(--site-hairline);
+  }
+  .fx-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fx-tab {
+    padding: 8px 14px;
+    border-radius: var(--site-radius-pill);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.14px;
+    color: var(--site-ink-muted);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 200ms ease;
+  }
+  .fx-tab:hover {
+    color: var(--site-ink);
+  }
+  /* selected = one surface step up, never a chromatic fill */
+  .fx-radio:checked + .fx-tab {
+    background: var(--site-surface-2);
+    color: var(--site-ink);
+  }
+  .fx-radio:focus-visible + .fx-tab {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--site-accent-blue) 60%, transparent);
+  }
+
+  .fx-panel {
+    display: none;
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 0;
+    padding: var(--site-lg);
+    overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--site-ink);
+    tab-size: 2;
+  }
+  /* Pair the Nth checked radio with the Nth panel. */
+  .fx-radio:nth-of-type(1):checked ~ .fx-panel:nth-of-type(1),
+  .fx-radio:nth-of-type(2):checked ~ .fx-panel:nth-of-type(2),
+  .fx-radio:nth-of-type(3):checked ~ .fx-panel:nth-of-type(3),
+  .fx-radio:nth-of-type(4):checked ~ .fx-panel:nth-of-type(4) {
+    display: block;
+  }
+</style>

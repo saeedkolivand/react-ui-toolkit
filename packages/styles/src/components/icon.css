@@ -3,9 +3,17 @@
    SVG presentation attributes, so moving them out reduces every adapter's Icon
    to <svg><path d="..." /></svg> — byte-identical across React, Vue, Svelte and
    Angular, with no strokeLinecap-vs-stroke-linecap casing problem. It also
-   gives consumers --ck-icon-stroke-width as a free knob. */
+   gives consumers --ck-icon-stroke-width as a free knob.
+
+   NOTE these selectors key off [data-scope="icon"] ALONE, deliberately not
+   [data-part="root"]. A composing component (Button, Alert, Select) renders an
+   Icon as one of its own parts, and if it labels that child — data-part="icon"
+   — the child's own part name is replaced. Requiring data-part="root" here made
+   every composed icon lose its dimensions and render at the SVG default size.
+   Scope identifies the component; part identifies a slot WITHIN it, and a
+   composed child legitimately carries its parent's part name. */
 @layer ck.components {
-  [data-scope="icon"][data-part="root"] {
+  [data-scope="icon"] {
     fill: none;
     stroke: currentColor;
     stroke-width: var(--ck-icon-stroke-width, 2);
@@ -14,21 +22,23 @@
     flex-shrink: 0;
     display: inline-block;
     vertical-align: middle;
-  }
-
-  [data-scope="icon"][data-part="root"][data-size="sm"] {
-    width: 1rem;
-    height: 1rem;
-  }
-  [data-scope="icon"][data-part="root"][data-size="md"] {
     width: 1.25rem;
     height: 1.25rem;
   }
-  [data-scope="icon"][data-part="root"][data-size="lg"] {
+
+  [data-scope="icon"][data-size="sm"] {
+    width: 1rem;
+    height: 1rem;
+  }
+  [data-scope="icon"][data-size="md"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  [data-scope="icon"][data-size="lg"] {
     width: 1.5rem;
     height: 1.5rem;
   }
-  [data-scope="icon"][data-part="root"][data-size="xl"] {
+  [data-scope="icon"][data-size="xl"] {
     width: 2rem;
     height: 2rem;
   }

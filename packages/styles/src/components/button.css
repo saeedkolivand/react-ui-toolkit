@@ -125,18 +125,21 @@
     border-radius: inherit;
   }
 
-  /* the old `mr-2`/`ml-2` on the icon element */
-  [data-scope="button"] [data-part="icon"],
-  [data-scope="button"] [data-part="spinner"] {
+  /* the old `mr-2`/`ml-2` on the icon element.
+     Targets the child by its own SCOPE, not by a data-part the parent would have
+     to stamp onto it — stamping a part name onto a composed child replaces the
+     child's own, which silently breaks that child's styling. */
+  [data-scope="button"] > [data-scope="icon"],
+  [data-scope="button"] > [data-scope="spinner"] {
     flex-shrink: 0;
   }
-  [data-scope="button"][data-icon-position="left"] [data-part="icon"] {
+  [data-scope="button"][data-icon-position="left"] > [data-scope="icon"] {
     margin-right: var(--ck-button-gap);
   }
-  [data-scope="button"][data-icon-position="right"] [data-part="icon"] {
+  [data-scope="button"][data-icon-position="right"] > [data-scope="icon"] {
     margin-left: var(--ck-button-gap);
   }
-  [data-scope="button"] [data-part="spinner"] {
+  [data-scope="button"] > [data-scope="spinner"] {
     margin-right: var(--ck-button-gap);
   }
 }

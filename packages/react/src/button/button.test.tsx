@@ -53,4 +53,22 @@ describe("Button", () => {
     render(<Button loading>Click</Button>);
     expect(screen.getByRole("button")).toBeDisabled();
   });
+
+  // Regression: Button used to stamp data-part="icon" onto the composed Icon,
+  // which REPLACED the Icon's own data-part="root". Every sizing rule keyed on
+  // [data-scope="icon"][data-part="root"] then stopped matching and icons
+  // rendered at the SVG default size. Composed children must keep their own
+  // scope/part; the parent targets them by scope.
+  it("does not overwrite a composed child's own data-part", () => {
+    const { container } = render(<Button icon="check">Save</Button>);
+    const icon = container.querySelector('[data-scope="icon"]')!;
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveAttribute("data-part", "root");
+    expect(icon).toHaveAttribute("data-size", "md");
+  });
+
+  it("renders a spinner while loading", () => {
+    const { container } = render(<Button loading>Save</Button>);
+    expect(container.querySelector('[data-scope="spinner"]')).toBeInTheDocument();
+  });
 });

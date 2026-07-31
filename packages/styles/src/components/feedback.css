@@ -13,23 +13,25 @@
     display: inline-block;
     line-height: 0;
   }
-  [data-scope="spinner"][data-part="indicator"] {
+  [data-scope="spinner"] [data-part="indicator"] {
     display: inline-block;
     border-radius: var(--ck-radius-full);
     border: 2px solid currentColor;
     border-top-color: transparent;
     animation: ck-spin 1s linear infinite;
     color: var(--ck-spinner-color, var(--ck-accent-solid));
-  }
-  [data-scope="spinner"][data-part="indicator"][data-size="sm"] {
-    width: 1rem;
-    height: 1rem;
-  }
-  [data-scope="spinner"][data-part="indicator"][data-size="md"] {
     width: 1.5rem;
     height: 1.5rem;
   }
-  [data-scope="spinner"][data-part="indicator"][data-size="lg"] {
+  [data-scope="spinner"] [data-part="indicator"][data-size="sm"] {
+    width: 1rem;
+    height: 1rem;
+  }
+  [data-scope="spinner"] [data-part="indicator"][data-size="md"] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  [data-scope="spinner"] [data-part="indicator"][data-size="lg"] {
     width: 2rem;
     height: 2rem;
   }

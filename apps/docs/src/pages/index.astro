@@ -1,0 +1,134 @@
+---
+import Base from "../layouts/Base.astro";
+import FrameworkTabs from "../components/FrameworkTabs.astro";
+import { Showcase } from "../components/Showcase";
+---
+
+<Base>
+  <!-- Hero. One assertive statement, generous black around it. -->
+  <section class="site-section" style="padding-top: 120px;">
+    <div class="site-container stack-lg">
+      <p class="eyebrow">React · Vue · Svelte · Angular</p>
+      <h1 class="display-xxl">Write the component once.</h1>
+      <p class="subhead">
+        One behaviour core, one stylesheet, and thin adapters for four frameworks. Accessible by
+        construction — focus traps, keyboard navigation and ARIA come from state machines, not from
+        each framework's copy of them.
+      </p>
+      <div class="row" style="gap: var(--site-sm);">
+        <a class="btn btn-primary" href="#install">Get started</a>
+        <a class="btn btn-secondary" href="/storybook/">Browse Storybook</a>
+        <code class="code-inline">pnpm add @crosskit-ui/react</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live components. Real package, not a mock. -->
+  <section class="site-section" id="components">
+    <div class="site-container stack-lg">
+      <div class="stack-sm">
+        <p class="eyebrow">Live</p>
+        <h2 class="display-lg">These are the real components.</h2>
+        <p class="subhead">
+          Rendered from <code class="code-inline">@crosskit-ui/react</code> on this page. The other
+          three adapters emit identical markup, so they look identical too.
+        </p>
+      </div>
+      <div class="card card-featured">
+        <Showcase client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- The actual selling point: same API, four frameworks. -->
+  <section class="site-section" id="frameworks">
+    <div class="site-container stack-lg">
+      <div class="stack-sm">
+        <p class="eyebrow">One API</p>
+        <h2 class="display-lg">Same props. Every framework.</h2>
+        <p class="subhead">
+          Prop names are identical everywhere. Only the binding syntax is idiomatic to each
+          framework.
+        </p>
+      </div>
+      <FrameworkTabs />
+    </div>
+  </section>
+
+  <!-- Rhythm break: the atmosphere device. Two, not three. -->
+  <section class="site-section">
+    <div class="site-container grid-2">
+      <div class="spotlight spotlight-violet">
+        <p class="eyebrow" style="color: rgba(255,255,255,0.7)">Accessibility</p>
+        <div>
+          <h3 class="display-md">Focus traps you didn't have to write.</h3>
+          <p class="body-lg" style="opacity: 0.85; margin-top: var(--site-sm);">
+            Behaviour comes from Zag.js state machines — the same tested implementation in all four
+            adapters, instead of four chances to get it wrong.
+          </p>
+        </div>
+      </div>
+      <div class="spotlight spotlight-orange">
+        <p class="eyebrow" style="color: rgba(255,255,255,0.75)">Theming</p>
+        <div>
+          <h3 class="display-md">Retheme with CSS variables.</h3>
+          <p class="body-lg" style="opacity: 0.9; margin-top: var(--site-sm);">
+            Around 48 semantic tokens. Override them in a stylesheet loaded after ours — no rebuild,
+            no fork, and no Tailwind required to consume it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why it is built this way -->
+  <section class="site-section">
+    <div class="site-container stack-lg">
+      <h2 class="display-lg">Built to stay honest.</h2>
+      <div class="grid-3">
+        <div class="card stack-sm">
+          <h3 class="display-md">No utility classes</h3>
+          <p class="muted">
+            Components emit <code class="code-inline">data-scope</code> and
+            <code class="code-inline">data-part</code>, never class strings. One stylesheet serves
+            every framework, and your own CSS still wins.
+          </p>
+        </div>
+        <div class="card stack-sm">
+          <h3 class="display-md">Tailwind optional</h3>
+          <p class="muted">
+            The CSS ships precompiled. Tailwind is our build-time dependency, not yours. Use it if
+            you like — an opt-in bridge maps our tokens onto your utilities.
+          </p>
+        </div>
+        <div class="card stack-sm">
+          <h3 class="display-md">Dark mode, once</h3>
+          <p class="muted">
+            Flip <code class="code-inline">data-theme</code> on <code class="code-inline">html</code
+            >. No <code class="code-inline">dark:</code> variant repeated inside every component.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section class="site-section" id="install">
+    <div class="site-container stack-lg">
+      <div class="stack-sm">
+        <p class="eyebrow">Install</p>
+        <h2 class="display-lg">Two lines.</h2>
+      </div>
+      <div class="card" style="padding: var(--site-xl);">
+        <pre
+          style="margin:0; overflow-x:auto; font-family: ui-monospace, monospace; font-size:14px; line-height:1.8;"><code>pnpm add @crosskit-ui/react     <span class="muted"># or /vue, /svelte, /angular</span>
+
+<span class="muted">// then, once, anywhere in your app:</span>
+import "@crosskit-ui/styles";</code></pre>
+      </div>
+      <p class="caption">
+        Requires React 19, Vue 3.5, Svelte 5 or Angular 20+. ESM only. MIT licensed.
+      </p>
+    </div>
+  </section>
+</Base>
