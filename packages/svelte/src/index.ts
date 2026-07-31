@@ -17,3 +17,5 @@ export { default as Switch } from "./toggle/Switch.svelte";
 export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as Progress } from "./progress/Progress.svelte";
 export { default as Col } from "./layout/Col.svelte";
+export { default as Modal } from "./dialog/Modal.svelte";
+export { default as Drawer } from "./dialog/Drawer.svelte";

@@ -9,6 +9,8 @@
     "@crosskit-ui/core",
     "@crosskit-ui/styles",
     "@crosskit-ui/zag-angular",
-    "tslib"
+    "tslib",
+    "@zag-js/dialog",
+    "@zag-js/presence"
   ]
 }
