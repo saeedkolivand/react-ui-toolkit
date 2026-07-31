@@ -89,6 +89,15 @@ describe("Button", () => {
       expect(document.querySelector('[data-part="spinner"]')).toBeInTheDocument();
     });
 
+    it("marks itself disabled while loading, matching the DOM", () => {
+      // A rule keyed on [data-disabled] would otherwise miss a loading button
+      // that `:disabled` matches — and each of the other three adapters would
+      // then re-decide that inconsistency differently.
+      render(<Button loading>Save</Button>);
+      expect(root()).toHaveAttribute("data-disabled", "");
+      expect(root()).toBeDisabled();
+    });
+
     it("does not claim to be busy when only disabled", () => {
       render(<Button disabled>Save</Button>);
       expect(root()).toBeDisabled();
@@ -151,6 +160,15 @@ describe("Button", () => {
       render(<Button href="/next">Next</Button>);
       expect(root().tagName).toBe("A");
       expect(root()).toHaveAttribute("href", "/next");
+    });
+
+    it("keeps the link role, so it stays in the links rotor", () => {
+      // `role="button"` would override the implicit one, announcing "button"
+      // and removing the "this navigates" affordance for exactly the users the
+      // <a> was rendered for.
+      render(<Button href="/next">Next</Button>);
+      expect(screen.getByRole("link", { name: "Next" })).toBe(root());
+      expect(root()).not.toHaveAttribute("role");
     });
 
     it("drops the href when disabled, rather than only styling it", () => {

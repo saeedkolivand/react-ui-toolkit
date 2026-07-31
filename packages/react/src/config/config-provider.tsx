@@ -22,6 +22,15 @@ export type Direction = "ltr" | "rtl";
 export interface ConfigContextValue {
   locale: Locale;
   direction: Direction;
+  /**
+   * Whether a provider exists above this point.
+   *
+   * An explicit marker rather than inferring it from `themeScope`: only a
+   * provider that *scoped* sets that, and the outermost never scopes — so
+   * inferring made every provider believe it was outermost, and a nested theme
+   * wrote to `:root` and repainted the whole document.
+   */
+  hasProvider: boolean;
   /** Present when a nested provider scoped its theme; components rarely need it. */
   themeScope?: string;
 }
@@ -29,6 +38,7 @@ export interface ConfigContextValue {
 const ConfigContext = createContext<ConfigContextValue>({
   locale: defaultLocale,
   direction: "ltr",
+  hasProvider: false,
 });
 
 export const useConfig = (): ConfigContextValue => use(ConfigContext);
@@ -42,14 +52,18 @@ export interface ConfigProviderProps {
 
 export function ConfigProvider({ theme, locale, direction, children }: ConfigProviderProps) {
   const parent = use(ConfigContext);
-  const generatedScope = useId();
+  const scopeId = useId();
 
-  // Only a *nested* provider scopes its theme. The outermost one writes to
-  // `:root` so a portaled overlay — which is a sibling of the provider, not a
-  // descendant — still gets the tokens. Scoping the top level would leave every
-  // modal in the app unthemed, which is the failure this ordering avoids.
-  const nested = parent.themeScope !== undefined || direction !== undefined;
-  const scope = theme && nested ? generatedScope.replace(/:/g, "") : undefined;
+  // Only a *nested* provider scopes its theme. The outermost writes to `:root`,
+  // so a portaled overlay — a sibling of the provider rather than a descendant,
+  // per rule 6 — still gets the tokens. Scoping the top level leaves every
+  // modal, drawer, tooltip and toast in the app unthemed.
+  //
+  // `direction` deliberately plays no part in this. Including it meant a
+  // top-level provider that merely set `dir="rtl"` scoped its theme to a wrapper
+  // div, producing exactly the unthemed-overlay failure described above for
+  // every RTL app.
+  const scope = theme && parent.hasProvider ? scopeId.replace(/:/g, "") : undefined;
 
   const value = useMemo<ConfigContextValue>(
     () => ({
@@ -57,6 +71,7 @@ export function ConfigProvider({ theme, locale, direction, children }: ConfigPro
       // keeps the locale from above it.
       locale: locale ?? parent.locale,
       direction: direction ?? parent.direction,
+      hasProvider: true,
       themeScope: scope ?? parent.themeScope,
     }),
     [locale, direction, scope, parent]
@@ -65,10 +80,21 @@ export function ConfigProvider({ theme, locale, direction, children }: ConfigPro
   const css = useMemo(() => {
     if (!theme) return undefined;
     if (!scope) return theme.css;
-    // `createTheme({ scope })` would be the tidier route, but the theme object
-    // is already compiled by the time it arrives here. Rewriting the one
-    // selector it emits is cheaper than recompiling the whole thing on render.
-    return theme.css.replace(":root {", `[data-ck-theme="${scope}"] {`);
+    // Every `:root`, not the first.
+    //
+    // `String.replace` with a string pattern replaces one occurrence, and a
+    // theme emits more than one block once `components` is used: a
+    // `[data-scope="button"]` token block and compiled style overrides sit
+    // alongside the `:root` one. Rewriting only the first left a *scoped*
+    // provider applying its component tokens document-wide.
+    //
+    // The tidier route is `createTheme({ scope })`, but the theme arrives here
+    // already compiled and recompiling on every render costs more than a
+    // string scan. Component blocks are prefixed rather than replaced, so they
+    // stay scoped to both the theme and the component.
+    return theme.css
+      .replaceAll(":root {", `[data-ck-theme="${scope}"] {`)
+      .replaceAll(/^(\[data-scope=)/gm, `[data-ck-theme="${scope}"] $1`);
   }, [theme, scope]);
 
   const content = (

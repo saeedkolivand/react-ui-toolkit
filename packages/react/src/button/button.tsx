@@ -56,7 +56,10 @@ export interface LinkButtonProps
   ref?: Ref<HTMLAnchorElement>;
 }
 
-const isLink = (props: ButtonProps | LinkButtonProps): props is LinkButtonProps =>
+/** Either form. What a consumer wrapping Button should accept. */
+export type AnyButtonProps = ButtonProps | LinkButtonProps;
+
+const isLink = (props: AnyButtonProps): props is LinkButtonProps =>
   typeof (props as LinkButtonProps).href === "string";
 
 /**
@@ -66,7 +69,7 @@ const isLink = (props: ButtonProps | LinkButtonProps): props is LinkButtonProps 
  * branches cannot drift — a `data-*` added to one and forgotten on the other is
  * exactly the divergence the parity suite would catch a week later.
  */
-function usePresentation(props: CommonProps) {
+function presentation(props: CommonProps) {
   const {
     type = "default",
     size = "middle",
@@ -97,7 +100,12 @@ function usePresentation(props: CommonProps) {
     "data-ghost": dataAttr(ghost),
     "data-block": dataAttr(block),
     "data-loading": dataAttr(loading),
-    "data-disabled": dataAttr(disabled),
+    // Reflects the *effective* state, not just the prop. A loading button is
+    // genuinely disabled in the DOM, so a stylesheet rule keyed on the
+    // attribute would otherwise miss it while `:disabled` matched — the two
+    // disagreeing is the sort of thing each of the other three adapters would
+    // then re-decide differently.
+    "data-disabled": dataAttr(disabled || loading),
     "data-icon-position": icon ? iconPosition : undefined,
     className,
   };
@@ -124,7 +132,7 @@ function usePresentation(props: CommonProps) {
   return { shared, content, inactive: disabled || loading, loading };
 }
 
-/** Keys `usePresentation` consumes, so neither branch leaks them onto the DOM. */
+/** Keys `presentation` consumes, so neither branch leaks them onto the DOM. */
 const PRESENTATION_KEYS = [
   "type",
   "size",
@@ -149,7 +157,7 @@ const withoutPresentation = <T extends object>(
 };
 
 function NativeButton(props: ButtonProps) {
-  const { shared, content, inactive, loading } = usePresentation(props);
+  const { shared, content, inactive, loading } = presentation(props);
   const { htmlType = "button", ref, href: _href, ...rest } = withoutPresentation(props);
 
   return (
@@ -172,7 +180,7 @@ function NativeButton(props: ButtonProps) {
 }
 
 function LinkButton(props: LinkButtonProps) {
-  const { shared, content, inactive } = usePresentation(props);
+  const { shared, content, inactive } = presentation(props);
   const { href, ref, ...rest } = withoutPresentation(props);
 
   return (
@@ -184,7 +192,11 @@ function LinkButton(props: LinkButtonProps) {
       // An <a> has no `disabled`, so the state has to be exposed for assistive
       // technology some other way.
       aria-disabled={inactive ? "true" : undefined}
-      role="button"
+      // Deliberately NO role="button". It would override the implicit `link`
+      // role, so a screen reader announces "button", the element drops out of
+      // the links rotor, and the "this navigates" affordance is gone for exactly
+      // the users the <a> was rendered for. Styling keys on data-scope, not the
+      // role, so nothing is lost by leaving it native.
       {...shared}
       {...rest}
     >
@@ -198,6 +210,6 @@ function LinkButton(props: LinkButtonProps) {
  * leaves TypeScript widening every prop the two shapes disagree about, so
  * `htmlType` came out as `ButtonType | "button" | "submit" | "reset"`.
  */
-export function Button(props: ButtonProps | LinkButtonProps) {
+export function Button(props: AnyButtonProps) {
   return isLink(props) ? <LinkButton {...props} /> : <NativeButton {...props} />;
 }

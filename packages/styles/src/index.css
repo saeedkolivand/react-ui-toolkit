@@ -19,6 +19,8 @@
 @import "./reset.css";
 @import "./components/icon.css";
 @import "./components/button.css";
+/* Temporary: delete with packages/styles/src/components/button-v1.css. */
+@import "./components/button-v1.css";
 @import "./components/feedback.css";
 @import "./components/tag-alert.css";
 @import "./components/layout.css";
