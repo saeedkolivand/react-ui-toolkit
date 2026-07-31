@@ -3,6 +3,14 @@ import { defineConfig } from "@playwright/test";
 /**
  * The suites that need one browser and one server, not the four-server rig.
  *
+ * `test:browser` builds every dependency of the harness playground rather than
+ * naming them one by one — `^...` is "this package's dependencies, not the
+ * package itself", so adding an import to a harness cannot leave the command
+ * measuring a stale `dist`. Trap 2 in CLAUDE.md, which has produced a false
+ * green twice: the playgrounds import built output, and `overlay.spec.ts`
+ * asserts pure CSS layout, so a stale stylesheet could invert its result
+ * silently.
+ *
  * `position.ts` is framework-free, so proving it does not need the parity rig —
  * and booting all four to test rect maths would make the tightest feedback loop
  * in the project one of the slowest. `overlay.spec.ts` joins it for a different

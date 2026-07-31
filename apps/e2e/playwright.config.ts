@@ -17,7 +17,7 @@ export const FRAMEWORKS = [
 
 export default defineConfig({
   testDir: "./specs",
-  // The positioner and overlay suites run alone under position.config.ts,
+  // The positioner and overlay suites run alone under browser.config.ts,
   // against a single server and its own baseURL. Without this they are collected
   // here too — where there is no baseURL at all, so every `page.goto("/…html")`
   // throws, dozens of times.

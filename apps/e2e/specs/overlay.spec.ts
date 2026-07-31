@@ -36,16 +36,31 @@ test("returns focus to the trigger after Escape, across the inert background", a
   expect(await activeId(page)).toBe("before");
 });
 
-test("makes the background genuinely unreachable, not merely hidden", async ({ page }) => {
+test("makes the background refuse focus it is given, not just focus tabbed to it", async ({
+  page,
+}) => {
   await open(page);
-  // `inert` blocks focus, so Tab cannot reach a control outside the dialog no
-  // matter how many times it is pressed. jsdom would let this walk straight out.
-  for (let i = 0; i < 6; i++) await page.keyboard.press("Tab");
-  const inside = await page.evaluate(() => {
-    const content = document.querySelector('[data-scope="dialog"][data-part="content"]');
-    return content?.contains(document.activeElement) ?? false;
+  // Programmatic focus, deliberately — NOT Tab.
+  //
+  // The first version of this test pressed Tab six times and asserted focus was
+  // still inside. That passes with `inertBackground` deleted outright: the focus
+  // trap already cancels Tab at the last tabbable and wraps, so the trap alone
+  // produced the result, and the same wrap is covered in jsdom anyway. Verified
+  // by removing the call and watching all four tests stay green.
+  //
+  // What only `inert` gives is a background that rejects focus handed straight
+  // to it — a screen reader moving the virtual cursor, a stray `.focus()` in
+  // consumer code, a browser restoring focus after an alert. jsdom reflects the
+  // IDL attribute and implements none of that, so this is unreachable there.
+  const focused = await page.evaluate(() => {
+    document.getElementById("after")!.focus();
+    return document.activeElement?.id ?? "";
   });
-  expect(inside).toBe(true);
+  // The call is refused outright and focus stays where the trap put it, rather
+  // than falling to <body> — inert rejects the request instead of accepting and
+  // then correcting it.
+  expect(focused).not.toBe("after");
+  expect(focused).toBe("inner-first");
 });
 
 test("a press on the mask reaches the positioner, and reports as a cancel", async ({ page }) => {

@@ -31,7 +31,7 @@
       "dependsOn": ["^build"],
       "outputs": ["playwright-report/**", "test-results/**"]
     },
-    "test:position": {
+    "test:browser": {
       "dependsOn": ["^build"],
       "outputs": ["playwright-report/**", "test-results/**"]
     }
