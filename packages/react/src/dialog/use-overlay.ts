@@ -154,17 +154,14 @@ export function useOverlay(options: OverlayOptions): Overlay {
       onDismiss: dismiss,
       escape: closeOnEscape,
       outside: closeOnInteractOutside,
-      // A trapped layer cannot lose focus outward on its own, so a focusin
-      // outside it is never the user leaving. It is, routinely, the layer above
-      // restoring focus to its trigger as it closes — which used to dismiss this
-      // one in the same tick, closing two nested dialogs on one Escape.
-      // `false` for a dialog either way. A modal traps focus so a focusin
+      // `false` for a dialog either way. A modal traps focus, so a focusin
       // outside it is never the user leaving — it is the layer above restoring
       // focus to its trigger as it closes, which used to dismiss this one in the
-      // same tick. And a non-modal dialog is exactly the case where moving focus
-      // out is the point: an inspector or a find-and-replace panel is worked
-      // alongside the page, so the first Tab out was closing it. The option is
-      // for menus and popovers, which a dialog is neither of.
+      // same tick and close two nested dialogs on one Escape. And a non-modal
+      // dialog is exactly the case where moving focus out is the point: an
+      // inspector or a find-and-replace panel is worked alongside the page, so
+      // the first Tab out was closing it. The option is for menus and popovers,
+      // which a dialog is neither of.
       focus: false,
     });
 

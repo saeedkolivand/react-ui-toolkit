@@ -26,12 +26,22 @@
  * the hole `inert` was chosen to close.
  *
  * So: one registry of open overlay contents, and one recomputation whenever it
- * changes. A body child is background when it contains none of them, the
- * background is inert until the last overlay leaves, and nothing an overlay does
- * touches another overlay's layers.
+ * changes, with exactly one overlay foreground — the topmost.
+ *
+ * Topmost rather than "every registered overlay". Treating them all as
+ * foreground also fixes the mutual-destruction bug, but it means a dialog opened
+ * on top of another leaves the one below reachable, which is the contract in the
+ * first paragraph: a screen reader walks out of the top dialog into the one
+ * behind it, and programmatic focus lands on a control the user cannot see the
+ * top of. Two open modal dialogs means one of them is behind the other, and
+ * "behind a modal" is the case this exists for.
+ *
+ * Recomputing on every change is what makes that safe to unwind: closing the top
+ * overlay makes the next one topmost and un-inerts it in the same call, before
+ * its trap takes focus back.
  */
 
-/** The content node of each open overlay. Order is irrelevant; membership is not. */
+/** The content node of each open overlay, oldest first. The last one is on top. */
 const layers: HTMLElement[] = [];
 
 /**
@@ -47,11 +57,13 @@ function apply() {
   // Nothing is background when nothing is foreground. Without this guard the
   // last overlay closing leaves every child still "background" and the release
   // loop below skips them all, so the page stays inert forever.
-  if (layers.length > 0) {
+  const topmost = layers[layers.length - 1];
+  if (topmost) {
     for (const child of document.body.children) {
       if (!(child instanceof HTMLElement)) continue;
-      // Any open overlay's layer is foreground, not just the one registering.
-      if (layers.some(layer => child.contains(layer))) continue;
+      // Only the topmost overlay's layers. A lower overlay is behind a modal,
+      // which is exactly what should be unreachable.
+      if (child.contains(topmost)) continue;
       background.add(child);
     }
   }

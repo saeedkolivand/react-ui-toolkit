@@ -44,7 +44,8 @@ return-focus target is read while the trigger is unambiguously still focused
 rather than relying on the focus fixup rule being deferred.
 
 
-`inertBackground` moves into `core` with a shared registry. Each overlay used to
+`inertBackground` moves into `core` with a shared registry, in which exactly
+one overlay — the topmost — is foreground. Each overlay used to
 sweep the background alone and treat every `document.body` child that did not
 contain *its* content as background — including another overlay's layers. Two
 overlays opening in the same commit each inerted the other, leaving both visible

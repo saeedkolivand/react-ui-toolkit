@@ -422,8 +422,11 @@ describe("Modal", () => {
 
       const positioner = (ck: string) =>
         document.querySelector<HTMLElement>(`[data-ck="${ck}"][data-part="positioner"]`)!;
-      expect(positioner("modal").inert).not.toBe(true);
+      // The Drawer registered second, so it is on top and usable. The Modal is
+      // behind it and inert, which is what inert is for — the bug was that BOTH
+      // ended up inert, not that one did.
       expect(positioner("drawer").inert).not.toBe(true);
+      expect(positioner("modal").inert).toBe(true);
       expect(inertDepth()).toBe(2);
     });
 

@@ -80,6 +80,24 @@ test("a press on the mask reaches the positioner, and reports as a cancel", asyn
   expect(await activeId(page)).toBe("");
 });
 
+test("keeps the dialog behind a stacked one unreachable too", async ({ page }) => {
+  await open(page);
+  await page.locator("#inner-first").click();
+  await expect(page.locator('[data-scope="dialog"][data-part="content"]')).toHaveCount(2);
+
+  // The same assertion as the page background, one layer up. Making every open
+  // overlay foreground fixes two dialogs opening in one commit inerting each
+  // other, but then a dialog opened ON one leaves the lower reachable — a screen
+  // reader walks out of the top dialog into the one behind it, and this call
+  // lands focus on a control the user cannot see the top of.
+  const focused = await page.evaluate(() => {
+    document.getElementById("inner-second")!.focus();
+    return document.activeElement?.id ?? "";
+  });
+  expect(focused).not.toBe("inner-second");
+  expect(focused).toBe("nested-first");
+});
+
 test("Tab advances inside a nested dialog, and the outer trap resumes", async ({ page }) => {
   await open(page);
   await page.locator("#inner-first").click();
