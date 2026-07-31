@@ -1,6 +1,6 @@
 {
   "name": "@crosskit-ui/svelte",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "CrossKit components for Svelte 5.",
   "type": "module",
   "sideEffects": false,
