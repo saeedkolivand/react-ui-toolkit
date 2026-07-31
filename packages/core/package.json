@@ -38,6 +38,9 @@
     "lint": "eslint src",
     "check:exports": "publint --strict && attw --pack --profile esm-only"
   },
+  "dependencies": {
+    "@zag-js/toast": "catalog:zag"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",
     "publint": "catalog:",

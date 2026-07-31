@@ -1,0 +1,129 @@
+/* Toast. The group is positioned by the machine through inline custom
+   properties, so this file styles appearance only — no fixed/top/right of its
+   own beyond what zag needs to be laid out at all. */
+@layer ck.components {
+  [data-scope="toast"][data-part="group"] {
+    position: fixed;
+    z-index: var(--ck-z-toast);
+    display: flex;
+    flex-direction: column;
+    /* zag writes --width; without it the group collapses and the toasts inside
+       have nothing to size against. */
+    width: var(--width, 22rem);
+    max-width: calc(100vw - 2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    outline: none;
+  }
+
+  [data-scope="toast"][data-part="root"] {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 0.5rem 0.75rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--ck-radius-lg);
+    border: 1px solid var(--ck-toast-border, var(--ck-border));
+    background-color: var(--ck-toast-bg, var(--ck-surface));
+    color: var(--ck-toast-fg, var(--ck-fg));
+    box-shadow: var(--ck-shadow-lg);
+    /* zag drives stacking, offset and scale entirely through these. */
+    translate: var(--x) var(--y);
+    scale: var(--scale);
+    z-index: var(--z-index);
+    height: var(--height);
+    opacity: var(--opacity);
+    will-change: translate, opacity, scale;
+    transition:
+      translate var(--ck-duration-lg) var(--ck-ease-in-out),
+      scale var(--ck-duration-lg) var(--ck-ease-in-out),
+      opacity var(--ck-duration-lg) var(--ck-ease-in-out);
+  }
+
+  /* One accent per type, mixed into bg/border exactly the way Alert does it —
+     the semantic tokens have already flipped for dark mode, so there is no
+     `dark:` twin here either. */
+  [data-scope="toast"][data-part="root"] {
+    --ck-toast-accent: var(--ck-neutral-solid);
+  }
+  [data-scope="toast"][data-part="root"][data-type="success"] {
+    --ck-toast-accent: var(--ck-success-solid);
+  }
+  [data-scope="toast"][data-part="root"][data-type="error"] {
+    --ck-toast-accent: var(--ck-danger-solid);
+  }
+  [data-scope="toast"][data-part="root"][data-type="warning"] {
+    --ck-toast-accent: var(--ck-warning-solid);
+  }
+  [data-scope="toast"][data-part="root"][data-type="info"] {
+    --ck-toast-accent: var(--ck-info-solid);
+  }
+  [data-scope="toast"][data-part="root"]:not([data-type="loading"]) {
+    --ck-toast-bg: color-mix(in oklab, var(--ck-toast-accent) 12%, var(--ck-surface));
+    --ck-toast-border: color-mix(in oklab, var(--ck-toast-accent) 35%, transparent);
+  }
+
+  [data-scope="toast"] [data-part="icon"] {
+    grid-row: 1 / span 2;
+    color: var(--ck-toast-accent, var(--ck-fg-muted));
+    flex-shrink: 0;
+  }
+
+  [data-scope="toast"][data-part="title"] {
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin: 0;
+  }
+  [data-scope="toast"][data-part="description"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-toast-fg, var(--ck-fg-muted));
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  [data-scope="toast"][data-part="action-trigger"] {
+    grid-column: 2;
+    justify-self: start;
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ck-toast-accent, var(--ck-accent-solid));
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  [data-scope="toast"][data-part="close-trigger"] {
+    grid-row: 1;
+    grid-column: 3;
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0.125rem;
+    border-radius: var(--ck-radius-base);
+    color: currentColor;
+    opacity: 0.6;
+    cursor: pointer;
+    line-height: 0;
+  }
+  [data-scope="toast"][data-part="close-trigger"]:hover {
+    opacity: 1;
+  }
+  [data-scope="toast"][data-part="close-trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope="toast"][data-part="root"] {
+      transition-duration: 1ms;
+    }
+  }
+}

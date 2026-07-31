@@ -54,7 +54,8 @@
     "@zag-js/tooltip": "catalog:zag",
     "@zag-js/select": "catalog:zag",
     "@zag-js/svelte": "catalog:zag",
-    "@zag-js/tabs": "catalog:zag"
+    "@zag-js/tabs": "catalog:zag",
+    "@zag-js/toast": "catalog:zag"
   },
   "devDependencies": {
     "@sveltejs/package": "catalog:frameworks",
