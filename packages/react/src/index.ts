@@ -39,3 +39,4 @@ export {
   type MenuEntry,
   type MenuSeparator,
 } from "./menu/menu";
+export { Table, type TableProps } from "./table/table";

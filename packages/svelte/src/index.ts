@@ -28,3 +28,5 @@ export { default as Toaster } from "./toast/Toaster.svelte";
 export { default as Tooltip } from "./tooltip/Tooltip.svelte";
 export { default as Menu } from "./menu/Menu.svelte";
 export type { MenuItem, MenuSeparator, MenuEntry } from "./menu/Menu.svelte";
+export { default as Table } from "./table/Table.svelte";
+export type { TableProps } from "./table/types";
