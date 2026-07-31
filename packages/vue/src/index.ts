@@ -21,3 +21,5 @@ export { default as Modal } from "./dialog/Modal.vue";
 export { default as Drawer } from "./dialog/Drawer.vue";
 export { default as Select } from "./select/Select.vue";
 export { default as Option } from "./select/Option";
+export { default as Tabs } from "./tabs/Tabs.vue";
+export { default as Accordion } from "./accordion/Accordion.vue";

@@ -27,7 +27,7 @@
   // Inline custom property, not a class: v0's `gap-${n}` was a dynamic Tailwind
   // class that produced nothing in a consumer's build.
   const styleAttr = $derived(
-    spacing == null ? style : `${style ? style + ";" : ""}--ck-row-spacing:${spacing}`,
+    spacing == null ? style : `${style ? style + ";" : ""}--ck-row-spacing:${spacing}`
   );
 </script>
 

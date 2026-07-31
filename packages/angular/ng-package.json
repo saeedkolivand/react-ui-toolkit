@@ -12,6 +12,8 @@
     "tslib",
     "@zag-js/dialog",
     "@zag-js/presence",
-    "@zag-js/select"
+    "@zag-js/select",
+    "@zag-js/tabs",
+    "@zag-js/accordion"
   ]
 }

@@ -76,6 +76,9 @@ catalogs:
       specifier: ^8.21.3
       version: 8.21.3
   zag:
+    '@zag-js/accordion':
+      specifier: ^1.43.0
+      version: 1.43.0
     '@zag-js/core':
       specifier: ^1.43.0
       version: 1.43.0
@@ -88,7 +91,13 @@ catalogs:
     '@zag-js/react':
       specifier: ^1.43.0
       version: 1.43.0
+    '@zag-js/select':
+      specifier: ^1.43.0
+      version: 1.43.0
     '@zag-js/svelte':
+      specifier: ^1.43.0
+      version: 1.43.0
+    '@zag-js/tabs':
       specifier: ^1.43.0
       version: 1.43.0
     '@zag-js/types':
@@ -260,6 +269,9 @@ importers:
       '@crosskit-ui/zag-angular':
         specifier: workspace:^
         version: link:../zag-angular/dist
+      '@zag-js/accordion':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
@@ -267,7 +279,10 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/select':
-        specifier: ^1.43.0
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tabs':
+        specifier: catalog:zag
         version: 1.43.0
       tslib:
         specifier: ^2.8.1
@@ -319,6 +334,9 @@ importers:
       '@crosskit-ui/styles':
         specifier: workspace:^
         version: link:../styles
+      '@zag-js/accordion':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
@@ -329,7 +347,10 @@ importers:
         specifier: catalog:zag
         version: 1.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@zag-js/select':
-        specifier: ^1.43.0
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tabs':
+        specifier: catalog:zag
         version: 1.43.0
     devDependencies:
       '@arethetypeswrong/cli':
@@ -395,6 +416,9 @@ importers:
       '@tanstack/table-core':
         specifier: catalog:table
         version: 8.21.3
+      '@zag-js/accordion':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
@@ -402,11 +426,14 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/select':
-        specifier: ^1.43.0
+        specifier: catalog:zag
         version: 1.43.0
       '@zag-js/svelte':
         specifier: catalog:zag
         version: 1.43.0(svelte@5.56.8(@typescript-eslint/types@8.65.0))
+      '@zag-js/tabs':
+        specifier: catalog:zag
+        version: 1.43.0
     devDependencies:
       '@sveltejs/package':
         specifier: catalog:frameworks
@@ -435,6 +462,9 @@ importers:
       '@crosskit-ui/styles':
         specifier: workspace:^
         version: link:../styles
+      '@zag-js/accordion':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
@@ -442,7 +472,10 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/select':
-        specifier: ^1.43.0
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tabs':
+        specifier: catalog:zag
         version: 1.43.0
       '@zag-js/vue':
         specifier: catalog:zag
@@ -3007,6 +3040,9 @@ packages:
   '@yuku-toolchain/types@0.8.1':
     resolution: {integrity: sha512-HcGEV3kOn9evBTm2ARYOFNKAI7sY9twQozCVd9EVdlsBlnKi0a2iv8xXxYVHFCBQpX3SvvPXBhk8lcK6NUTdNg==}
 
+  '@zag-js/accordion@1.43.0':
+    resolution: {integrity: sha512-Cy7jSbmFAn4mm+btHjCk0rtYEq5ggTvuLEFDdLnnEUw3SvK0H9J1hlouX5QVEybgibI2TFwk5wd8arn+hpZRnw==}
+
   '@zag-js/anatomy@1.43.0':
     resolution: {integrity: sha512-hcARaNvhU+jXukKCU4Gz4eXU2oUSlppi15L/MoxcckMum+Pu1HFqjWpllDgjb7RyByHYX6XfFk6ijPRV8EzPpg==}
 
@@ -3062,6 +3098,9 @@ packages:
     resolution: {integrity: sha512-gzDR6OYwOtRgN5rDpGLW5v2odwX8OQpzN7cXLlBA6UtEULhurZp2Fh4VaUTxYBREfmit0l2fuBZiom0W0Cm7RA==}
     peerDependencies:
       svelte: '>=5'
+
+  '@zag-js/tabs@1.43.0':
+    resolution: {integrity: sha512-Nll5xQUPGOdVTYd+DYGA3wF+0xlJc+kRmQoAuE5ZHIsLuJrXn9jhRwkmQHL2rh/lln3cT9Ecp4UDWl/qyqBecQ==}
 
   '@zag-js/types@1.43.0':
     resolution: {integrity: sha512-pheZyCiVjJaXBzbfoj/gMKXkZUo1D5JWd46QVYWonHJZIdUfDRDwBvDKcXGIHmpuq7fJrnGXbegAk0+D2aa4bw==}
@@ -8135,6 +8174,14 @@ snapshots:
 
   '@yuku-toolchain/types@0.8.1': {}
 
+  '@zag-js/accordion@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
+
   '@zag-js/anatomy@1.43.0': {}
 
   '@zag-js/aria-hidden@1.43.0':
@@ -8232,6 +8279,14 @@ snapshots:
       '@zag-js/types': 1.43.0
       '@zag-js/utils': 1.43.0
       svelte: 5.56.8(@typescript-eslint/types@8.65.0)
+
+  '@zag-js/tabs@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
 
   '@zag-js/types@1.43.0':
     dependencies:

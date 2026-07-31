@@ -28,3 +28,5 @@ export {
   type SelectItem,
   type OptionProps,
 } from "./select/select";
+export { Tabs, type TabsProps, type TabItem } from "./tabs/tabs";
+export { Accordion, type AccordionProps, type AccordionItem } from "./accordion/accordion";

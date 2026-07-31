@@ -2,7 +2,7 @@
   "name": "@crosskit-ui/vue",
   "version": "0.0.0",
   "description": "CrossKit components for Vue 3.",
-  "//check:exports": "publint only, no attw. The emitted index.d.ts re-exports './button/Button.vue', which node16 resolution cannot resolve by design — every SFC-based Vue library has this shape. Consumers resolve it through the Vue plugin / vue-tsc, and 'bundler' resolution handles it correctly.",
+  "//check:exports": "publint only, no attw. The emitted index.d.ts re-exports './button/Button.vue', which node16 resolution cannot resolve by design \u2014 every SFC-based Vue library has this shape. Consumers resolve it through the Vue plugin / vue-tsc, and 'bundler' resolution handles it correctly.",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -45,9 +45,11 @@
   "dependencies": {
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
+    "@zag-js/accordion": "catalog:zag",
     "@zag-js/dialog": "catalog:zag",
     "@zag-js/presence": "catalog:zag",
-    "@zag-js/select": "^1.43.0",
+    "@zag-js/select": "catalog:zag",
+    "@zag-js/tabs": "catalog:zag",
     "@zag-js/vue": "catalog:zag"
   },
   "devDependencies": {

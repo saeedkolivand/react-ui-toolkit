@@ -22,3 +22,5 @@ export { default as Drawer } from "./dialog/Drawer.svelte";
 export { default as Select } from "./select/Select.svelte";
 export { default as Option } from "./select/Option.svelte";
 export type { SelectItem } from "./select/context.svelte";
+export { default as Tabs } from "./tabs/Tabs.svelte";
+export { default as Accordion } from "./accordion/Accordion.svelte";

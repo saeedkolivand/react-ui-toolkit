@@ -34,10 +34,12 @@
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
     "@crosskit-ui/zag-angular": "workspace:^",
+    "tslib": "^2.8.1",
+    "@zag-js/accordion": "catalog:zag",
     "@zag-js/dialog": "catalog:zag",
     "@zag-js/presence": "catalog:zag",
-    "@zag-js/select": "^1.43.0",
-    "tslib": "^2.8.1"
+    "@zag-js/select": "catalog:zag",
+    "@zag-js/tabs": "catalog:zag"
   },
   "devDependencies": {
     "@angular/common": "catalog:angular",
