@@ -1,0 +1,55 @@
+/* The four playgrounds share this file byte for byte. Anything that could make
+   one framework's page differ from another's — a font that may or may not have
+   loaded, a scrollbar, a caret — is pinned here, because the parity test
+   compares screenshots between frameworks and every such difference is a false
+   positive. */
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  /* A concrete stack, never a webfont: a font still loading in one run and
+     cached in the next would fail the comparison for no real reason. */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#root,
+#app {
+  padding: 24px;
+  width: 900px;
+}
+
+.parity-section {
+  margin-bottom: 28px;
+}
+
+.parity-section > h2 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.parity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.parity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Caret blink is a moving pixel. */
+* {
+  caret-color: transparent;
+}

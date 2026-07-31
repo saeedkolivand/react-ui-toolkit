@@ -2,6 +2,14 @@
 import { computed, useId } from "vue";
 import { ariaAttr, dataAttr, type FieldVariant, type Size } from "@crosskit-ui/core";
 
+// Native attributes must reach the CONTROL, not the wrapper. Without
+// inheritAttrs:false Vue puts every undeclared attribute — type, placeholder,
+// value, readonly, required, name, autocomplete — on the root div, where they do
+// nothing at all. React and Svelte both spread rest onto the control, so this
+// was a silent Vue-only divergence; the cross-framework parity screenshots are
+// what surfaced it.
+defineOptions({ inheritAttrs: false });
+
 const props = withDefaults(
   defineProps<{
     variant?: FieldVariant;
@@ -63,6 +71,7 @@ function onInput(event: Event) {
       :data-value="props.autoResize ? (props.modelValue ?? '') : undefined"
     >
       <textarea
+        v-bind="$attrs"
         :id="textareaId"
         data-scope="textarea"
         data-part="input"

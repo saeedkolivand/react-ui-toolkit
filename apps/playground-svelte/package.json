@@ -1,0 +1,21 @@
+{
+  "name": "@crosskit-ui/playground-svelte",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4176",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:*",
+    "@crosskit-ui/styles": "workspace:*",
+    "@crosskit-ui/svelte": "workspace:*",
+    "svelte": "catalog:frameworks"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "typescript": "catalog:",
+    "vite": "catalog:frameworks"
+  }
+}
