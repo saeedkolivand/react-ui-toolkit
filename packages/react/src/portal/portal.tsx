@@ -20,6 +20,11 @@ export interface PortalProps {
  * Nothing in `core` can detect or prevent that, so portalling is the fix, and
  * it has to happen at the adapter.
  *
+ * React-only, deliberately. Vue has `<Teleport>` and Svelte has an action, both
+ * better than a component wrapping them, so this is not the missing quarter of a
+ * four-adapter component — it is the React idiom for a thing the other three
+ * already express natively.
+ *
  * Nothing renders until after hydration, so the server and the first client
  * render agree — `document` does not exist during SSR, and portalling on the
  * hydration pass produces a mismatch.

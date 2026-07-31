@@ -71,6 +71,24 @@ describe("Modal", () => {
     expect(content()).not.toHaveAttribute("aria-describedby");
   });
 
+  it("omits the boolean attributes entirely when false", async () => {
+    // `data-centered="false"` *matches* `[data-centered]` in CSS, so a raw
+    // boolean applies the wrong styles silently. The highest-weighted rule in
+    // the repo, and the one most likely to diverge across the four adapters.
+    render(
+      <Modal defaultOpen centered={false} scrollable={false} title="T">
+        body
+      </Modal>
+    );
+    await opened();
+    expect(document.querySelector(POSITIONER)).not.toHaveAttribute("data-centered");
+    expect(content()).not.toHaveAttribute("data-scrollable");
+    // Scoped to data-* on purpose: `focusable="false"` on an <svg> is a real SVG
+    // attribute whose value is meaningful, not a boolean that should have been
+    // omitted.
+    expect(document.body.innerHTML).not.toMatch(/data-[\w-]+="false"/);
+  });
+
   it("round-trips a controlled open prop in both directions", async () => {
     const user = userEvent.setup();
     function Harness() {
@@ -278,11 +296,20 @@ describe("Modal", () => {
       await user.tab();
       expect(document.activeElement).toBe(screen.getByText("a"));
 
-      // The outer trap resumes once the inner one leaves.
+      // The outer trap resumes once the inner one leaves. Asserted by the WRAP,
+      // not by "focus is still inside": focus is restored to a node inside the
+      // outer dialog either way, and the next Tab reaches the close button
+      // whether or not a trap is active. Only wrapping from the last tabbable
+      // back to the first requires one.
       await user.keyboard("{Escape}");
       await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(1));
+      const trigger = screen.getByText("open inner");
+      const close = screen.getByLabelText("Close");
+      trigger.focus();
       await user.tab();
-      expect(document.querySelector(CONTENT)!.contains(document.activeElement)).toBe(true);
+      expect(document.activeElement).toBe(close);
+      await user.tab();
+      expect(document.activeElement).toBe(trigger);
     });
 
     it("keeps focus put across a re-render while open", async () => {
