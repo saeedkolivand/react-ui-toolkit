@@ -44,8 +44,19 @@ echo "==> Step 1/3: publish 0.0.0 placeholders (expect an OTP prompt per package
 for p in "${PACKAGES[@]}"; do
   dir="packages/$p"
   # The Angular packages publish their built dist/ via publishConfig.directory.
+  #
+  # --no-provenance is required HERE and nowhere else. Every package sets
+  # publishConfig.provenance:true, which is right for the real release, but
+  # provenance can only be generated inside a supported CI provider — from a
+  # laptop npm fails with:
+  #
+  #   EUSAGE  Automatic provenance generation not supported for provider: null
+  #
+  # These are 0.0.0 placeholders that exist purely so `npm trust` has a package
+  # to attach to; nobody installs them. v1.0.0 goes out from release.yml with
+  # provenance intact, which is the version that matters.
   echo "--- @crosskit-ui/$p"
-  ( cd "$dir" && npm publish --access public )
+  ( cd "$dir" && npm publish --access public --no-provenance )
 done
 
 echo
