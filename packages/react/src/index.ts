@@ -31,3 +31,11 @@ export {
 export { Tabs, type TabsProps, type TabItem } from "./tabs/tabs";
 export { Accordion, type AccordionProps, type AccordionItem } from "./accordion/accordion";
 export { Toaster, type ToasterProps } from "./toast/toaster";
+export { Tooltip, type TooltipProps } from "./tooltip/tooltip";
+export {
+  Menu,
+  type MenuProps,
+  type MenuItem,
+  type MenuEntry,
+  type MenuSeparator,
+} from "./menu/menu";

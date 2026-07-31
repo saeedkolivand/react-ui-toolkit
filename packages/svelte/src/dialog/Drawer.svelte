@@ -5,7 +5,7 @@
   import * as dialog from "@zag-js/dialog";
   import { useMachine, normalizeProps, portal } from "@zag-js/svelte";
   import type { Side, Size } from "@crosskit-ui/core";
-  import { usePresence, presenceNode } from "./presence.svelte";
+  import { usePresence, presenceNode } from "../presence.svelte";
   import Button from "../button/Button.svelte";
 
   interface Props {

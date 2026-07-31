@@ -85,6 +85,9 @@ catalogs:
     '@zag-js/dialog':
       specifier: ^1.43.0
       version: 1.43.0
+    '@zag-js/menu':
+      specifier: ^1.43.0
+      version: 1.43.0
     '@zag-js/presence':
       specifier: ^1.43.0
       version: 1.43.0
@@ -101,6 +104,9 @@ catalogs:
       specifier: ^1.43.0
       version: 1.43.0
     '@zag-js/toast':
+      specifier: ^1.43.0
+      version: 1.43.0
+    '@zag-js/tooltip':
       specifier: ^1.43.0
       version: 1.43.0
     '@zag-js/types':
@@ -278,6 +284,9 @@ importers:
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/menu':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/presence':
         specifier: catalog:zag
         version: 1.43.0
@@ -288,6 +297,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tooltip':
         specifier: catalog:zag
         version: 1.43.0
       tslib:
@@ -350,6 +362,9 @@ importers:
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/menu':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/presence':
         specifier: catalog:zag
         version: 1.43.0
@@ -363,6 +378,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tooltip':
         specifier: catalog:zag
         version: 1.43.0
     devDependencies:
@@ -435,6 +453,9 @@ importers:
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/menu':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/presence':
         specifier: catalog:zag
         version: 1.43.0
@@ -448,6 +469,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tooltip':
         specifier: catalog:zag
         version: 1.43.0
     devDependencies:
@@ -484,6 +508,9 @@ importers:
       '@zag-js/dialog':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/menu':
+        specifier: catalog:zag
+        version: 1.43.0
       '@zag-js/presence':
         specifier: catalog:zag
         version: 1.43.0
@@ -494,6 +521,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/tooltip':
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/vue':
@@ -3092,6 +3122,9 @@ packages:
   '@zag-js/interact-outside@1.43.0':
     resolution: {integrity: sha512-mQ/6HT6Tn99H4l7u7FaxvXirE4wYenlZFuFkR0qXGRaR7bDRUeWm3dJKcV0Ex3gwcs+G5Z0ZdvA++VBfVh+WUg==}
 
+  '@zag-js/menu@1.43.0':
+    resolution: {integrity: sha512-Sox9be5JdAYnsZHj1esbXH2J9in/EL/bbbMG1+MFcHPV57TjsI0HyT5ETT3WeeATrY5h45Z7gHYhJkRkHKZxWA==}
+
   '@zag-js/popper@1.43.0':
     resolution: {integrity: sha512-mN69qeFpsbrnwijwbRZlgFWiBT7Aes+VMT9sLOZ5nMHQDDupbWQDqh3DCWz8Ojqp6LbDUq6uOFdA5zrLxE5rmQ==}
 
@@ -3103,6 +3136,9 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
+
+  '@zag-js/rect-utils@1.43.0':
+    resolution: {integrity: sha512-Cj4Y9trhY4+NpVN74dkLb5ZOkLFieypnIRFvOovo0JrexZ/wtj1srG9Y35zWgBsmWDTkvp9bexdFg0rggPcNGQ==}
 
   '@zag-js/remove-scroll@1.43.0':
     resolution: {integrity: sha512-2cE7yS3G6JffdlKMzECDQm2ro3mAqWf2ovSylFcsHh/xLx4RIgtv3EivJrNTcr1d+H0YF2/uVyDuUwYlycWNsQ==}
@@ -3123,6 +3159,9 @@ packages:
 
   '@zag-js/toast@1.43.0':
     resolution: {integrity: sha512-T2bChbXQXfYCk8Kw4NYqoybRBN1z3XL2HnpzRe1zRyNQ/Q9RfnUsU492P+sl8IlLB2nchNKgN2BCg/UacffSYQ==}
+
+  '@zag-js/tooltip@1.43.0':
+    resolution: {integrity: sha512-gZNsKXI4gVbQkuGUgVzz0hHbD0fU/aBxrDlD//zXtoAicmIBTic4dw+kRqpPKNNEetD9XuoKlbJ0xNbbNxgatw==}
 
   '@zag-js/types@1.43.0':
     resolution: {integrity: sha512-pheZyCiVjJaXBzbfoj/gMKXkZUo1D5JWd46QVYWonHJZIdUfDRDwBvDKcXGIHmpuq7fJrnGXbegAk0+D2aa4bw==}
@@ -8254,6 +8293,18 @@ snapshots:
       '@zag-js/dom-query': 1.43.0
       '@zag-js/utils': 1.43.0
 
+  '@zag-js/menu@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dismissable': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/focus-visible': 1.43.0
+      '@zag-js/popper': 1.43.0
+      '@zag-js/rect-utils': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
+
   '@zag-js/popper@1.43.0':
     dependencies:
       '@floating-ui/dom': 1.8.0
@@ -8274,6 +8325,8 @@ snapshots:
       '@zag-js/utils': 1.43.0
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  '@zag-js/rect-utils@1.43.0': {}
 
   '@zag-js/remove-scroll@1.43.0':
     dependencies:
@@ -8316,6 +8369,16 @@ snapshots:
       '@zag-js/core': 1.43.0
       '@zag-js/dismissable': 1.43.0
       '@zag-js/dom-query': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
+
+  '@zag-js/tooltip@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/focus-visible': 1.43.0
+      '@zag-js/popper': 1.43.0
       '@zag-js/types': 1.43.0
       '@zag-js/utils': 1.43.0
 

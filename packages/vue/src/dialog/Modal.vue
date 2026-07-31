@@ -3,7 +3,7 @@ import { computed, useId } from "vue";
 import * as dialog from "@zag-js/dialog";
 import { useMachine, normalizeProps } from "@zag-js/vue";
 import { dataAttr, type ModalSize } from "@crosskit-ui/core";
-import { usePresence } from "./usePresence";
+import { usePresence } from "../usePresence";
 import Button from "../button/Button.vue";
 
 // Multi-root under <Teleport>: Vue warns and drops $attrs unless this is off.

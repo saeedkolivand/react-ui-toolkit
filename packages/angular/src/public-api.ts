@@ -18,3 +18,5 @@ export type { CkSelectItem } from "./select/select.component";
 export { CkTabs, CkAccordion, CkPanel } from "./disclosure/disclosure.components";
 export type { CkTabItem, CkAccordionItem } from "./disclosure/disclosure.components";
 export { CkToaster, CkToastItem } from "./toast/toast.components";
+export { CkTooltip, CkMenu } from "./overlay/overlay.components";
+export type { CkMenuItem, CkMenuSeparator, CkMenuEntry } from "./overlay/overlay.components";
