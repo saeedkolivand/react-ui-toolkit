@@ -14,7 +14,14 @@ export interface StaggerOptions {
   each?: number;
   /** Which index goes first; everything else is ordered by distance from it. */
   from?: StaggerOrigin;
-  /** Total time the whole sequence may take. Scales `each` down to fit. */
+  /**
+   * Spread the whole sequence across this many milliseconds, replacing `each`.
+   *
+   * A cap rather than a replacement was the other option, but "the list appears
+   * over 200ms" is the useful guarantee -- a cap would leave a short list
+   * finishing early and a long one at the limit, which is the inconsistency
+   * `total` exists to remove.
+   */
   total?: number;
 }
 
@@ -40,9 +47,10 @@ export function stagger(count: number, options: StaggerOptions = {}): number[] {
   const distances = Array.from({ length: count }, (_, i) => Math.abs(i - origin));
   const furthest = Math.max(...distances);
 
-  // `total` is a ceiling on the whole sequence, so a list of 200 does not take
-  // ten seconds to appear. With one item, or an origin every item is equidistant
-  // from, there is no spread to scale and `each` stands.
+  // `total` replaces `each` entirely, spreading the sequence across it, so a
+  // list of 200 takes the same time to appear as a list of 5. With one item --
+  // or an origin every item is equidistant from -- there is no spread to divide
+  // and `each` stands.
   const step = total !== undefined && furthest > 0 ? total / furthest : each;
 
   return distances.map(distance => distance * step);

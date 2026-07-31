@@ -12,7 +12,8 @@
  * pausing mid-drag and then releasing does not count as a throw.
  */
 
-export interface DragEvent {
+/** Named to avoid shadowing the DOM's own `DragEvent` on the public barrel. */
+export interface DragGestureEvent {
   /** Movement since the gesture began. */
   dx: number;
   dy: number;
@@ -28,9 +29,9 @@ export interface DragOptions {
   threshold?: number;
   /** Which axis to track. The other is ignored, and left to the page to scroll. */
   axis?: "x" | "y" | "both";
-  onStart?: (event: DragEvent) => void;
-  onMove?: (event: DragEvent) => void;
-  onEnd?: (event: DragEvent) => void;
+  onStart?: (event: DragGestureEvent) => void;
+  onMove?: (event: DragGestureEvent) => void;
+  onEnd?: (event: DragGestureEvent) => void;
 }
 
 interface Sample {
@@ -58,7 +59,7 @@ export function createDrag(element: HTMLElement, options: DragOptions = {}): () 
     while (samples.length > 2 && samples[1]!.t < cutoff) samples.shift();
   };
 
-  const describe = (event: PointerEvent): DragEvent => {
+  const describe = (event: PointerEvent): DragGestureEvent => {
     const first = samples[0]!;
     const last = samples[samples.length - 1]!;
     const elapsed = (last.t - first.t) / 1000;
@@ -76,6 +77,39 @@ export function createDrag(element: HTMLElement, options: DragOptions = {}): () 
     };
   };
 
+  /**
+   * Move, up and cancel are bound to the *document* while a press is active,
+   * not to the element.
+   *
+   * Capture is deliberately deferred until the threshold is passed, so a plain
+   * click still reaches whatever is underneath — which leaves a window where
+   * the pointer can leave the element with nothing capturing it. Element-bound
+   * listeners then never see the release: `pointerId` stays set, every later
+   * `pointerdown` is rejected by the guard below, and the element is dead to
+   * dragging until it remounts.
+   *
+   * `axis` makes that window wide rather than a corner case: with `axis: "x"`,
+   * dragging straight up off a toast never reaches the threshold, so capture is
+   * never taken. Touch survives it — the specification grants implicit capture
+   * on `pointerdown` — which is exactly why it would pass a touch test.
+   */
+  const listenWhilePressed = () => {
+    const doc = element.ownerDocument;
+    doc.addEventListener("pointermove", onPointerMove);
+    doc.addEventListener("pointerup", finish);
+    // `pointercancel` fires when the browser takes the gesture over — a scroll
+    // starting, or a system gesture. Without it the drag never ends and the
+    // element stays stuck mid-swipe.
+    doc.addEventListener("pointercancel", finish);
+  };
+
+  const stopListeningWhilePressed = () => {
+    const doc = element.ownerDocument;
+    doc.removeEventListener("pointermove", onPointerMove);
+    doc.removeEventListener("pointerup", finish);
+    doc.removeEventListener("pointercancel", finish);
+  };
+
   const onPointerDown = (event: PointerEvent) => {
     // Secondary buttons belong to the context menu, not to a drag.
     if (pointerId !== null || (event.pointerType === "mouse" && event.button !== 0)) return;
@@ -83,6 +117,7 @@ export function createDrag(element: HTMLElement, options: DragOptions = {}): () 
     origin = { t: event.timeStamp, x: event.clientX, y: event.clientY };
     samples = [origin];
     recognised = false;
+    listenWhilePressed();
   };
 
   const onPointerMove = (event: PointerEvent) => {
@@ -107,10 +142,16 @@ export function createDrag(element: HTMLElement, options: DragOptions = {}): () 
 
   const finish = (event: PointerEvent) => {
     if (event.pointerId !== pointerId) return;
-    const wasRecognised = recognised;
-    const final = wasRecognised ? describe(event) : null;
+    // The release is the last point of the trailing window. Without it the
+    // window still ends at the last *move*, so dragging fast, holding still for
+    // a second and then letting go reports the old fast movement -- a
+    // deliberate hold dismissed as a flick. Jittery holds happened to work,
+    // because the jitter refreshed the window, which made it intermittent.
+    if (recognised) track(event);
+    const final = recognised ? describe(event) : null;
 
     if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
+    stopListeningWhilePressed();
     pointerId = null;
     origin = null;
     samples = [];
@@ -120,17 +161,9 @@ export function createDrag(element: HTMLElement, options: DragOptions = {}): () 
   };
 
   element.addEventListener("pointerdown", onPointerDown);
-  element.addEventListener("pointermove", onPointerMove);
-  element.addEventListener("pointerup", finish);
-  // `pointercancel` fires when the browser takes the gesture over — a scroll
-  // starting, or a system gesture. Without it the drag never ends and the
-  // element stays stuck mid-swipe.
-  element.addEventListener("pointercancel", finish);
 
   return () => {
     element.removeEventListener("pointerdown", onPointerDown);
-    element.removeEventListener("pointermove", onPointerMove);
-    element.removeEventListener("pointerup", finish);
-    element.removeEventListener("pointercancel", finish);
+    stopListeningWhilePressed();
   };
 }

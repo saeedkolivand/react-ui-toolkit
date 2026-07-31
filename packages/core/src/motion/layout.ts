@@ -80,10 +80,18 @@ export function flip(snapshot: LayoutSnapshot, options: FlipOptions = {}): Anima
       animate(
         element,
         [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
-        // `fill: none` so the element is left owning no inline transform once
-        // this finishes; `both` would pin it at `transform: none` and quietly
-        // override whatever the stylesheet says next.
-        { fill: "none", ...animateOptions }
+        // `backwards`, not `none` and not `both`.
+        //
+        // `both` would pin an inline `transform: none` over whatever the
+        // stylesheet sets next. But `none` also drops the *backwards* fill, and
+        // `delay` is part of this function's surface -- so a delayed flip paints
+        // at the new layout position for the whole delay, then snaps back to the
+        // inverted transform: exactly the jump the inversion exists to hide.
+        // That pairing is not hypothetical, since `stagger()` produces delays.
+        //
+        // `backwards` holds the first keyframe during the delay and retains
+        // nothing after the active phase, which is both properties at once.
+        { fill: "backwards", ...animateOptions }
       )
     );
   }

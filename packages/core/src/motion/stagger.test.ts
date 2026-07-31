@@ -29,9 +29,19 @@ describe("stagger", () => {
     expect(stagger(3, { each: 10, from: -5 })).toEqual([0, 10, 20]);
   });
 
-  it("scales to fit a total budget", () => {
-    // So a list of 200 does not take ten seconds to appear.
+  it("spreads the sequence across a total, replacing each", () => {
+    // Documented as replacing `each`, not capping it — so this holds whichever
+    // way `each` points. The previous test only used a `total` that happened to
+    // coincide with the default `each`, which proved neither.
     expect(stagger(5, { total: 200 })).toEqual([0, 50, 100, 150, 200]);
+    expect(stagger(5, { each: 10, total: 200 })).toEqual([0, 50, 100, 150, 200]);
+    expect(stagger(5, { each: 500, total: 200 })).toEqual([0, 50, 100, 150, 200]);
+  });
+
+  it("takes the same time regardless of length", () => {
+    for (const count of [2, 5, 40]) {
+      expect(Math.max(...stagger(count, { total: 300 })), `${count}`).toBe(300);
+    }
   });
 
   it("keeps `each` when there is no spread to scale", () => {

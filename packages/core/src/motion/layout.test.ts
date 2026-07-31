@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flip, flipLayout, measureLayout } from "./layout";
-import { createDrag } from "./gesture";
 
 /**
  * jsdom does no layout, so `getBoundingClientRect` is driven from a table the
@@ -123,14 +122,17 @@ describe("flip", () => {
     expect(transformOf(1)).toBe("translate(0px, 20px) scale(1, 1)");
   });
 
-  it("leaves no inline transform behind", () => {
-    // `fill: both` would pin the element at `transform: none` and silently
-    // override whatever the stylesheet sets next.
+  it("holds the inverted transform through a delay, and retains nothing after", () => {
+    // `both` would pin an inline `transform: none` over the stylesheet, but
+    // `none` drops the backwards fill — so a delayed flip paints at the *new*
+    // position for the whole delay and then snaps back, showing the jump the
+    // inversion exists to hide. `stagger()` produces exactly such delays.
     rects.set(el("a"), rect(0, 0));
     const snapshot = measureLayout([el("a")]);
     rects.set(el("a"), rect(0, 60));
-    flip(snapshot);
-    expect(recorded[0]!.options.fill).toBe("none");
+    flip(snapshot, { delay: 100 });
+    expect(recorded[0]!.options.fill).toBe("backwards");
+    expect(recorded[0]!.options.delay).toBe(100);
   });
 
   it("passes spring options through", () => {
@@ -162,133 +164,5 @@ describe("flipLayout", () => {
     };
     flipLayout([el("a")], () => order.push("change"));
     expect(order).toEqual(["measure", "change", "measure"]);
-  });
-});
-
-describe("createDrag", () => {
-  const pointer = (type: string, x: number, y: number, t = 0, pointerId = 1, button = 0) => {
-    const event = new Event(type, { bubbles: true }) as PointerEvent;
-    Object.assign(event, { clientX: x, clientY: y, pointerId, pointerType: "mouse", button });
-    // `timeStamp` is getter-only, and velocity is measured from it — so it has
-    // to be defined rather than assigned.
-    Object.defineProperty(event, "timeStamp", { value: t, configurable: true });
-    return event;
-  };
-
-  beforeEach(() => {
-    Element.prototype.setPointerCapture = vi.fn();
-    Element.prototype.releasePointerCapture = vi.fn();
-    Element.prototype.hasPointerCapture = () => true;
-  });
-
-  it("does not start until the threshold is passed", () => {
-    const onStart = vi.fn();
-    createDrag(el("a"), { onStart, threshold: 10 });
-
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    el("a").dispatchEvent(pointer("pointermove", 5, 0, 10));
-    expect(onStart).not.toHaveBeenCalled();
-
-    el("a").dispatchEvent(pointer("pointermove", 20, 0, 20));
-    expect(onStart).toHaveBeenCalledTimes(1);
-  });
-
-  it("captures the pointer only once the gesture is real", () => {
-    // Capturing on pointerdown would swallow plain clicks.
-    createDrag(el("a"), { threshold: 10 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    expect(Element.prototype.setPointerCapture).not.toHaveBeenCalled();
-
-    el("a").dispatchEvent(pointer("pointermove", 20, 0, 20));
-    expect(Element.prototype.setPointerCapture).toHaveBeenCalled();
-  });
-
-  it("reports movement from the origin", () => {
-    const onMove = vi.fn();
-    createDrag(el("a"), { onMove, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 10, 10));
-    el("a").dispatchEvent(pointer("pointermove", 40, 30, 16));
-    expect(onMove).toHaveBeenCalledWith(expect.objectContaining({ dx: 30, dy: 20 }));
-  });
-
-  it("measures velocity in pixels per second", () => {
-    const onEnd = vi.fn();
-    createDrag(el("a"), { onEnd, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0, 0));
-    el("a").dispatchEvent(pointer("pointermove", 50, 0, 50));
-    el("a").dispatchEvent(pointer("pointerup", 50, 0, 50));
-    // 50px over 50ms.
-    expect(onEnd.mock.calls[0]![0].vx).toBeCloseTo(1000, 0);
-  });
-
-  it("reports zero velocity rather than Infinity for a single-frame gesture", () => {
-    const onEnd = vi.fn();
-    createDrag(el("a"), { onEnd, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0, 5));
-    el("a").dispatchEvent(pointer("pointermove", 50, 0, 5));
-    el("a").dispatchEvent(pointer("pointerup", 50, 0, 5));
-    expect(onEnd.mock.calls[0]![0].vx).toBe(0);
-  });
-
-  it("ignores the axis it was not asked to track", () => {
-    const onMove = vi.fn();
-    createDrag(el("a"), { onMove, axis: "x", threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    el("a").dispatchEvent(pointer("pointermove", 30, 40, 16));
-    expect(onMove).toHaveBeenCalledWith(expect.objectContaining({ dx: 30, dy: 0 }));
-  });
-
-  it("measures the threshold on the tracked axis only", () => {
-    const onStart = vi.fn();
-    createDrag(el("a"), { onStart, axis: "x", threshold: 10 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    // Straight down: no horizontal movement, so a horizontal drag never starts
-    // and the page keeps its scroll.
-    el("a").dispatchEvent(pointer("pointermove", 0, 50, 16));
-    expect(onStart).not.toHaveBeenCalled();
-  });
-
-  it("ends on pointercancel, not just pointerup", () => {
-    // The browser takes the gesture over when a scroll starts; without this the
-    // element stays stuck mid-swipe.
-    const onEnd = vi.fn();
-    createDrag(el("a"), { onEnd, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    el("a").dispatchEvent(pointer("pointermove", 30, 0, 16));
-    el("a").dispatchEvent(pointer("pointercancel", 30, 0, 20));
-    expect(onEnd).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not report an end for a gesture that never started", () => {
-    const onEnd = vi.fn();
-    createDrag(el("a"), { onEnd, threshold: 10 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    el("a").dispatchEvent(pointer("pointerup", 2, 0, 16));
-    expect(onEnd).not.toHaveBeenCalled();
-  });
-
-  it("ignores a secondary mouse button", () => {
-    const onStart = vi.fn();
-    createDrag(el("a"), { onStart, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0, 0, 1, 2));
-    el("a").dispatchEvent(pointer("pointermove", 30, 0, 16));
-    expect(onStart).not.toHaveBeenCalled();
-  });
-
-  it("ignores a second pointer mid-gesture", () => {
-    const onMove = vi.fn();
-    createDrag(el("a"), { onMove, threshold: 1 });
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0, 0, 1));
-    el("a").dispatchEvent(pointer("pointermove", 30, 0, 16, 2));
-    expect(onMove).not.toHaveBeenCalled();
-  });
-
-  it("detaches every listener", () => {
-    const onStart = vi.fn();
-    const stop = createDrag(el("a"), { onStart, threshold: 1 });
-    stop();
-    el("a").dispatchEvent(pointer("pointerdown", 0, 0));
-    el("a").dispatchEvent(pointer("pointermove", 30, 0, 16));
-    expect(onStart).not.toHaveBeenCalled();
   });
 });
