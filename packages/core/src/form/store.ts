@@ -71,6 +71,36 @@ export interface FormStore<T> {
   listMove(path: string, from: number, to: number): void;
 }
 
+/**
+ * Re-keys the entries of a per-field map when a list's indices move.
+ *
+ * Errors and touched state are keyed by path, so any change to a list's order
+ * or length has to move them with the values. `next` returns the row's new
+ * index, or `null` for a row that is going away.
+ */
+function remapListKeys<V>(
+  source: Record<string, V>,
+  path: string,
+  next: (index: number) => number | null
+): Record<string, V> {
+  const target: Record<string, V> = {};
+  for (const [key, value] of Object.entries(source)) {
+    if (!key.startsWith(`${path}[`)) {
+      target[key] = value;
+      continue;
+    }
+    const match = /^\[(\d+)\](.*)$/.exec(key.slice(path.length));
+    if (!match) {
+      target[key] = value;
+      continue;
+    }
+    const moved = next(Number(match[1]));
+    if (moved === null) continue;
+    target[`${path}[${moved}]${match[2]}`] = value;
+  }
+  return target;
+}
+
 const asTriggers = (trigger: ValidateTrigger | ValidateTrigger[] | undefined): ValidateTrigger[] =>
   trigger === undefined ? [] : Array.isArray(trigger) ? trigger : [trigger];
 
@@ -118,6 +148,27 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
       .filter(([, config]) => config.dependencies?.includes(path))
       .map(([name]) => name);
 
+  /**
+   * What has to happen after any write, however it arrived.
+   *
+   * Shared by `setFieldValue` and `setFieldsValue` so the two cannot drift:
+   * which of them an adapter reaches for must not change what the user sees.
+   */
+  const afterWrite = (path: string) => {
+    if (triggersFor(path).includes("change")) void runField(path);
+    // An error already on screen clears as soon as the value becomes valid,
+    // even under a blur trigger — leaving a stale message under a corrected
+    // field reads as the correction not having registered.
+    else if (state.errors[path]) void runField(path);
+
+    // A dependent only re-validates once it has been touched. Validating an
+    // untouched confirmation field the moment the password changes puts an
+    // error on a field nobody has visited.
+    for (const dependent of dependents(path)) {
+      if (state.touched[dependent]) void runField(dependent);
+    }
+  };
+
   const runField = async (path: string): Promise<string | undefined> => {
     const config = fields.get(path);
     if (!config?.rules?.length) return undefined;
@@ -126,18 +177,24 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
     const hasAsync = config.rules.some(rule => rule.validator);
     if (hasAsync) patch({ validating: { ...state.validating, [path]: true } });
 
-    const message = await validateRules(value, config.rules, {
-      label: config.label ?? path,
-      values: state.values,
-      messages: options.messages,
-    });
+    try {
+      const message = await validateRules(value, config.rules, {
+        label: config.label ?? path,
+        values: state.values,
+        messages: options.messages,
+      });
 
-    const errors = message ? { ...state.errors, [path]: message } : without(state.errors, path);
-    patch({
-      errors,
-      validating: hasAsync ? without(state.validating, path) : state.validating,
-    });
-    return message;
+      patch({
+        errors: message ? { ...state.errors, [path]: message } : without(state.errors, path),
+      });
+      return message;
+    } finally {
+      // A validator that *rejects* rather than resolving a message -- an
+      // offline "is this taken?" check is the ordinary way to produce one --
+      // would otherwise leave this field spinning forever. The rejection still
+      // propagates; only the flag is guaranteed to clear.
+      if (hasAsync) patch({ validating: without(state.validating, path) });
+    }
   };
 
   const store: FormStore<T> = {
@@ -152,25 +209,21 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
 
     setFieldValue(path, value) {
       patch({ values: setPath(state.values, path, value) });
-
-      if (triggersFor(path).includes("change")) void runField(path);
-      // An error already on screen clears as soon as the value becomes valid,
-      // even under a blur trigger — leaving a stale message under a corrected
-      // field reads as the correction not having registered.
-      else if (state.errors[path]) void runField(path);
-
-      // A dependent only re-validates once it has been touched. Validating an
-      // untouched confirmation field the moment the password changes puts an
-      // error on a field nobody has visited.
-      for (const dependent of dependents(path)) {
-        if (state.touched[dependent]) void runField(dependent);
-      }
+      afterWrite(path);
     },
 
     setFieldsValue(values) {
+      const paths = Object.keys(values);
       let next = state.values;
       for (const [path, value] of Object.entries(values)) next = setPath(next, path, value);
+      // One patch for every value, so a bulk write is a single notification
+      // rather than one per field.
       patch({ values: next });
+      // Then the same per-path rules `setFieldValue` applies. Skipping them
+      // meant a "fill from saved profile" button left a stale error under a
+      // field it had just corrected -- the exact reading those rules exist to
+      // prevent, reachable only through the other of two equivalent APIs.
+      for (const path of paths) afterWrite(path);
     },
 
     getFieldError: path => state.errors[path],
@@ -216,18 +269,17 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
       for (const path of fields.keys()) touched[path] = true;
       patch({ touched });
 
-      const valid = await store.validateFields();
-      if (!valid) {
-        patch({ submitting: false });
-        return false;
-      }
-
       try {
+        // Validation is inside the `try`, not before it. A rejecting validator
+        // reaches `submit` exactly as a throwing handler does, and leaving it
+        // outside meant that path escaped the guard below -- the same permanent
+        // lock-out, arriving from the other direction.
+        if (!(await store.validateFields())) return false;
         await options.onSubmit?.(state.values);
         return true;
       } finally {
-        // In `finally` so a throwing handler cannot leave the form permanently
-        // submitting, with its buttons disabled and no way back.
+        // A throwing handler cannot leave the form permanently submitting, with
+        // its buttons disabled and no way back.
         patch({ submitting: false });
       }
     },
@@ -254,31 +306,15 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
       const list = (getPath(state.values, path) as unknown[]) ?? [];
       if (index < 0 || index >= list.length) return;
 
-      // Errors are keyed by path, so removing row 1 of 3 would leave row 2's
-      // error sitting on what is now row 1. Re-index them with the values.
-      const errors: Record<string, string> = {};
-      const touched: Record<string, boolean> = {};
-      const prefix = `${path}[`;
-      const remap = <V>(source: Record<string, V>, target: Record<string, V>) => {
-        for (const [key, value] of Object.entries(source)) {
-          if (!key.startsWith(prefix)) {
-            target[key] = value;
-            continue;
-          }
-          const match = /^\[(\d+)\](.*)$/.exec(key.slice(path.length));
-          if (!match) {
-            target[key] = value;
-            continue;
-          }
-          const at = Number(match[1]);
-          if (at === index) continue;
-          target[`${path}[${at > index ? at - 1 : at}]${match[2]}`] = value;
-        }
-      };
-      remap(state.errors, errors);
-      remap(state.touched, touched);
-
-      patch({ values: deletePath(state.values, `${path}[${index}]`), errors, touched });
+      patch({
+        values: deletePath(state.values, `${path}[${index}]`),
+        errors: remapListKeys(state.errors, path, at =>
+          at === index ? null : at > index ? at - 1 : at
+        ),
+        touched: remapListKeys(state.touched, path, at =>
+          at === index ? null : at > index ? at - 1 : at
+        ),
+      });
     },
 
     listMove(path, from, to) {
@@ -286,7 +322,21 @@ export function createFormStore<T extends object>(options: FormOptions<T>): Form
       if (from < 0 || from >= list.length || to < 0 || to >= list.length) return;
       const [moved] = list.splice(from, 1);
       list.splice(to, 0, moved);
-      patch({ values: setPath(state.values, path, list) });
+
+      // The same re-indexing `listRemove` does. Without it a reordered row
+      // keeps its old key, so its error renders under whichever row took its
+      // place -- and drag-to-reorder is the ordinary way to produce that.
+      const shift = (at: number) => {
+        if (at === from) return to;
+        if (from < to) return at > from && at <= to ? at - 1 : at;
+        return at >= to && at < from ? at + 1 : at;
+      };
+
+      patch({
+        values: setPath(state.values, path, list),
+        errors: remapListKeys(state.errors, path, shift),
+        touched: remapListKeys(state.touched, path, shift),
+      });
     },
   };
 

@@ -79,6 +79,19 @@ describe("form store", () => {
       await vi.waitFor(() => expect(store.getFieldError("email")).toBeDefined());
     });
 
+    it("clears a visible error through setFieldsValue too, not only setFieldValue", async () => {
+      // A "fill from saved profile" button used to leave a stale error under a
+      // field it had just corrected -- which of two equivalent APIs an adapter
+      // reaches for must not change what the user sees.
+      const store = form();
+      store.setFieldValue("email", "no");
+      store.blur("email");
+      await vi.waitFor(() => expect(store.getFieldError("email")).toBeDefined());
+
+      store.setFieldsValue({ email: "a@b.co" });
+      await vi.waitFor(() => expect(store.getFieldError("email")).toBeUndefined());
+    });
+
     it("clears a visible error as soon as the value becomes valid", async () => {
       // Even under a blur trigger: leaving a stale message under a corrected
       // field reads as the correction not registering.
@@ -149,6 +162,30 @@ describe("form store", () => {
       await store.submit();
       expect(store.getState().submitCount).toBe(1);
       expect(store.getState().submitting).toBe(false);
+    });
+
+    it("clears submitting when a validator rejects, not only when the handler throws", async () => {
+      // The same permanent lock-out arriving from the other direction: a
+      // network-backed "is this taken?" check that goes offline rejects rather
+      // than resolving a message, and validation used to run outside the guard.
+      const store = createFormStore<Values>({
+        initialValues,
+        fields: {
+          email: {
+            rules: [
+              {
+                validator: async () => {
+                  throw new Error("offline");
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      await expect(store.submit()).rejects.toThrow("offline");
+      expect(store.getState().submitting).toBe(false);
+      expect(store.getState().validating).toEqual({});
     });
 
     it("clears submitting even when the handler throws", async () => {
@@ -241,6 +278,37 @@ describe("form store", () => {
       store.listAppend("contacts", { name: "a" });
       store.listRemove("contacts", 9);
       expect(store.getFieldValue("contacts")).toHaveLength(1);
+    });
+
+    it("moves errors and touched state with the row", () => {
+      // `listRemove` re-indexed them and `listMove` did not, so a reordered row
+      // kept its old key and its error rendered under whichever row took its
+      // place. Drag-to-reorder is the ordinary way to produce that.
+      const store = form();
+      store.listAppend("contacts", { name: "a" });
+      store.listAppend("contacts", { name: "b" });
+      store.listAppend("contacts", { name: "c" });
+      store.setFieldError("contacts[0].name", "belongs to a");
+
+      store.listMove("contacts", 0, 2);
+
+      expect(store.getFieldValue("contacts")).toEqual([
+        { name: "b" },
+        { name: "c" },
+        { name: "a" },
+      ]);
+      expect(store.getFieldError("contacts[2].name")).toBe("belongs to a");
+      expect(store.getFieldError("contacts[0].name")).toBeUndefined();
+    });
+
+    it("shifts the rows a move displaced", () => {
+      const store = form();
+      for (const name of ["a", "b", "c"]) store.listAppend("contacts", { name });
+      store.setFieldError("contacts[2].name", "belongs to c");
+
+      // Moving the last row to the front pushes the others down one.
+      store.listMove("contacts", 2, 0);
+      expect(store.getFieldError("contacts[0].name")).toBe("belongs to c");
     });
 
     it("moves a row", () => {
