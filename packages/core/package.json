@@ -39,6 +39,10 @@
     "test": "vitest run",
     "check:exports": "publint --strict && attw --pack --profile esm-only"
   },
+  "dependencies": {
+    "@tanstack/table-core": "catalog:table",
+    "@zag-js/toast": "catalog:zag"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",
     "jsdom": "catalog:",
@@ -46,8 +50,5 @@
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@tanstack/table-core": "catalog:table"
   }
 }

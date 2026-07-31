@@ -24,6 +24,7 @@ export { default as Option } from "./select/Option.svelte";
 export type { SelectItem } from "./select/context.svelte";
 export { default as Tabs } from "./tabs/Tabs.svelte";
 export { default as Accordion } from "./accordion/Accordion.svelte";
+export { default as Toaster } from "./toast/Toaster.svelte";
 export { default as Tooltip } from "./tooltip/Tooltip.svelte";
 export { default as Menu } from "./menu/Menu.svelte";
 export type { MenuItem, MenuSeparator, MenuEntry } from "./menu/Menu.svelte";

@@ -23,6 +23,7 @@ export { default as Select } from "./select/Select.vue";
 export { default as Option } from "./select/Option";
 export { default as Tabs } from "./tabs/Tabs.vue";
 export { default as Accordion } from "./accordion/Accordion.vue";
+export { default as Toaster } from "./toast/Toaster.vue";
 export { default as Tooltip } from "./tooltip/Tooltip.vue";
 export { default as Menu } from "./menu/Menu.vue";
 export { default as Table } from "./table/Table.vue";

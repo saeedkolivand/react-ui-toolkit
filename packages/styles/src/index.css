@@ -29,5 +29,6 @@
 @import "./components/dialog.css";
 @import "./components/select.css";
 @import "./components/disclosure.css";
+@import "./components/toast.css";
 @import "./components/overlay.css";
 @import "./components/table.css";
