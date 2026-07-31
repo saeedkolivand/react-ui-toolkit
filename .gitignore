@@ -61,3 +61,7 @@ apps/*/dist/
 
 # storybook build output
 storybook-static/
+
+# Playwright
+playwright-report/
+test-results/
