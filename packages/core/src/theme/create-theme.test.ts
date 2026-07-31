@@ -195,6 +195,78 @@ describe("createTheme", () => {
     });
   });
 
+  describe("components", () => {
+    const manifests = {
+      Button: {
+        scope: "button",
+        parts: ["root", "icon"],
+        variants: { type: ["default", "primary"], size: ["small", "middle", "large"] },
+        defaults: { type: "default", size: "middle" },
+      },
+    };
+
+    it("scopes component tokens by data-scope", () => {
+      const { css } = createTheme({
+        manifests,
+        components: { Button: { token: { "accent-solid": "#059669" } } },
+      });
+      expect(css).toContain('[data-scope="button"] {');
+      expect(css).toContain("--ck-accent-solid: #059669;");
+    });
+
+    it("compiles styleOverrides into static rules", () => {
+      const { css } = createTheme({
+        manifests,
+        components: {
+          Button: {
+            styleOverrides: {
+              root: ({ ownerState }) => ({
+                letterSpacing: "0.02em",
+                padding: ownerState.size === "large" ? 16 : 8,
+              }),
+            },
+          },
+        },
+      });
+      expect(css).toContain(
+        '[data-scope="button"][data-part="root"] { letter-spacing: 0.02em; padding: 8px }'
+      );
+      expect(css).toContain('[data-size="large"] { padding: 16px }');
+    });
+
+    it("hands the compiled theme to the style function", () => {
+      const { css } = createTheme({
+        manifests,
+        components: {
+          Button: {
+            styleOverrides: {
+              root: ({ theme }) => ({ background: theme.map.primary[600] }),
+            },
+          },
+        },
+      });
+      // The style function can read derived tokens, not just the raw seed.
+      expect(css).toMatch(/background: oklch\(/);
+    });
+
+    it("keeps everything inside the overrides layer", () => {
+      const { css } = createTheme({
+        manifests,
+        components: { Button: { styleOverrides: { root: { color: "red" } } } },
+      });
+      // One layer block wrapping everything — component rules emitted outside
+      // it would beat the theme's own tokens and lose to nothing.
+      expect(css.match(/@layer/g)).toHaveLength(1);
+      expect(css.trimEnd().endsWith("}")).toBe(true);
+    });
+
+    it("names the component when no manifest exists, rather than emitting dead CSS", () => {
+      expect(() =>
+        createTheme({ manifests, components: { Buton: { styleOverrides: { root: {} } } } })
+      ).toThrow(/No variant manifest for "Buton".*Known components: Button/s);
+    });
+  });
+
   it("returns the resolved seed and map alongside the CSS", () => {
     const theme = createTheme({ token: { colorPrimary: "#7c3aed" } });
     expect(theme.seed.colorPrimary).toBe("#7c3aed");

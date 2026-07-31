@@ -6,6 +6,8 @@ export * from "./theme/color";
 export * from "./theme/css";
 export * from "./theme/ramp";
 export * from "./theme/tokens";
+export * from "./theme/manifest";
+export * from "./theme/overrides";
 export * from "./theme/create-theme";
 export * from "./icons";
 export * from "./toast";
