@@ -132,7 +132,6 @@ export class CkSwitch {
         data-part="control"
         [attr.data-size]="size()"
         [disabled]="disabled()"
-        [attr.aria-invalid]="aria(invalid())"
         [attr.name]="name()"
         [value]="value()"
         [checked]="checked()"
@@ -176,10 +175,21 @@ export class CkRadio {
     "data-scope": "radio-group",
     "data-part": "root",
     "[attr.data-orientation]": "orientation()",
+    "[attr.data-invalid]": "attr(invalid())",
+    "[attr.aria-invalid]": "aria(invalid())",
   },
   template: `<ng-content />`,
 })
 export class CkRadioGroup {
   readonly orientation = input<Orientation>("horizontal");
   readonly label = input<string>();
+  /**
+   * Marks the whole group invalid. `aria-invalid` is NOT supported on
+   * `role="radio"`; it belongs on the radiogroup. Only svelte-check flagged
+   * that, so the wrong placement shipped in all four adapters — `data-invalid`
+   * on the individual radio stays, for styling.
+   */
+  readonly invalid = input(false, { transform: booleanAttribute });
+  protected readonly attr = ckDataAttr;
+  protected readonly aria = ckAriaAttr;
 }

@@ -101,6 +101,7 @@ test("5: outside click closes, and closeOnInteractOutside=false prevents it", as
     page.locator(BACKDROP).click({ position: { x: 5, y: 5 }, force: true });
 
   await open(page);
+
   await clickOutside();
   await expect(page.locator(CONTENT)).toHaveCount(0);
 

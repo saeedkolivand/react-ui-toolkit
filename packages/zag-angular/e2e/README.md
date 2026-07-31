@@ -47,17 +47,14 @@ distinct defects were behind it, plus one bug in the test itself — see
    waits for focus to land inside the dialog, which is the observable signal
    that the entry effects actually attached.
 
-## Known remaining issue
+## Determinism
 
-**Outside-click dismissal is missed intermittently — roughly one run in six.**
-Everything else has been stable across eight runs.
+The config emulates `prefers-reduced-motion`. Entry and exit animations are real
+CSS here, and a click delivered while `ck-dialog-in` is still running tests the
+animation rather than the behaviour — outside-click dismissal failed roughly
+half the time for exactly that reason, with the machine, the listener and every
+`isEventOutside` predicate all provably correct. The library collapses every
+duration to 1ms under reduced motion, so this uses a path consumers really get
+rather than a test-only escape hatch.
 
-What is established: the `pointerdown` does reach the document, and this is not
-a listener-attachment race (the focus trap, registered in the same batch, has
-already attached by then). While a modal is open zag sets `pointer-events: none`
-below the content, so the event targets `<html>` rather than the backdrop —
-that is zag's own design, not our CSS, and it is unclear why the outcome varies.
-
-This does not affect Escape, the close button, or programmatic close. It should
-be resolved before the Angular adapter ships, and it needs a pass against zag's
-`trackDismissableElement` internals rather than more guesses at this layer.
+With it, the suite is 9/9 across nine consecutive runs.

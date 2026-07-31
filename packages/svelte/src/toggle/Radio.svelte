@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import type { HTMLInputAttributes } from "svelte/elements";
-  import { ariaAttr, dataAttr, type Size } from "@crosskit-ui/core";
+  import { dataAttr, type Size } from "@crosskit-ui/core";
 
   interface Props extends Omit<HTMLInputAttributes, "size" | "type"> {
     size?: Size;
@@ -45,7 +45,6 @@
     data-size={size}
     {disabled}
     {value}
-    aria-invalid={ariaAttr(invalid)}
     bind:group
     {...rest}
   />
