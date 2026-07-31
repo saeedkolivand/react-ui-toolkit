@@ -2,7 +2,7 @@
 # One-time bootstrap of npm trusted publishing for the @crosskit-ui packages.
 #
 # WHY THIS EXISTS
-# A trusted publisher cannot be configured before a package's first publish —
+# A trusted publisher cannot be configured before a package's first publish --
 # npm requires the package to already exist on the registry. So each package
 # gets one throwaway 0.0.0 publish from a laptop, after which CI publishes
 # everything else over OIDC with provenance and no NPM_TOKEN.
@@ -29,8 +29,8 @@ PACKAGES=(core styles zag-angular react vue svelte angular)
 cd "$(dirname "$0")/.."
 
 # 11.5.1 is the real floor for the OIDC exchange. `npm trust` was documented as
-# 11.15+, but it is present and takes this exact syntax in 11.14.1 — verified
-# against `npm trust --help` — so the check reports rather than gates.
+# 11.15+, but it is present and takes this exact syntax in 11.14.1 -- verified
+# against `npm trust --help` -- so the check reports rather than gates.
 echo "==> npm CLI: $(npm --version)  (needs >= 11.5.1 for the OIDC exchange)"
 npm trust --help >/dev/null 2>&1 || {
   echo "This npm has no 'npm trust'. Upgrade: npm i -g npm@latest"
@@ -47,7 +47,7 @@ for p in "${PACKAGES[@]}"; do
   #
   # --no-provenance is required HERE and nowhere else. Every package sets
   # publishConfig.provenance:true, which is right for the real release, but
-  # provenance can only be generated inside a supported CI provider — from a
+  # provenance can only be generated inside a supported CI provider -- from a
   # laptop npm fails with:
   #
   #   EUSAGE  Automatic provenance generation not supported for provider: null
@@ -57,15 +57,20 @@ for p in "${PACKAGES[@]}"; do
   # provenance intact, which is the version that matters.
   #
   # Resumable. Each publish needs its own OTP, so a run WILL sometimes die
-  # partway — a mistyped code, an expired one, a browser tab left too long.
+  # partway -- a mistyped code, an expired one, a browser tab left too long.
   # Re-running then skips whatever already landed, rather than failing on
   # EPUBLISHCONFLICT and leaving you to work out how far it got.
   if npm view "@crosskit-ui/$p" version >/dev/null 2>&1; then
-    echo "--- @crosskit-ui/$p — already published, skipping"
+    echo "--- @crosskit-ui/$p -- already published, skipping"
     continue
   fi
   echo "--- @crosskit-ui/$p"
-  ( cd "$dir" && npm publish --access public --no-provenance )
+  # pnpm, not npm. The Angular packages set publishConfig.directory:"dist" so
+  # that the ng-packagr output is published as the package root -- that is a
+  # pnpm/yarn field which npm has never supported and now warns about, so
+  # `npm publish` shipped their SOURCE tree with no entry points at all.
+  # `changeset publish` uses pnpm for a pnpm repo, so this matches the release.
+  ( cd "$dir" && pnpm publish --access public --no-git-checks --no-provenance )
 done
 
 echo
@@ -73,7 +78,7 @@ echo "==> Step 2/3: register GitHub Actions as the trusted publisher"
 for p in "${PACKAGES[@]}"; do
   # Same reasoning as above: safe to re-run.
   if npm trust list "@crosskit-ui/$p" 2>/dev/null | grep -qi github; then
-    echo "--- @crosskit-ui/$p — trusted publisher already set, skipping"
+    echo "--- @crosskit-ui/$p -- trusted publisher already set, skipping"
     continue
   fi
   echo "--- @crosskit-ui/$p"
