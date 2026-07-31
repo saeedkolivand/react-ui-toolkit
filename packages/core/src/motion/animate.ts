@@ -42,6 +42,23 @@ export interface AnimationHandle {
 export const prefersReducedMotion = (): boolean =>
   typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * Whether the engine understands `linear()`.
+ *
+ * Baseline since late 2025, so this is a shrinking tail — but an easing string
+ * the engine rejects makes `element.animate()` throw, and nothing else in this
+ * file fails that way rather than degrading.
+ *
+ * Deliberately not cached. One `CSS.supports` parse per animation is nothing
+ * next to the animation itself, and a module-level cache would freeze whatever
+ * the first call saw — including a server render, where `CSS` does not exist at
+ * all and every later spring on the client would silently lose its curve.
+ */
+const supportsLinearEasing = (): boolean =>
+  typeof CSS !== "undefined" &&
+  typeof CSS.supports === "function" &&
+  CSS.supports("transition-timing-function", "linear(0, 1)");
+
 const NOOP_HANDLE: AnimationHandle = {
   finished: Promise.resolve(),
   cancel() {},
@@ -64,9 +81,18 @@ export function animate(
   const spring = options.spring ? toLinearEasing(options.spring) : undefined;
   const duration = prefersReducedMotion() ? 1 : (spring?.duration ?? options.duration ?? 200);
 
+  // `element.animate()` throws on an easing it cannot parse, which would make
+  // this the one path in the file that fails hard instead of degrading. The
+  // fallback loses the overshoot but keeps the motion.
+  const easing = spring
+    ? supportsLinearEasing()
+      ? spring.easing
+      : "ease-out"
+    : (options.easing ?? "ease");
+
   const animation = element.animate(keyframes, {
     duration,
-    easing: spring?.easing ?? options.easing ?? "ease",
+    easing,
     delay: options.delay ?? 0,
     fill: options.fill ?? "both",
   });
@@ -107,6 +133,16 @@ export function retarget(
     );
   }
 
-  for (const existing of element.getAnimations({ subtree: false })) existing.cancel();
+  // Cancelled only after the read above. Reversing these two is the bug this
+  // function exists to prevent, and it is silent: cancelling snaps the element
+  // back to its pre-animation style, so `from` would capture the state the
+  // interrupted animation started at rather than where it had reached.
+  //
+  // Guarded for the same reason `animate` guards `element.animate`: this is the
+  // environment that has neither, and `getAnimations` postdates `animate` by
+  // several years, so an engine can have one without the other.
+  if (typeof element.getAnimations === "function") {
+    for (const existing of element.getAnimations({ subtree: false })) existing.cancel();
+  }
   return animate(element, [from, to], options);
 }

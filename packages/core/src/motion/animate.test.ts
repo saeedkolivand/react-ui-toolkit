@@ -15,10 +15,12 @@ interface Recorded {
 let recorded: Recorded[] = [];
 let running: Animation[] = [];
 
-const fakeAnimation = () => {
+const fakeAnimation = (onCancel?: () => void) => {
   const animation = {
     finished: Promise.resolve(),
-    cancel: vi.fn(),
+    // A real `cancel()` snaps the element back to its pre-animation style.
+    // Modelling that is what lets a test see the read/cancel ordering at all.
+    cancel: vi.fn(onCancel),
     finish: vi.fn(),
     playState: "running",
   } as unknown as Animation;
@@ -41,6 +43,7 @@ beforeEach(() => {
 
   Element.prototype.getAnimations = () => running;
   vi.stubGlobal("matchMedia", () => ({ matches: false }));
+  vi.stubGlobal("CSS", { supports: () => true });
 });
 
 afterEach(() => {
@@ -100,6 +103,14 @@ describe("animate", () => {
     await expect(animate(el(), [{ opacity: 1 }]).finished).resolves.toBeUndefined();
   });
 
+  it("falls back to a parseable easing where linear() is unsupported", () => {
+    // `element.animate()` throws on an easing it cannot parse, which would make
+    // this the only path in the module that fails hard rather than degrading.
+    vi.stubGlobal("CSS", { supports: () => false });
+    animate(el(), [{ opacity: 1 }], { spring: { stiffness: 180, damping: 12 } });
+    expect(lastCall().options.easing).toBe("ease-out");
+  });
+
   it("applies the end state when the platform has no WAAPI", () => {
     // @ts-expect-error deliberately removing the method
     delete Element.prototype.animate;
@@ -115,6 +126,28 @@ describe("retarget", () => {
     el().style.opacity = "0.4";
     retarget(el(), ["opacity"], { opacity: 1 });
     expect(lastCall().keyframes[0]).toEqual({ opacity: "0.4" });
+  });
+
+  it("reads the current value before cancelling, not after", () => {
+    // The invariant the whole function exists for, and it was previously
+    // untestable: with a cancel that does not touch the element, moving the
+    // cancel loop above the read left all tests green while restoring the
+    // tooltip-jumps-to-transparent bug.
+    el().style.opacity = "0.4";
+    fakeAnimation(() => {
+      el().style.opacity = "";
+    });
+
+    retarget(el(), ["opacity"], { opacity: 1 });
+    expect(lastCall().keyframes[0]).toEqual({ opacity: "0.4" });
+  });
+
+  it("does not throw where getAnimations is missing", () => {
+    // The same environment `animate` deliberately degrades for. `getAnimations`
+    // also postdates `animate` by years, so an engine can have one without it.
+    // @ts-expect-error deliberately removing the method
+    delete Element.prototype.getAnimations;
+    expect(() => retarget(el(), ["opacity"], { opacity: 1 })).not.toThrow();
   });
 
   it("cancels whatever was already running", () => {
