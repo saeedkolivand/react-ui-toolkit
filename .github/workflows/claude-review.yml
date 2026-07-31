@@ -57,9 +57,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Set exactly one of these as a repository secret; the other stays empty
+      # and is ignored. CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`)
+      # bills against an existing Pro/Max subscription rather than API credit,
+      # at the cost of inline comment classification — reviews then arrive as a
+      # summary comment instead of line-anchored ones.
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review ${{ github.repository }}/pull/${{ env.PR }}"
