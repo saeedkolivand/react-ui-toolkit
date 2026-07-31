@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { dataAttr, type ModalSize } from "@crosskit-ui/core";
 import { useConfig } from "../config/config-provider";
 import { Portal } from "../portal/portal";
@@ -61,26 +61,52 @@ export function Modal({
   ...overlay
 }: ModalProps) {
   const { locale } = useConfig();
+  const [submitting, setSubmitting] = useState(false);
+
+  // Every route out that the user initiated reports here — Escape and a press
+  // outside go through the hook, Cancel and the close button call it directly.
+  const cancel = () => onCancel?.();
+
   const dialog = useOverlay({
     ...overlay,
+    onDismiss: cancel,
     hasTitle: title != null,
     hasDescription: description != null,
   });
+
+  // Awaited, so an async handler holds the button busy on its own and a second
+  // click cannot submit twice. `confirmLoading` still works for a consumer
+  // driving the state itself.
+  const confirm = async () => {
+    if (!onOk) return;
+    const result = onOk();
+    if (!(result instanceof Promise)) return;
+    setSubmitting(true);
+    try {
+      await result;
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Gated on presence, never on `open`: unmounting the instant open flips means
   // data-state="closed" never gets a frame and the exit animation does nothing.
   if (!dialog.present) return null;
 
-  // Every route out of the dialog is a cancel, so Escape, the mask and the close
-  // button all report the same way a consumer's own Cancel button would.
-  const cancel = () => {
-    onCancel?.();
+  const cancelAndClose = () => {
+    cancel();
     dialog.close();
   };
 
   return (
     <Portal>
-      <div {...dialog.backdropProps} data-ck="modal" onClick={cancel} />
+      {/* No onClick. Backdrop and positioner are both `position: fixed; inset: 0`
+          at the same z-index, and the positioner comes second in DOM order — so
+          the browser delivers a mask press to the positioner, and this handler
+          would only ever fire in an environment without layout. The dismissable
+          layer's own pointerdown is what actually catches it, which is also what
+          makes `closeOnInteractOutside` and `alertdialog` apply to it. */}
+      <div {...dialog.backdropProps} data-ck="modal" />
       <div {...dialog.positionerProps} data-ck="modal" data-centered={dataAttr(centered)}>
         <div
           {...dialog.contentProps}
@@ -89,8 +115,16 @@ export function Modal({
           data-scrollable={dataAttr(scrollable)}
           // An unbounded value, so it is an inline custom property rather than a
           // variant — the theme compiler enumerates variants, and a width cannot
-          // be enumerated.
-          style={width === undefined ? undefined : { inlineSize: width }}
+          // be enumerated. The size rules read it as their `max-width`, which is
+          // what makes it actually override them: setting `inline-size` here left
+          // `max-width: 28rem` from `data-size` clamping it.
+          style={
+            width === undefined
+              ? undefined
+              : ({
+                  "--ck-modal-width": typeof width === "number" ? `${width}px` : width,
+                } as CSSProperties)
+          }
           className={className}
         >
           {title != null && <h2 {...dialog.titleProps}>{title}</h2>}
@@ -102,12 +136,12 @@ export function Modal({
             <div data-scope="dialog" data-part="footer" data-ck="modal">
               {footer ?? (
                 <>
-                  <Button onClick={cancel}>{cancelText ?? locale.Modal.cancelText}</Button>
+                  <Button onClick={cancelAndClose}>{cancelText ?? locale.Modal.cancelText}</Button>
                   <Button
                     type={okType}
                     danger={okDanger}
-                    loading={confirmLoading}
-                    onClick={() => onOk?.()}
+                    loading={confirmLoading || submitting}
+                    onClick={confirm}
                   >
                     {okText ?? locale.Modal.okText}
                   </Button>
@@ -122,7 +156,7 @@ export function Modal({
               icon={<Icon name="close" />}
               data-close-trigger=""
               aria-label="Close"
-              onClick={cancel}
+              onClick={cancelAndClose}
             />
           )}
         </div>

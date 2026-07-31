@@ -48,6 +48,7 @@ export function Drawer({
 }: DrawerProps) {
   const dialog = useOverlay({
     ...overlay,
+    onDismiss: () => onClose?.(),
     hasTitle: title != null,
     hasDescription: description != null,
   });
@@ -61,7 +62,9 @@ export function Drawer({
 
   return (
     <Portal>
-      <div {...dialog.backdropProps} data-ck="drawer" onClick={close} />
+      {/* No onClick — see Modal. The positioner covers the backdrop, so the
+          dismissable layer is what catches a mask press. */}
+      <div {...dialog.backdropProps} data-ck="drawer" />
       <div {...dialog.positionerProps} data-ck="drawer">
         <div
           {...dialog.contentProps}

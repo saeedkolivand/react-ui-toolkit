@@ -19,7 +19,8 @@ export interface DismissableOptions {
   escape?: boolean;
   outside?: boolean;
   /**
-   * Whether focus landing outside dismisses too. Defaults to `outside`.
+   * Whether focus landing outside dismisses too. Defaults to true, and is
+   * ignored entirely when `outside` is false — that already turns both off.
    *
    * Set false for a layer that traps focus. Such a layer cannot legitimately
    * lose focus outward, so every `focusin` it sees is someone else's doing —

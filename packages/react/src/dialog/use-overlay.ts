@@ -13,7 +13,7 @@
  * attributes that matter.
  */
 
-import { useCallback, useEffect, useId, useState, type HTMLAttributes } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type HTMLAttributes } from "react";
 import {
   createFocusTrap,
   createPresence,
@@ -28,6 +28,12 @@ export interface OverlayOptions {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (details: { open: boolean }) => void;
+  /**
+   * Every route out that the user initiated — Escape, a press outside — before
+   * the overlay closes. The caller's own Cancel button calls the same function,
+   * so a consumer has one place to handle "the user backed out".
+   */
+  onDismiss?: () => void;
   role?: "dialog" | "alertdialog";
   /** Traps focus, locks scroll and makes the background inert. */
   modal?: boolean;
@@ -82,6 +88,7 @@ export function useOverlay(options: OverlayOptions): Overlay {
     open: controlled,
     defaultOpen = false,
     onOpenChange,
+    onDismiss,
     role = "dialog",
     modal = true,
     closeOnEscape = true,
@@ -103,14 +110,38 @@ export function useOverlay(options: OverlayOptions): Overlay {
   // `createPresence` on every render only to discard the result.
   const [presence] = useState<Presence>(() => createPresence(open, { onChange: setPresent }));
 
+  // Held in a ref and read at call time, so `setOpen` and `close` keep a stable
+  // identity across renders.
+  //
+  // Without this the setup effect below depends transitively on `onOpenChange`,
+  // and an inline arrow — the idiomatic way to write it — is a new identity every
+  // render. The effect then tore down and rebuilt the trap, the layer, the lock
+  // and the inert background on *every render while open*: focus jumped to the
+  // first tabbable mid-typing, the layer was re-pushed to the top of the stack so
+  // Escape closed the wrong dialog, and the body scroll position was restored and
+  // re-taken each time.
+  const callbacksRef = useRef({ onOpenChange, onDismiss });
+  // Written in an effect, not during render: a ref must not be mutated while
+  // rendering. Nothing reads it before then — every reader is a DOM event
+  // handler, which cannot fire until after the commit.
+  useEffect(() => {
+    callbacksRef.current = { onOpenChange, onDismiss };
+  });
+
   const setOpen = useCallback(
     (next: boolean) => {
       if (controlled === undefined) setUncontrolled(next);
-      onOpenChange?.({ open: next });
+      callbacksRef.current.onOpenChange?.({ open: next });
     },
-    [controlled, onOpenChange]
+    [controlled]
   );
   const close = useCallback(() => setOpen(false), [setOpen]);
+
+  // What the user backing out runs: the caller's handler first, then the close.
+  const dismiss = useCallback(() => {
+    callbacksRef.current.onDismiss?.();
+    setOpen(false);
+  }, [setOpen]);
 
   useEffect(() => presence.setNode(content), [presence, content]);
   useEffect(() => presence.setOpen(open), [presence, open]);
@@ -128,7 +159,7 @@ export function useOverlay(options: OverlayOptions): Overlay {
     trap?.activate();
 
     const removeLayer = pushDismissable(() => content, {
-      onDismiss: close,
+      onDismiss: dismiss,
       escape: closeOnEscape,
       outside: closeOnInteractOutside,
       // A trapped layer cannot lose focus outward on its own, so a focusin
@@ -144,7 +175,7 @@ export function useOverlay(options: OverlayOptions): Overlay {
       uninert?.();
       trap?.deactivate();
     };
-  }, [open, content, modal, closeOnEscape, closeOnInteractOutside, close]);
+  }, [open, content, modal, closeOnEscape, closeOnInteractOutside, dismiss]);
 
   const state = open ? "open" : "closed";
   const scope = { "data-scope": "dialog", "data-state": state } as const;

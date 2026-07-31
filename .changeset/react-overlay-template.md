@@ -23,3 +23,8 @@ Two fixes in `core` that this turned up:
   dismissing on outside focus. Without it, closing a stacked layer restored
   focus to its trigger at the moment the layer below became topmost and
   dismissed that one too — two nested dialogs closing on one Escape.
+
+`Modal.width` is written as `--ck-modal-width`, which the size rules now read as
+their `max-width` fallback — previously an inline `inline-size` was clamped by
+the size rule and had no effect. An async `onOk` now holds the confirm button
+busy until it settles.

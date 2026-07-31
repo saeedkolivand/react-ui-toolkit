@@ -6,7 +6,9 @@ import { Modal } from "./modal";
 import { Drawer } from "./drawer";
 
 const CONTENT = '[data-scope="dialog"][data-part="content"]';
-const BACKDROP = '[data-scope="dialog"][data-part="backdrop"]';
+const POSITIONER = '[data-scope="dialog"][data-part="positioner"]';
+const frame = () =>
+  new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 const content = () => document.querySelector<HTMLElement>(CONTENT);
 const opened = () => waitFor(() => expect(content()).not.toBeNull());
 const closed = () => waitFor(() => expect(content()).toBeNull());
@@ -125,7 +127,7 @@ describe("Modal", () => {
       expect(document.activeElement).toBe(screen.getByText("last"));
     });
 
-    it("closes on a click on the mask", async () => {
+    it("closes on a press on the mask, and reports it as a cancel", async () => {
       const user = userEvent.setup();
       const onCancel = vi.fn();
       render(
@@ -134,23 +136,46 @@ describe("Modal", () => {
         </Modal>
       );
       await opened();
-      await user.click(document.querySelector<HTMLElement>(BACKDROP)!);
+      // The POSITIONER, not the backdrop. Both are position:fixed inset:0 at the
+      // same z-index and the positioner comes second in DOM order, so it is what
+      // a real browser hands the press to. Pressing the backdrop exercises a path
+      // no user can reach.
+      await user.click(document.querySelector<HTMLElement>(POSITIONER)!);
       await closed();
-      // Every route out reports the same way a consumer's own Cancel would.
+      // Every route out reports the same way a consumer own Cancel button would.
+      expect(onCancel).toHaveBeenCalledTimes(1);
+    });
+
+    it("reports Escape as a cancel too", async () => {
+      const user = userEvent.setup();
+      const onCancel = vi.fn();
+      render(
+        <Modal defaultOpen title="T" onCancel={onCancel}>
+          body
+        </Modal>
+      );
+      await opened();
+      await user.keyboard("{Escape}");
+      await closed();
       expect(onCancel).toHaveBeenCalledTimes(1);
     });
 
     it("does not close an alertdialog from outside, which must be answered", async () => {
       const user = userEvent.setup();
+      const onCancel = vi.fn();
       render(
-        <Modal defaultOpen role="alertdialog" title="Sure?">
+        <Modal defaultOpen role="alertdialog" title="Sure?" onCancel={onCancel}>
           body
         </Modal>
       );
       await opened();
-      await user.click(document.querySelector<HTMLElement>(BACKDROP)!);
+      await user.click(document.querySelector<HTMLElement>(POSITIONER)!);
+      // After a frame, not synchronously: the exit is deferred into a rAF, so an
+      // immediate assertion passes even when the dialog *is* closing.
+      await frame();
       expect(content()).not.toBeNull();
-      // Escape still works: it is a deliberate act, not a stray click.
+      expect(onCancel).not.toHaveBeenCalled();
+      // Escape still works: it is a deliberate act, not a stray press.
       await user.keyboard("{Escape}");
       await closed();
     });
@@ -167,23 +192,63 @@ describe("Modal", () => {
       expect(content()).not.toBeNull();
     });
 
-    it("only the topmost layer answers Escape", async () => {
+    it("only the topmost layer answers Escape, with the inner one truly nested", async () => {
       const user = userEvent.setup();
-      render(
-        <>
+      // Nested, not siblings: the inner trigger lives inside the outer dialog,
+      // which is what makes the focus-restoration race real — closing the inner
+      // returns focus to a node inside the outer at the exact moment the outer
+      // becomes topmost. As siblings the trigger is body and the race never runs.
+      function Harness() {
+        const [inner, setInner] = useState(false);
+        return (
           <Modal defaultOpen title="Outer" id="outer">
-            outer
+            <button onClick={() => setInner(true)}>open inner</button>
+            <Modal open={inner} onOpenChange={d => setInner(d.open)} title="Inner" id="inner">
+              inner
+            </Modal>
           </Modal>
-          <Modal defaultOpen title="Inner" id="inner">
-            inner
-          </Modal>
-        </>
-      );
+        );
+      }
+      render(<Harness />);
+      await opened();
+      await user.click(screen.getByText("open inner"));
       await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(2));
+
       await user.keyboard("{Escape}");
-      // Without a shared stack both have a document listener and both close.
       await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(1));
+      // Both closed before: the outer had its own document listener without the
+      // shared stack, and the inner focus restoration dismissed it without the
+      // `focus: false` opt-out.
       expect(document.querySelector(CONTENT)).toHaveTextContent("Outer");
+
+      await user.keyboard("{Escape}");
+      await closed();
+    });
+
+    it("keeps focus put across a re-render while open", async () => {
+      const user = userEvent.setup();
+      // An inline onOpenChange is a new identity every render. While the setup
+      // effect depended on it, every render tore the trap down and rebuilt it —
+      // and rebuilding moves focus to the first tabbable, so typing in the second
+      // field of a dialog threw you back to the first.
+      function Harness() {
+        const [tick, setTick] = useState(0);
+        return (
+          <Modal defaultOpen onOpenChange={() => {}} title="T" footer={null}>
+            <button>first</button>
+            <button onClick={() => setTick(t => t + 1)}>second {tick}</button>
+          </Modal>
+        );
+      }
+      render(<Harness />);
+      await opened();
+
+      const second = screen.getByText(/^second/);
+      await user.click(second);
+      expect(document.activeElement).toBe(second);
+      // And the layer was not re-pushed, which would put it above a dialog that
+      // legitimately sits on top of it.
+      expect(dismissableDepth()).toBe(1);
     });
 
     it("releases the layer, the scroll lock and the background on close", async () => {
@@ -234,6 +299,30 @@ describe("Modal", () => {
     });
   });
 
+  it("writes width as a custom property the size rules read, not inline-size", async () => {
+    // `size` always renders, so its `max-width` clamped an inline `inline-size`
+    // and <Modal width={800}> came out at the md width. The size rules take
+    // --ck-modal-width as their fallback value instead, so setting it wins.
+    render(
+      <Modal defaultOpen title="T" width={800}>
+        body
+      </Modal>
+    );
+    await opened();
+    expect(content()!.style.getPropertyValue("--ck-modal-width")).toBe("800px");
+    expect(content()!.style.inlineSize).toBe("");
+  });
+
+  it("passes a string width through untouched", async () => {
+    render(
+      <Modal defaultOpen title="T" width="60ch">
+        body
+      </Modal>
+    );
+    await opened();
+    expect(content()!.style.getPropertyValue("--ck-modal-width")).toBe("60ch");
+  });
+
   describe("footer", () => {
     it("renders the locale's confirm and cancel by default", async () => {
       render(
@@ -258,6 +347,28 @@ describe("Modal", () => {
       await user.click(screen.getByText("OK"));
       expect(onOk).toHaveBeenCalledTimes(1);
       expect(content()).not.toBeNull();
+    });
+
+    it("holds the confirm button busy until an async onOk settles", async () => {
+      const user = userEvent.setup();
+      let release!: () => void;
+      const onOk = vi.fn(() => new Promise<void>(resolve => (release = resolve)));
+      render(
+        <Modal defaultOpen title="T" onOk={onOk}>
+          body
+        </Modal>
+      );
+      await opened();
+      const ok = screen.getByText("OK").closest("button")!;
+
+      await user.click(ok);
+      await waitFor(() => expect(ok).toBeDisabled());
+      // A second press while it is in flight must not submit again.
+      await user.click(ok);
+      expect(onOk).toHaveBeenCalledTimes(1);
+
+      release();
+      await waitFor(() => expect(ok).toBeEnabled());
     });
 
     it("removes the footer for null, and replaces it for anything else", async () => {
