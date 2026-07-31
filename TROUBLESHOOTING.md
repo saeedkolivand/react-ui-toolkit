@@ -1,118 +1,77 @@
-# Troubleshooting Guide
+# Troubleshooting
 
-## CSS Files Not Loading
+## Styles are not applied
 
-### Problem
+Import the stylesheet once, anywhere in your app:
 
-After installing the package, you may find that styles are not being applied to the components.
-
-### Solutions
-
-1. **Direct CSS Import (Most Reliable)**
-
-   Explicitly import the CSS file in your application entry point:
-
-   ```javascript
-   import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
-   ```
-
-2. **Use the StylesProvider Component**
-
-   Wrap your application with the StylesProvider:
-
-   ```jsx
-   import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
-
-   function App() {
-     return (
-       <StylesProvider>
-         <YourApplication />
-       </StylesProvider>
-     );
-   }
-   ```
-
-3. **Use the withStyles HOC**
-
-   ```jsx
-   import { withStyles } from "@saeedkolivand/react-ui-toolkit";
-
-   function App() {
-     return <YourApplication />;
-   }
-
-   export default withStyles(App);
-   ```
-
-4. **Manual CSS Include**
-
-   You can also manually include the CSS file in your HTML:
-
-   ```html
-   <link rel="stylesheet" href="node_modules/@saeedkolivand/react-ui-toolkit/dist/styles.css" />
-   ```
-
-   Or use a CDN:
-
-   ```html
-   <link
-     rel="stylesheet"
-     href="https://unpkg.com/@saeedkolivand/react-ui-toolkit@latest/dist/styles.css"
-   />
-   ```
-
-## Troubleshooting CSS in Next.js
-
-For Next.js projects, use the SSR-compatible provider:
-
-```jsx
-import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
-
-function MyApp({ Component, pageProps }) {
-  return (
-    <StylesProviderSSR>
-      <Component {...pageProps} />
-    </StylesProviderSSR>
-  );
-}
-
-export default MyApp;
+```ts
+import "@crosskit-ui/styles";
 ```
 
-Alternatively, you can import the CSS file in your `_app.js` file:
+Angular has no JS entry point for it, so it goes in `angular.json`:
 
-```jsx
-import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
-
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
-
-export default MyApp;
+```json
+"styles": ["@crosskit-ui/styles", "src/styles.css"]
 ```
 
-## CSS Not Working in Production Builds
+There is nothing else — no provider, no HOC. v0's `withStyles`, `withStylesSSR`, `StylesProvider`
+and `StylesProviderSSR` are deleted rather than renamed, because a single CSS import replaces all
+four.
 
-If you're experiencing issues with CSS in production builds, make sure your bundler is configured to handle CSS files properly. For most bundlers, you'll need to set up appropriate loaders or plugins for CSS processing.
+## My own CSS does not override a component
 
-### Webpack
+It should, without `!important`. Everything shipped lives inside CSS cascade layers
+(`ck.reset, ck.tokens, ck.components, ck.overrides`), and **unlayered CSS beats layered CSS
+regardless of specificity** — so a plain `.my-button { background: red }` wins over
+`[data-scope="button"][data-part="root"]`.
 
-Ensure you have the appropriate loaders configured:
+If it is not winning, your rule is probably inside a layer too. Tailwind users: import
+`@crosskit-ui/styles` **before** `tailwindcss`, so the `ck.*` layers are declared first.
 
-```javascript
-module.exports = {
-  // ...
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-      },
-    ],
-  },
-};
+## Dark mode does nothing
+
+Set `data-theme` on `<html>`, not a `dark` class:
+
+```html
+<html data-theme="dark"></html>
 ```
 
-### Vite
+To avoid a flash of the wrong theme, inline `themeScript()` in `<head>` — it is a string, so a
+Server Component can render it with no client JS.
 
-Vite handles CSS imports out of the box, but you may need to add specific configuration for CSS modules or preprocessors.
+## A Content Security Policy blocks the layout
+
+A few props are continuous rather than enumerable — `Row.spacing`, `Col.order`, `Progress.value`,
+the table's scroll limits — and ship as **inline custom properties**, which a strict CSP rejects:
+
+```
+style-src-attr 'unsafe-inline'
+```
+
+Everything else is static CSS, so this is the only concession needed.
+
+## Exit animations do not run
+
+The node has to survive long enough to be animated. Any component you build on top of the machines
+must gate rendering on **presence**, never on `api.open` — otherwise the node unmounts the instant
+`open` flips, `data-state="closed"` never gets a frame, and the animation silently does nothing.
+
+## Angular: a component renders nothing
+
+Almost always a required input read during construction. `useMachine` has to run in a field
+initializer — the only injection context available — which is **before** Angular applies any
+binding, so an `input.required` read there throws `NG0950` and takes the whole component tree with
+it. Use a default instead.
+
+## Next.js: "useState only works in a Client Component"
+
+`"use client"` is a per-file banner here, never on the barrel — so importing from
+`@crosskit-ui/react` in a Server Component is fine, and only the components that need it are client
+components. If you hit this, you are probably importing a machine-driven component (Modal, Select,
+Tabs…) into a file that is itself a Server Component; add `"use client"` there, or import from the
+per-component subpath.
+
+## Something else
+
+[Open an issue](https://github.com/saeedkolivand/crosskit/issues) with the framework, the version and
+a reproduction.

@@ -1,270 +1,141 @@
+<h1 align="center">CrossKit</h1>
+
 <p align="center">
-  <img src="https://github.com/saeedkolivand/react-ui-toolkit/raw/main/assets/images/banner.png" alt="React UI Toolkit Banner" width="100%">
+  One component library. React, Vue, Svelte and Angular.
 </p>
 
 <p align="center">
-  <a href="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/ci.yml">
-    <img src="https://github.com/saeedkolivand/react-ui-toolkit/actions/workflows/ci.yml/badge.svg" alt="CI Status">
+  <a href="https://github.com/saeedkolivand/crosskit/actions/workflows/ci.yml">
+    <img src="https://github.com/saeedkolivand/crosskit/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   </a>
-  <a href="https://codecov.io/gh/saeedkolivand/react-ui-toolkit">
-    <img src="https://codecov.io/gh/saeedkolivand/react-ui-toolkit/branch/main/graph/badge.svg" alt="Code Coverage">
+  <a href="https://www.npmjs.com/org/crosskit-ui">
+    <img src="https://img.shields.io/npm/v/@crosskit-ui/react.svg" alt="npm version">
   </a>
-  <a href="https://www.npmjs.com/package/@saeedkolivand/react-ui-toolkit">
-    <img src="https://img.shields.io/npm/v/@saeedkolivand/react-ui-toolkit.svg" alt="NPM Version">
+  <a href="https://github.com/saeedkolivand/crosskit/blob/main/LICENSE">
+    <img src="https://img.shields.io/npm/l/@crosskit-ui/react.svg" alt="MIT licence">
   </a>
 </p>
 
-## Features
+<p align="center">
+  <a href="https://crosskit.iamsaeed.dev/">Docs</a> ·
+  <a href="https://crosskit.iamsaeed.dev/docs/">Components</a> ·
+  <a href="https://crosskit.iamsaeed.dev/storybook/">Storybook</a>
+</p>
 
-- **Modern Design** - Clean and professional component designs
-- **TypeScript Support** - Full type definitions for all components
-- **Accessibility** - WCAG 2.1 compliant components
-- **Customizable** - Easily customize using Tailwind CSS
-- **Dark Mode** - Built-in dark mode support
-- **Responsive** - Mobile-first design approach
+---
 
-## Links
-
-- **[Landing page](https://saeedkolivand.github.io/react-ui-toolkit/)** — overview with live components
-- **[Storybook](https://saeedkolivand.github.io/react-ui-toolkit/storybook/)** — every component and variant
-
-## Installation
+27 accessible components with **the same API in four frameworks**. Behaviour comes from
+[Zag.js](https://zagjs.com) state machines shared across all of them; styling from one precompiled
+stylesheet. Consumers need no Tailwind of their own — it is an authoring tool here, not a runtime
+dependency.
 
 ```bash
-npm install @saeedkolivand/react-ui-toolkit
-# or
-yarn add @saeedkolivand/react-ui-toolkit
+pnpm add @crosskit-ui/react    # or /vue, /svelte, /angular
 ```
 
-**Requires React 19.** Components take `ref` as a regular prop rather than through
-`forwardRef`, and the providers use React 19's `<Context>` and `use()`. For React 18, pin `0.x`.
+```tsx
+import { Button } from "@crosskit-ui/react";
+import "@crosskit-ui/styles"; // once, anywhere
 
-Styles ship as a single stylesheet. Either import it once at your app entry:
-
-```js
-import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
+<Button variant="primary" icon="check" onClick={save}>
+  Save changes
+</Button>;
 ```
 
-...or wrap your app in `StylesProvider`, which injects it for you.
+The same component in each of the other three:
 
-## Quick Start
+```vue
+<Button variant="primary" icon="check" @click="save">Save changes</Button>
+```
 
-```jsx
-import React from "react";
-import { Button, StylesProvider } from "@saeedkolivand/react-ui-toolkit";
-import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
+```svelte
+<Button variant="primary" icon="check" onclick={save}>Save changes</Button>
+```
 
-function App() {
-  return (
-    <StylesProvider>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Hello React UI Toolkit</h1>
-        <Button variant="primary">Click Me</Button>
-      </div>
-    </StylesProvider>
-  );
+```html
+<button ckButton variant="primary" icon="check" (click)="save()">Save changes</button>
+```
+
+## Why it is built this way
+
+**Accessibility is the expensive part of a component library**, and it is the part that would
+otherwise have to be right four separate times. Focus traps, keyboard navigation, typeahead, roving
+tabindex and ARIA wiring all come from machines that are tested once and shared.
+
+**The markup is identical everywhere.** Every component emits `data-scope`, `data-part` and
+`data-state` — never a class name. Because the DOM and the CSS are shared, rendered output is
+framework-independent, which is what makes a real parity test possible: the suite in `apps/e2e`
+drives all four playgrounds with assertions that never branch on which framework they are talking
+to, then checks that all four agree on every computed style and every box.
+
+That test has already found six bugs which unit tests, typecheck and build all passed.
+
+**Styling is CSS, not runtime class composition.** `tailwind-merge`, `classnames` and
+`framer-motion` are gone with nothing replacing them; exit animations key off the machines' own
+`data-state`.
+
+## Packages
+
+| Package                    | What it is                                                     |
+| -------------------------- | -------------------------------------------------------------- |
+| `@crosskit-ui/react`       | React 19 adapters                                              |
+| `@crosskit-ui/vue`         | Vue 3.5 adapters                                               |
+| `@crosskit-ui/svelte`      | Svelte 5 adapters                                              |
+| `@crosskit-ui/angular`     | Angular 20–22 adapters                                         |
+| `@crosskit-ui/styles`      | The whole visual layer, precompiled. One import.               |
+| `@crosskit-ui/core`        | Icon data, table and toast stores, shared types                |
+| `@crosskit-ui/zag-angular` | Angular signals binding for `@zag-js/core`. Useful on its own. |
+
+`core` and `styles` are dependencies of each adapter rather than peers, and every package moves in
+lockstep — so there is no version to keep in step by hand.
+
+## Components
+
+Button · Icon · Spinner · Divider · Badge · Tag · Card · Alert · Container · Row · Col · Input ·
+Textarea · Checkbox · Radio · RadioGroup · Switch · Select · Option · Modal · Drawer · Tooltip ·
+Menu · Toast · Tabs · Accordion · Avatar · Progress · Table
+
+Full reference, with samples for all four frameworks, at
+[crosskit.iamsaeed.dev/docs](https://crosskit.iamsaeed.dev/docs/).
+
+## Theming
+
+About 48 semantic `--ck-*` custom properties are the public contract. Dark mode is a single
+`[data-theme="dark"]` block rather than a `dark:` variant duplicated inside all 27 components.
+
+```css
+:root {
+  --ck-accent-solid: #7c3aed;
+  --ck-radius-md: 2px;
 }
-
-export default App;
 ```
 
-## Documentation
+Everything ships inside CSS cascade layers, so **your own unlayered rules win regardless of
+specificity** — a plain `.my-button { background: red }` beats
+`[data-scope="button"][data-part="root"]` with no `!important` anywhere.
 
-For detailed documentation, see the following resources:
+## Migrating from `@saeedkolivand/react-ui-toolkit`
 
-- [Usage Guide](./docs/usage-guide.md)
-- [API Reference](./docs/api-reference.md)
-- [Examples](./examples/README.md)
-- [Releasing](./docs/releasing.md)
-- [Deploying the site](./docs/STORYBOOK_DEPLOYMENT.md)
-- [Audit — July 2026](./docs/audit-2026-07.md)
+CrossKit is a clean break, not a rename. See
+[docs/migrating-from-react-ui-toolkit.md](./docs/migrating-from-react-ui-toolkit.md) — generated
+from the same data as the component reference, so the two cannot drift — including the seven v0 bugs
+whose workarounds you can now delete.
 
-## Available Components
+## Repository
 
-### Base Components
-
-- Button
-- Input
-- Textarea
-- Select
-- Checkbox
-- Radio
-- Switch
-- Tooltip
-- Tag
-- Icon
-- Divider
-
-### Layout Components
-
-- Container
-- Row
-- Col
-
-### Feedback Components
-
-- Card
-- Alert
-- Badge
-- Avatar
-- Spinner
-- Progress
-- Notification
-
-### Navigation Components
-
-- Tabs
-- Modal
-- Drawer
-- Dropdown
-- Accordion
-
-### Theme Components
-
-- ThemeToggle
-
-## Development
+```
+packages/   core · styles · zag-angular · react · vue · svelte · angular
+apps/       docs · storybook · e2e · playground-{react,vue,svelte,angular}
+```
 
 ```bash
-# Clone the repository
-git clone https://github.com/saeedkolivand/react-ui-toolkit.git
-cd react-ui-toolkit
-
-# Install dependencies
-npm install
-
-# Start Storybook for development
-npm run storybook
-
-# Run tests
-npm test
-
-# Build the library
-npm run build
+pnpm install
+pnpm turbo run lint typecheck build test check:exports   # the gate CI runs
+pnpm --filter @crosskit-ui/e2e test:e2e                  # cross-framework parity
 ```
 
-## Contributing
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — the conventions that keep four adapters honest
+- [docs/releasing.md](./docs/releasing.md) — how a release is cut, and the failure modes it avoids
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Usage
-
-### Importing Styles
-
-You have three options for importing styles:
-
-#### Option 1: Direct CSS Import
-
-```js
-import "@saeedkolivand/react-ui-toolkit/dist/styles.css";
-```
-
-#### Option 2: StylesProvider (Recommended)
-
-```jsx
-import { StylesProvider } from "@saeedkolivand/react-ui-toolkit";
-
-function App() {
-  return (
-    <StylesProvider>
-      <YourApplication />
-    </StylesProvider>
-  );
-}
-```
-
-#### Option 3: SSR-Compatible Provider (Next.js)
-
-```jsx
-import { StylesProviderSSR } from "@saeedkolivand/react-ui-toolkit";
-
-function App() {
-  return (
-    <StylesProviderSSR>
-      <YourApplication />
-    </StylesProviderSSR>
-  );
-}
-```
-
-#### Option 4: Higher-Order Component
-
-```jsx
-import { withStylesProvider } from "@saeedkolivand/react-ui-toolkit";
-
-function YourApp() {
-  return <div>Your application content</div>;
-}
-
-export default withStylesProvider(YourApp);
-```
-
-### Dark Mode
-
-Components ship `dark:` variants throughout. Tailwind is configured with `darkMode: "class"`, so
-they activate when a `dark` class is present on `<html>` — which `ThemeProvider` manages for you:
-
-```jsx
-import { ThemeProvider, ThemeToggle } from "@saeedkolivand/react-ui-toolkit";
-
-function App() {
-  return (
-    <ThemeProvider>
-      <ThemeToggle />
-      <YourApplication />
-    </ThemeProvider>
-  );
-}
-```
-
-Without `ThemeProvider` nothing sets that class and every `dark:` variant stays inert.
-
-The provider follows the OS `prefers-color-scheme` on first load, remembers an explicit choice in
-`localStorage`, and applies it on the next visit. To drive the theme yourself:
-
-```jsx
-import { useTheme } from "@saeedkolivand/react-ui-toolkit";
-
-const { theme, toggleTheme, setTheme } = useTheme();
-```
-
-> **SSR note:** the class is applied after hydration, so a server-rendered page can show one frame of
-> light theme before switching. To avoid it, set the class in a small blocking script in your
-> document `<head>` before React mounts.
-
-### Using Components
-
-```jsx
-import { Button, Input } from "@saeedkolivand/react-ui-toolkit";
-
-function App() {
-  return (
-    <div>
-      <Input placeholder="Enter your name" />
-      <Button>Click me</Button>
-    </div>
-  );
-}
-```
-
-### Development Workflow
-
-1. Create a feature branch
-2. Make your changes
-3. Write/update tests
-4. Update documentation
-5. Submit a pull request
-
-### Pre-commit Hooks
-
-Before each commit, the following will run automatically:
-
-- TypeScript type checking
-- ESLint
-- Prettier
-- Tests
-- Project build
-
-## License
-
-MIT © [Saeed Kolivand](https://github.com/saeedkolivand)
+MIT © Saeed Kolivand

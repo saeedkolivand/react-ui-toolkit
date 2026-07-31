@@ -3,10 +3,10 @@
 One workflow publishes both halves of the site: the landing page at the root and Storybook one level
 down.
 
-| Path                                                          | Content      | Built by                  |
-| ------------------------------------------------------------- | ------------ | ------------------------- |
-| `https://saeedkolivand.github.io/react-ui-toolkit/`           | Landing page | `npm run build:landing`   |
-| `https://saeedkolivand.github.io/react-ui-toolkit/storybook/` | Storybook    | `npm run build-storybook` |
+| Path                                       | Content      | Built by                                     |
+| ------------------------------------------ | ------------ | -------------------------------------------- |
+| `https://crosskit.iamsaeed.dev/`           | Landing page | `pnpm --filter @crosskit-ui/docs build`      |
+| `https://crosskit.iamsaeed.dev/storybook/` | Storybook    | `pnpm --filter @crosskit-ui/storybook build` |
 
 ## Automatic deployment
 
@@ -30,22 +30,22 @@ npm run storybook       # Storybook at :6006, served at "/"
 To reproduce the deployed layout exactly:
 
 ```bash
-npm run build && npm run build:landing
-STORYBOOK_BASE_PATH=/react-ui-toolkit/storybook/ npm run build-storybook
+npm run build && pnpm --filter @crosskit-ui/docs build
+STORYBOOK_BASE_PATH=/storybook/ pnpm --filter @crosskit-ui/storybook build
 mkdir -p site/storybook && cp -r landing-dist/. site/ && cp -r storybook-static/. site/storybook/
 ```
 
-Then serve the parent directory so the page sits under `/react-ui-toolkit/`.
+Then serve the parent directory so the page sits under the site root.
 
 > On Windows Git Bash, prefix the Storybook command with `MSYS_NO_PATHCONV=1`. Otherwise MSYS
 > rewrites the leading `/` of the base path into your Git install directory and every asset URL comes
-> out as `/Program Files/Git/react-ui-toolkit/...`. This does not affect CI, which runs on Linux.
+> out as `/Program Files/Git/storybook/...`. This does not affect CI, which runs on Linux.
 
 ## Base paths
 
 - **Landing page**: `base` in `vite.landing.config.mts`, overridable with `LANDING_BASE`.
 - **Storybook**: `STORYBOOK_BASE_PATH` in `.storybook/main.ts`, defaulting to `/` so local dev works
-  unchanged. The Pages workflow sets it to `/react-ui-toolkit/storybook/`.
+  unchanged. The Pages workflow sets it to `/storybook/`.
 
 ## Repository settings
 
