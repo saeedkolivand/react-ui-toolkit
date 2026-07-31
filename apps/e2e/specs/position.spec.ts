@@ -120,6 +120,42 @@ test.describe("stays on screen", () => {
   }
 });
 
+test.describe("the element is put in the coordinate space it was measured in", () => {
+  test("applyPosition sets position: fixed itself", async ({ page }) => {
+    // Not left to a stylesheet: a rule can be overridden, scoped away, or never
+    // written for a component added later, and the failure is silent -- the
+    // element still renders, just measured from the wrong containing block.
+    // The harness page deliberately declares no `position` for it.
+    await place(page, { placement: "top", spot: "center" });
+    await expect(page.locator("#floating")).toHaveCSS("position", "fixed");
+  });
+
+  test("a transformed ancestor still captures it, which is why overlays must portal", async ({
+    page,
+  }) => {
+    // Pins the boundary of what `fixed` buys, because it is easy to assume it
+    // escapes everything -- it does not. A transform on an ancestor makes that
+    // ancestor the containing block for *fixed* descendants too, so the
+    // coordinates are measured from it instead of the viewport.
+    //
+    // This test exists to fail if that ever stops being true, and to record
+    // why every overlay component portals to document.body.
+    const before = await place(page, { placement: "bottom", spot: "center" });
+
+    await page.evaluate(() => {
+      document.body.style.transform = "translateX(50px)";
+    });
+    const captured = await place(page, { placement: "bottom", spot: "center" });
+    expect(captured.rect.x).not.toBe(before.rect.x);
+
+    await page.evaluate(() => {
+      document.body.style.transform = "";
+    });
+    const released = await place(page, { placement: "bottom", spot: "center" });
+    expect(released.rect).toEqual(before.rect);
+  });
+});
+
 test.describe("flip", () => {
   test("does not fire when the anchor is central", async ({ page }) => {
     for (const placement of PLACEMENTS) {

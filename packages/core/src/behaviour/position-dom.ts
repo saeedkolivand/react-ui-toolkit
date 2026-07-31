@@ -5,10 +5,28 @@
  * Two decisions worth stating, because both are load-bearing:
  *
  * 1. **The floating element is `position: fixed`, always.** Viewport
- *    coordinates mean `getBoundingClientRect()` needs no correction, and the
- *    entire class of offset-parent bugs — a `transform` on an ancestor
- *    silently becoming the containing block, `position: relative` wrappers,
- *    scroll containers — simply cannot happen. The stylesheet enforces it.
+ *    coordinates mean `getBoundingClientRect()` needs no correction, and
+ *    `position: relative` wrappers and scroll containers — the usual reasons
+ *    an absolutely positioned popup drifts — stop mattering entirely.
+ *
+ *    `applyPosition` sets it alongside the coordinates rather than leaving it
+ *    to a stylesheet. A rule can be overridden, scoped away, or simply never
+ *    written for a component someone adds later — and the failure is silent,
+ *    because the element still renders, just in the wrong place. Written here
+ *    it travels with the values it is a precondition for.
+ *
+ *    **`fixed` is not a complete escape, and it is worth being exact about
+ *    what it does not fix.** A `transform`, `filter`, `perspective`,
+ *    `backdrop-filter`, `contain: paint` or `will-change` on *any* ancestor
+ *    makes that ancestor the containing block for fixed descendants too — the
+ *    coordinates are then measured from it rather than from the viewport, and
+ *    the element lands somewhere else. Verified, not assumed: the e2e suite
+ *    puts a transform on `<body>` and watches it move.
+ *
+ *    The answer is to portal the floating element out to `document.body`,
+ *    which every overlay component must do. That is a component-level
+ *    requirement this module cannot enforce, so it is stated here rather than
+ *    implied.
  *
  * 2. **Position is written to `left`/`top`, not `transform`.** `transform` is
  *    reserved for the animation layer, which scales and translates these same
@@ -74,6 +92,10 @@ export function measure(
  * what the user sees.
  */
 export function applyPosition(floating: HTMLElement, position: PositionResult): void {
+  // The coordinates below are viewport-relative, which is only what `fixed`
+  // means. Under `absolute` they would be measured from whichever ancestor
+  // happens to be the containing block — a different, silently wrong place.
+  floating.style.position = "fixed";
   floating.style.left = `${position.x}px`;
   floating.style.top = `${position.y}px`;
   floating.dataset.placement = position.placement;

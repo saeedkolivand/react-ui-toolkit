@@ -37,14 +37,20 @@ Do not name other UI or behaviour libraries in shipped code, comments, docs or c
 5. **Gate rendering on presence, not on `open`.** Unmounting the instant `open` flips means
    `data-state="closed"` never gets a frame and every exit animation silently does nothing.
 
-6. **Prop names are identical in all four adapters.** Only two-way binding differs, each using its
+6. **Anchored overlays must portal to `document.body`.** The positioner writes viewport
+   coordinates and sets `position: fixed`, but `fixed` is captured by any ancestor with a
+   `transform`, `filter`, `perspective`, `backdrop-filter`, `contain: paint` or `will-change` —
+   that ancestor becomes the containing block and the popup lands somewhere else. Portalling is
+   the only fix, and it cannot be enforced from `core`.
+
+7. **Prop names are identical in all four adapters.** Only two-way binding differs, each using its
    own framework idiom over the same underlying prop.
 
-7. **CSS ships inside cascade layers** (`@layer ck.reset, ck.tokens, ck.components, ck.overrides`),
+8. **CSS ships inside cascade layers** (`@layer ck.reset, ck.tokens, ck.components, ck.overrides`),
    because unlayered consumer CSS then wins regardless of specificity. Authoring outside a layer
    breaks the override story.
 
-8. **Write logical properties, not physical ones** (`margin-inline`, `inset-inline-start`). RTL is a
+9. **Write logical properties, not physical ones** (`margin-inline`, `inset-inline-start`). RTL is a
    tested contract, not a claim.
 
 ## Two traps that have each cost real time
