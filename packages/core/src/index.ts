@@ -5,6 +5,7 @@ export * from "./behaviour/position-dom";
 export * from "./behaviour/dom";
 export * from "./behaviour/focus-trap";
 export * from "./behaviour/dismissable";
+export * from "./behaviour/inert";
 export * from "./behaviour/presence";
 export * from "./behaviour/scroll-lock";
 export * from "./behaviour/collection";

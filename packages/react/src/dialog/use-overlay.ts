@@ -19,6 +19,7 @@ import {
   createFocusTrap,
   createPresence,
   dataAttr,
+  inertBackground,
   lockScroll,
   pushDismissable,
   type Presence,
@@ -59,34 +60,6 @@ export interface Overlay {
   contentProps: Div & { ref: (node: HTMLElement | null) => void; tabIndex: number };
   titleProps: Div;
   descriptionProps: Div;
-}
-
-/**
- * Everything outside the overlay, hidden from assistive technology.
- *
- * `inert` rather than `aria-hidden`: it removes the subtree from the
- * accessibility tree *and* stops it receiving focus or clicks, so a screen
- * reader's own navigation — which does not use Tab and therefore never meets
- * the focus trap — cannot walk out of the dialog into the page behind it.
- *
- * Applied to body children rather than to one wrapper, because the overlay is
- * portalled and is therefore a sibling of the app root, not a descendant.
- *
- * That sweeps up the overlay's own backdrop, which is a body child that does not
- * contain the content. Harmless rather than intended: the backdrop holds nothing
- * and the positioner covers it anyway. Give the backdrop content one day and this
- * needs an exclusion.
- */
-function inertBackground(content: HTMLElement): () => void {
-  const changed: HTMLElement[] = [];
-  for (const child of [...document.body.children]) {
-    if (!(child instanceof HTMLElement) || child.contains(content) || child.inert) continue;
-    child.inert = true;
-    changed.push(child);
-  }
-  return () => {
-    for (const child of changed) child.inert = false;
-  };
 }
 
 export function useOverlay(options: OverlayOptions): Overlay {
@@ -185,7 +158,14 @@ export function useOverlay(options: OverlayOptions): Overlay {
       // outside it is never the user leaving. It is, routinely, the layer above
       // restoring focus to its trigger as it closes — which used to dismiss this
       // one in the same tick, closing two nested dialogs on one Escape.
-      focus: !modal,
+      // `false` for a dialog either way. A modal traps focus so a focusin
+      // outside it is never the user leaving — it is the layer above restoring
+      // focus to its trigger as it closes, which used to dismiss this one in the
+      // same tick. And a non-modal dialog is exactly the case where moving focus
+      // out is the point: an inspector or a find-and-replace panel is worked
+      // alongside the page, so the first Tab out was closing it. The option is
+      // for menus and popovers, which a dialog is neither of.
+      focus: false,
     });
 
     return () => {

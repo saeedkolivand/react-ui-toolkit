@@ -4,9 +4,10 @@
 ---
 
 React Modal and Drawer are rebuilt on the framework-free primitives in `core` —
-focus trap, dismissable layer stack, presence, scroll lock — and no longer pull
-a state-machine dependency. The DOM contract is unchanged, so no stylesheet
-moved.
+focus trap, dismissable layer stack, presence, scroll lock, inert background —
+and no longer pull a state-machine dependency. The DOM contract is unchanged, so
+no markup-keyed rule moved; `dialog.css` changes only in that the size rules now
+read `--ck-modal-width` as their fallback.
 
 New in `ModalProps`: `onOk` / `onCancel` / `okText` / `cancelText` / `okType` /
 `okDanger` / `confirmLoading` / `width`, and a default footer built from the
@@ -41,3 +42,16 @@ nothing at all. `focusTrapDepth()` is exported for tests.
 The focus trap is now activated before the background is made inert, so the
 return-focus target is read while the trigger is unambiguously still focused
 rather than relying on the focus fixup rule being deferred.
+
+
+`inertBackground` moves into `core` with a shared registry. Each overlay used to
+sweep the background alone and treat every `document.body` child that did not
+contain *its* content as background — including another overlay's layers. Two
+overlays opening in the same commit each inerted the other, leaving both visible
+and untouchable; and closing the lower of two released the page while the upper
+was still open. `inertDepth()` is exported for tests.
+
+A non-modal `Modal` no longer closes when focus leaves it. It has no focus trap,
+so focus starts on the trigger — outside the layer — and the first Tab onto
+anything after it dismissed the dialog, which is the opposite of what a non-modal
+dialog is for.

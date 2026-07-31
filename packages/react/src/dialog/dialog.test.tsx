@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { dismissableDepth, scrollLockDepth } from "@crosskit-ui/core";
+import { dismissableDepth, inertDepth, scrollLockDepth } from "@crosskit-ui/core";
 import { Modal } from "./modal";
 import { Drawer } from "./drawer";
 
@@ -192,6 +192,34 @@ describe("Modal", () => {
       expect(onCancel).toHaveBeenCalledTimes(1);
     });
 
+    it("does not close a non-modal dialog when focus leaves it", async () => {
+      const user = userEvent.setup();
+      // A non-modal dialog is an inspector or a find-and-replace panel: worked
+      // alongside the page, so moving focus out is the point rather than a
+      // dismissal. It has no focus trap either, so focus starts on the trigger —
+      // outside the layer — and the first Tab onto anything after it used to
+      // fire focusin and close the dialog. Whether it survived depended on where
+      // the next tabbable happened to be, which reads as flaky, not as a rule.
+      render(
+        <>
+          <button>trigger</button>
+          <button>next</button>
+          <Modal defaultOpen modal={false} title="Panel">
+            <button>inside</button>
+          </Modal>
+        </>
+      );
+      await opened();
+      screen.getByText("trigger").focus();
+      await user.tab();
+
+      expect(document.activeElement).toBe(screen.getByText("next"));
+      expect(content()).not.toBeNull();
+      // A press outside still dismisses it — that is a deliberate act.
+      await user.click(screen.getByText("next"));
+      await closed();
+    });
+
     it("does not close an alertdialog from outside, which must be answered", async () => {
       const user = userEvent.setup();
       const onCancel = vi.fn();
@@ -370,6 +398,33 @@ describe("Modal", () => {
       // A dialog torn down by a route change must not leave the page locked.
       expect(dismissableDepth()).toBe(0);
       expect(scrollLockDepth()).toBe(0);
+    });
+
+    it("leaves two overlays opened in one commit both usable", async () => {
+      // Each overlay used to sweep the background alone, treating every body
+      // child that did not contain its own content as background — which is the
+      // other overlay's layers. Opening one commit apart hid it, because the
+      // later sweep skips whatever is already inert. Opened together, each
+      // inerted the other: both dialogs visible, neither focusable or
+      // clickable, and `getTabbables` empty because isTabbable rejects
+      // `[inert] *`.
+      render(
+        <>
+          <Modal defaultOpen title="Behind">
+            behind
+          </Modal>
+          <Drawer defaultOpen title="In front">
+            front
+          </Drawer>
+        </>
+      );
+      await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(2));
+
+      const positioner = (ck: string) =>
+        document.querySelector<HTMLElement>(`[data-ck="${ck}"][data-part="positioner"]`)!;
+      expect(positioner("modal").inert).not.toBe(true);
+      expect(positioner("drawer").inert).not.toBe(true);
+      expect(inertDepth()).toBe(2);
     });
 
     it("does none of it when modal={false}", async () => {
