@@ -30,6 +30,10 @@
     "test:e2e": {
       "dependsOn": ["^build"],
       "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "test:position": {
+      "dependsOn": ["^build"],
+      "outputs": ["playwright-report/**", "test-results/**"]
     }
   }
 }

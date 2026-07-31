@@ -56,9 +56,9 @@ export function measure(
   floating: HTMLElement,
   options: ComputePositionOptions = {}
 ): PositionResult {
-  // Read direction off the anchor rather than taking it as a prop: it is what the
-  // the `dir` attribute sets on an ancestor, and the DOM already
-  // resolves inheritance for us.
+  // Read direction off the anchor rather than taking it as a prop: it is what
+  // the `dir` attribute sets on an ancestor, and the DOM already resolves
+  // inheritance for us.
   const rtl = options.rtl ?? getComputedStyle(anchor).direction === "rtl";
   const win = floating.ownerDocument.defaultView ?? window;
   return {
