@@ -11,6 +11,7 @@
     "@crosskit-ui/zag-angular",
     "tslib",
     "@zag-js/dialog",
-    "@zag-js/presence"
+    "@zag-js/presence",
+    "@zag-js/select"
   ]
 }

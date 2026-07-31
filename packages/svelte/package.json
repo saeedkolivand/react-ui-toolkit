@@ -46,10 +46,11 @@
   "dependencies": {
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
-    "@zag-js/svelte": "catalog:zag",
+    "@tanstack/table-core": "catalog:table",
     "@zag-js/dialog": "catalog:zag",
     "@zag-js/presence": "catalog:zag",
-    "@tanstack/table-core": "catalog:table"
+    "@zag-js/select": "^1.43.0",
+    "@zag-js/svelte": "catalog:zag"
   },
   "devDependencies": {
     "@sveltejs/package": "catalog:frameworks",

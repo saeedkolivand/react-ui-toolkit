@@ -45,9 +45,10 @@
   "dependencies": {
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
-    "@zag-js/vue": "catalog:zag",
     "@zag-js/dialog": "catalog:zag",
-    "@zag-js/presence": "catalog:zag"
+    "@zag-js/presence": "catalog:zag",
+    "@zag-js/select": "^1.43.0",
+    "@zag-js/vue": "catalog:zag"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",

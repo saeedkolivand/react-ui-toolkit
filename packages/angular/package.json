@@ -36,6 +36,7 @@
     "@crosskit-ui/zag-angular": "workspace:^",
     "@zag-js/dialog": "catalog:zag",
     "@zag-js/presence": "catalog:zag",
+    "@zag-js/select": "^1.43.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
