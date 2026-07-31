@@ -1,6 +1,8 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from "@angular/core";
-import type { Size, Variant } from "@crosskit-ui/core";
+import type { IconName, Size, Variant } from "@crosskit-ui/core";
 import { ckDataAttr } from "@crosskit-ui/zag-angular";
+import { CkIcon } from "../icon/icon.component";
+import { CkSpinner } from "../feedback/spinner.component";
 
 /**
  * Attribute selector on the NATIVE element, not a <ck-button> wrapper.
@@ -18,6 +20,7 @@ import { ckDataAttr } from "@crosskit-ui/zag-angular";
 @Component({
   selector: "button[ckButton]",
   standalone: true,
+  imports: [CkIcon, CkSpinner],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     "data-scope": "button",
@@ -28,15 +31,29 @@ import { ckDataAttr } from "@crosskit-ui/zag-angular";
     "[attr.data-loading]": "attr(loading())",
     "[attr.data-disabled]": "attr(disabled())",
     "[attr.data-full-width]": "attr(fullWidth())",
+    "[attr.data-icon-position]": "icon() ? iconPosition() : null",
     "[disabled]": "disabled() || loading()",
   },
-  template: `<span data-part="label"><ng-content /></span>`,
+  template: `
+    @if (loading()) {
+      <ck-spinner [size]="size()" label="" />
+    }
+    @if (icon() && iconPosition() === "left") {
+      <svg ckIcon [name]="icon()!" [size]="size()"></svg>
+    }
+    <span data-part="label"><ng-content /></span>
+    @if (icon() && iconPosition() === "right") {
+      <svg ckIcon [name]="icon()!" [size]="size()"></svg>
+    }
+  `,
 })
 export class CkButton {
   readonly variant = input<Variant>("primary");
   readonly size = input<Size>("md");
   readonly loading = input(false, { transform: booleanAttribute });
   readonly fullWidth = input(false, { transform: booleanAttribute });
+  readonly icon = input<IconName>();
+  readonly iconPosition = input<"left" | "right">("left");
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly type = input<"button" | "submit" | "reset">("button");
 

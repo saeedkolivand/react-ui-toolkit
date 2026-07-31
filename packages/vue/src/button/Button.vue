@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { dataAttr, type Size, type Variant } from "@crosskit-ui/core";
+import { dataAttr, type IconName, type Size, type Variant } from "@crosskit-ui/core";
+import Icon from "../icon/Icon.vue";
+import Spinner from "../spinner/Spinner.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -7,6 +9,8 @@ const props = withDefaults(
     size?: Size;
     loading?: boolean;
     fullWidth?: boolean;
+    icon?: IconName;
+    iconPosition?: "left" | "right";
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
   }>(),
@@ -15,6 +19,7 @@ const props = withDefaults(
     size: "md",
     loading: false,
     fullWidth: false,
+    iconPosition: "left",
     type: "button",
     disabled: false,
   }
@@ -35,8 +40,20 @@ const props = withDefaults(
     :data-loading="dataAttr(props.loading)"
     :data-disabled="dataAttr(props.disabled)"
     :data-full-width="dataAttr(props.fullWidth)"
+    :data-icon-position="props.icon ? props.iconPosition : undefined"
     :disabled="props.disabled || props.loading"
   >
+    <Spinner v-if="props.loading" :size="props.size" label="" />
+    <Icon
+      v-if="props.icon && props.iconPosition === 'left'"
+      :name="props.icon"
+      :size="props.size"
+    />
     <span v-if="$slots.default" data-part="label"><slot /></span>
+    <Icon
+      v-if="props.icon && props.iconPosition === 'right'"
+      :name="props.icon"
+      :size="props.size"
+    />
   </button>
 </template>

@@ -4,3 +4,7 @@ export { default as Spinner } from "./spinner/Spinner.svelte";
 export { default as Badge } from "./badge/Badge.svelte";
 export { default as Card } from "./card/Card.svelte";
 export { default as Divider } from "./divider/Divider.svelte";
+export { default as Tag } from "./tag/Tag.svelte";
+export { default as Alert } from "./alert/Alert.svelte";
+export { default as Container } from "./layout/Container.svelte";
+export { default as Row } from "./layout/Row.svelte";

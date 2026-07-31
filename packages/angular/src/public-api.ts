@@ -4,3 +4,6 @@ export { CkSpinner } from "./feedback/spinner.component";
 export { CkBadge } from "./feedback/badge.component";
 export { CkCard } from "./feedback/card.component";
 export { CkDivider } from "./feedback/divider.component";
+export { CkTag } from "./feedback/tag.component";
+export { CkAlert } from "./feedback/alert.component";
+export { CkContainer, CkRow } from "./layout/layout.components";

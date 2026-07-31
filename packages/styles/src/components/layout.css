@@ -1,0 +1,98 @@
+/* Container and Row.
+   v0's Row generated `gap-${spacing}` at runtime — a dynamic Tailwind class that
+   only worked because this repo's own config happened to include those values,
+   and silently produced nothing in a consumer's build. Spacing is now an inline
+   custom property instead, which is why it works for ANY number. (This is the
+   documented CSP tradeoff: components that set inline custom properties need
+   style-src-attr 'unsafe-inline'.) */
+@layer ck.components {
+  /* -------------------------------------------------------------- Container */
+  [data-scope="container"][data-part="root"] {
+    width: 100%;
+  }
+  [data-scope="container"][data-part="root"][data-centered] {
+    margin-inline: auto;
+  }
+  [data-scope="container"][data-part="root"][data-padded] {
+    padding-inline: 1rem;
+  }
+  @media (min-width: 40rem) {
+    [data-scope="container"][data-part="root"][data-padded] {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    [data-scope="container"][data-part="root"][data-padded] {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Tailwind's screen-* scale, transcribed. */
+  [data-scope="container"][data-part="root"][data-max-width="sm"] {
+    max-width: 640px;
+  }
+  [data-scope="container"][data-part="root"][data-max-width="md"] {
+    max-width: 768px;
+  }
+  [data-scope="container"][data-part="root"][data-max-width="lg"] {
+    max-width: 1024px;
+  }
+  [data-scope="container"][data-part="root"][data-max-width="xl"] {
+    max-width: 1280px;
+  }
+  [data-scope="container"][data-part="root"][data-max-width="2xl"] {
+    max-width: 1536px;
+  }
+  [data-scope="container"][data-part="root"][data-max-width="full"] {
+    max-width: 100%;
+  }
+
+  /* -------------------------------------------------------------------- Row */
+  [data-scope="row"][data-part="root"] {
+    display: flex;
+    flex-wrap: wrap;
+    /* v0's `gap-${n}` mapped to Tailwind's 0.25rem step */
+    gap: calc(var(--ck-row-spacing, 0) * 0.25rem);
+  }
+  [data-scope="row"][data-part="root"][data-wrap="false"] {
+    flex-wrap: nowrap;
+  }
+  [data-scope="row"][data-part="root"][data-reverse] {
+    flex-direction: row-reverse;
+  }
+
+  [data-scope="row"][data-part="root"][data-justify="start"] {
+    justify-content: flex-start;
+  }
+  [data-scope="row"][data-part="root"][data-justify="center"] {
+    justify-content: center;
+  }
+  [data-scope="row"][data-part="root"][data-justify="end"] {
+    justify-content: flex-end;
+  }
+  [data-scope="row"][data-part="root"][data-justify="between"] {
+    justify-content: space-between;
+  }
+  [data-scope="row"][data-part="root"][data-justify="around"] {
+    justify-content: space-around;
+  }
+  [data-scope="row"][data-part="root"][data-justify="evenly"] {
+    justify-content: space-evenly;
+  }
+
+  [data-scope="row"][data-part="root"][data-align="start"] {
+    align-items: flex-start;
+  }
+  [data-scope="row"][data-part="root"][data-align="center"] {
+    align-items: center;
+  }
+  [data-scope="row"][data-part="root"][data-align="end"] {
+    align-items: flex-end;
+  }
+  [data-scope="row"][data-part="root"][data-align="stretch"] {
+    align-items: stretch;
+  }
+  [data-scope="row"][data-part="root"][data-align="baseline"] {
+    align-items: baseline;
+  }
+}
