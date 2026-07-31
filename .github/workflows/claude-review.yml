@@ -1,13 +1,19 @@
 name: Claude Review
 
-# Reviews a PR only when asked. Comment `@claude` on the PR — either a normal
-# comment or an inline review comment — and the review runs against that PR.
+# On-demand PR review. Comment `@claude review` on a pull request and it runs
+# against that PR. Nothing is automatic: not on open, not on push, not on a
+# schedule — so spend stays under manual control.
 #
-# Nothing triggers automatically: no review on open, on push, or on a schedule.
+# Auth is a CLAUDE_CODE_OAUTH_TOKEN generated locally with `claude setup-token`,
+# which draws on an existing Pro/Max subscription instead of per-token API
+# billing.
 #
-# Note that GitHub only runs `issue_comment` workflows from the version of this
-# file on the default branch, so the mention has no effect until this is merged
-# — including on PRs that were opened before it landed.
+#   Do NOT also add ANTHROPIC_API_KEY. If both exist the API key wins, and
+#   usage is billed per token instead of against the subscription.
+#
+# GitHub only runs `issue_comment` workflows from the default branch's copy of
+# this file, so a mention does nothing until this is merged — including on PRs
+# opened beforehand.
 
 on:
   issue_comment:
@@ -15,67 +21,54 @@ on:
   pull_request_review_comment:
     types: [created]
 
-# A second mention while a review is still running supersedes the first.
+permissions: {}
+
+# cancel-in-progress MUST stay false. While a review runs, claude[bot] posts a
+# "working…" comment — which is itself an issue_comment event, starting a second
+# run in this same concurrency group. With cancel-in-progress: true that second
+# run cancels the real review mid-flight, because the owner gate below is only
+# evaluated AFTER concurrency is. Leaving it false lets the real review finish;
+# the bot-comment run queues and is then skipped by the gate.
 concurrency:
   group: claude-review-${{ github.event.issue.number || github.event.pull_request.number }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
-  pull-requests: write
-  issues: write
-  # Required by the action itself, not by the review: it exchanges a GitHub
-  # OIDC token for a Claude App installation token, which is how it
-  # authenticates to GitHub without a PAT. Without this the run dies at
-  # "Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable" after three
-  # retries, long before it reaches any code.
-  id-token: write
+  cancel-in-progress: false
 
 jobs:
   review:
-    # Three conditions, all required:
-    #   1. the comment is on a pull request, not a plain issue
-    #   2. it mentions @claude
-    #   3. it came from someone with write access
+    # Three conditions, all required: the comment is on a PR rather than a plain
+    # issue, it contains the exact phrase, and it came from the repository owner.
     #
-    # The third matters because this repository is public and the job runs with
-    # an API key attached. Without it, anyone who can type a comment can spend
-    # money here.
-    if: >-
-      (github.event_name == 'pull_request_review_comment' ||
-       github.event.issue.pull_request != null) &&
-      contains(github.event.comment.body, '@claude') &&
-      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
-               github.event.comment.author_association)
+    # The owner check is not decoration. This repository is public and the job
+    # runs with a subscription token attached, so without it any stranger can
+    # drain quota or attempt a prompt injection through a comment body.
+    if: >
+      ((github.event_name == 'issue_comment' && github.event.issue.pull_request != null) ||
+      github.event_name == 'pull_request_review_comment') &&
+      contains(github.event.comment.body, '@claude review') &&
+      github.event.comment.user.login == github.repository_owner
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      PR: ${{ github.event.issue.number || github.event.pull_request.number }}
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write # the action exchanges an OIDC token for an App token
+
     steps:
       - uses: actions/checkout@v5
         with:
-          # Full history so the review can diff against the base branch.
-          fetch-depth: 0
+          fetch-depth: 0 # full history, so the review can diff against the base
 
-      # `issue_comment` checks out the default branch, not the PR — so without
-      # this the review would read main and find nothing.
-      - run: gh pr checkout "$PR"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Set exactly one of these as a repository secret; the other stays empty
-      # and is ignored. CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`)
-      # bills against an existing Pro/Max subscription rather than API credit,
-      # at the cost of inline comment classification — reviews then arrive as a
-      # summary comment instead of line-anchored ones.
-      - uses: anthropics/claude-code-action@v1
+      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
-          plugins: "code-review@claude-code-plugins"
-          prompt: "/code-review:code-review ${{ github.repository }}/pull/${{ env.PR }}"
-          # Opus because the things worth catching in this repository are
-          # cross-framework divergence and hand-rolled behaviour bugs, and both
-          # need the whole diff held in mind at once. This is the cost knob.
-          claude_args: "--model opus --max-turns 40"
+          # NO `prompt` input, deliberately. Passing one forces the action into
+          # automation mode, where the inline-comment tools are DENIED — which
+          # shows up as a job that reviews the code and then posts nothing, with
+          # "No buffered inline comments" in the log.
+          #
+          # A bare `@claude review` mention runs the action in TAG mode instead,
+          # which grants those tools. `--append-system-prompt` adds our review
+          # standards without flipping modes.
+          claude_args: |
+            --model claude-opus-5
+            --append-system-prompt "Review this pull request against CLAUDE.md and CONTRIBUTING.md, which encode the conventions that keep four framework adapters identical. Review only the changed files. Weight these highest, because each has silently shipped a bug here before: booleans rendered as data-x=\"false\" rather than absent (\"false\" matches [data-x] in CSS, so the wrong styles apply); class names appearing in markup instead of data-scope/data-part/data-state; consumer attributes not spread last; a root part with no declared display; rendering gated on open rather than on presence, which silently kills exit animations; CSS authored outside a cascade layer; physical CSS properties where logical ones are required for RTL; and any new runtime dependency in a published package.json. Hand-rolled behaviour in packages/core is the intended v2 design — do not flag it as reinventing a wheel. Report only defects introduced by this diff, and only where you can quote the specific rule broken or demonstrate the failure. If you are not certain an issue is real, do not raise it: false positives erode trust. Post findings as inline comments on the changed lines. Advisory only — do not approve or block."
