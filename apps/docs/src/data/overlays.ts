@@ -6,7 +6,6 @@ export const overlays: ComponentDoc[] = [
     name: "Modal",
     group: "Overlays",
     scope: "dialog",
-    machine: "core overlay primitives",
     gains: [
       "A focus trap that wraps in both directions and restores focus to the trigger",
       "Escape and outside-press dismissal, each independently switchable",
@@ -40,32 +39,52 @@ export const overlays: ComponentDoc[] = [
       },
       {
         name: "width",
+        reactFirst: true,
         type: "number | string",
         description: "Explicit width, overriding `size`. A number is read as px.",
       },
       {
         name: "onOk",
+        reactFirst: true,
         type: "() => void | Promise<void>",
         description:
           "The confirm button. Return a promise and it holds the button busy until it settles, so a second press cannot submit twice.",
       },
       {
         name: "onCancel",
+        reactFirst: true,
         type: "() => void",
         description:
           "Every route out the user initiated: Cancel, the close button, Escape, and a press on the mask.",
       },
-      { name: "okText", type: "ReactNode", description: "Defaults to the active locale's." },
-      { name: "cancelText", type: "ReactNode", description: "Defaults to the active locale's." },
+      {
+        name: "okText",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "Defaults to the active locale's.",
+      },
+      {
+        name: "cancelText",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "Defaults to the active locale's.",
+      },
       {
         name: "okType",
+        reactFirst: true,
         type: '"default" | "primary" | "dashed" | "text" | "link"',
         default: '"primary"',
         description: "Visual weight of the confirm button.",
       },
-      { name: "okDanger", type: "boolean", description: "Destructive confirm styling." },
+      {
+        name: "okDanger",
+        reactFirst: true,
+        type: "boolean",
+        description: "Destructive confirm styling.",
+      },
       {
         name: "confirmLoading",
+        reactFirst: true,
         type: "boolean",
         description: "Drives the busy state yourself, instead of returning a promise from `onOk`.",
       },
@@ -73,6 +92,7 @@ export const overlays: ComponentDoc[] = [
       { name: "description", type: "ReactNode", description: "Wired to aria-describedby." },
       {
         name: "footer",
+        reactFirst: true,
         type: "ReactNode | null",
         description:
           "Replaces the default confirm/cancel pair. `null` removes the footer entirely.",
@@ -117,7 +137,6 @@ export const overlays: ComponentDoc[] = [
     name: "Drawer",
     group: "Overlays",
     scope: "dialog",
-    machine: "core overlay primitives",
     summary:
       'The same behaviour as Modal — about fifteen lines differ. It is distinguished in CSS by `data-ck="drawer"` plus `data-placement`, since both share `data-scope="dialog"`.',
     props: [
@@ -135,6 +154,7 @@ export const overlays: ComponentDoc[] = [
       },
       {
         name: "onClose",
+        reactFirst: true,
         type: "() => void",
         description: "Escape, a press on the mask, and the close button all arrive here.",
       },

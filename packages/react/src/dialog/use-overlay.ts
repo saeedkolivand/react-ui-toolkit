@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type HTMLAttributes } from "react";
 import {
+  ariaAttr,
   createFocusTrap,
   createPresence,
   dataAttr,
@@ -197,9 +198,11 @@ export function useOverlay(options: OverlayOptions): Overlay {
       "data-part": "content",
       ref: setContent,
       role,
-      // Only claimed when it is true. A non-modal dialog that says `aria-modal`
-      // makes a screen reader ignore the rest of the page for no reason.
-      "aria-modal": modal ? true : undefined,
+      // `ariaAttr`, not a raw boolean: aria-* takes the string "true" or nothing
+      // at all. Only claimed when it is true, too — a non-modal dialog that says
+      // `aria-modal` makes a screen reader ignore the rest of the page for no
+      // reason.
+      "aria-modal": ariaAttr(modal),
       "aria-labelledby": hasTitle ? `${id}:title` : undefined,
       "aria-describedby": hasDescription ? `${id}:description` : undefined,
       // So the trap has somewhere to put focus when the dialog holds nothing
