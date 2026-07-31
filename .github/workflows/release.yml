@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
       # Node 24 ships npm >= 11.5.1, which performs the OIDC token exchange at
       # publish time. Trusted publishing requires npm >= 11.5.1 and Node >= 22.14.
