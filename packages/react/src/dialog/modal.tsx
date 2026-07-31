@@ -5,6 +5,7 @@ import * as dialog from "@zag-js/dialog";
 import { useMachine, normalizeProps, Portal } from "@zag-js/react";
 import { dataAttr, type ModalSize } from "@crosskit-ui/core";
 import { usePresence } from "../use-presence";
+import { Icon } from "../icon/icon";
 import { Button } from "../button/button";
 
 export interface ModalProps {
@@ -79,9 +80,9 @@ export function Modal({
           )}
           {showCloseButton && (
             <Button
-              variant="ghost"
-              size="sm"
-              icon="close"
+              type="text"
+              size="small"
+              icon={<Icon name="close" />}
               data-close-trigger=""
               aria-label="Close"
               onClick={() => api.setOpen(false)}

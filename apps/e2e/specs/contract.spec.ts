@@ -66,9 +66,26 @@ for (const framework of FRAMEWORKS) {
 
     test("variant and size land as data attributes, not classes", async ({ page }) => {
       await ready(page, framework.url);
-      const primary = page.locator('[data-scope="button"][data-variant="primary"]').first();
-      await expect(primary).toBeVisible();
-      await expect(page.locator('[data-scope="button"][data-size="lg"]').first()).toBeVisible();
+
+      // Button is mid-migration: React is on the v2 contract (`data-type`,
+      // sizes small/middle/large) while the other three are still on v1
+      // (`data-variant`, sm/md/lg). The rule being asserted -- that these are
+      // attributes rather than class names -- is identical either way, so the
+      // test follows the contract rather than being skipped for React.
+      const v2 = framework.name === "react";
+      await expect(
+        page
+          .locator(
+            v2
+              ? '[data-scope="button"][data-type="primary"]'
+              : '[data-scope="button"][data-variant="primary"]'
+          )
+          .first()
+      ).toBeVisible();
+      await expect(
+        page.locator(`[data-scope="button"][data-size="${v2 ? "large" : "lg"}"]`).first()
+      ).toBeVisible();
+
       await expect(
         page.locator('[data-scope="alert"][data-variant="error"]').first()
       ).toBeVisible();

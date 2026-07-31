@@ -41,21 +41,26 @@ export function Parity() {
     <>
       <section className="parity-section" data-fixture="button">
         <h2>Button</h2>
+        {/* The v2 API. The other three playgrounds still render v1 here, which
+            is why `parity.spec.ts` lists this section under MIGRATING until they
+            catch up. */}
         <div className="parity-row">
-          {FIXTURE.buttonVariants.map(variant => (
-            <Button key={variant} variant={variant}>
-              {variant}
+          {(["default", "primary", "dashed", "text", "link"] as const).map(type => (
+            <Button key={type} type={type}>
+              {type}
             </Button>
           ))}
+          <Button danger>danger</Button>
         </div>
         <div className="parity-row">
-          {FIXTURE.sizes.map(size => (
-            <Button key={size} size={size} icon="check">
+          {(["small", "middle", "large"] as const).map(size => (
+            <Button key={size} size={size} icon={<Icon name="check" />}>
               {size}
             </Button>
           ))}
           <Button loading>loading</Button>
           <Button disabled>disabled</Button>
+          <Button shape="circle" icon={<Icon name="check" />} aria-label="confirm" />
         </div>
       </section>
 

@@ -28,6 +28,22 @@ const SECTIONS = [
  */
 const KNOWN_GAPS = new Set<string>([]);
 
+/**
+ * Sections whose contract has moved in some frameworks but not yet all.
+ *
+ * The v2 rewrite migrates React first and freezes the API there before the
+ * other three follow, so for a while the same component genuinely renders
+ * different markup per framework — React's Button emits `data-type`, the others
+ * still emit `data-variant`. Comparing those is not a bug report, it is the
+ * plan.
+ *
+ * Listed rather than deleted, and skipped by *framework and section* like
+ * KNOWN_GAPS, so every other section stays enforced. An entry that stops
+ * diverging fails the assertion below, which is what forces it to be removed as
+ * each framework lands rather than left to rot.
+ */
+const MIGRATING = new Set<string>(["vue/button", "svelte/button", "angular/button"]);
+
 /** Layout-visible properties. Compared as strings, so a rem/px difference shows. */
 const PROPS = [
   "display",
@@ -152,11 +168,14 @@ test("frameworks render identical styles and geometry", async ({ page }) => {
         }
       }
 
-      if (local.length && !KNOWN_GAPS.has(gapKey)) differences.push(...local.slice(0, 3));
-      if (!local.length && KNOWN_GAPS.has(gapKey)) unexpectedlyFixed.push(gapKey);
+      const excused = KNOWN_GAPS.has(gapKey) || MIGRATING.has(gapKey);
+      if (local.length && !excused) differences.push(...local.slice(0, 3));
+      if (!local.length && excused) unexpectedlyFixed.push(gapKey);
     }
   }
 
   expect(differences, "adapters that diverge from React").toEqual([]);
-  expect(unexpectedlyFixed, "KNOWN_GAPS entries that now pass — remove them").toEqual([]);
+  expect(unexpectedlyFixed, "KNOWN_GAPS or MIGRATING entries that now pass — remove them").toEqual(
+    []
+  );
 });

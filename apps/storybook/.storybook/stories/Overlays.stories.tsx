@@ -20,7 +20,7 @@ export const Modals: Story = {
     return (
       <div style={row}>
         <Button onClick={() => setOpen(true)}>Open modal</Button>
-        <Button variant="error" onClick={() => setAlert(true)}>
+        <Button type="primary" danger onClick={() => setAlert(true)}>
           Open alertdialog
         </Button>
 
@@ -31,10 +31,10 @@ export const Modals: Story = {
           description="This cannot be undone."
           footer={
             <>
-              <Button variant="ghost" onClick={() => setOpen(false)}>
+              <Button type="text" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="error" onClick={() => setOpen(false)}>
+              <Button type="primary" danger onClick={() => setOpen(false)}>
                 Delete
               </Button>
             </>
@@ -65,7 +65,7 @@ export const Drawers: Story = {
     return (
       <div style={row}>
         {(["left", "right", "top", "bottom"] as const).map(side => (
-          <Button key={side} variant="secondary" onClick={() => setPlacement(side)}>
+          <Button key={side} type="default" onClick={() => setPlacement(side)}>
             {side}
           </Button>
         ))}
@@ -87,12 +87,12 @@ export const Tooltips: Story = {
     <div style={{ ...row, gap: 32, padding: 48 }}>
       {(["top", "right", "bottom", "left"] as const).map(placement => (
         <Tooltip key={placement} content={`Placed ${placement}`} placement={placement}>
-          <Button variant="secondary">{placement}</Button>
+          <Button type="default">{placement}</Button>
         </Tooltip>
       ))}
       {/* v0's Ant placement names still work. */}
       <Tooltip content="Legacy name: bottomRight" placement="bottomRight">
-        <Button variant="ghost">bottomRight</Button>
+        <Button type="text">bottomRight</Button>
       </Tooltip>
     </div>
   ),
@@ -132,17 +132,14 @@ export const Toasts: Story = {
       >
         Success
       </Button>
-      <Button variant="error" onClick={() => toaster.error({ title: "Upload failed" })}>
+      <Button type="primary" danger onClick={() => toaster.error({ title: "Upload failed" })}>
         Error
       </Button>
-      <Button
-        variant="warning"
-        onClick={() => toaster.create({ title: "Careful", type: "warning" })}
-      >
+      <Button type="default" onClick={() => toaster.create({ title: "Careful", type: "warning" })}>
         Warning
       </Button>
       <Button
-        variant="secondary"
+        type="default"
         onClick={() =>
           toaster.create({
             title: "Deleted",

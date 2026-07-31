@@ -54,12 +54,12 @@ export function Alert({
       </div>
       {dismissible && (
         <Button
-          variant="ghost"
-          size="sm"
+          type="text"
+          size="small"
           data-part="close-trigger"
           onClick={onDismiss}
           aria-label="Dismiss"
-          icon="close"
+          icon={<Icon name="close" />}
         />
       )}
     </div>

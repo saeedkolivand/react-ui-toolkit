@@ -41,4 +41,19 @@ export function variantCombinations(
  * its component rather than up front, so this file never describes something
  * that has not shipped.
  */
-export const manifests = {} as Record<string, ComponentManifest>;
+export const manifests: Record<string, ComponentManifest> = {
+  Button: {
+    scope: "button",
+    parts: ["root", "label", "icon", "spinner"],
+    // Only enumerable dimensions. `danger`, `ghost`, `block`, `loading` and
+    // `disabled` are booleans, which render as presence attributes -- so they
+    // are targeted with a nested key like `"&[data-danger]"`, never declared
+    // here. `compileOverrides` throws on a "true"/"false" variant for exactly
+    // that reason.
+    variants: {
+      type: ["default", "primary", "dashed", "text", "link"],
+      size: ["small", "middle", "large"],
+    },
+    defaults: { type: "default", size: "middle" },
+  },
+};
