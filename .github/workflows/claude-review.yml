@@ -24,6 +24,12 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  # Required by the action itself, not by the review: it exchanges a GitHub
+  # OIDC token for a Claude App installation token, which is how it
+  # authenticates to GitHub without a PAT. Without this the run dies at
+  # "Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable" after three
+  # retries, long before it reaches any code.
+  id-token: write
 
 jobs:
   review:
