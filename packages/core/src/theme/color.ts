@@ -43,7 +43,10 @@ export function parseColor(input: string): { r: number; g: number; b: number } {
         .map(ch => ch + ch)
         .join("");
     }
-    if (hex.length !== 6 && hex.length !== 8) {
+    // The digits are checked, not just the length. `parseInt("gg", 16)` is NaN
+    // and would propagate all the way to `oklch(NaN% NaN NaN)` — which the
+    // browser drops, silently deleting the entire ramp derived from it.
+    if (!/^(?:[0-9a-f]{6}|[0-9a-f]{8})$/.test(hex)) {
       throw new Error(`Cannot parse colour: ${input}`);
     }
     return {
@@ -58,7 +61,13 @@ export function parseColor(input: string): { r: number; g: number; b: number } {
     const [r, g, b] = rgb[1].split(/[\s,/]+/).filter(Boolean);
     if (!r || !g || !b) throw new Error(`Cannot parse colour: ${input}`);
     const channel = (p: string) => (p.endsWith("%") ? parseFloat(p) / 100 : parseFloat(p) / 255);
-    return { r: channel(r), g: channel(g), b: channel(b) };
+    const parsed = { r: channel(r), g: channel(g), b: channel(b) };
+    // Same reasoning as the hex digits: `parseFloat("a")` is NaN, and NaN
+    // reaches the stylesheet as a declaration the browser throws away.
+    if (!Object.values(parsed).every(Number.isFinite)) {
+      throw new Error(`Cannot parse colour: ${input}`);
+    }
+    return parsed;
   }
 
   throw new Error(`Cannot parse colour: ${input}. Use hex or rgb().`);

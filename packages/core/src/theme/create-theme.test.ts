@@ -141,6 +141,60 @@ describe("createTheme", () => {
     });
   });
 
+  describe("bad input is refused, not emitted", () => {
+    it("treats an undefined seed value as unspecified", () => {
+      // The natural caller shape: `colorPrimary: userConfig.brandColour` where
+      // the field is optional. Passing it through overwrote the default with
+      // undefined and threw inside the colour parser.
+      expect(createTheme({ token: { colorPrimary: undefined } }).seed.colorPrimary).toBe("#0284c7");
+    });
+
+    it("does not emit an undefined alias value", () => {
+      // `--ck-bg: undefined` is a *valid* custom property declaration, so it
+      // wins over the derived value and then breaks every var() reading it.
+      const { css } = createTheme({ token: { "color-primary-600": undefined } });
+      expect(css).not.toContain("undefined");
+      expect(varOf(css, "color-primary-600")).toMatch(/^oklch\(/);
+    });
+
+    it("rejects a hex with invalid digits rather than producing NaN", () => {
+      // Previously yielded oklch(NaN% NaN NaN) for all ten steps; the browser
+      // drops those, silently deleting the primary ramp and the neutral ramp
+      // derived from its hue.
+      expect(() => createTheme({ token: { colorPrimary: "#gggggg" } })).toThrow(
+        /Cannot parse colour/
+      );
+    });
+
+    it("rejects non-numeric rgb() channels", () => {
+      expect(() => createTheme({ token: { colorPrimary: "rgb(a, b, c)" } })).toThrow(
+        /Cannot parse colour/
+      );
+    });
+
+    it("never emits NaN for any accepted colour", () => {
+      const { css } = createTheme({ token: { colorPrimary: "#7c3aed" } });
+      expect(css).not.toContain("NaN");
+    });
+
+    it("escapes a scope that would close the attribute selector", () => {
+      const { css } = createTheme({ scope: 'x"] { color: red } [data-y="' });
+      expect(css).toContain('[data-ck-theme="x\\"] { color: red } [data-y=\\""]');
+      // Counting braces cannot decide this — the payload legitimately contains
+      // one inside the quoted selector. What matters is that nothing injected
+      // became a *declaration*: every indented line is a --ck- custom property.
+      const declarations = css.split("\n").filter(line => line.startsWith("  "));
+      expect(declarations.length).toBeGreaterThan(0);
+      expect(declarations.every(line => line.trimStart().startsWith("--ck-"))).toBe(true);
+    });
+
+    it("rejects a token value that would end its own declaration", () => {
+      expect(() => createTheme({ token: { bg: "#fff; } :root { display: none" } })).toThrow(
+        /unsafe value/
+      );
+    });
+  });
+
   it("returns the resolved seed and map alongside the CSS", () => {
     const theme = createTheme({ token: { colorPrimary: "#7c3aed" } });
     expect(theme.seed.colorPrimary).toBe("#7c3aed");

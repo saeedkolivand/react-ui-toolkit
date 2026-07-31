@@ -12,6 +12,7 @@
  */
 
 import { parseToOklch } from "./color";
+import { assertSafeValue, escapeAttributeValue } from "./css";
 import { deriveNeutralRamp, deriveRamp, RAMP_STEPS, type Ramp, type RampAlgorithm } from "./ramp";
 import {
   defaultSeed,
@@ -104,8 +105,14 @@ export function createTheme(config: ThemeConfig = {}): CompiledTheme {
   const seedOverrides: Partial<SeedToken> = {};
   const aliasOverrides: AliasToken = {};
   for (const [key, value] of Object.entries(config.token ?? {})) {
+    // `undefined` means "not specified", which is what an optional field on a
+    // caller's own config object produces. Letting it through would overwrite a
+    // seed default with undefined (and throw inside the colour parser), or emit
+    // a literal `--ck-bg: undefined` — a *valid* custom property declaration
+    // that beats the derived value and then fails at every var() that reads it.
+    if (value === undefined) continue;
     if (SEED_KEYS.has(key)) (seedOverrides as Record<string, unknown>)[key] = value;
-    else aliasOverrides[key] = String(value);
+    else aliasOverrides[key] = assertSafeValue(key, String(value));
   }
 
   const seed: SeedToken = { ...defaultSeed, ...seedOverrides };
@@ -125,7 +132,9 @@ export function createTheme(config: ThemeConfig = {}): CompiledTheme {
     ...aliasOverrides,
   };
 
-  const selector = config.scope ? `[data-ck-theme="${config.scope}"]` : ":root";
+  const selector = config.scope
+    ? `[data-ck-theme="${escapeAttributeValue(config.scope)}"]`
+    : ":root";
   const css = `@layer ck.overrides {\n${selector} {\n${declarations(vars)}\n}\n}\n`;
 
   return { seed, map, css };

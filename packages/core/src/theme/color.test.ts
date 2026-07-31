@@ -52,6 +52,27 @@ describe("parseColor", () => {
     expect(() => parseColor("rebeccapurple")).toThrow(/Cannot parse colour/);
     expect(() => parseColor("#12345")).toThrow(/Cannot parse colour/);
   });
+
+  it("checks hex digits, not just hex length", () => {
+    // The original check was length-only, so `parseInt("gg", 16)` returned NaN
+    // and every derived step became `oklch(NaN% NaN NaN)` — declarations the
+    // browser silently drops, deleting a whole ramp with no error anywhere.
+    // The two cases above both happen to fail on length, so neither covered it.
+    expect(() => parseColor("#gggggg")).toThrow(/Cannot parse colour/);
+    expect(() => parseColor("#12345g")).toThrow(/Cannot parse colour/);
+    expect(() => parseColor("#zzz")).toThrow(/Cannot parse colour/);
+  });
+
+  it("rejects rgb() channels that are not numbers", () => {
+    expect(() => parseColor("rgb(a, b, c)")).toThrow(/Cannot parse colour/);
+    expect(() => parseColor("rgb(1, 2, three)")).toThrow(/Cannot parse colour/);
+  });
+
+  it("never returns a non-finite channel", () => {
+    for (const input of ["#0284c7", "#08c", "rgb(2, 132, 199)", "rgb(50% 50% 50%)"]) {
+      expect(Object.values(parseColor(input)).every(Number.isFinite), input).toBe(true);
+    }
+  });
 });
 
 describe("rgbToOklch", () => {

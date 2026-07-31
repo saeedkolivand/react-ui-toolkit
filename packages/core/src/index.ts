@@ -3,6 +3,7 @@ export * from "./data-attrs";
 export * from "./behaviour/position";
 export * from "./behaviour/position-dom";
 export * from "./theme/color";
+export * from "./theme/css";
 export * from "./theme/ramp";
 export * from "./theme/tokens";
 export * from "./theme/create-theme";
