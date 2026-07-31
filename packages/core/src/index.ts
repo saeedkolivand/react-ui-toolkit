@@ -25,6 +25,9 @@ export * from "./icons";
 export * from "./toast";
 export * from "./placement";
 export * from "./table";
+export * from "./form/path";
+export * from "./form/rules";
+export * from "./form/store";
 export * from "./table/compare";
 export { createTableStore as createTableStoreV2 } from "./table/store";
 export type {
