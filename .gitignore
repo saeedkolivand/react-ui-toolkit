@@ -58,3 +58,6 @@ apps/*/dist/
 
 # svelte-package intermediate output
 .svelte-kit/
+
+# storybook build output
+storybook-static/

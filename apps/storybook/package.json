@@ -1,0 +1,26 @@
+{
+  "name": "@crosskit-ui/storybook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build -o storybook-static"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:*",
+    "@crosskit-ui/react": "workspace:*",
+    "@crosskit-ui/styles": "workspace:*",
+    "react": "catalog:frameworks",
+    "react-dom": "catalog:frameworks"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "^10.5.5",
+    "@storybook/react-vite": "^10.5.5",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "storybook": "^10.5.5",
+    "typescript": "catalog:",
+    "vite": "catalog:frameworks"
+  }
+}
