@@ -39,6 +39,12 @@ for (const file of files) {
 let bad = 0;
 for (const component of docs) {
   const missing = component.props
+    // `reactRemoved` rows document a prop the other three adapters still have
+    // and React has already replaced. Every name here is checked against the
+    // React adapters only, so such a row would always report missing — which is
+    // true and not a defect. Removing the row instead would leave a Vue reader
+    // with no documentation for a prop they still pass.
+    .filter(p => !p.reactRemoved)
     // Split on commas as well as spaces: a row can list several props at once
     // ("open, defaultOpen, onOpenChange"), and splitting on spaces alone yielded
     // "open," — which the identifier filter then rejected, so every name in such

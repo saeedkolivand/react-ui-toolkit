@@ -1,0 +1,87 @@
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "@crosskit-ui/styles";
+import { Button, Dropdown, Popover, Tooltip } from "@crosskit-ui/react";
+
+/**
+ * The anchored overlay harness.
+ *
+ * Everything here needs real layout, which is the whole reason it is not a unit
+ * test: jsdom gives every element a 0×0 rect at the origin, so a popup that
+ * anchored to the wrong node, flipped to the wrong side, or landed on top of
+ * its own trigger reads there exactly like one that is placed perfectly.
+ *
+ * The triggers are deliberately at the four edges. A tooltip asked for `top` at
+ * the top of the viewport has nowhere to go and must flip — which is the only
+ * way to tell a positioner that flips from one that silently clamps.
+ */
+function Harness() {
+  return (
+    <main style={{ padding: 0, minBlockSize: "100vh" }}>
+      {/* Pinned to the very top, so `placement="top"` cannot fit. */}
+      <div style={{ position: "absolute", insetBlockStart: 2, insetInlineStart: 400 }}>
+        <Tooltip title="Flipped downward" placement="top" mouseEnterDelay={0}>
+          <Button id="flip-top">flip-top</Button>
+        </Tooltip>
+      </div>
+
+      {/* Middle of the page, where the requested side fits and must be used. */}
+      <div style={{ position: "absolute", insetBlockStart: 380, insetInlineStart: 400 }}>
+        <Tooltip title="Stays above" placement="top" mouseEnterDelay={0}>
+          <Button id="fits">fits</Button>
+        </Tooltip>
+      </div>
+
+      <div style={{ position: "absolute", insetBlockStart: 380, insetInlineStart: 40 }}>
+        <Popover
+          title="Popover"
+          content={<Button id="popover-button">inner</Button>}
+          placement="right"
+          trigger="click"
+        >
+          <Button id="popover-trigger">popover</Button>
+        </Popover>
+      </div>
+
+      <div style={{ position: "absolute", insetBlockStart: 380, insetInlineStart: 700 }}>
+        <Dropdown
+          menu={{
+            items: [
+              { key: "edit", label: "Edit" },
+              { key: "duplicate", label: "Duplicate" },
+              { type: "divider" },
+              { key: "delete", label: "Delete", danger: true },
+            ],
+          }}
+          placement="bottomLeft"
+          trigger="click"
+        >
+          <Button id="menu-trigger">menu</Button>
+        </Dropdown>
+      </div>
+
+      {/* An ancestor with a transform. `position: fixed` inside one resolves
+          against THAT element rather than the viewport, so a popup rendered in
+          place here would land somewhere else entirely — the portal is what
+          makes this case identical to the others. */}
+      <div
+        style={{
+          position: "absolute",
+          insetBlockStart: 560,
+          insetInlineStart: 400,
+          transform: "translateX(0px)",
+        }}
+      >
+        <Tooltip title="Portalled out" placement="top" mouseEnterDelay={0}>
+          <Button id="transformed">transformed</Button>
+        </Tooltip>
+      </div>
+    </main>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <Harness />
+  </StrictMode>
+);

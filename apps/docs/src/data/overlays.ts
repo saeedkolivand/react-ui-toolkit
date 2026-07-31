@@ -188,22 +188,74 @@ export const overlays: ComponentDoc[] = [
     summary:
       "Deletes the largest file in v0 — three state variables, four refs, three effects, hand-rolled viewport clamping and a manually managed portal container. The trigger wraps your element rather than cloning props onto it.",
     props: [
-      { name: "content", type: "ReactNode", description: "Tooltip body." },
+      {
+        name: "title",
+        reactFirst: true,
+        type: "ReactNode",
+        description:
+          "The tooltip text. An empty one never opens, so `title={row.note}` is safe without a conditional around it.",
+      },
+      { name: "content", type: "ReactNode", description: "Tooltip body. v2 React: `title`." },
       {
         name: "placement",
-        type: "Placement | LegacyPlacement",
+        type: "Placement | PlacementAlias",
         default: '"top"',
         description:
-          "Accepts Floating UI names and all twelve of v0's Ant names (topLeft, rightBottom, …).",
+          "Accepts the canonical names and all twelve camelCase ones (topLeft, rightBottom, …).",
       },
-      { name: "openDelay", type: "number", description: "v0: showDelay." },
-      { name: "closeDelay", type: "number", description: "v0: hideDelay." },
+      {
+        name: "trigger",
+        reactFirst: true,
+        type: '"hover" | "focus" | "click" | Array<…>',
+        default: '["hover", "focus"]',
+        description:
+          "Focus is in the default because a tooltip only a pointer can reach is not a tooltip.",
+      },
+      {
+        name: "mouseEnterDelay",
+        reactFirst: true,
+        type: "number",
+        default: "0.1",
+        description: "SECONDS, not milliseconds.",
+      },
+      {
+        name: "mouseLeaveDelay",
+        reactFirst: true,
+        type: "number",
+        default: "0.1",
+        description: "SECONDS. Also the window in which moving onto the popup keeps it open.",
+      },
+      {
+        name: "openDelay",
+        reactRemoved: true,
+        type: "number",
+        description: "v0: showDelay. v2 React: mouseEnterDelay.",
+      },
+      {
+        name: "closeDelay",
+        reactRemoved: true,
+        type: "number",
+        description: "v0: hideDelay. v2 React: mouseLeaveDelay.",
+      },
       { name: "open", type: "boolean", description: "Controlled. v0: visible." },
       { name: "disabled", type: "boolean", default: "false", description: "Never opens." },
       {
-        name: "contentClassName",
+        name: "color",
+        reactFirst: true,
         type: "string",
-        description: "Class on the content. v0: overlayClassName.",
+        description: "Any CSS colour. Drives the box and its arrow from one value.",
+      },
+      {
+        name: "overlayClassName",
+        reactFirst: true,
+        type: "string",
+        description: "Class on the popup rather than the trigger.",
+      },
+      {
+        name: "contentClassName",
+        reactRemoved: true,
+        type: "string",
+        description: "Class on the content. v0: overlayClassName. v2 React: overlayClassName.",
       },
     ],
     changes: [
@@ -211,13 +263,23 @@ export const overlays: ComponentDoc[] = [
       { from: "showDelay / hideDelay", to: "openDelay / closeDelay" },
       { from: "overlayClassName", to: "contentClassName" },
       {
+        from: "contentClassName",
+        to: "overlayClassName",
+        note: "React only, and back to the name v0 had: the prop names the popup, and `content` is what goes in it.",
+      },
+      {
+        from: "content",
+        to: "title",
+        note: "React only. Frees `content` for Popover, where a title and a body are different things.",
+      },
+      {
         from: "cloneElement onto your trigger",
         to: "a wrapper element with display: inline-flex",
         note: "Zag's trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else.",
       },
     ],
     samples: {
-      react: `<Tooltip content="Copy to clipboard" placement="top">
+      react: `<Tooltip title="Copy to clipboard" placement="top">
   <Button icon="copy" aria-label="Copy" />
 </Tooltip>`,
       vue: `<Tooltip content="Copy to clipboard" placement="top">
@@ -233,7 +295,7 @@ export const overlays: ComponentDoc[] = [
   },
   {
     slug: "menu",
-    name: "Menu",
+    name: "Menu / Dropdown",
     group: "Overlays",
     scope: "menu",
     machine: "@zag-js/menu",
@@ -245,6 +307,20 @@ export const overlays: ComponentDoc[] = [
     summary:
       "Replaces v0's Dropdown + Menu + MenuItem trio with one data-driven component. It renders its own trigger button — v0 took a whole element, so the common case put a button inside a button.",
     props: [
+      {
+        name: "menu",
+        reactFirst: true,
+        type: "{ items: DropdownMenuEntry[]; onClick?: (i: { key }) => void }",
+        description:
+          "React's Dropdown takes one object, so the menu can grow props without competing with the trigger's. Dividers are `{ type: 'divider' }`.",
+      },
+      {
+        name: "children",
+        reactFirst: true,
+        type: "ReactNode",
+        description:
+          "React's Dropdown takes the trigger ELEMENT and renders it as given — no generated button, so your own Button stays exactly one button.",
+      },
       { name: "items", type: "MenuEntry[]", description: "Items and `{ separator: true }` marks." },
       {
         name: "trigger",
@@ -253,11 +329,17 @@ export const overlays: ComponentDoc[] = [
       },
       {
         name: "triggerVariant",
+        reactRemoved: true,
         type: "Variant",
         default: '"secondary"',
         description: "Styles the generated trigger as a Button.",
       },
-      { name: "onSelect", type: "(d: { value }) => void", description: "Selection callback." },
+      {
+        name: "onSelect",
+        reactRemoved: true,
+        type: "(d: { value }) => void",
+        description: "Selection callback.",
+      },
       {
         name: "placement",
         type: "Placement | LegacyPlacement",
@@ -267,6 +349,14 @@ export const overlays: ComponentDoc[] = [
     ],
     changes: [
       { from: "Dropdown + Menu + MenuItem", to: "one Menu with items" },
+      {
+        from: "Menu with a generated trigger",
+        to: "Dropdown wrapping your own trigger",
+        note: "React only. The generated button solved nested buttons by removing the choice; taking the element back and never wrapping it solves the same thing without it.",
+      },
+      { from: "MenuItem.value", to: "item.key (React Dropdown)" },
+      { from: "{ separator: true }", to: "{ type: 'divider' } (React Dropdown)" },
+      { from: "onSelect(d => d.value)", to: "menu.onClick(i => i.key) (React Dropdown)" },
       { from: "MenuItem.key", to: "MenuItem.value" },
       { from: "overlay", to: "items" },
       {
@@ -276,15 +366,18 @@ export const overlays: ComponentDoc[] = [
       },
     ],
     samples: {
-      react: `<Menu
-  trigger="Actions"
-  items={[
-    { value: "edit", label: "Edit", icon: "edit" },
-    { separator: true },
-    { value: "delete", label: "Delete", danger: true },
-  ]}
-  onSelect={d => run(d.value)}
-/>`,
+      react: `<Dropdown
+  menu={{
+    items: [
+      { key: "edit", label: "Edit", icon: "edit" },
+      { type: "divider" },
+      { key: "delete", label: "Delete", danger: true },
+    ],
+    onClick: i => run(i.key),
+  }}
+>
+  <Button>Actions</Button>
+</Dropdown>`,
       vue: `<Menu trigger="Actions" :items="items" @select="d => run(d.value)" />`,
       svelte: `<Menu trigger="Actions" {items} onSelect={d => run(d.value)} />`,
       angular: `<ck-menu trigger="Actions" [items]="items" (select)="run($event.value)" />`,

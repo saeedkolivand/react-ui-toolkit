@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { createToaster } from "@crosskit-ui/core";
-import { Button, Drawer, Menu, Modal, Toaster, Tooltip } from "@crosskit-ui/react";
+import { Button, Drawer, Dropdown, Modal, Popover, Toaster, Tooltip } from "@crosskit-ui/react";
 
 const meta = {
   title: "Components/Overlays",
@@ -102,38 +102,66 @@ export const Tooltips: Story = {
   render: () => (
     <div style={{ ...row, gap: 32, padding: 48 }}>
       {(["top", "right", "bottom", "left"] as const).map(placement => (
-        <Tooltip key={placement} content={`Placed ${placement}`} placement={placement}>
+        <Tooltip key={placement} title={`Placed ${placement}`} placement={placement}>
           <Button type="default">{placement}</Button>
         </Tooltip>
       ))}
-      {/* v0's Ant placement names still work. */}
-      <Tooltip content="Legacy name: bottomRight" placement="bottomRight">
+      {/* The corner names resolve to the same twelve placements. */}
+      <Tooltip title="Corner name: bottomRight" placement="bottomRight">
         <Button type="text">bottomRight</Button>
       </Tooltip>
     </div>
   ),
 };
 
-export const Menus: Story = {
-  render: function MenuStory() {
+export const Dropdowns: Story = {
+  render: function DropdownStory() {
     const [chosen, setChosen] = useState("—");
     return (
       <div style={row}>
-        <Menu
-          trigger="Actions"
-          onSelect={details => setChosen(details.value)}
-          items={[
-            { value: "edit", label: "Edit", icon: "edit" },
-            { value: "copy", label: "Duplicate", icon: "copy" },
-            { value: "archive", label: "Archive", disabled: true },
-            { separator: true },
-            { value: "delete", label: "Delete", icon: "trash", danger: true },
-          ]}
-        />
+        <Dropdown
+          menu={{
+            onClick: info => setChosen(info.key),
+            items: [
+              { key: "edit", label: "Edit", icon: "edit" },
+              { key: "copy", label: "Duplicate", icon: "copy" },
+              { key: "archive", label: "Archive", disabled: true },
+              { type: "divider" },
+              { key: "delete", label: "Delete", icon: "trash", danger: true },
+            ],
+          }}
+        >
+          <Button type="default">Actions</Button>
+        </Dropdown>
         <span>Chosen: {chosen}</span>
       </div>
     );
   },
+};
+
+export const Popovers: Story = {
+  render: () => (
+    <div style={{ ...row, gap: 32, padding: 48 }}>
+      <Popover
+        title="Delete this record?"
+        content={
+          <div style={{ ...row, gap: 8, marginBlockStart: 8 }}>
+            <Button type="primary" size="small">
+              Yes
+            </Button>
+            <Button size="small">No</Button>
+          </div>
+        }
+        trigger="click"
+      >
+        <Button type="default">Click me</Button>
+      </Popover>
+      {/* Unlike a tooltip, the body is reachable — which is why it is a dialog. */}
+      <Popover content="Hover, then move the pointer onto this popup." placement="bottomLeft">
+        <Button type="text">Hover me</Button>
+      </Popover>
+    </div>
+  ),
 };
 
 // The toaster is a module-level singleton, so there is no provider anywhere in

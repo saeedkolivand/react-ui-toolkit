@@ -12,6 +12,17 @@ export interface PropDoc {
    * flag when the last adapter lands.
    */
   reactFirst?: boolean;
+  /**
+   * The mirror image: the prop still exists in the other three, and React has
+   * already replaced it.
+   *
+   * Needed for the same reason as `reactFirst` and pointing the other way. A
+   * Vue reader still passes `openDelay` and must keep finding it documented,
+   * while React no longer has it — so `check-props.mjs`, which validates rows
+   * against the React adapters alone, has to be told this one is not its
+   * business. Delete the row outright once that adapter moves to v2.
+   */
+  reactRemoved?: boolean;
 }
 
 export interface PartDoc {
