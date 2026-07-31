@@ -321,6 +321,28 @@ describe("Dropdown", () => {
     expect(input).toHaveFocus();
   });
 
+  it("still takes focus on a keyboard open that follows a hover open", async () => {
+    const user = userEvent.setup();
+    setup();
+    // The open reason is recorded where the open happens. The trigger's keydown
+    // opens without going through the delay scheduler, so it used to inherit
+    // whatever the last POINTER gesture wrote — and after one hover-open the
+    // next keyboard open read a stale "hover", declined to take focus, and left
+    // the menu keyboard-dead with only Escape working.
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await user.unhover(trigger());
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+
+    trigger().focus();
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await waitFor(() => expect(content()).toHaveFocus());
+    // And the keys actually reach it, which is the thing the user notices.
+    await user.keyboard("{ArrowDown}");
+    expect(highlighted()).toBe("Duplicate");
+  });
+
   it("moves focus into the menu when it opens", async () => {
     const user = userEvent.setup();
     setup();

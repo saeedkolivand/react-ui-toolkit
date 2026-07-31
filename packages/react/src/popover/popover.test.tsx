@@ -184,6 +184,19 @@ describe("Popover", () => {
     expect(input).toHaveFocus();
   });
 
+  it("opens from the keyboard on the default trigger", async () => {
+    const user = userEvent.setup();
+    setup();
+    trigger().focus();
+    // Hover alone leaves no way in for a keyboard: unlike Tooltip there is no
+    // `focus` in the default, and unlike Dropdown no role-mandated Enter. A
+    // popover exists to hold controls, so a default nobody can open by keyboard
+    // makes those controls unreachable.
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await waitFor(() => expect(content()).toHaveFocus());
+  });
+
   it("names the dialog with its own title", async () => {
     const user = userEvent.setup();
     setup({ trigger: "click" });

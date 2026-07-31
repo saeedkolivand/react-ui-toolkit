@@ -60,6 +60,30 @@ function Harness() {
         </Dropdown>
       </div>
 
+      {/* Default triggers, untouched, for the keyboard paths. The instances above
+          set `trigger="click"` so a Playwright press is deterministic, which
+          also means they never exercise what a consumer gets by default —
+          Dropdown's is hover, and Popover's is hover plus click. These are
+          driven by focus and keys only, so no pointer timing is involved. */}
+      <div style={{ position: "absolute", insetBlockStart: 680, insetInlineStart: 400 }}>
+        <Dropdown
+          menu={{
+            items: [
+              { key: "one", label: "One" },
+              { key: "two", label: "Two" },
+            ],
+          }}
+        >
+          <button id="default-menu">default menu</button>
+        </Dropdown>
+      </div>
+
+      <div style={{ position: "absolute", insetBlockStart: 680, insetInlineStart: 620 }}>
+        <Popover title="Defaults" content={<button id="default-popover-button">inner</button>}>
+          <button id="default-popover">default popover</button>
+        </Popover>
+      </div>
+
       {/* An ancestor with a transform. `position: fixed` inside one resolves
           against THAT element rather than the viewport, so a popup rendered in
           place here would land somewhere else entirely — the portal is what

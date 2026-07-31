@@ -390,7 +390,19 @@ export function useAnchored(options: AnchoredOptions): Anchored {
         setOpen(false);
         return;
       }
-      onTriggerKeyDown?.(event, { open, setOpen });
+      // The `setOpen` handed over records the reason, rather than trusting the
+      // caller to. It opens without going through `schedule`, so `reasonRef`
+      // would otherwise keep whatever the last POINTER gesture wrote — and one
+      // hover-open-and-close earlier left a keyboard open reading "hover",
+      // declining to take focus, and the menu keyboard-dead with only Escape
+      // working.
+      onTriggerKeyDown?.(event, {
+        open,
+        setOpen: next => {
+          if (next) reasonRef.current = "keyboard";
+          setOpen(next);
+        },
+      });
     };
   }
 

@@ -175,6 +175,26 @@ test("gives menu focus back to the trigger, but not over a press outside", async
   await expect(page.locator("#menu-trigger")).not.toBeFocused();
 });
 
+test("opens both default triggers from the keyboard alone", async ({ page }) => {
+  // The other instances on this page set `trigger="click"` so a press is
+  // deterministic, which also means they never exercise the defaults a consumer
+  // actually gets. Driven by focus and keys only here — no pointer, so no race
+  // between the hover delay and the press.
+  await page.locator("#default-menu").focus();
+  await page.keyboard.press("Enter");
+  await expect(content(page, "menu")).toBeVisible();
+  await expect(content(page, "menu")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#default-menu")).toBeFocused();
+
+  await page.locator("#default-popover").focus();
+  await page.keyboard.press("Enter");
+  await expect(content(page, "popover")).toBeVisible();
+  await expect(content(page, "popover")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#default-popover-button")).toBeFocused();
+});
+
 /**
  * The arrow, in both directions.
  *

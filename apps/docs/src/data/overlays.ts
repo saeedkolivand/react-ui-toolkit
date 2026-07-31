@@ -335,9 +335,9 @@ export const overlays: ComponentDoc[] = [
         name: "trigger",
         reactFirst: true,
         type: '"hover" | "focus" | "click" | Array<…>',
-        default: '"hover"',
+        default: '["hover", "click"]',
         description:
-          "A tap toggles it whatever this says — a touch device has no hover state, and a control it cannot open is a dead one.",
+          "`click` is in the default because it is the only way a keyboard reaches this one — activating the trigger with Enter or Space dispatches one. A tap toggles it too.",
       },
       {
         name: "open, defaultOpen, onOpenChange",

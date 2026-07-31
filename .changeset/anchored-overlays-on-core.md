@@ -21,11 +21,20 @@ move too.
   button. Items move to `menu={{ items, onClick }}`, `value` to `key`, and
   `{ separator: true }` to `{ type: "divider" }`.
 - `Popover` is new: a title, a body, and real controls inside it. `role="dialog"`
-  rather than `tooltip`, so a screen reader can reach what is in it.
+  rather than `tooltip`, so a screen reader can reach what is in it. Its default
+  `trigger` is `["hover", "click"]` — `click` is what lets a keyboard open it at
+  all, since Enter or Space on the trigger dispatches one, and unlike the other
+  two there is no second way in.
 
 All three share one hook, so they cannot drift apart in the parts a user can
 observe, and all three portal to `document.body` — a transformed ancestor would
 otherwise capture the `position: fixed` popup and place it somewhere else.
+
+Dropdown and Popover move focus into the popup when they open and hand it back
+when they close, which is what makes a portalled popup reachable at all: tab
+order follows the DOM, and the popup is a body sibling at the end of the
+document rather than a neighbour of its trigger. Neither does it on a hover-open
+— a pointer crossing a trigger is not a request for focus.
 
 `Dropdown` gets arrow keys, Home/End, typeahead, and `aria-activedescendant`
 from the primitives already in core. It opens on Enter, Space and the arrows

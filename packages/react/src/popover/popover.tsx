@@ -15,6 +15,14 @@ export interface PopoverProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (details: { open: boolean }) => void;
+  /**
+   * Defaults to hover AND click. Hover alone is the more faithful default, but
+   * a popover exists to hold controls, and unlike the other two there is no
+   * second way in: Tooltip has `focus` in its default and Dropdown answers
+   * Enter and the arrows because its role demands it. Including `click` is what
+   * makes a keyboard reach it at all, since activating the trigger with Enter
+   * or Space dispatches one — and it costs a pointer user nothing.
+   */
   trigger?: TriggerKind | TriggerKind[];
   /** SECONDS. */
   mouseEnterDelay?: number;
@@ -29,12 +37,14 @@ export interface PopoverProps {
   id?: string;
 }
 
+const DEFAULT_TRIGGER: TriggerKind[] = ["hover", "click"];
+
 export function Popover({
   content,
   title,
   children,
   placement = "top",
-  trigger = "hover",
+  trigger = DEFAULT_TRIGGER,
   arrow = true,
   overlayClassName,
   className,
