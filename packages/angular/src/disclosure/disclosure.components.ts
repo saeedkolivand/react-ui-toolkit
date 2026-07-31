@@ -67,7 +67,15 @@ export class CkPanel {
   `,
 })
 export class CkTabs {
-  readonly items = input.required<CkTabItem[]>();
+  /**
+   * Not `input.required`, deliberately. `useMachine` must run in a field
+   * initializer (that is the only injection context available), and building the
+   * machine's props reads this input — before Angular has applied any binding.
+   * A required input throws NG0950 at that point, taking the whole component
+   * tree down with it. An empty default is the honest shape for an input the
+   * component is obliged to read before it can be set.
+   */
+  readonly items = input<CkTabItem[]>([]);
   readonly value = model<string | undefined>(undefined);
   readonly defaultValue = input<string>();
   readonly variant = input<TabsVariant>("line");
@@ -121,7 +129,15 @@ export class CkTabs {
   `,
 })
 export class CkAccordion {
-  readonly items = input.required<CkAccordionItem[]>();
+  /**
+   * Not `input.required`, deliberately. `useMachine` must run in a field
+   * initializer (that is the only injection context available), and building the
+   * machine's props reads this input — before Angular has applied any binding.
+   * A required input throws NG0950 at that point, taking the whole component
+   * tree down with it. An empty default is the honest shape for an input the
+   * component is obliged to read before it can be set.
+   */
+  readonly items = input<CkAccordionItem[]>([]);
   readonly value = model<string[] | undefined>(undefined);
   readonly defaultValue = input<string[]>();
   readonly allowMultiple = input(false, { transform: booleanAttribute });

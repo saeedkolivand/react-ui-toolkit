@@ -1,0 +1,21 @@
+{
+  "name": "@crosskit-ui/playground-vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4175",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:*",
+    "@crosskit-ui/styles": "workspace:*",
+    "@crosskit-ui/vue": "workspace:*",
+    "vue": "catalog:frameworks"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:frameworks",
+    "typescript": "catalog:",
+    "vite": "catalog:frameworks"
+  }
+}

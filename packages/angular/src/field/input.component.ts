@@ -34,6 +34,12 @@ let uid = 0;
         [disabled]="disabled()"
         [attr.aria-invalid]="aria(invalid())"
         [attr.aria-describedby]="describedBy()"
+        [value]="value()"
+        [attr.placeholder]="placeholder()"
+        [attr.name]="name()"
+        [attr.required]="required() || null"
+        [attr.readonly]="readonly() || null"
+        [attr.type]="type()"
       />
     </div>
     @if (errorMessage()) {
@@ -53,6 +59,22 @@ export class CkInput {
   readonly fullWidth = input(true, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly id = input<string>();
+
+  /**
+   * Native control attributes, declared explicitly.
+   *
+   * React, Vue and Svelte spread their rest props onto the inner control, so a
+   * consumer can pass any native attribute. Angular cannot: this is a component
+   * with an element selector, so anything written on <ck-input> lands on the
+   * host, not on the <input> inside it. These are the ones that actually get
+   * used; the parity matrix is what showed placeholder silently doing nothing.
+   */
+  readonly value = input("");
+  readonly placeholder = input<string>();
+  readonly name = input<string>();
+  readonly required = input(false, { transform: booleanAttribute });
+  readonly readonly = input(false, { transform: booleanAttribute });
+  readonly type = input("text");
 
   private readonly instanceId = `ck-input-${++uid}`;
   protected readonly inputId = computed(() => this.id() ?? this.instanceId);
