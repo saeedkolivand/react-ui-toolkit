@@ -63,7 +63,7 @@ catalogs:
       specifier: ^5.56.8
       version: 5.56.8
     vite:
-      specifier: ^8.2.0
+      specifier: ^8.1.5
       version: 8.2.0
     vue:
       specifier: ^3.5.40
