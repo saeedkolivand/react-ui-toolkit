@@ -9,8 +9,10 @@ import { Button, type ButtonType } from "../button/button";
 import { useOverlay } from "./use-overlay";
 
 export interface ModalProps {
+  /** Controlled. v0 called this `isOpen`. */
   open?: boolean;
   defaultOpen?: boolean;
+  /** v0 had `onClose: () => void`; this reports both directions. */
   onOpenChange?: (details: { open: boolean }) => void;
   /** The confirm button. Returning a promise keeps it busy until it settles. */
   onOk?: () => void | Promise<void>;
@@ -28,7 +30,9 @@ export interface ModalProps {
   width?: number | string;
   role?: "dialog" | "alertdialog";
   modal?: boolean;
+  /** v0 called this `closeOnEsc`. */
   closeOnEscape?: boolean;
+  /** v0 called this `closeOnBackdropClick`. */
   closeOnInteractOutside?: boolean;
   showCloseButton?: boolean;
   centered?: boolean;

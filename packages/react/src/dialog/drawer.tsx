@@ -8,8 +8,10 @@ import { Button } from "../button/button";
 import { useOverlay } from "./use-overlay";
 
 export interface DrawerProps {
+  /** Controlled. v0 called this `isOpen`. */
   open?: boolean;
   defaultOpen?: boolean;
+  /** v0 had `onClose: () => void`; this reports both directions. */
   onOpenChange?: (details: { open: boolean }) => void;
   onClose?: () => void;
   /** v0 called this `position`. */
@@ -17,7 +19,9 @@ export interface DrawerProps {
   size?: Size;
   role?: "dialog" | "alertdialog";
   modal?: boolean;
+  /** v0 called this `closeOnEsc`. */
   closeOnEscape?: boolean;
+  /** v0 called this `closeOnBackdropClick`. */
   closeOnInteractOutside?: boolean;
   showCloseButton?: boolean;
   id?: string;

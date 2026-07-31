@@ -133,7 +133,7 @@
   }
 
   /* ----------------------------------------------------------------- Drawer
-     Same machine, same scope, same file — only placement and the animation
+     Same behaviour, same scope, same file — only placement and the animation
      differ. This is the copy-cost claim made good. */
   @keyframes ck-slide-in-right {
     from {

@@ -158,7 +158,12 @@ export const overlays: ComponentDoc[] = [
         type: "() => void",
         description: "Escape, a press on the mask, and the close button all arrive here.",
       },
-      { name: "…", type: "", description: "Every other prop matches Modal." },
+      {
+        name: "open, defaultOpen, onOpenChange, role, modal, closeOnEscape, closeOnInteractOutside, showCloseButton, id, className, title, description, footer",
+        type: "",
+        description:
+          "Identical to Modal. Listed rather than implied with an ellipsis: Modal also has centered, scrollable, width and the whole confirm/cancel set, and a Drawer has none of them.",
+      },
     ],
     samples: {
       react: `<Drawer open={open} onOpenChange={d => setOpen(d.open)} placement="left" title="Filters">

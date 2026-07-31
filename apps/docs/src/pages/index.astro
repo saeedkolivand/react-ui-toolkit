@@ -12,8 +12,8 @@ import { Showcase } from "../components/Showcase";
       <h1 class="display-xxl">Write the component once.</h1>
       <p class="subhead">
         One behaviour core, one stylesheet, and thin adapters for four frameworks. Accessible by
-        construction — focus traps, keyboard navigation and ARIA come from state machines, not from
-        each framework's copy of them.
+        construction — focus traps, keyboard navigation and ARIA are written once and shared, not
+        reimplemented as each framework's own copy.
       </p>
       <div class="row" style="gap: var(--site-sm);">
         <a class="btn btn-primary" href="#install">Get started</a>
@@ -63,8 +63,8 @@ import { Showcase } from "../components/Showcase";
         <div>
           <h3 class="display-md">Focus traps you didn't have to write.</h3>
           <p class="body-lg" style="opacity: 0.85; margin-top: var(--site-sm);">
-            Behaviour comes from Zag.js state machines — the same tested implementation in all four
-            adapters, instead of four chances to get it wrong.
+            Behaviour lives in one framework-free core — the same tested implementation in all
+            four adapters, instead of four chances to get it wrong.
           </p>
         </div>
       </div>
