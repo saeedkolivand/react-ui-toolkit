@@ -8,3 +8,5 @@ export { default as Tag } from "./tag/Tag.vue";
 export { default as Alert } from "./alert/Alert.vue";
 export { default as Container } from "./layout/Container.vue";
 export { default as Row } from "./layout/Row.vue";
+export { default as Input } from "./input/Input.vue";
+export { default as Textarea } from "./textarea/Textarea.vue";

@@ -11,3 +11,5 @@ export { Tag, type TagProps, type TagVariant, type TagColor } from "./tag/tag";
 export { Alert, type AlertProps } from "./alert/alert";
 export { Container, type ContainerProps, type ContainerMaxWidth } from "./layout/container";
 export { Row, type RowProps, type RowJustify, type RowAlign } from "./layout/row";
+export { Input, type InputProps } from "./input/input";
+export { Textarea, type TextareaProps } from "./textarea/textarea";

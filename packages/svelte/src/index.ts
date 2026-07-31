@@ -8,3 +8,5 @@ export { default as Tag } from "./tag/Tag.svelte";
 export { default as Alert } from "./alert/Alert.svelte";
 export { default as Container } from "./layout/Container.svelte";
 export { default as Row } from "./layout/Row.svelte";
+export { default as Input } from "./input/Input.svelte";
+export { default as Textarea } from "./textarea/Textarea.svelte";

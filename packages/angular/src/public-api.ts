@@ -7,3 +7,5 @@ export { CkDivider } from "./feedback/divider.component";
 export { CkTag } from "./feedback/tag.component";
 export { CkAlert } from "./feedback/alert.component";
 export { CkContainer, CkRow } from "./layout/layout.components";
+export { CkInput } from "./field/input.component";
+export { CkTextarea } from "./field/textarea.component";
