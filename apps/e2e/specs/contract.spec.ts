@@ -82,28 +82,21 @@ for (const framework of FRAMEWORKS) {
       await expect(page.locator('[data-scope="button"][disabled]').first()).toBeVisible();
     });
 
-    // Angular is expected to fail this: the binding snapshots a machine's
-    // `default*` props while constructing it in a field initializer — the only
-    // injection context there is — which runs BEFORE Angular applies inputs, so
-    // `defaultValue` reaches zag as undefined. Documented, not hidden.
-    (framework.name === "angular" ? test.fixme : test)(
-      "machine-backed parts report their state",
-      async ({ page }) => {
-        await ready(page, framework.url);
-        await expect(
-          page.locator('[data-scope="tabs"][data-part="trigger"][data-selected]').first()
-        ).toBeVisible();
-        await expect(
-          page
-            .locator('[data-scope="accordion"][data-part="item-content"][data-state="open"]')
-            .first()
-        ).toBeVisible();
-        await expect(page.locator('[data-scope="select"][data-part="trigger"]')).toHaveAttribute(
-          "role",
-          "combobox"
-        );
-      }
-    );
+    test("machine-backed parts report their state", async ({ page }) => {
+      await ready(page, framework.url);
+      await expect(
+        page.locator('[data-scope="tabs"][data-part="trigger"][data-selected]').first()
+      ).toBeVisible();
+      await expect(
+        page
+          .locator('[data-scope="accordion"][data-part="item-content"][data-state="open"]')
+          .first()
+      ).toBeVisible();
+      await expect(page.locator('[data-scope="select"][data-part="trigger"]')).toHaveAttribute(
+        "role",
+        "combobox"
+      );
+    });
 
     test("the invalid field is marked for both CSS and assistive tech", async ({ page }) => {
       await ready(page, framework.url);

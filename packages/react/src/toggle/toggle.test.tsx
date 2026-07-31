@@ -69,7 +69,7 @@ describe("RadioGroup", () => {
   it("groups radios and keeps them mutually exclusive by name", async () => {
     const user = userEvent.setup();
     render(
-      <RadioGroup label="Size" name="size">
+      <RadioGroup label="Size">
         <Radio name="size" value="sm" label="Small" />
         <Radio name="size" value="md" label="Medium" />
       </RadioGroup>
@@ -104,7 +104,7 @@ describe("invalid state placement", () => {
 
   it("puts aria-invalid on the radiogroup, where ARIA allows it", () => {
     render(
-      <RadioGroup name="n" label="Pick" invalid>
+      <RadioGroup label="Pick" invalid>
         <Radio label="One" value="1" />
       </RadioGroup>
     );
@@ -113,7 +113,7 @@ describe("invalid state placement", () => {
 
   it("omits it on a valid group rather than writing false", () => {
     render(
-      <RadioGroup name="n" label="Pick">
+      <RadioGroup label="Pick">
         <Radio label="One" value="1" />
       </RadioGroup>
     );

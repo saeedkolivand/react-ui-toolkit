@@ -18,100 +18,162 @@ const SECTIONS = [
   "table",
 ] as const;
 
-async function settle(page: Page, base: string) {
-  await page.goto(url(base));
-  await expect(page.locator('[data-fixture="table"] [data-part="row"]').first()).toBeVisible();
-  // Machine-driven parts (tabs, accordion, select) settle a frame after mount,
-  // and the spinner is a CSS animation that reducedMotion already froze.
-  await page.waitForTimeout(300);
-}
-
-/**
- * Cross-framework visual parity.
- *
- * This asserts the frameworks match EACH OTHER, not that they match a stored
- * golden image. That distinction is what makes it useful during a port: the CSS
- * is still changing, so a golden baseline would be invalidated constantly,
- * whereas "all four produce the same pixels" stays true no matter how the
- * design moves — and fails the moment one adapter's markup drifts.
- *
- * React is the reference only because it was ported first; any of the four
- * would do.
- */
 /**
  * Known gaps, listed rather than hidden.
  *
- * Every entry here is a real divergence that the matrix found and that has not
- * been fixed yet. Naming them keeps the rest of the grid enforced — a
- * regression in any unlisted section still fails — while making the debt
- * visible in code review instead of in a skipped test nobody reads.
+ * Every entry is a real divergence the matrix found and that is not fixed yet.
+ * Naming them keeps the rest of the grid enforced — a regression in any
+ * unlisted section still fails — and a gap that quietly closes fails the test
+ * until it is removed, so the list cannot rot.
  */
 const KNOWN_GAPS = new Set<string>([
-  // The Angular binding snapshots a machine's `default*` props while building
-  // the machine, which happens in a field initializer — the only injection
-  // context available — i.e. BEFORE Angular has applied any input. So
-  // `defaultValue` reaches zag as undefined and no tab is selected, no
-  // accordion item is open. Fixing it means deferring machine construction past
-  // the first change detection, which is a change to useMachine itself.
-  "angular/tabs",
-  "angular/accordion",
-  // Angular components use element selectors, so every component root is an
-  // extra element (<ck-card>) that the other three do not emit. It carries the
-  // right data-* and the right box, but sub-pixel layout still differs.
-  "angular/button",
-  "angular/icon",
-  "angular/badge",
-  "angular/alert",
+  // ONE cause, and this suite is what pinned it down.
+  //
+  // Several Angular components render their root part INSIDE the host rather
+  // than on it: <ck-checkbox> wraps <label data-part="root">, where React, Vue
+  // and Svelte emit that label directly. So the host is an extra element in the
+  // layout — it defaults to display:inline, it stops the real root from being a
+  // flex item of the surrounding row, and it shifts every child's box.
+  //
+  // The fix is mechanical: hoist data-scope/data-part onto the host with
+  // Angular's `host:` block, which CkInput and CkRadioGroup already do. It is
+  // its own batch rather than a hurried edit at the end of this one.
   "angular/card",
   "angular/field",
   "angular/toggle",
   "angular/display",
   "angular/layout",
-  "angular/table",
-  // 42 bytes on the table section only; not yet characterised.
-  "vue/table",
 ]);
 
-test("frameworks render identical pixels", async ({ page }) => {
-  // Capture and compare in ONE test on purpose. Module-level state does not
-  // survive between Playwright tests reliably — a retry alone moves a test to a
-  // fresh worker — so a "capture" test feeding a "compare" test looked like it
-  // worked and then reported an empty reference.
-  const shots = new Map<string, Map<string, Buffer>>();
+/** Layout-visible properties. Compared as strings, so a rem/px difference shows. */
+const PROPS = [
+  "display",
+  "backgroundColor",
+  "color",
+  "borderTopWidth",
+  "borderTopColor",
+  "borderRadius",
+  "paddingTop",
+  "paddingRight",
+  "paddingBottom",
+  "paddingLeft",
+  "marginTop",
+  "fontSize",
+  "fontWeight",
+  "lineHeight",
+  "opacity",
+  "textAlign",
+  "flexDirection",
+  "justifyContent",
+  "alignItems",
+  "gap",
+];
+
+interface Snapshot {
+  key: string;
+  box: string;
+  styles: string;
+}
+
+async function capture(page: Page, base: string, section: string): Promise<Snapshot[]> {
+  return page.locator(`[data-fixture="${section}"]`).evaluate(
+    (root, props) =>
+      [...root.querySelectorAll<HTMLElement>("[data-part]")].map(element => {
+        const rect = element.getBoundingClientRect();
+        const computed = getComputedStyle(element);
+        // data-ownedby / data-controls hold generated ids, which differ by
+        // construction: React's useId, Vue's v-12, Svelte's c13, Angular's own.
+        // They are references, not contract, so they are not compared.
+        const ignored = ["data-fixture", "data-ownedby", "data-controls"];
+        const identity = [...element.attributes]
+          .filter(attr => attr.name.startsWith("data-") && !ignored.includes(attr.name))
+          .map(attr => (attr.value === "" ? attr.name : `${attr.name}=${attr.value}`))
+          .sort()
+          .join(" ");
+        return {
+          key: identity,
+          // Rounded: sub-pixel layout differs harmlessly between engines.
+          box: `${Math.round(rect.width)}x${Math.round(rect.height)}`,
+          styles: props.map(prop => `${prop}:${computed[prop as never]}`).join(";"),
+        };
+      }),
+    PROPS
+  );
+}
+
+async function settle(page: Page, base: string) {
+  await page.goto(url(base));
+  // The pointer keeps its position across navigations and table rows are
+  // hoverable, so park it; likewise drop focus. Both were producing differences
+  // that moved between runs, which is what gave them away as artefacts.
+  await page.mouse.move(0, 0);
+  await expect(page.locator('[data-fixture="table"] [data-part="row"]').first()).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.waitForTimeout(400);
+}
+
+/**
+ * Cross-framework parity, compared as computed styles and geometry rather than
+ * as images.
+ *
+ * This asserts the frameworks match EACH OTHER, not a stored golden image —
+ * which is what makes it useful during a port, since the CSS is still moving
+ * and a baseline would be invalidated constantly.
+ *
+ * Screenshots were the first attempt and were the wrong instrument: a byte
+ * compare of two PNGs captured in separate page loads drifted by a few dozen
+ * bytes for reasons that had nothing to do with the adapters, and reported
+ * "42 bytes" rather than which property differed. Computed styles are
+ * deterministic and name the offending property.
+ *
+ * React is the reference only because it was ported first.
+ */
+test("frameworks render identical styles and geometry", async ({ page }) => {
+  const captured = new Map<string, Map<string, Snapshot[]>>();
 
   for (const framework of FRAMEWORKS) {
     await settle(page, framework.url);
-    const perSection = new Map<string, Buffer>();
-    for (const section of SECTIONS) {
-      perSection.set(
-        section,
-        await page.locator(`[data-fixture="${section}"]`).screenshot({ animations: "disabled" })
-      );
-    }
-    shots.set(framework.name, perSection);
+    const perSection = new Map<string, Snapshot[]>();
+    for (const section of SECTIONS)
+      perSection.set(section, await capture(page, framework.url, section));
+    captured.set(framework.name, perSection);
   }
 
-  const reference = shots.get("react")!;
-  const mismatches: string[] = [];
+  const reference = captured.get("react")!;
+  const differences: string[] = [];
   const unexpectedlyFixed: string[] = [];
 
   for (const framework of FRAMEWORKS) {
     if (framework.name === "react") continue;
     for (const section of SECTIONS) {
-      const key = `${framework.name}/${section}`;
+      const gapKey = `${framework.name}/${section}`;
       const a = reference.get(section)!;
-      const b = shots.get(framework.name)!.get(section)!;
-      // Same browser, same viewport, same encoder — identical pixels produce
-      // identical bytes, so a byte compare needs no image-diff dependency.
-      const identical = a.equals(b);
-      if (!identical && !KNOWN_GAPS.has(key)) {
-        mismatches.push(`${key} (react ${a.length}B vs ${b.length}B)`);
+      const b = captured.get(framework.name)!.get(section)!;
+      const local: string[] = [];
+
+      if (a.length !== b.length) {
+        local.push(`${gapKey}: ${a.length} parts in react vs ${b.length}`);
+      } else {
+        for (let i = 0; i < a.length; i++) {
+          if (a[i]!.key !== b[i]!.key) {
+            local.push(`${gapKey}#${i}: attrs "${a[i]!.key}" vs "${b[i]!.key}"`);
+          } else if (a[i]!.box !== b[i]!.box) {
+            local.push(`${gapKey}#${i} [${a[i]!.key}]: box ${a[i]!.box} vs ${b[i]!.box}`);
+          } else if (a[i]!.styles !== b[i]!.styles) {
+            const mine = a[i]!.styles.split(";");
+            const theirs = b[i]!.styles.split(";");
+            const prop = mine.find((entry, index) => entry !== theirs[index]);
+            local.push(`${gapKey}#${i} [${a[i]!.key}]: ${prop} vs ${theirs[mine.indexOf(prop!)]}`);
+          }
+        }
       }
-      if (identical && KNOWN_GAPS.has(key)) unexpectedlyFixed.push(key);
+
+      if (local.length && !KNOWN_GAPS.has(gapKey)) differences.push(...local.slice(0, 3));
+      if (!local.length && KNOWN_GAPS.has(gapKey)) unexpectedlyFixed.push(gapKey);
     }
   }
 
-  expect(mismatches, "sections that differ from React").toEqual([]);
-  // A gap that quietly closes should be deleted from the list, not left to rot.
+  expect(differences, "adapters that diverge from React").toEqual([]);
   expect(unexpectedlyFixed, "KNOWN_GAPS entries that now pass — remove them").toEqual([]);
 });

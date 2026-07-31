@@ -18,7 +18,12 @@ body {
 }
 
 #root,
-#app {
+#app,
+/* Angular's root is a custom element, which defaults to display:inline — so
+   the width below did nothing at all until this line existed, and every
+   Angular section measured 100px wider than the other three. */
+app-root {
+  display: block;
   padding: 24px;
   width: 900px;
 }
@@ -52,4 +57,11 @@ body {
 /* Caret blink is a moving pixel. */
 * {
   caret-color: transparent;
+}
+
+/* The spinner really does rotate, so its bounding box depends on when it was
+   measured. prefers-reduced-motion does not stop it — it is an indicator, and
+   stopping it would be a lie about the state. Frozen here instead. */
+[data-scope="spinner"] * {
+  animation: none !important;
 }

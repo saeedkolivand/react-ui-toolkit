@@ -110,7 +110,7 @@ const accordionItems = FIXTURE.accordion;
       <Switch label="Off" />
       <Switch label="On" :model-value="true" />
     </div>
-    <RadioGroup name="parity-size" label="Size">
+    <RadioGroup label="Size">
       <Radio
         v-for="size in FIXTURE.sizes"
         :key="size"
