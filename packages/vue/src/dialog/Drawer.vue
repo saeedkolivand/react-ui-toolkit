@@ -76,8 +76,9 @@ const presence = usePresence(() => api.value.open);
             variant="ghost"
             size="sm"
             icon="close"
-            data-part="close-trigger"
+            data-close-trigger=""
             aria-label="Close"
+            @click="api.setOpen(false)"
           />
         </div>
       </div>

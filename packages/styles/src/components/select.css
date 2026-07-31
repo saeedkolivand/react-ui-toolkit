@@ -1,0 +1,204 @@
+/* Select. The trigger is a real <button role="combobox"> — v0 used an
+   <input readOnly role="combobox">, which is the ARIA pattern for a
+   *typeahead* combobox and wrong for a plain select.
+
+   The listbox is positioned by Floating UI (through zag), so this file sets
+   no top/left of its own; --ck-select-content-available-height is written by
+   the positioner. */
+@layer ck.components {
+  [data-scope="select"][data-part="root"] {
+    display: block;
+  }
+  [data-scope="select"][data-part="root"][data-full-width] {
+    width: 100%;
+  }
+
+  [data-scope="select"][data-part="control"] {
+    position: relative;
+    display: flex;
+  }
+
+  /* ---------------------------------------------------------------- trigger */
+  [data-scope="select"][data-part="trigger"] {
+    appearance: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-radius: var(--ck-radius-md);
+    border: 1px solid var(--ck-field-border, var(--ck-border));
+    background-color: var(--ck-field-bg, var(--ck-surface));
+    color: var(--ck-fg);
+    transition:
+      border-color var(--ck-duration-md) var(--ck-ease-in-out),
+      background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="select"][data-part="trigger"]:hover:not([data-disabled]) {
+    border-color: var(--ck-border-hover, var(--ck-border));
+  }
+  [data-scope="select"][data-part="trigger"]:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: var(--ck-field-ring, var(--ck-ring));
+    box-shadow:
+      0 0 0 2px var(--ck-ring-offset),
+      0 0 0 4px var(--ck-field-ring, var(--ck-ring));
+  }
+  [data-scope="select"][data-part="trigger"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Sizes match Input's exactly — the two sit next to each other in forms. */
+  [data-scope="select"][data-size="sm"] [data-part="trigger"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.375rem 0.5rem;
+  }
+  [data-scope="select"][data-size="md"] [data-part="trigger"] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+  [data-scope="select"][data-size="lg"] [data-part="trigger"] {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  [data-scope="select"][data-part="value-text"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Zag reports "no selection" as data-placeholder-shown on the TRIGGER, not
+     on the value text. */
+  [data-scope="select"][data-part="trigger"][data-placeholder-shown] [data-part="value-text"] {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="select"][data-part="indicator"] {
+    flex-shrink: 0;
+    color: var(--ck-fg-muted);
+    transition: rotate var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="select"][data-part="indicator"][data-state="open"] {
+    rotate: 180deg;
+  }
+
+  /* -------------------------------------------------------------- variants */
+  [data-scope="select"][data-variant="filled"] {
+    --ck-field-bg: var(--ck-surface-hover);
+    --ck-field-border: transparent;
+  }
+  [data-scope="select"][data-variant="outline"] {
+    --ck-field-bg: transparent;
+  }
+  [data-scope="select"][data-invalid] {
+    --ck-field-border: var(--ck-danger-solid);
+    --ck-field-ring: var(--ck-danger-solid);
+  }
+
+  /* -------------------------------------------------------------- dropdown */
+  /* Zag writes `z-index: var(--z-index)` inline, which beats any stylesheet
+     rule — so the token is supplied as that variable rather than as z-index. */
+  [data-scope="select"][data-part="positioner"] {
+    --z-index: var(--ck-z-popover);
+  }
+
+  [data-scope="select"][data-part="content"] {
+    background-color: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    padding: 0.25rem;
+    overflow-y: auto;
+    max-height: var(--available-height, 16rem);
+    /* The trigger's width is published by the positioner as a custom property,
+       so the list lines up with the control without measuring anything. */
+    width: var(--reference-width);
+  }
+  [data-scope="select"][data-part="content"]:focus-visible {
+    outline: none;
+  }
+  [data-scope="select"][data-part="content"][data-state="open"] {
+    animation: ck-select-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="select"][data-part="content"][data-state="closed"] {
+    animation: ck-select-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  @keyframes ck-select-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes ck-select-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+    }
+  }
+
+  /* ------------------------------------------------------------------ item */
+  [data-scope="select"][data-part="item"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--ck-radius-base);
+    color: var(--ck-fg);
+    cursor: pointer;
+    user-select: none;
+  }
+  /* data-highlighted is the keyboard/pointer cursor; it is NOT :hover, which is
+     why arrow keys and the mouse can never disagree about which row is active. */
+  [data-scope="select"][data-part="item"][data-highlighted] {
+    background-color: var(--ck-surface-hover);
+  }
+  [data-scope="select"][data-part="item"][data-state="checked"] {
+    color: var(--ck-accent-solid);
+    font-weight: 500;
+  }
+  [data-scope="select"][data-part="item"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-scope="select"][data-part="item-indicator"] {
+    flex-shrink: 0;
+    color: var(--ck-accent-solid);
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    color: var(--ck-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope="select"][data-part="content"],
+    [data-scope="select"][data-part="indicator"] {
+      animation-duration: 1ms;
+      transition-duration: 1ms;
+    }
+  }
+}

@@ -13,5 +13,7 @@ export { CkCheckbox, CkRadio, CkRadioGroup, CkSwitch } from "./toggle/toggle.com
 export { CkAvatar, CkProgress } from "./feedback/avatar-progress.components";
 export { CkCol } from "./layout/col.component";
 export { CkModal, CkDrawer } from "./dialog/dialog.components";
+export { CkSelect, CkOption } from "./select/select.component";
+export type { CkSelectItem } from "./select/select.component";
 export { CkTabs, CkAccordion, CkPanel } from "./disclosure/disclosure.components";
 export type { CkTabItem, CkAccordionItem } from "./disclosure/disclosure.components";
