@@ -241,6 +241,25 @@ describe("table store", () => {
       expect(table.getState().pageIndex).toBe(0);
       expect(table.getRows()).toHaveLength(2);
     });
+
+    it("clamps against the new data even when rows were already rendered", () => {
+      // The version above passed by accident: with a cold cache the clamp
+      // recomputed and happened to be right. Every adapter renders before it
+      // replaces data, so this is the real path -- and the clamp measured the
+      // *old* row count, left pageIndex alone, and produced an empty table.
+      const table = store({ initialState: { pageSize: 2, pageIndex: 2 } });
+      table.getRows();
+      table.setData(people.slice(0, 2));
+      expect(table.getState().pageIndex).toBe(0);
+      expect(table.getRows()).toHaveLength(2);
+    });
+
+    it("reports the new row count immediately after setData", () => {
+      const table = store();
+      table.getRows();
+      table.setData(people.slice(0, 2));
+      expect(table.getRowCount()).toBe(2);
+    });
   });
 
   describe("selection", () => {
@@ -322,6 +341,45 @@ describe("table store", () => {
       const table = store();
       table.toggleSelection("Ada");
       expect(table.getRows().find(r => r.id === "Ada")?.selected).toBe(true);
+    });
+  });
+
+  describe("opting in", () => {
+    it("refuses to sort a column that did not opt in", () => {
+      // Enforced in the store so four adapters do not each decide separately
+      // whether to guard the header click.
+      const table = store();
+      table.toggleSort("city");
+      expect(table.getSortDirection("city")).toBeUndefined();
+      expect(names(table.getRows())).toEqual(names(store().getRows()));
+    });
+
+    it("refuses to filter a column that did not opt in", () => {
+      const table = store();
+      table.setFilter("age", 36);
+      expect(table.getRows()).toHaveLength(5);
+    });
+
+    it("treats a comparator or matcher as the opt-in", () => {
+      // There is no reason to write one for a column that cannot use it.
+      const table = createTableStore<Person>({
+        data: people,
+        getRowId: r => r.name,
+        columns: [
+          { id: "name", accessor: r => r.name, sortFn: (a, b) => a.name.length - b.name.length },
+          { id: "age", accessor: r => r.age, filterFn: (row, q) => row.age > Number(q) },
+        ],
+      });
+      table.toggleSort("name");
+      expect(table.getSortDirection("name")).toBe("asc");
+      table.setFilter("age", 40);
+      expect(table.getRows()).toHaveLength(3);
+    });
+
+    it("ignores an unknown column id", () => {
+      const table = store();
+      expect(() => table.toggleSort("nope")).not.toThrow();
+      expect(table.getState().sorting).toEqual([]);
     });
   });
 

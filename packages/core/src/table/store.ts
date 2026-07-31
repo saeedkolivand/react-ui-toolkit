@@ -25,11 +25,13 @@ export interface TableColumnDef<T> {
   id: string;
   /** Reads the cell value. Given the whole row so a column can be computed. */
   accessor: (row: T) => unknown;
+  /** Opt in to sorting. Implied by `sortFn`. */
   sortable?: boolean;
-  /** Overrides the default comparator for this column. */
+  /** Overrides the default comparator for this column, and implies `sortable`. */
   sortFn?: (a: T, b: T) => number;
+  /** Opt in to filtering. Implied by `filterFn`. */
   filterable?: boolean;
-  /** Overrides the default "includes, case-insensitive" match. */
+  /** Overrides the default "includes, case-insensitive" match, and implies `filterable`. */
   filterFn?: (row: T, query: unknown) => boolean;
 }
 
@@ -142,6 +144,20 @@ export function createTableStore<T>(options: TableStoreOptions<T>): TableStore<T
 
   const columnById = () => new Map(columns.map(column => [column.id, column]));
 
+  // Opt in, the way a `sorter` on a column definition reads: supplying a
+  // comparator or a matcher is itself the opt-in, since there is no reason to
+  // write one for a column that cannot use it.
+  //
+  // Enforced here rather than in the adapters. Left unchecked, each of the four
+  // would have to decide independently whether to guard a header click, which
+  // is exactly the divergence "prop names are identical in all four" exists to
+  // prevent — and the kind only the parity suite would ever catch.
+  const isSortable = (column: TableColumnDef<T> | undefined) =>
+    column !== undefined && (column.sortable === true || column.sortFn !== undefined);
+
+  const isFilterable = (column: TableColumnDef<T> | undefined) =>
+    column !== undefined && (column.filterable === true || column.filterFn !== undefined);
+
   /**
    * Row ids are assigned once, against the original data, before anything is
    * filtered or sorted.
@@ -246,8 +262,16 @@ export function createTableStore<T>(options: TableStoreOptions<T>): TableStore<T
     setData(nextData, nextColumns) {
       data = nextData;
       if (nextColumns) columns = nextColumns;
-      // Clamp the page: deleting rows while on the last page otherwise leaves
-      // the table showing nothing, with no way back except paging.
+      // The cache has to be dropped *before* the row count is read. Every
+      // derived getter returns the cache while `version` is unchanged, so
+      // clamping first would measure the data that was just replaced — leaving
+      // `pageIndex` untouched and the table showing nothing, which is the exact
+      // case the clamp exists for.
+      version++;
+      cache = { version: -1 };
+
+      // Deleting rows while on the last page otherwise leaves no way back
+      // except paging.
       const pageCount = Math.max(1, Math.ceil(store.getRowCount() / state.pageSize));
       if (state.pageIndex >= pageCount) state = { ...state, pageIndex: pageCount - 1 };
       invalidate();
@@ -279,6 +303,7 @@ export function createTableStore<T>(options: TableStoreOptions<T>): TableStore<T
      * natural order once a column has been touched.
      */
     toggleSort(id, { multi = false } = {}) {
+      if (!isSortable(columnById().get(id))) return;
       const existing = state.sorting.find(rule => rule.id === id);
       const others = multi ? state.sorting.filter(rule => rule.id !== id) : [];
 
@@ -296,6 +321,7 @@ export function createTableStore<T>(options: TableStoreOptions<T>): TableStore<T
     getSortDirection: id => state.sorting.find(rule => rule.id === id)?.direction,
 
     setFilter(id, value) {
+      if (!isFilterable(columnById().get(id))) return;
       store.setState({ filters: { ...state.filters, [id]: value }, pageIndex: 0 });
     },
 
