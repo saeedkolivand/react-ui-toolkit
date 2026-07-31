@@ -17,11 +17,11 @@ export const FRAMEWORKS = [
 
 export default defineConfig({
   testDir: "./specs",
-  // The positioner suite is framework-free and runs alone under
-  // position.config.ts, against a single server and its own baseURL. Without
-  // this it is collected here too — where there is no baseURL at all, so every
-  // `page.goto("/position.html")` throws, 29 times.
-  testIgnore: "position.spec.ts",
+  // The positioner and overlay suites run alone under position.config.ts,
+  // against a single server and its own baseURL. Without this they are collected
+  // here too — where there is no baseURL at all, so every `page.goto("/…html")`
+  // throws, dozens of times.
+  testIgnore: /(position|overlay)\.spec\.ts$/,
   // In CI: an HTML report to upload on failure, plus inline annotations. The
   // failure output here names a property and two values, so having it attached
   // to the run is the difference between fixing it and re-running it locally.

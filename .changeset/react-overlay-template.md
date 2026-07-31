@@ -37,3 +37,7 @@ imports it now that Modal and Drawer are rebuilt.
 ran first, found its container empty because an inner overlay had marked it
 inert, and cancelled every Tab — so Tab from the middle of a nested dialog did
 nothing at all. `focusTrapDepth()` is exported for tests.
+
+The focus trap is now activated before the background is made inert, so the
+return-focus target is read while the trigger is unambiguously still focused
+rather than relying on the focus fixup rule being deferred.

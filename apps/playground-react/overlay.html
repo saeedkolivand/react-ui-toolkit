@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — overlay behaviour harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because the things asserted against this page are the
+         ones jsdom cannot model: `inert` blocks focus and runs the focus fixup
+         rule, and layout decides which of two overlapping fixed elements gets a
+         press. Unit tests over jsdom report clean on both. -->
+    <div id="root"></div>
+    <script type="module" src="/overlay.tsx"></script>
+  </body>
+</html>

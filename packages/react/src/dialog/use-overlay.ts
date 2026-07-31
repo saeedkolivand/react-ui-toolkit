@@ -160,9 +160,22 @@ export function useOverlay(options: OverlayOptions): Overlay {
     if (!open || !content) return;
 
     const trap = modal ? createFocusTrap(() => content) : null;
+    // Activated BEFORE the background is inerted, which is the mirror of the
+    // teardown order below.
+    //
+    // `activate()` captures the return-focus target by reading
+    // `document.activeElement`, and inerting an ancestor of the focused element
+    // runs the HTML focus fixup rule, which resets that to `<body>`. Measured in
+    // Chromium, Firefox and WebKit, the fixup is deferred by a task — so the old
+    // order happened to capture the trigger correctly and then moved focus
+    // inside before the fixup could apply. Correct by timing is not correct:
+    // this way the trigger is read while it is unambiguously still focused, and
+    // the first tabbable inside the content has focus before anything becomes
+    // inert. `inertBackground` skips the body child containing the content, so
+    // focusing first is safe.
+    trap?.activate();
     const uninert = modal ? inertBackground(content) : null;
     const unlock = modal ? lockScroll() : null;
-    trap?.activate();
 
     const removeLayer = pushDismissable(() => content, {
       onDismiss: dismiss,
