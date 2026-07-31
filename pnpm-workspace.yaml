@@ -10,6 +10,9 @@ allowBuilds:
   "@tailwindcss/oxide": true
   esbuild: true
   "@parcel/watcher": true
+  # Pulled in by @angular/build, which the Angular playground needs to compile.
+  lmdb: true
+  msgpackr-extract: true
   unrs-resolver: true
 
 linkWorkspacePackages: true
@@ -105,3 +108,6 @@ minimumReleaseAgeExclude:
   - eslint-plugin-react-rsc@5.18.1
   - eslint-plugin-react-web-api@5.18.1
   - eslint-plugin-react-x@5.18.1
+  - '@angular-devkit/architect@0.2201.2'
+  - '@angular-devkit/core@22.1.2'
+  - '@angular/build@22.1.2'

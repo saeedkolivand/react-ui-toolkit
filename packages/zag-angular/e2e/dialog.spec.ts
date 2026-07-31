@@ -4,9 +4,25 @@ const TRIGGER = '[data-scope="dialog"][data-part="trigger"]';
 const CONTENT = '[data-scope="dialog"][data-part="content"]';
 const BACKDROP = '[data-scope="dialog"][data-part="backdrop"]';
 
+/**
+ * Waits for the focus trap, not just for the node.
+ *
+ * The dialog machine's entry effects (focus trap, dismissable listener) resolve
+ * their target element one frame after the content renders, so "visible" is not
+ * yet "interactive". Focus landing inside the dialog is the observable signal
+ * that those effects actually attached — without waiting for it a test can press
+ * Escape in the same frame the dialog appears, before anything is listening.
+ * A human cannot hit that window; a Playwright script hits it constantly.
+ */
 const open = async (page: Page) => {
   await page.click(TRIGGER);
   await expect(page.locator(CONTENT)).toBeVisible();
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[data-scope="dialog"][data-part="content"]')
+        ?.contains(document.activeElement) ?? false
+  );
 };
 
 test.beforeEach(async ({ page }) => {
@@ -155,8 +171,7 @@ test("10 + 11: 20x open/close leaves no leaked nodes and logs no Angular errors"
   });
 
   for (let i = 0; i < 20; i++) {
-    await page.click(TRIGGER);
-    await expect(page.locator(CONTENT)).toBeVisible();
+    await open(page);
     // close with Escape, not an outside button: while the modal is open the rest
     // of the page is inert, which is correct behaviour and blocks outside clicks.
     await page.keyboard.press("Escape");

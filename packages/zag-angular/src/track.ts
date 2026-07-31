@@ -36,7 +36,22 @@ export function track(deps: Array<() => any>, fn: VoidFunction, injector?: Injec
 
       if (changed) {
         prevDeps = current;
-        untracked(fn);
+        // Deferred out of change detection, and this is load-bearing.
+        //
+        // Angular effects run inside ApplicationRef.tick(). Every controlled
+        // prop change reaches the machine through this callback, so running it
+        // here means the transition — and the flush inside bindable.set that is
+        // supposed to commit the new DOM — happens inside a tick that is already
+        // running. appRef.tick() then throws NG0101 (recursive tick), the flush
+        // silently does nothing, and the machine's entry effects run against a
+        // DOM that has not been updated: they rAF, resolve a null element, and
+        // bail without a sound. That is the whole of the intermittent
+        // "dialog opens but Escape does nothing".
+        //
+        // tick() is synchronous, so a microtask queued from inside it runs once
+        // the pass has finished — at which point flushing is both legal and
+        // meaningful.
+        queueMicrotask(() => untracked(fn));
       }
     },
     injector ? { injector } : undefined
