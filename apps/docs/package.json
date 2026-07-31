@@ -7,8 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "typecheck": "astro check",
-    "gen:migration": "node scripts/generate-migration.mjs"
+    "typecheck": "astro check && node scripts/check-props.mjs",
+    "gen:migration": "node scripts/generate-migration.mjs",
+    "check:props": "node scripts/check-props.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.2",

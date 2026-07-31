@@ -215,12 +215,18 @@ export class Demo {}`,
     props: [
       {
         name: "variant",
-        type: '"primary" | "neutral" | "success" | "error" | "warning" | "info"',
-        default: '"neutral"',
+        type: '"primary" | "secondary" | "success" | "warning" | "error" | "info"',
+        default: '"primary"',
         description: "Colour.",
       },
       { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Badge size." },
-      { name: "dot", type: "boolean", default: "false", description: "Renders as a bare dot." },
+      { name: "rounded", type: "boolean", default: "false", description: "Fully rounded pill." },
+      {
+        name: "outlined",
+        type: "boolean",
+        default: "false",
+        description: "Outline instead of a fill.",
+      },
     ],
     samples: {
       react: `import { Badge } from "@crosskit-ui/react";
@@ -256,18 +262,23 @@ export class Demo {}`,
     props: [
       {
         name: "color",
-        type: '"neutral" | "primary" | "success" | "error" | "warning" | "info"',
-        default: '"neutral"',
+        type: '"default" | "primary" | "success" | "warning" | "error" | "info"',
+        default: '"default"',
         description: "Colour.",
       },
       {
         name: "variant",
-        type: '"solid" | "subtle" | "outline"',
-        default: '"subtle"',
+        type: '"default" | "outline" | "solid"',
+        default: '"default"',
         description: "Fill style.",
       },
-      { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Tag size." },
-      { name: "onRemove", type: "() => void", description: "Renders a remove button when given." },
+      {
+        name: "closable",
+        type: "boolean",
+        default: "false",
+        description: "Renders a close button.",
+      },
+      { name: "onClose", type: "() => void", description: "Called when the close button is used." },
     ],
     samples: {
       react: `import { Tag } from "@crosskit-ui/react";
