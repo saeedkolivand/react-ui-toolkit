@@ -37,7 +37,6 @@ export function Radio({
         data-part="control"
         data-size={size}
         disabled={disabled}
-        aria-invalid={ariaAttr(invalid)}
         {...rest}
       />
       {label != null && <span data-part="label">{label}</span>}
@@ -50,6 +49,8 @@ export interface RadioGroupProps {
   name?: string;
   orientation?: Orientation;
   label?: ReactNode;
+  /** Marks the whole group invalid. aria-invalid is NOT supported on role="radio" — it belongs on the radiogroup. Only svelte-check flags this, so it shipped in all four adapters; data-invalid stays for styling. */
+  invalid?: boolean;
   children?: ReactNode;
   className?: string;
 }
@@ -63,6 +64,7 @@ export function RadioGroup({
   name,
   orientation = "horizontal",
   label,
+  invalid = false,
   children,
   className,
 }: RadioGroupProps) {
@@ -73,6 +75,8 @@ export function RadioGroup({
       data-scope="radio-group"
       data-part="root"
       data-orientation={orientation}
+      data-invalid={dataAttr(invalid)}
+      aria-invalid={ariaAttr(invalid)}
       data-name={name}
       className={className}
     >

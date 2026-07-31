@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
-import { ariaAttr, dataAttr, type Size } from "@crosskit-ui/core";
+import { dataAttr, type Size } from "@crosskit-ui/core";
 
 const props = withDefaults(
   defineProps<{
@@ -36,7 +36,6 @@ const inputId = computed(() => props.id ?? autoId);
       data-part="control"
       :data-size="props.size"
       :disabled="props.disabled"
-      :aria-invalid="ariaAttr(props.invalid)"
       :value="props.value"
       :name="props.name"
       :checked="props.modelValue === props.value"

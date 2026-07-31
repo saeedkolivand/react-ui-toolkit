@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Checkbox } from "./checkbox";
@@ -81,5 +82,51 @@ describe("RadioGroup", () => {
     await user.click(screen.getByText("Medium"));
     expect(screen.getByLabelText("Medium")).toBeChecked();
     expect(screen.getByLabelText("Small")).not.toBeChecked();
+  });
+});
+
+describe("invalid state placement", () => {
+  // aria-invalid is not a supported attribute on role="radio" — it belongs on
+  // the radiogroup. Only svelte-check flagged it, so the wrong placement shipped
+  // in all four adapters with no test covering it. These are that test.
+  it("keeps aria-invalid off an individual radio", () => {
+    render(<Radio label="One" value="1" invalid />);
+    expect(screen.getByLabelText("One")).not.toHaveAttribute("aria-invalid");
+  });
+
+  it("still marks an invalid radio for styling", () => {
+    const { container } = render(<Radio label="One" value="1" invalid />);
+    expect(container.querySelector('[data-scope="radio"][data-part="root"]')).toHaveAttribute(
+      "data-invalid",
+      ""
+    );
+  });
+
+  it("puts aria-invalid on the radiogroup, where ARIA allows it", () => {
+    render(
+      <RadioGroup name="n" label="Pick" invalid>
+        <Radio label="One" value="1" />
+      </RadioGroup>
+    );
+    expect(screen.getByRole("radiogroup")).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("omits it on a valid group rather than writing false", () => {
+    render(
+      <RadioGroup name="n" label="Pick">
+        <Radio label="One" value="1" />
+      </RadioGroup>
+    );
+    const group = screen.getByRole("radiogroup");
+    expect(group).not.toHaveAttribute("aria-invalid");
+    expect(group).not.toHaveAttribute("data-invalid");
+  });
+
+  // role="checkbox" DOES support aria-invalid, so the checkbox keeps its own.
+  // (Switch has no `invalid` prop at all — role="switch" would support it, so
+  // that is an API gap rather than a correctness bug. Noted, not fixed here.)
+  it("keeps aria-invalid on an invalid checkbox", () => {
+    render(<Checkbox label="Accept" invalid />);
+    expect(screen.getByLabelText("Accept")).toHaveAttribute("aria-invalid", "true");
   });
 });

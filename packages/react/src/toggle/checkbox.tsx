@@ -33,12 +33,12 @@ export function Checkbox({
 }: CheckboxProps) {
   const autoId = useId();
   const inputId = id ?? autoId;
-  const inner = useRef<HTMLInputElement>(null);
+  const innerRef = useRef<HTMLInputElement>(null);
 
   // `indeterminate` has no HTML attribute — it exists only as a DOM property,
   // which is why it needs an effect rather than a prop on the element.
   useEffect(() => {
-    if (inner.current) inner.current.indeterminate = indeterminate;
+    if (innerRef.current) innerRef.current.indeterminate = indeterminate;
   }, [indeterminate]);
 
   return (
@@ -52,7 +52,7 @@ export function Checkbox({
     >
       <input
         ref={node => {
-          inner.current = node;
+          innerRef.current = node;
           if (typeof ref === "function") ref(node);
           else if (ref) ref.current = node;
         }}
