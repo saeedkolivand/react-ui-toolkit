@@ -33,7 +33,19 @@ export const toCalendarDate = (date: Date): CalendarDate => ({
  * becomes January of the next year, and `{ day: 0 }` becomes the last day of
  * the previous month, so no caller needs its own month-length table.
  */
-export const toDate = ({ year, month, day }: CalendarDate): Date => new Date(year, month - 1, day);
+export function toDate({ year, month, day }: CalendarDate): Date {
+  const date = new Date(year, month - 1, day);
+  // `new Date(26, …)` is 1926. Every other function here routes through this
+  // one, so the mapping would propagate silently — and the contract above
+  // promises normalisation, which is the one input where it would not hold.
+  //
+  // The offset is *subtracted* rather than the year being set outright:
+  // setting it would overwrite whatever normalisation had just produced, so
+  // `{ year: 1, month: 1, day: 0 }` — the day before year 1 — would come back
+  // as year 1 instead of year 0.
+  if (year >= 0 && year < 100) date.setFullYear(date.getFullYear() - 1900);
+  return date;
+}
 
 export const isSameDay = (a: CalendarDate, b: CalendarDate): boolean =>
   a.year === b.year && a.month === b.month && a.day === b.day;
@@ -62,13 +74,13 @@ export const addDays = (date: CalendarDate, days: number): CalendarDate =>
  * result in date arithmetic.
  */
 export function addMonths(date: CalendarDate, months: number): CalendarDate {
-  const target = new Date(date.year, date.month - 1 + months, 1);
-  const length = daysInMonth(target.getFullYear(), target.getMonth() + 1);
-  return {
-    year: target.getFullYear(),
-    month: target.getMonth() + 1,
-    day: Math.min(date.day, length),
-  };
+  // Through `toDate` rather than `new Date` directly, so the 0-99 year mapping
+  // is handled in the one place that knows about it. Constructing here was the
+  // one path that escaped it.
+  const target = toDate({ year: date.year, month: date.month + months, day: 1 });
+  const year = target.getFullYear();
+  const month = target.getMonth() + 1;
+  return { year, month, day: Math.min(date.day, daysInMonth(year, month)) };
 }
 
 export const addYears = (date: CalendarDate, years: number): CalendarDate =>
@@ -78,7 +90,9 @@ export const addYears = (date: CalendarDate, years: number): CalendarDate =>
 
 /** Day 0 of the next month is the last day of this one — no lookup table, no leap-year rule. */
 export const daysInMonth = (year: number, month: number): number =>
-  new Date(year, month, 0).getDate();
+  // Via `toDate` so the 0-99 year mapping is handled in one place; day 0 of the
+  // next month normalises to the last day of this one.
+  toDate({ year, month: month + 1, day: 0 }).getDate();
 
 export const startOfMonth = (date: CalendarDate): CalendarDate => ({ ...date, day: 1 });
 

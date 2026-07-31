@@ -15,7 +15,13 @@ import {
   toDate,
   type CalendarDate,
 } from "./calendar";
-import { getMonthNames, getWeekdayNames, getWeekStart, parseLocaleDate } from "./format";
+import {
+  formatDate,
+  getMonthNames,
+  getWeekdayNames,
+  getWeekStart,
+  parseLocaleDate,
+} from "./format";
 
 const d = (year: number, month: number, day: number): CalendarDate => ({ year, month, day });
 
@@ -90,6 +96,16 @@ describe("calendar arithmetic", () => {
       expect(addMonths(d(2026, 1, 15), -1)).toEqual(d(2025, 12, 15));
       expect(addMonths(d(2026, 6, 15), 18)).toEqual(d(2027, 12, 15));
     });
+  });
+
+  it("keeps years 0-99 in the first century, not the 1900s", () => {
+    // `new Date(26, ...)` is 1926. `toDate` is the chokepoint every other
+    // function routes through, and the contract above promises normalisation —
+    // this was the one input where it did not hold.
+    expect(toDate(d(26, 1, 1)).getFullYear()).toBe(26);
+    expect(daysInMonth(4, 2)).toBe(29); // year 4 was a leap year
+    expect(addMonths(d(99, 1, 31), 1)).toEqual(d(99, 2, 28));
+    expect(addDays(d(1, 1, 1), -1)).toEqual(d(0, 12, 31));
   });
 
   it("clamps a leap day when adding years", () => {
@@ -193,7 +209,7 @@ describe("getMonthGrid", () => {
     expect(getMonthGrid(2026, 1, { fixedWeeks: true })).toHaveLength(6);
   });
 
-  it("uses five or six rows naturally", () => {
+  it("uses only as many rows as the month needs", () => {
     // February 2027 starts on a Monday and has 28 days, so with a Monday start
     // it fits in exactly four rows.
     expect(getMonthGrid(2026, 8, { weekStartsOn: 0 })).toHaveLength(6);
@@ -269,6 +285,19 @@ describe("locale formatting", () => {
     expect(start).toBeLessThanOrEqual(6);
   });
 
+  it("labels a Gregorian grid with Gregorian months, whatever the locale's own calendar", () => {
+    // A bare Intl.DateTimeFormat uses the *locale's* calendar — persian for
+    // fa-IR — so indexing month names by a Gregorian month number labelled the
+    // grid with months offset by roughly ten days.
+    expect(new Intl.DateTimeFormat("fa-IR").resolvedOptions().calendar).toBe("persian");
+    expect(getMonthNames("fa-IR")[0]).toBe("ژانویه"); // January, not دی
+  });
+
+  it("formats against the Gregorian calendar the grid is built in", () => {
+    // Otherwise the date under a picker disagrees with the cell just clicked.
+    expect(formatDate(d(2026, 1, 15), "fa-IR", { dateStyle: "short" })).toContain("۲۰۲۶");
+  });
+
   describe("parseLocaleDate", () => {
     it("reads a date the way the locale writes it", () => {
       // 01/02/2026 is January in the US and February nearly everywhere else,
@@ -291,6 +320,25 @@ describe("locale formatting", () => {
       expect(parseLocaleDate("", "en-GB")).toBeUndefined();
       expect(parseLocaleDate("tomorrow", "en-GB")).toBeUndefined();
       expect(parseLocaleDate("1/2", "en-GB")).toBeUndefined();
+    });
+
+    it("reads the locale's own digits, not only ASCII", () => {
+      // `\d` is [0-9] and nothing else, so a scan for it finds nothing in
+      // ar-EG (arab) or fa-IR (arabext) — a typed date field would have
+      // rejected every value the user's own keyboard produces.
+      expect(parseLocaleDate("١٥/١/٢٠٢٦", "ar-EG")).toEqual(d(2026, 1, 15));
+      expect(parseLocaleDate("۲۰۲۶/۱/۱۵", "fa-IR")).toEqual(d(2026, 1, 15));
+    });
+
+    it("round-trips a numeric format in every locale", () => {
+      // The two functions are inverses only for a numeric style: the default
+      // `dateStyle: "medium"` writes the month as a name, which has no digits
+      // to read back.
+      const date = d(2026, 1, 15);
+      for (const locale of ["en-GB", "en-US", "ar-EG", "fa-IR", "de-DE"]) {
+        const text = formatDate(date, locale, { dateStyle: "short" });
+        expect(parseLocaleDate(text, locale), `${locale} "${text}"`).toEqual(date);
+      }
     });
 
     it("accepts any separator", () => {

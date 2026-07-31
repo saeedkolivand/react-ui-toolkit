@@ -12,6 +12,37 @@ import { toDate, type CalendarDate } from "./calendar";
 export type NameWidth = "long" | "short" | "narrow";
 
 /**
+ * Forced on every formatter here.
+ *
+ * A bare `Intl.DateTimeFormat(locale)` uses the *locale's* calendar, which is
+ * `persian` for fa-IR and `islamic-umalqura` for ar-SA. `CalendarDate` and
+ * `getMonthGrid` are Gregorian, so inheriting the locale default labels a
+ * Gregorian grid with Persian month names -- offset by roughly ten days -- and
+ * renders a date under the picker that disagrees with the cell just clicked.
+ */
+const GREGORY = { calendar: "gregory" } as const;
+
+/**
+ * Maps a locale's own digits onto ASCII.
+ *
+ * `\d` in JavaScript is `[0-9]` and nothing else, with or without the `u` flag,
+ * so a scan for it finds nothing in ar-EG (`arab`), fa-IR (`arabext`), ne-NP or
+ * my-MM. A typed date field in those locales would reject every value the
+ * user's own keyboard produces.
+ *
+ * Built by formatting 1234567890 and reading the result position by position,
+ * which works for any numbering system without a table.
+ */
+function toAsciiDigits(input: string, locale?: string): string {
+  const localised = new Intl.NumberFormat(locale, { useGrouping: false }).format(1234567890);
+  if (localised === "1234567890") return input;
+
+  const map = new Map<string, string>();
+  [...localised].forEach((char, index) => map.set(char, String((index + 1) % 10)));
+  return [...input].map(char => map.get(char) ?? char).join("");
+}
+
+/**
  * Month names for a locale.
  *
  * Built from a fixed year in which no month is ambiguous, and read via
@@ -19,7 +50,7 @@ export type NameWidth = "long" | "short" | "narrow";
  * formatted string — the position of which differs by locale.
  */
 export function getMonthNames(locale?: string, width: NameWidth = "long"): string[] {
-  const format = new Intl.DateTimeFormat(locale, { month: width });
+  const format = new Intl.DateTimeFormat(locale, { ...GREGORY, month: width });
   return Array.from({ length: 12 }, (_, index) => format.format(new Date(2021, index, 1)));
 }
 
@@ -35,7 +66,7 @@ export function getWeekdayNames(
   width: NameWidth = "short",
   weekStartsOn = 0
 ): string[] {
-  const format = new Intl.DateTimeFormat(locale, { weekday: width });
+  const format = new Intl.DateTimeFormat(locale, { ...GREGORY, weekday: width });
   // 2021-08-01 was a Sunday, so index 0 is Sunday before rotation.
   const names = Array.from({ length: 7 }, (_, index) =>
     format.format(new Date(2021, 7, 1 + index))
@@ -72,7 +103,8 @@ export const formatDate = (
   date: CalendarDate,
   locale?: string,
   options: Intl.DateTimeFormatOptions = { dateStyle: "medium" }
-): string => new Intl.DateTimeFormat(locale, options).format(toDate(date));
+  // `calendar` first, so a caller who genuinely wants another one can say so.
+): string => new Intl.DateTimeFormat(locale, { ...GREGORY, ...options }).format(toDate(date));
 
 /**
  * Parses a date the way a locale writes it.
@@ -83,10 +115,10 @@ export const formatDate = (
  * from `formatToParts`, and the input is read against that.
  */
 export function parseLocaleDate(input: string, locale?: string): CalendarDate | undefined {
-  const digits = input.match(/\d+/g);
+  const digits = toAsciiDigits(input, locale).match(/\d+/g);
   if (!digits || digits.length < 3) return undefined;
 
-  const order = new Intl.DateTimeFormat(locale)
+  const order = new Intl.DateTimeFormat(locale, GREGORY)
     .formatToParts(new Date(2021, 10, 22))
     .filter(part => part.type === "year" || part.type === "month" || part.type === "day")
     .map(part => part.type);
