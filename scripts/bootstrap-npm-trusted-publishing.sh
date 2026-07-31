@@ -32,8 +32,21 @@ cd "$(dirname "$0")/.."
 # 11.15+, but it is present and takes this exact syntax in 11.14.1 -- verified
 # against `npm trust --help` -- so the check reports rather than gates.
 echo "==> npm CLI: $(npm --version)  (needs >= 11.5.1 for the OIDC exchange)"
-npm trust --help >/dev/null 2>&1 || {
-  echo "This npm has no 'npm trust'. Upgrade: npm i -g npm@latest"
+# Probe for the flag, not for a version number -- and probe the SUBCOMMAND's
+# help, not `npm trust --help`, which does not list it.
+#
+# npm 11.14.1 has `npm trust github` but sends no `permissions` field, and the
+# registry rejects that with a bare "400 Bad Request" naming nothing:
+#
+#   npm error 400 Bad Request - POST .../-/package/@scope%2fpkg/trust
+#
+# npm 12 requires at least one of --allow-publish / --allow-stage-publish and
+# sends them. So having the command is not enough; it has to take the flag.
+npm trust github --help 2>&1 | grep -q -- "--allow-publish" || {
+  echo
+  echo "This npm cannot register a trusted publisher: 'npm trust github' does"
+  echo "not accept --allow-publish, so the registry will reject it with a 400."
+  echo "Upgrade and re-run:  npm i -g npm@latest"
   exit 1
 }
 npm whoami >/dev/null 2>&1 || { echo "Not logged in. Run: npm login"; exit 1; }
