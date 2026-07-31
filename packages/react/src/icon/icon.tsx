@@ -25,7 +25,7 @@ export function Icon({ name, size = "md", className, ref, ...rest }: IconProps) 
       className={className}
       {...rest}
     >
-      {paths.map((d) => (
+      {paths.map(d => (
         <path key={d} d={d} />
       ))}
     </svg>

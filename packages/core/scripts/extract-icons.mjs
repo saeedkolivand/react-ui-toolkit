@@ -46,7 +46,7 @@ for (let i = 0; i < keys.length; i++) {
   const to = i + 1 < keys.length ? keys[i + 1].index : body.length;
   const name = keys[i][1];
   const chunk = body.slice(from, to);
-  const ds = [...chunk.matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
+  const ds = [...chunk.matchAll(/\sd="([^"]+)"/g)].map(m => m[1]);
   if (!ds.length) {
     console.warn(`!! ${name}: no path data found — inspect manually`);
     continue;
@@ -70,7 +70,7 @@ export const ICON_VIEW_BOX = "0 0 24 24";
 
 /** ${entries.length} icons; ${multi.length} of them multi-path. */
 export const iconPaths = {
-${entries.map(([name, ds]) => `  ${name}: [${ds.map((d) => JSON.stringify(d)).join(", ")}],`).join("\n")}
+${entries.map(([name, ds]) => `  ${name}: [${ds.map(d => JSON.stringify(d)).join(", ")}],`).join("\n")}
 } as const satisfies Record<string, readonly string[]>;
 
 export type IconName = keyof typeof iconPaths;
@@ -87,5 +87,6 @@ export const isIconName = (value: string): value is IconName => value in iconPat
 writeFileSync(OUT, out);
 
 console.log(`extracted ${entries.length} icons (${multi.length} multi-path) -> src/icons.ts`);
-if (multi.length) console.log("multi-path:", multi.map(([n, ds]) => `${n}(${ds.length})`).join(", "));
+if (multi.length)
+  console.log("multi-path:", multi.map(([n, ds]) => `${n}(${ds.length})`).join(", "));
 console.log("first/last:", names[0], "...", names[names.length - 1]);

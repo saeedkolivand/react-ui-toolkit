@@ -56,7 +56,8 @@ describe("icon data", () => {
     for (const name of ICON_NAMES) {
       const paths = iconPaths[name];
       expect(paths.length, `${name} has no paths`).toBeGreaterThan(0);
-      for (const d of paths) expect(d.trim().length, `${name} has an empty path`).toBeGreaterThan(0);
+      for (const d of paths)
+        expect(d.trim().length, `${name} has an empty path`).toBeGreaterThan(0);
     }
   });
 

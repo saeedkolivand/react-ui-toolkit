@@ -3,3 +3,7 @@
 // the entire library for React Server Components consumers.
 export { Button, type ButtonProps } from "./button/button";
 export { Icon, type IconProps } from "./icon/icon";
+export { Spinner, type SpinnerProps, type SpinnerVariant } from "./spinner/spinner";
+export { Badge, type BadgeProps, type BadgeVariant } from "./badge/badge";
+export { Card, type CardProps, type CardVariant } from "./card/card";
+export { Divider, type DividerProps } from "./divider/divider";
