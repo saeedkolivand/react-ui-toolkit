@@ -1,52 +1,41 @@
 import type { Preview } from "@storybook/react-vite";
-import "../src/styles/index.css";
+// The real shipped stylesheet — Storybook renders exactly what a consumer gets.
+import "@crosskit-ui/styles";
 
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: "^on[A-Z].*" },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    controls: { matchers: { color: /(background|color)$/i } },
     options: {
-      storySort: {
-        order: [
-          "Introduction",
-          "Getting Started",
-          "Components",
-          [
-            "Base",
-            [
-              "Button",
-              "Input",
-              "Textarea",
-              "Select",
-              "Checkbox",
-              "Radio",
-              "Switch",
-              "Tooltip",
-              "Icon",
-              "Divider",
-              "Tag",
-              "Table",
-              "*",
-            ],
-          ],
-          ["Feedback", ["Alert", "Badge", "Progress", "Spinner", "Avatar", "*"]],
-          ["Layout", "*"],
-          ["Navigation", "*"],
-          "Form",
-          "Hooks",
-          "Utilities",
-          "Examples",
-          "Theme",
-          "*",
+      storySort: { order: ["Introduction", "Data attributes", "Components", "*"] },
+    },
+  },
+  // Storybook is the review surface for @crosskit-ui/styles, so the theme
+  // toggle has to flip the real [data-theme] attribute the stylesheet keys on,
+  // not swap a preview background colour.
+  globalTypes: {
+    theme: {
+      description: "Theme",
+      defaultValue: "light",
+      toolbar: {
+        title: "Theme",
+        icon: "circlehollow",
+        items: [
+          { value: "light", title: "Light" },
+          { value: "dark", title: "Dark" },
         ],
+        dynamicTitle: true,
       },
     },
   },
+  decorators: [
+    (Story, context) => {
+      const theme = (context.globals as { theme?: string }).theme ?? "light";
+      document.documentElement.setAttribute("data-theme", theme);
+      document.body.style.background = "var(--ck-bg)";
+      document.body.style.color = "var(--ck-fg)";
+      return Story();
+    },
+  ],
 };
 
 export default preview;
