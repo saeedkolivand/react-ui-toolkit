@@ -4,3 +4,7 @@ export { default as Spinner } from "./spinner/Spinner.vue";
 export { default as Badge } from "./badge/Badge.vue";
 export { default as Card } from "./card/Card.vue";
 export { default as Divider } from "./divider/Divider.vue";
+export { default as Tag } from "./tag/Tag.vue";
+export { default as Alert } from "./alert/Alert.vue";
+export { default as Container } from "./layout/Container.vue";
+export { default as Row } from "./layout/Row.vue";

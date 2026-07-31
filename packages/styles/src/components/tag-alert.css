@@ -1,0 +1,132 @@
+/* Tag and Alert.
+   Tag has a two-axis API (variant × color) rather than Badge's single variant
+   axis, so its selectors carry both data-variant and data-color. */
+@layer ck.components {
+  /* -------------------------------------------------------------------- Tag */
+  [data-scope="tag"][data-part="root"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: var(--ck-radius-full);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    background-color: var(--ck-tag-bg);
+    color: var(--ck-tag-fg);
+  }
+
+  /* colour axis: one accent per colour, three visual treatments over it */
+  [data-scope="tag"][data-part="root"] {
+    --ck-tag-accent: var(--ck-color-neutral-600);
+  }
+  [data-scope="tag"][data-part="root"][data-color="primary"] {
+    --ck-tag-accent: var(--ck-accent-solid);
+  }
+  [data-scope="tag"][data-part="root"][data-color="success"] {
+    --ck-tag-accent: var(--ck-success-solid);
+  }
+  [data-scope="tag"][data-part="root"][data-color="warning"] {
+    --ck-tag-accent: var(--ck-warning-solid);
+  }
+  [data-scope="tag"][data-part="root"][data-color="error"] {
+    --ck-tag-accent: var(--ck-danger-solid);
+  }
+  [data-scope="tag"][data-part="root"][data-color="info"] {
+    --ck-tag-accent: var(--ck-info-solid);
+  }
+
+  /* variant axis */
+  [data-scope="tag"][data-part="root"][data-variant="default"] {
+    --ck-tag-bg: color-mix(in oklab, var(--ck-tag-accent) 15%, transparent);
+    --ck-tag-fg: var(--ck-tag-accent);
+  }
+  [data-scope="tag"][data-part="root"][data-variant="outline"] {
+    --ck-tag-bg: transparent;
+    --ck-tag-fg: var(--ck-tag-accent);
+    border-color: var(--ck-tag-accent);
+  }
+  [data-scope="tag"][data-part="root"][data-variant="solid"] {
+    --ck-tag-bg: var(--ck-tag-accent);
+    --ck-tag-fg: #fff;
+  }
+
+  [data-scope="tag"] [data-part="close-trigger"] {
+    margin-left: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: currentColor;
+    border-radius: var(--ck-radius-full);
+    cursor: pointer;
+  }
+  [data-scope="tag"] [data-part="close-trigger"]:hover {
+    background-color: color-mix(in oklab, currentColor 20%, transparent);
+  }
+  [data-scope="tag"] [data-part="close-trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 1px;
+  }
+
+  /* ------------------------------------------------------------------ Alert */
+  [data-scope="alert"][data-part="root"] {
+    position: relative;
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--ck-radius-lg);
+    border: 1px solid var(--ck-alert-border);
+    background-color: var(--ck-alert-bg);
+    color: var(--ck-alert-fg);
+    transition: background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+
+  [data-scope="alert"][data-part="root"] {
+    --ck-alert-accent: var(--ck-info-solid);
+  }
+  [data-scope="alert"][data-part="root"][data-variant="success"] {
+    --ck-alert-accent: var(--ck-success-solid);
+  }
+  [data-scope="alert"][data-part="root"][data-variant="warning"] {
+    --ck-alert-accent: var(--ck-warning-solid);
+  }
+  [data-scope="alert"][data-part="root"][data-variant="error"] {
+    --ck-alert-accent: var(--ck-danger-solid);
+  }
+  [data-scope="alert"][data-part="root"] {
+    --ck-alert-bg: color-mix(in oklab, var(--ck-alert-accent) 12%, transparent);
+    --ck-alert-border: color-mix(in oklab, var(--ck-alert-accent) 35%, transparent);
+    --ck-alert-fg: var(--ck-fg);
+  }
+
+  [data-scope="alert"] > [data-scope="icon"] {
+    flex-shrink: 0;
+    color: var(--ck-alert-accent);
+    margin-top: 0.125rem;
+  }
+  [data-scope="alert"] [data-part="content"] {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+  [data-scope="alert"] [data-part="title"] {
+    margin: 0 0 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+  [data-scope="alert"] [data-part="description"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    opacity: 0.9;
+  }
+  [data-scope="alert"] [data-part="close-trigger"] {
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+}
