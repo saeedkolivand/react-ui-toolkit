@@ -58,6 +58,36 @@ jobs:
         with:
           fetch-depth: 0 # full history, so the review can diff against the base
 
+      # Everything below exists so the review can RUN the code rather than only
+      # read it. Reviews were closing with "I could not run the gate: this
+      # checkout has no node_modules", which meant every finding was reasoned
+      # from the diff — and the ones that mattered most in this repo are the ones
+      # reading cannot settle: whether an assertion still fails when the fix is
+      # reverted, and whether a jsdom green survives a real browser.
+      #
+      # Installing here rather than letting the agent do it keeps the lockfile
+      # frozen, gets the pnpm store cache, and means the allowed-tools list below
+      # never has to include a command that mutates dependencies.
+      - uses: pnpm/action-setup@v6 # reads packageManager from package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The playgrounds import built dist, not src — trap 2 in CLAUDE.md, which
+      # has produced a false green twice. Building here means a suite the review
+      # runs measures this PR rather than whatever was last built.
+      - run: pnpm turbo run build --filter="./packages/*"
+
+      # Chromium only, and only because the browser suite is the one that catches
+      # what jsdom structurally cannot: `inert` blocking focus, and which of two
+      # overlapping fixed elements a press actually reaches. Both have hidden a
+      # real bug behind a green unit test here.
+      - run: pnpm --filter @crosskit-ui/e2e exec playwright install --with-deps chromium
+
       - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -71,4 +101,5 @@ jobs:
           # standards without flipping modes.
           claude_args: |
             --model claude-opus-5
-            --append-system-prompt "Review this pull request against CLAUDE.md and CONTRIBUTING.md, which encode the conventions that keep four framework adapters identical. Review only the changed files. Weight these highest, because each has silently shipped a bug here before: booleans rendered as data-x=\"false\" rather than absent (\"false\" matches [data-x] in CSS, so the wrong styles apply); class names appearing in markup instead of data-scope/data-part/data-state; consumer attributes not spread last; a root part with no declared display; rendering gated on open rather than on presence, which silently kills exit animations; CSS authored outside a cascade layer; physical CSS properties where logical ones are required for RTL; and any new runtime dependency in a published package.json. Hand-rolled behaviour in packages/core is the intended v2 design — do not flag it as reinventing a wheel. Report only defects introduced by this diff, and only where you can quote the specific rule broken or demonstrate the failure. If you are not certain an issue is real, do not raise it: false positives erode trust. Post findings as inline comments on the changed lines. Advisory only — do not approve or block."
+            --allowedTools "Bash(pnpm turbo run:*),Bash(pnpm --filter:*),Bash(pnpm vitest:*),Bash(pnpm lint:*),Bash(pnpm typecheck:*),Bash(node:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
+            --append-system-prompt "Review this pull request against CLAUDE.md and CONTRIBUTING.md, which encode the conventions that keep four framework adapters identical. Review only the changed files. Weight these highest, because each has silently shipped a bug here before: booleans rendered as data-x=\"false\" rather than absent (\"false\" matches [data-x] in CSS, so the wrong styles apply); class names appearing in markup instead of data-scope/data-part/data-state; consumer attributes not spread last; a root part with no declared display; rendering gated on open rather than on presence, which silently kills exit animations; CSS authored outside a cascade layer; physical CSS properties where logical ones are required for RTL; and any new runtime dependency in a published package.json. Hand-rolled behaviour in packages/core is the intended v2 design — do not flag it as reinventing a wheel. Dependencies are installed and the packages are built before you start, and you can run the suites: `pnpm turbo run lint typecheck build test` for the gate, `pnpm --filter <pkg> vitest run <path>` for one file, `pnpm --filter @crosskit-ui/e2e test:browser` for the browser suite (Chromium is installed) and `test:e2e` for cross-framework parity. Prefer running over reasoning. When you suspect a defect, reproduce it first; when you believe a test is weak, revert the fix or delete the code it covers and confirm the test actually fails. Report a finding you could not reproduce as unconfirmed, and say what you ran. Report only defects introduced by this diff, and only where you can quote the specific rule broken or demonstrate the failure. If you are not certain an issue is real, do not raise it: false positives erode trust. Post findings as inline comments on the changed lines. Advisory only — do not approve or block."
