@@ -24,3 +24,4 @@ export { default as Option } from "./select/Option.svelte";
 export type { SelectItem } from "./select/context.svelte";
 export { default as Tabs } from "./tabs/Tabs.svelte";
 export { default as Accordion } from "./accordion/Accordion.svelte";
+export { default as Toaster } from "./toast/Toaster.svelte";

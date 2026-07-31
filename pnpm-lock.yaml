@@ -100,6 +100,9 @@ catalogs:
     '@zag-js/tabs':
       specifier: ^1.43.0
       version: 1.43.0
+    '@zag-js/toast':
+      specifier: ^1.43.0
+      version: 1.43.0
     '@zag-js/types':
       specifier: ^1.43.0
       version: 1.43.0
@@ -284,6 +287,9 @@ importers:
       '@zag-js/tabs':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -312,6 +318,10 @@ importers:
     publishDirectory: dist
 
   packages/core:
+    dependencies:
+      '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: 'catalog:'
@@ -350,6 +360,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/tabs':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/toast':
         specifier: catalog:zag
         version: 1.43.0
     devDependencies:
@@ -434,6 +447,9 @@ importers:
       '@zag-js/tabs':
         specifier: catalog:zag
         version: 1.43.0
+      '@zag-js/toast':
+        specifier: catalog:zag
+        version: 1.43.0
     devDependencies:
       '@sveltejs/package':
         specifier: catalog:frameworks
@@ -475,6 +491,9 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/tabs':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/toast':
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/vue':
@@ -3101,6 +3120,9 @@ packages:
 
   '@zag-js/tabs@1.43.0':
     resolution: {integrity: sha512-Nll5xQUPGOdVTYd+DYGA3wF+0xlJc+kRmQoAuE5ZHIsLuJrXn9jhRwkmQHL2rh/lln3cT9Ecp4UDWl/qyqBecQ==}
+
+  '@zag-js/toast@1.43.0':
+    resolution: {integrity: sha512-T2bChbXQXfYCk8Kw4NYqoybRBN1z3XL2HnpzRe1zRyNQ/Q9RfnUsU492P+sl8IlLB2nchNKgN2BCg/UacffSYQ==}
 
   '@zag-js/types@1.43.0':
     resolution: {integrity: sha512-pheZyCiVjJaXBzbfoj/gMKXkZUo1D5JWd46QVYWonHJZIdUfDRDwBvDKcXGIHmpuq7fJrnGXbegAk0+D2aa4bw==}
@@ -8284,6 +8306,15 @@ snapshots:
     dependencies:
       '@zag-js/anatomy': 1.43.0
       '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
+
+  '@zag-js/toast@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dismissable': 1.43.0
       '@zag-js/dom-query': 1.43.0
       '@zag-js/types': 1.43.0
       '@zag-js/utils': 1.43.0

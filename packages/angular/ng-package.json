@@ -12,6 +12,7 @@
     "tslib",
     "@zag-js/dialog",
     "@zag-js/presence",
+    "@zag-js/toast",
     "@zag-js/select",
     "@zag-js/tabs",
     "@zag-js/accordion"

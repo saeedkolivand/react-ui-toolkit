@@ -51,7 +51,8 @@
     "@zag-js/presence": "catalog:zag",
     "@zag-js/react": "catalog:zag",
     "@zag-js/select": "catalog:zag",
-    "@zag-js/tabs": "catalog:zag"
+    "@zag-js/tabs": "catalog:zag",
+    "@zag-js/toast": "catalog:zag"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",
