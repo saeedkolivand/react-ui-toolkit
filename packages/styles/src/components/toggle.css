@@ -1,0 +1,203 @@
+/* Checkbox, Radio and Switch.
+ *
+ * These style the NATIVE input rather than wrapping a Zag machine. A native
+ * <input type="checkbox"> already brings keyboard handling, focus behaviour,
+ * form participation, the indeterminate property and correct AX-tree semantics;
+ * a machine would mostly re-implement those around a hidden input. The v0
+ * double-fire bug came from putting onClick on a wrapper AND onChange on the
+ * input, which a single native control simply cannot reproduce.
+ *
+ * Checkbox and Radio style the input directly (appearance: none + a background
+ * image). Switch cannot: it needs a moving thumb, and pseudo-elements on
+ * replaced elements are not reliably specified, so it uses a visually-hidden
+ * input plus an explicit track/thumb pair.
+ */
+@layer ck.components {
+  /* ----------------------------------------------------- checkbox / radio */
+  [data-scope="checkbox"][data-part="root"],
+  [data-scope="radio"][data-part="root"],
+  [data-scope="switch"][data-part="root"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  [data-scope="checkbox"][data-part="root"][data-disabled],
+  [data-scope="radio"][data-part="root"][data-disabled],
+  [data-scope="switch"][data-part="root"][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope="checkbox"] [data-part="control"],
+  [data-scope="radio"] [data-part="control"] {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    flex-shrink: 0;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--ck-border);
+    background-color: var(--ck-surface);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    cursor: inherit;
+    transition:
+      background-color var(--ck-duration-sm) var(--ck-ease-in-out),
+      border-color var(--ck-duration-sm) var(--ck-ease-in-out);
+  }
+  [data-scope="checkbox"] [data-part="control"] {
+    border-radius: var(--ck-radius-base);
+  }
+  [data-scope="radio"] [data-part="control"] {
+    border-radius: var(--ck-radius-full);
+  }
+
+  [data-scope="checkbox"] [data-part="control"][data-size="sm"],
+  [data-scope="radio"] [data-part="control"][data-size="sm"] {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  [data-scope="checkbox"] [data-part="control"][data-size="lg"],
+  [data-scope="radio"] [data-part="control"][data-size="lg"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  [data-scope="checkbox"] [data-part="control"]:checked,
+  [data-scope="radio"] [data-part="control"]:checked,
+  [data-scope="checkbox"] [data-part="control"]:indeterminate {
+    background-color: var(--ck-accent-solid);
+    border-color: var(--ck-accent-solid);
+  }
+
+  /* Inline SVG marks. `stroke='white'` is literal rather than currentColor
+     because a background image cannot inherit it. */
+  [data-scope="checkbox"] [data-part="control"]:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-6'/%3E%3C/svg%3E");
+  }
+  [data-scope="checkbox"] [data-part="control"]:indeterminate {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M4 8h8'/%3E%3C/svg%3E");
+  }
+  [data-scope="radio"] [data-part="control"]:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='white'/%3E%3C/svg%3E");
+  }
+
+  [data-scope="checkbox"] [data-part="control"]:focus-visible,
+  [data-scope="radio"] [data-part="control"]:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow:
+      0 0 0 2px var(--ck-ring-offset),
+      0 0 0 4px var(--ck-ring);
+  }
+
+  [data-scope="checkbox"][data-invalid] [data-part="control"],
+  [data-scope="radio"][data-invalid] [data-part="control"] {
+    border-color: var(--ck-danger-solid);
+  }
+
+  /* ------------------------------------------------------------- switch */
+  /* The input stays in the DOM for keyboard, forms and AX — just not visible. */
+  [data-scope="switch"] [data-part="hidden-input"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  [data-scope="switch"] [data-part="control"] {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-block;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: var(--ck-radius-full);
+    background-color: var(--ck-color-neutral-300);
+    transition: background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="switch"] [data-part="control"][data-size="sm"] {
+    width: 1.75rem;
+    height: 1rem;
+  }
+  [data-scope="switch"] [data-part="control"][data-size="lg"] {
+    width: 2.75rem;
+    height: 1.5rem;
+  }
+
+  [data-scope="switch"] [data-part="thumb"] {
+    position: absolute;
+    top: 50%;
+    left: 0.125rem;
+    translate: 0 -50%;
+    width: 1rem;
+    height: 1rem;
+    border-radius: var(--ck-radius-full);
+    background-color: #fff;
+    box-shadow: var(--ck-shadow-sm);
+    transition: translate var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-part="control"][data-size="sm"] [data-part="thumb"] {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+  [data-part="control"][data-size="lg"] [data-part="thumb"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* checked state, driven by the real input's :checked */
+  [data-scope="switch"] [data-part="hidden-input"]:checked ~ [data-part="control"] {
+    background-color: var(--ck-accent-solid);
+  }
+  [data-scope="switch"]
+    [data-part="hidden-input"]:checked
+    ~ [data-part="control"]
+    [data-part="thumb"] {
+    translate: 1.0625rem -50%;
+  }
+  [data-scope="switch"]
+    [data-part="hidden-input"]:checked
+    ~ [data-part="control"][data-size="sm"]
+    [data-part="thumb"] {
+    translate: 0.8125rem -50%;
+  }
+  [data-scope="switch"]
+    [data-part="hidden-input"]:checked
+    ~ [data-part="control"][data-size="lg"]
+    [data-part="thumb"] {
+    translate: 1.3125rem -50%;
+  }
+
+  [data-scope="switch"] [data-part="hidden-input"]:focus-visible ~ [data-part="control"] {
+    outline: 2px solid transparent;
+    box-shadow:
+      0 0 0 2px var(--ck-ring-offset),
+      0 0 0 4px var(--ck-ring);
+  }
+
+  /* shared label + description */
+  [data-scope="checkbox"] [data-part="label"],
+  [data-scope="radio"] [data-part="label"],
+  [data-scope="switch"] [data-part="label"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg);
+    margin-bottom: 0;
+  }
+
+  /* radio group */
+  [data-scope="radio-group"][data-part="root"] {
+    display: flex;
+    gap: 0.75rem;
+  }
+  [data-scope="radio-group"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: column;
+  }
+}
