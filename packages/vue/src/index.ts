@@ -10,3 +10,7 @@ export { default as Container } from "./layout/Container.vue";
 export { default as Row } from "./layout/Row.vue";
 export { default as Input } from "./input/Input.vue";
 export { default as Textarea } from "./textarea/Textarea.vue";
+export { default as Checkbox } from "./toggle/Checkbox.vue";
+export { default as Radio } from "./toggle/Radio.vue";
+export { default as RadioGroup } from "./toggle/RadioGroup.vue";
+export { default as Switch } from "./toggle/Switch.vue";

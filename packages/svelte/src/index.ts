@@ -10,3 +10,7 @@ export { default as Container } from "./layout/Container.svelte";
 export { default as Row } from "./layout/Row.svelte";
 export { default as Input } from "./input/Input.svelte";
 export { default as Textarea } from "./textarea/Textarea.svelte";
+export { default as Checkbox } from "./toggle/Checkbox.svelte";
+export { default as Radio } from "./toggle/Radio.svelte";
+export { default as RadioGroup } from "./toggle/RadioGroup.svelte";
+export { default as Switch } from "./toggle/Switch.svelte";

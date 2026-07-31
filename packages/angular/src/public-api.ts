@@ -9,3 +9,4 @@ export { CkAlert } from "./feedback/alert.component";
 export { CkContainer, CkRow } from "./layout/layout.components";
 export { CkInput } from "./field/input.component";
 export { CkTextarea } from "./field/textarea.component";
+export { CkCheckbox, CkRadio, CkRadioGroup, CkSwitch } from "./toggle/toggle.components";
