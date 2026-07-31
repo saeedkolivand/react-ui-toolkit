@@ -2,3 +2,4 @@
 // per-file directives tree-shake correctly, but a directive here would poison
 // the entire library for React Server Components consumers.
 export { Button, type ButtonProps } from "./button/button";
+export { Icon, type IconProps } from "./icon/icon";

@@ -17,4 +17,5 @@
 @import "./themes/dark.css" layer(ck.tokens);
 
 @import "./reset.css";
+@import "./components/icon.css";
 @import "./components/button.css";

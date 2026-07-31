@@ -1,0 +1,35 @@
+/* Icon presentation lives here, not in markup.
+   fill / stroke-width / stroke-linecap / stroke-linejoin are all CSS-settable
+   SVG presentation attributes, so moving them out reduces every adapter's Icon
+   to <svg><path d="..." /></svg> — byte-identical across React, Vue, Svelte and
+   Angular, with no strokeLinecap-vs-stroke-linecap casing problem. It also
+   gives consumers --ck-icon-stroke-width as a free knob. */
+@layer ck.components {
+  [data-scope="icon"][data-part="root"] {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--ck-icon-stroke-width, 2);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  [data-scope="icon"][data-part="root"][data-size="sm"] {
+    width: 1rem;
+    height: 1rem;
+  }
+  [data-scope="icon"][data-part="root"][data-size="md"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  [data-scope="icon"][data-part="root"][data-size="lg"] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  [data-scope="icon"][data-part="root"][data-size="xl"] {
+    width: 2rem;
+    height: 2rem;
+  }
+}
