@@ -3,8 +3,8 @@
 <!-- GENERATED FILE — edit apps/docs/src/data/*.ts and run `pnpm --filter @crosskit-ui/docs gen:migration`. -->
 
 CrossKit is a clean break, not a rename with a compatibility shim. The
-component set is the same 27 you had; what changed is that behaviour now comes
-from state machines shared across four frameworks, and styling from one
+component set is the same 27 you had; what changed is that behaviour is now
+written once and shared across four frameworks, and styling comes from one
 precompiled stylesheet keyed to data attributes.
 
 ## The four things that affect every file
@@ -48,128 +48,128 @@ of them, remove the workaround:
 
 #### Button
 
-| v0                | v1              | Notes                                                                                       |
-| ----------------- | --------------- | ------------------------------------------------------------------------------------------- |
+| v0 | v1 | Notes |
+| --- | --- | --- |
 | `no default type` | `type="button"` | A Button inside a form used to submit it. Pass type="submit" if you want the old behaviour. |
 
 ### Layout
 
 #### Row
 
-| v0                     | v1                                 | Notes                                                                              |
-| ---------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
+| v0 | v1 | Notes |
+| --- | --- | --- |
 | `gap-${spacing} class` | `--ck-row-spacing custom property` | The old dynamic class name only ever worked inside this repo's own Tailwind build. |
 
 #### Col
 
-| v0                                        | v1                                                     | Notes                                                       |
-| ----------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------- |
+| v0 | v1 | Notes |
+| --- | --- | --- |
 | `offset / smOffset / mdOffset / lgOffset` | `offset, and { offset } inside each breakpoint object` | These are newly functional — they never did anything in v0. |
 
 ### Forms
 
 #### Input
 
-| v0      | v1        | Notes |
-| ------- | --------- | ----- |
-| `error` | `invalid` |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `error` | `invalid` |  |
 
 #### Textarea
 
-| v0                   | v1                  | Notes              |
-| -------------------- | ------------------- | ------------------ |
-| `error`              | `invalid`           |                    |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `error` | `invalid` |  |
 | `variant="outlined"` | `variant="outline"` | Now matches Input. |
 
 #### Switch
 
-| v0                            | v1                        | Notes                                                         |
-| ----------------------------- | ------------------------- | ------------------------------------------------------------- |
+| v0 | v1 | Notes |
+| --- | --- | --- |
 | `two competing change events` | `one native change event` | Handlers that ran twice, or not at all, now run exactly once. |
 
 #### Select & Option
 
-| v0                                | v1                                       | Notes                                                                                                                    |
-| --------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `options`                         | `items`                                  |                                                                                                                          |
-| `onChange(e) with e.target.value` | `onValueChange({ value, item })`         |                                                                                                                          |
-| `error`                           | `invalid`                                |                                                                                                                          |
-| `<Option> children ignored`       | `<Option> children build the collection` | v0 destructured them into `_children` and never rendered them, which is why Table's page-size dropdown was always empty. |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `options` | `items` |  |
+| `onChange(e) with e.target.value` | `onValueChange({ value, item })` |  |
+| `error` | `invalid` |  |
+| `<Option> children ignored` | `<Option> children build the collection` | v0 destructured them into `_children` and never rendered them, which is why Table's page-size dropdown was always empty. |
 
 ### Overlays
 
 #### Modal
 
-| v0                              | v1                             | Notes                                          |
-| ------------------------------- | ------------------------------ | ---------------------------------------------- |
-| `isOpen`                        | `open`                         |                                                |
-| `onClose: () => void`           | `onOpenChange: (d) => void`    |                                                |
-| `closeOnEsc`                    | `closeOnEscape`                |                                                |
-| `closeOnBackdropClick`          | `closeOnInteractOutside`       |                                                |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `isOpen` | `open` |  |
+| `onClose: () => void` | `onOpenChange: (d) => void` |  |
+| `closeOnEsc` | `closeOnEscape` |  |
+| `closeOnBackdropClick` | `closeOnInteractOutside` |  |
 | `aria-labelledby="modal-title"` | `a generated id that resolves` | v0's pointed at an element that did not exist. |
 
 #### Tooltip
 
-| v0                               | v1                                            | Notes                                                                                                                                                                              |
-| -------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `visible`                        | `open`                                        |                                                                                                                                                                                    |
-| `showDelay / hideDelay`          | `openDelay / closeDelay`                      |                                                                                                                                                                                    |
-| `overlayClassName`               | `contentClassName`                            |                                                                                                                                                                                    |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `visible` | `open` |  |
+| `showDelay / hideDelay` | `openDelay / closeDelay` |  |
+| `overlayClassName` | `contentClassName` |  |
 | `cloneElement onto your trigger` | `a wrapper element with display: inline-flex` | Zag's trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else. |
 
 #### Menu
 
-| v0                                | v1                    | Notes                                                           |
-| --------------------------------- | --------------------- | --------------------------------------------------------------- |
-| `Dropdown + Menu + MenuItem`      | `one Menu with items` |                                                                 |
-| `MenuItem.key`                    | `MenuItem.value`      |                                                                 |
-| `overlay`                         | `items`               |                                                                 |
-| `children as the trigger element` | `trigger as content`  | <Dropdown><Button/></Dropdown> produced invalid nested buttons. |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `Dropdown + Menu + MenuItem` | `one Menu with items` |  |
+| `MenuItem.key` | `MenuItem.value` |  |
+| `overlay` | `items` |  |
+| `children as the trigger element` | `trigger as content` | <Dropdown><Button/></Dropdown> produced invalid nested buttons. |
 
 #### Toast
 
-| v0                                       | v1                                        | Notes |
-| ---------------------------------------- | ----------------------------------------- | ----- |
-| `<NotificationProvider>`                 | `<Toaster :toaster> at the root`          |       |
-| `const { notify } = useNotification()`   | `import { toaster } — no hook`            |       |
-| `notify({ type, message, description })` | `toaster.success({ title, description })` |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `<NotificationProvider>` | `<Toaster :toaster> at the root` |  |
+| `const { notify } = useNotification()` | `import { toaster } — no hook` |  |
+| `notify({ type, message, description })` | `toaster.success({ title, description })` |  |
 
 ### Disclosure
 
 #### Tabs
 
-| v0                         | v1                                | Notes |
-| -------------------------- | --------------------------------- | ----- |
-| `defaultActiveTab: number` | `value / defaultValue (a tab id)` |       |
-| `onTabChange(index)`       | `onValueChange({ value })`        |       |
-| `TabItem.id?`              | `TabItem.id — required`           |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `defaultActiveTab: number` | `value / defaultValue (a tab id)` |  |
+| `onTabChange(index)` | `onValueChange({ value })` |  |
+| `TabItem.id?` | `TabItem.id — required` |  |
 
 #### Accordion
 
-| v0         | v1              | Notes |
-| ---------- | --------------- | ----- |
-| `multiple` | `allowMultiple` |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `multiple` | `allowMultiple` |  |
 
 ### Data display
 
 #### Progress
 
-| v0              | v1             | Notes |
-| --------------- | -------------- | ----- |
-| `indeterminate` | `value={null}` |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `indeterminate` | `value={null}` |  |
 
 #### Table
 
-| v0                                                   | v1                                                                      | Notes |
-| ---------------------------------------------------- | ----------------------------------------------------------------------- | ----- |
-| `dataSource`                                         | `data`                                                                  |       |
-| `columns[].title / .dataIndex / .key`                | `.header / .accessor / .id`                                             |       |
-| `columns[].render`                                   | `a per-framework cell slot`                                             |       |
-| `columns[].sorter`                                   | `sortable + optional sortFn`                                            |       |
-| `rowKey: keyof T`                                    | `getRowId: (row, i) => string`                                          |       |
-| `size`                                               | `density`                                                               |       |
-| `scroll.x / scroll.y`                                | `--ck-table-min-width / --ck-table-max-height`                          |       |
-| `pagination: { current, pageSize, total, onChange }` | `pagination: boolean + pageSize / paginationState / onPaginationChange` |       |
+| v0 | v1 | Notes |
+| --- | --- | --- |
+| `dataSource` | `data` |  |
+| `columns[].title / .dataIndex / .key` | `.header / .accessor / .id` |  |
+| `columns[].render` | `a per-framework cell slot` |  |
+| `columns[].sorter` | `sortable + optional sortFn` |  |
+| `rowKey: keyof T` | `getRowId: (row, i) => string` |  |
+| `size` | `density` |  |
+| `scroll.x / scroll.y` | `--ck-table-min-width / --ck-table-max-height` |  |
+| `pagination: { current, pageSize, total, onChange }` | `pagination: boolean + pageSize / paginationState / onPaginationChange` |  |
 
 ## Unchanged APIs
 
@@ -179,10 +179,10 @@ These components kept their v0 prop names, so only the import path changes:
 
 ## Deleted, not renamed
 
-| Removed                                   | Replacement                                                |
-| ----------------------------------------- | ---------------------------------------------------------- |
-| `withStyles`, `withStylesSSR`             | `import "@crosskit-ui/styles"`                             |
-| `StylesProvider`, `StylesProviderSSR`     | same                                                       |
-| `useIsHydrated`                           | nothing — the theme controller's server snapshot covers it |
-| `NotificationProvider`, `useNotification` | `createToaster()` + `<Toaster>`                            |
-| `utils/position.ts`                       | Floating UI, via the machines                              |
+| Removed | Replacement |
+| --- | --- |
+| `withStyles`, `withStylesSSR` | `import "@crosskit-ui/styles"` |
+| `StylesProvider`, `StylesProviderSSR` | same |
+| `useIsHydrated` | nothing — the theme controller's server snapshot covers it |
+| `NotificationProvider`, `useNotification` | `createToaster()` + `<Toaster>` |
+| `utils/position.ts` | the shared behaviour core |

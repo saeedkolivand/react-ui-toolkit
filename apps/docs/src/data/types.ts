@@ -3,6 +3,15 @@ export interface PropDoc {
   type: string;
   default?: string;
   description: string;
+  /**
+   * Set while a prop exists in React but not yet in the other three.
+   *
+   * There is one props table and four samples on a page, so an unmarked row
+   * claims the prop in every framework. During the v2 migration React leads by
+   * design, and a Vue reader must not be told an API they do not have. Clear the
+   * flag when the last adapter lands.
+   */
+  reactFirst?: boolean;
 }
 
 export interface PartDoc {
@@ -31,7 +40,11 @@ export interface ComponentDoc {
   summary: string;
   /** The `data-scope` its DOM carries; the CSS hook consumers style against. */
   scope: string;
-  /** Set when a zag machine drives it — what the component gets for free. */
+  /**
+   * The behaviour source shown beside the scope. Absent once a component is
+   * rebuilt on the primitives in `@crosskit-ui/core`, which is the direction
+   * every component is heading.
+   */
   machine?: string;
   gains?: string[];
   props: PropDoc[];

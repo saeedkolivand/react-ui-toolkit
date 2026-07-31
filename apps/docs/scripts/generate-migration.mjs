@@ -34,8 +34,8 @@ const lines = [
   "<!-- GENERATED FILE — edit apps/docs/src/data/*.ts and run `pnpm --filter @crosskit-ui/docs gen:migration`. -->",
   "",
   "CrossKit is a clean break, not a rename with a compatibility shim. The",
-  "component set is the same 27 you had; what changed is that behaviour now comes",
-  "from state machines shared across four frameworks, and styling from one",
+  "component set is the same 27 you had; what changed is that behaviour is now",
+  "written once and shared across four frameworks, and styling comes from one",
   "precompiled stylesheet keyed to data attributes.",
   "",
   "## The four things that affect every file",
@@ -109,7 +109,7 @@ lines.push(
   "| `StylesProvider`, `StylesProviderSSR` | same |",
   "| `useIsHydrated` | nothing — the theme controller's server snapshot covers it |",
   "| `NotificationProvider`, `useNotification` | `createToaster()` + `<Toaster>` |",
-  "| `utils/position.ts` | Floating UI, via the machines |",
+  "| `utils/position.ts` | the shared behaviour core |",
   ""
 );
 

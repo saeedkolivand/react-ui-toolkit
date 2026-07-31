@@ -34,7 +34,7 @@ const { component } = Astro.props;
   {
     component.gains && (
       <section class="stack-sm block">
-        <h2 class="h3">What the machine gives you</h2>
+        <h2 class="h3">What you get for free</h2>
         <ul class="gains">
           {component.gains.map(gain => (
             <li>{gain}</li>
@@ -63,7 +63,10 @@ const { component } = Astro.props;
                 <td><code class="code-inline">{prop.name}</code></td>
                 <td class="type">{prop.type}</td>
                 <td>{prop.default ? <code class="code-inline">{prop.default}</code> : "—"}</td>
-                <td>{prop.description}</td>
+                <td>
+                  {prop.reactFirst && <span class="react-first">React first</span>}
+                  {prop.description}
+                </td>
               </tr>
             ))
           }
@@ -73,6 +76,15 @@ const { component } = Astro.props;
     <p class="note">
       Prop names are identical in all four frameworks. Only two-way binding differs, and each
       framework uses its own idiom over the same underlying prop.
+      {
+        component.props.some(p => p.reactFirst) && (
+          <>
+            {" "}
+            The rows marked <span class="react-first">React first</span> are the exception, and a
+            temporary one: they exist in React while the other three adapters catch up.
+          </>
+        )
+      }
     </p>
   </section>
 
@@ -187,6 +199,21 @@ const { component } = Astro.props;
   .api tr:last-child td {
     border-bottom: 0;
   }
+  /* Marks a prop that React has and the other three do not yet, so a Vue reader
+     is not told an API they lack while the migration is in flight. */
+  .react-first {
+    display: inline-block;
+    margin-inline-end: 0.5ch;
+    padding-inline: 0.4em;
+    border: 1px solid currentColor;
+    border-radius: 0.25em;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+    vertical-align: 1px;
+  }
+
   .api .type {
     font-family: ui-monospace, "SF Mono", monospace;
     font-size: 12px;

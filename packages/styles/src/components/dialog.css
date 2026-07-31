@@ -1,12 +1,14 @@
 /* Modal and Drawer.
  *
- * Both are @zag-js/dialog, so both emit data-scope="dialog". They are told apart
- * by data-ck — the disambiguator that exists precisely because two components
- * legitimately share one machine's scope. Drawer is ~15 lines of difference.
+ * Both are one behaviour — the overlay primitives in packages/core: focus trap,
+ * dismissable layer stack, presence, scroll lock — so both emit
+ * data-scope="dialog". They are told apart by data-ck, the disambiguator that
+ * exists precisely because two components legitimately share one scope. Drawer
+ * is about fifteen lines of difference.
  *
  * Exit animations depend on the node surviving long enough to run them, which
- * is what @zag-js/presence provides: gate rendering on presence, never on
- * api.open, or [data-state="closed"] never gets a frame and every exit
+ * is what core's presence controller is for: gate rendering on presence, never
+ * on `open`, or [data-state="closed"] never gets a frame and every exit
  * animation silently does nothing.
  */
 @layer ck.components {
@@ -99,20 +101,24 @@
   }
 
   /* ------------------------------------------------------------------ Modal */
+  /* Each size is the *fallback* for --ck-modal-width, not a fixed value, so an
+     explicit `width` overrides it. Setting `inline-size` inline instead does
+     not work: `size` always renders, so `max-width` from the rule below would
+     still clamp it. */
   [data-ck="modal"][data-part="content"][data-size="sm"] {
-    max-width: 24rem;
+    max-width: var(--ck-modal-width, 24rem);
   }
   [data-ck="modal"][data-part="content"][data-size="md"] {
-    max-width: 28rem;
+    max-width: var(--ck-modal-width, 28rem);
   }
   [data-ck="modal"][data-part="content"][data-size="lg"] {
-    max-width: 32rem;
+    max-width: var(--ck-modal-width, 32rem);
   }
   [data-ck="modal"][data-part="content"][data-size="xl"] {
-    max-width: 36rem;
+    max-width: var(--ck-modal-width, 36rem);
   }
   [data-ck="modal"][data-part="content"][data-size="full"] {
-    max-width: none;
+    max-width: var(--ck-modal-width, none);
     margin: 1rem;
   }
   [data-ck="modal"][data-part="content"][data-scrollable] {
@@ -127,7 +133,7 @@
   }
 
   /* ----------------------------------------------------------------- Drawer
-     Same machine, same scope, same file — only placement and the animation
+     Same behaviour, same scope, same file — only placement and the animation
      differ. This is the copy-cost claim made good. */
   @keyframes ck-slide-in-right {
     from {

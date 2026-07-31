@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test:e2e": "playwright test",
-    "test:position": "pnpm --filter @crosskit-ui/core build && playwright test -c position.config.ts"
+    "test:browser": "pnpm turbo run build --filter=@crosskit-ui/playground-react^... && playwright test -c browser.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "catalog:"

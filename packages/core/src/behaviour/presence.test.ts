@@ -117,6 +117,28 @@ describe("presence", () => {
     expect(presence.present).toBe(true);
   });
 
+  it("unmounts where getAnimations does not exist, rather than never", async () => {
+    // Not every environment has it — jsdom does not, nor do embedded engines.
+    // Calling it unguarded threw inside a requestAnimationFrame callback, where
+    // nothing catches the error, so the node stayed mounted forever. Absent has
+    // to read as "cannot be animating".
+    // Removed from the prototype, which is where `stubAnimations` puts it —
+    // deleting the element's own property would find nothing to delete.
+    const original = Element.prototype.getAnimations;
+    // @ts-expect-error — removing an optional DOM method is the whole point.
+    delete Element.prototype.getAnimations;
+
+    try {
+      const presence = createPresence(true);
+      presence.setNode(node());
+      presence.setOpen(false);
+      await frame();
+      expect(presence.present).toBe(false);
+    } finally {
+      Element.prototype.getAnimations = original;
+    }
+  });
+
   it("reports changes once each", async () => {
     stubAnimations(false);
     const onChange = vi.fn();

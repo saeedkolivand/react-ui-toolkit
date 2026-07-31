@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createFocusTrap } from "./focus-trap";
+import { createFocusTrap, focusTrapDepth } from "./focus-trap";
 
 const html = (markup: string) => {
   document.body.innerHTML = markup;
@@ -198,5 +198,58 @@ describe("focus trap", () => {
     // Re-running initial focus would yank the user back to the first element.
     expect(document.activeElement?.id).toBe("middle");
     trap.deactivate();
+  });
+
+  describe("nesting", () => {
+    it("gives Tab to the topmost trap only, and hands it back on deactivate", () => {
+      // Both traps used to keep their own document listener, so both fired and
+      // the outer one — whose container is inert while an overlay sits above it,
+      // hence empty of tabbables — cancelled every Tab before the inner could
+      // act on it.
+      const body = html(`
+        <div id="outer"><button id="o1">o1</button><button id="o2">o2</button></div>
+        <div id="inner"><button id="i1">i1</button><button id="i2">i2</button></div>
+      `);
+      const outer = createFocusTrap(() => body.querySelector("#outer"));
+      const inner = createFocusTrap(() => body.querySelector("#inner"));
+
+      outer.activate();
+      inner.activate();
+      expect(focusTrapDepth()).toBe(2);
+
+      // At the inner trap's last element, so only the topmost wrapping is visible.
+      body.querySelector<HTMLElement>("#i2")!.focus();
+      tab();
+      expect(document.activeElement).toBe(body.querySelector("#i1"));
+
+      inner.deactivate();
+      expect(focusTrapDepth()).toBe(1);
+
+      body.querySelector<HTMLElement>("#o2")!.focus();
+      tab();
+      expect(document.activeElement).toBe(body.querySelector("#o1"));
+
+      outer.deactivate();
+      expect(focusTrapDepth()).toBe(0);
+    });
+
+    it("removes by identity, so traps can close out of order", () => {
+      const body = html('<div id="a"><button>a</button></div><div id="b"><button>b</button></div>');
+      const a = createFocusTrap(() => body.querySelector("#a"));
+      const b = createFocusTrap(() => body.querySelector("#b"));
+
+      a.activate();
+      b.activate();
+      // The one underneath leaves first — popping would drop the wrong entry.
+      a.deactivate();
+      expect(focusTrapDepth()).toBe(1);
+
+      body.querySelector<HTMLElement>("#b")!.querySelector("button")!.focus();
+      tab();
+      expect(document.activeElement).toBe(body.querySelector("#b")!.querySelector("button"));
+
+      b.deactivate();
+      expect(focusTrapDepth()).toBe(0);
+    });
   });
 });

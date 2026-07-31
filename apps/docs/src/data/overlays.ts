@@ -6,16 +6,16 @@ export const overlays: ComponentDoc[] = [
     name: "Modal",
     group: "Overlays",
     scope: "dialog",
-    machine: "@zag-js/dialog",
     gains: [
       "A focus trap that wraps in both directions and restores focus to the trigger",
-      "Escape and outside-click dismissal, each independently switchable",
+      "Escape and outside-press dismissal, each independently switchable",
+      "A shared layer stack, so only the topmost overlay answers Escape",
       "Body scroll lock",
-      "Content below marked inert",
+      "Everything outside marked inert",
       "SSR safety — v0 called createPortal during render and threw on the server",
     ],
     summary:
-      'The machine template every overlay copies. Rendering is gated on presence, never on `open`, which is what keeps `data-state="closed"` on screen long enough for the exit animation to run.',
+      'The overlay template every other one copies, built on the primitives in `@crosskit-ui/core` with no runtime dependency. Rendering is gated on presence, never on `open`, which is what keeps `data-state="closed"` on screen long enough for the exit animation to run.',
     props: [
       { name: "open", type: "boolean", description: "Controlled. v0 called this `isOpen`." },
       { name: "defaultOpen", type: "boolean", description: "Uncontrolled initial state." },
@@ -37,16 +37,77 @@ export const overlays: ComponentDoc[] = [
         default: "true",
         description: "v0: closeOnBackdropClick.",
       },
+      {
+        name: "width",
+        reactFirst: true,
+        type: "number | string",
+        description: "Explicit width, overriding `size`. A number is read as px.",
+      },
+      {
+        name: "onOk",
+        reactFirst: true,
+        type: "() => void | Promise<void>",
+        description:
+          "The confirm button. Return a promise and it holds the button busy until it settles, so a second press cannot submit twice.",
+      },
+      {
+        name: "onCancel",
+        reactFirst: true,
+        type: "() => void",
+        description:
+          "Every route out the user initiated: Cancel, the close button, Escape, and a press on the mask.",
+      },
+      {
+        name: "okText",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "Defaults to the active locale's.",
+      },
+      {
+        name: "cancelText",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "Defaults to the active locale's.",
+      },
+      {
+        name: "okType",
+        reactFirst: true,
+        type: '"default" | "primary" | "dashed" | "text" | "link"',
+        default: '"primary"',
+        description: "Visual weight of the confirm button.",
+      },
+      {
+        name: "okDanger",
+        reactFirst: true,
+        type: "boolean",
+        description: "Destructive confirm styling.",
+      },
+      {
+        name: "confirmLoading",
+        reactFirst: true,
+        type: "boolean",
+        description: "Drives the busy state yourself, instead of returning a promise from `onOk`.",
+      },
       { name: "title", type: "ReactNode", description: "Heading; wired to aria-labelledby." },
       { name: "description", type: "ReactNode", description: "Wired to aria-describedby." },
-      { name: "footer", type: "ReactNode", description: "Footer area." },
+      {
+        name: "footer",
+        reactFirst: true,
+        type: "ReactNode | null",
+        description:
+          "Replaces the default confirm/cancel pair. `null` removes the footer entirely.",
+      },
       { name: "centered", type: "boolean", default: "true", description: "Vertical centring." },
       { name: "scrollable", type: "boolean", default: "true", description: "Scroll long content." },
     ],
     parts: [
       { part: "backdrop", description: "The dimmed layer." },
       { part: "positioner", description: "Centres the content; carries data-centered." },
-      { part: "content", description: "The dialog itself; carries data-size and data-state." },
+      {
+        part: "content",
+        description:
+          "The dialog itself; carries data-size and data-state, and reads --ck-modal-width when `width` is set.",
+      },
       { part: "title / description / body / footer", description: "Content areas." },
     ],
     changes: [
@@ -76,9 +137,8 @@ export const overlays: ComponentDoc[] = [
     name: "Drawer",
     group: "Overlays",
     scope: "dialog",
-    machine: "@zag-js/dialog",
     summary:
-      'The same machine as Modal — about fifteen lines differ. It is distinguished in CSS by `data-ck="drawer"` plus `data-placement`, since both share `data-scope="dialog"`.',
+      'The same behaviour as Modal — about fifteen lines differ. It is distinguished in CSS by `data-ck="drawer"` plus `data-placement`, since both share `data-scope="dialog"`.',
     props: [
       {
         name: "placement",
@@ -92,7 +152,18 @@ export const overlays: ComponentDoc[] = [
         default: '"md"',
         description: "Panel size along its axis.",
       },
-      { name: "…", type: "", description: "Every other prop matches Modal." },
+      {
+        name: "onClose",
+        reactFirst: true,
+        type: "() => void",
+        description: "Escape, a press on the mask, and the close button all arrive here.",
+      },
+      {
+        name: "open, defaultOpen, onOpenChange, role, modal, closeOnEscape, closeOnInteractOutside, showCloseButton, id, className, title, description",
+        type: "",
+        description:
+          "Identical to Modal. Listed rather than implied with an ellipsis: Modal also has centered, scrollable, width and the whole confirm/cancel set, and a Drawer has none of them. `footer` exists on both but differs — Drawer's is a plain slot with no default.",
+      },
     ],
     samples: {
       react: `<Drawer open={open} onOpenChange={d => setOpen(d.open)} placement="left" title="Filters">

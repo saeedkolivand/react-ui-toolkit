@@ -83,7 +83,14 @@ export function createPresence(open: boolean, options: PresenceOptions = {}): Pr
     // always see the enter animation or nothing at all.
     requestAnimationFrame(() => {
       if (!node || exit !== generation) return;
-      const animated = node.getAnimations({ subtree: false }).some(a => a.playState === "running");
+      // Optional, not assumed. Without the guard this throws wherever
+      // `getAnimations` is missing — jsdom, and any embedded engine — and the
+      // throw happens inside a rAF callback, so nothing catches it and the node
+      // stays mounted forever. Absent means "cannot be animating", which is the
+      // safe reading: unmount now rather than never.
+      const animated = node
+        .getAnimations?.({ subtree: false })
+        .some(animation => animation.playState === "running");
 
       if (!animated) return void set(false);
 

@@ -39,7 +39,11 @@ for (const file of files) {
 let bad = 0;
 for (const component of docs) {
   const missing = component.props
-    .map(p => p.name.split(".").pop().split(" ")[0].trim())
+    // Split on commas as well as spaces: a row can list several props at once
+    // ("open, defaultOpen, onOpenChange"), and splitting on spaces alone yielded
+    // "open," — which the identifier filter then rejected, so every name in such
+    // a row was skipped rather than checked.
+    .flatMap(p => p.name.split(/[,\s]+/).map(n => n.split(".").pop().trim()))
     .filter(n => /^[a-z]\w*$/.test(n) && !declared.has(n));
   if (missing.length) {
     bad += missing.length;

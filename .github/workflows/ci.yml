@@ -92,12 +92,13 @@ jobs:
       - name: Run parity suite
         run: pnpm --filter @crosskit-ui/e2e test:e2e
 
-      # The positioner suite runs separately because it is framework-free: one
-      # server, its own baseURL, no adapters involved. It is the gate on the
-      # geometry every overlay component will depend on, so it belongs in CI
-      # rather than only in a developer's terminal.
-      - name: Run positioner suite
-        run: pnpm --filter @crosskit-ui/e2e test:position
+      # The single-server suites run separately: one server, their own baseURL.
+      # The positioner half is framework-free geometry every overlay depends on;
+      # the overlay half asserts what jsdom structurally cannot — `inert`
+      # blocking focus, and which of two overlapping fixed elements a press
+      # actually reaches. Both belong in CI rather than only in a terminal.
+      - name: Run browser suites
+        run: pnpm --filter @crosskit-ui/e2e test:browser
 
       - uses: actions/upload-artifact@v5
         if: failure()

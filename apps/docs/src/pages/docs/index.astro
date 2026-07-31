@@ -4,7 +4,6 @@ import Samples from "../../components/Samples.astro";
 import { byGroup, components } from "../../data";
 
 const groups = byGroup();
-const machineBacked = components.filter(c => c.machine).length;
 
 const install = {
   react: `pnpm add @crosskit-ui/react
@@ -35,8 +34,9 @@ import "@crosskit-ui/styles";`,
     <p class="eyebrow">Reference</p>
     <h1 class="display-lg">Components</h1>
     <p class="subhead">
-      {components.length} components, identical in four frameworks. {machineBacked} of them are driven
-      by state machines, which is where the focus traps, keyboard navigation and ARIA come from.
+      {components.length} components, identical in four frameworks. Wherever one needs a focus
+      trap, keyboard navigation or managed ARIA, that behaviour is written once in a framework-free
+      core and shared by all four, rather than reimplemented per adapter.
     </p>
   </header>
 

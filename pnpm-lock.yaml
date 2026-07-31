@@ -516,9 +516,6 @@ importers:
       '@zag-js/accordion':
         specifier: catalog:zag
         version: 1.43.0
-      '@zag-js/dialog':
-        specifier: catalog:zag
-        version: 1.43.0
       '@zag-js/menu':
         specifier: catalog:zag
         version: 1.43.0

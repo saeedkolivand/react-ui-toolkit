@@ -31,19 +31,23 @@ apps/
 Every new component starts as a copy of one of these. Read them before writing anything.
 
 - **Presentational** — `packages/react/src/button/button.tsx`. Props in, data attributes out.
-- **Machine-driven** — `packages/react/src/dialog/modal.tsx`. Portal, presence, controlled and
-  uncontrolled, four content areas.
+- **Behavioural** — `packages/react/src/dialog/modal.tsx`, over the primitives in
+  `packages/core`. Portal, presence, focus trap, dismissable layer, scroll lock, controlled and
+  uncontrolled, four content areas. The wiring lives in `use-overlay.ts` beside it; the component
+  is markup.
 
 ## Conventions that keep four adapters honest
 
 1. **Prop names are identical in all four.** Only two-way binding differs, and each framework uses
    its own idiom over the same underlying prop: React `open`/`onOpenChange`, Vue `v-model:open`,
-   Svelte `bind:open`, Angular `[(open)]`. All four feed the same machine props, so there is no
+   Svelte `bind:open`, Angular `[(open)]`. All four feed the same underlying prop, so there is no
    branching logic to write.
 
 2. **No class names in markup, ever.** Components emit `data-scope`, `data-part` and `data-state`.
-   `data-scope` must match the zag machine's own scope name exactly where a machine exists — zag
-   emits it from its prop-getters, so renaming means the CSS silently stops matching.
+   `data-scope` is the CSS contract, so it is fixed per component and never renamed — every rule
+   in `packages/styles` keys on it, and changing one means the CSS silently stops matching. Where a
+   component is still driven by a third-party machine, the machine emits the scope from its
+   prop-getters and the name is that machine's, not ours.
 
 3. **Booleans are presence attributes, never `="false"`.** Funnel every one through `dataAttr()`.
    Binding a raw boolean makes Vue and Angular render `data-loading="false"`, which **matches**
@@ -92,8 +96,8 @@ Deliberately unequal:
 
 - **Core unit tests** carry the logic budget — pagination windows, column mapping, placement
   translation. No framework involved.
-- **Adapter tests** assert the same six things per component so divergence is obvious. Behaviour is
-  zag's job; do not re-test it four times.
+- **Adapter tests** assert the same six things per component so divergence is obvious. Behaviour
+  belongs to `packages/core` and is tested there once; do not re-test it four times.
 - **The parity suite** is the real guarantee. Assertions never branch on framework, and the visual
   check compares the frameworks against **each other**, not against a stored golden image — which is
   what keeps it useful while the CSS is still moving.

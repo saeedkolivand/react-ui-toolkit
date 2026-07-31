@@ -44,6 +44,74 @@ const resolve = (target: FocusTrapOptions["initialFocus"]): HTMLElement | null =
  */
 const focus = (element: HTMLElement | null) => element?.focus({ preventScroll: true });
 
+/**
+ * The active traps, newest last. Only the topmost handles Tab.
+ *
+ * A stack for the same reason `dismissable` has one, and it was missing here.
+ * Each trap used to own a document-level keydown listener, and nothing removed
+ * the outer one when an inner overlay opened — so with two dialogs open both
+ * fired, outer first. The inner overlay marks the outer positioner `inert`, and
+ * `isTabbable` rejects anything inside `[inert]`, so the outer trap saw an empty
+ * container, took its "nothing to move to" branch and called `preventDefault()`
+ * on every Tab. The inner trap then ran on an already-cancelled event and only
+ * moved focus at its two wrap boundaries. Net effect in a browser: Tab from the
+ * middle of a nested dialog did nothing at all, while Tab from the last element
+ * still wrapped — which reads as intermittent rather than broken.
+ *
+ * One listener, shared, acting on the top of the stack. A trap below stands down
+ * while a newer one is above it and resumes the moment that one leaves, with no
+ * work at either site.
+ */
+interface ActiveTrap {
+  container: () => HTMLElement | null;
+  options: FocusTrapOptions;
+}
+
+const stack: ActiveTrap[] = [];
+
+function onKeyDown(event: KeyboardEvent) {
+  if (event.key !== "Tab") return;
+  const trap = stack[stack.length - 1];
+  if (!trap) return;
+  const node = trap.container();
+  if (!node) return;
+
+  const tabbables = getTabbables(node);
+  if (tabbables.length === 0) {
+    // Nothing to move to, so Tab must not escape. The container itself holds
+    // focus — an empty dialog is still a trap.
+    event.preventDefault();
+    focus(node);
+    return;
+  }
+
+  const first = tabbables[0]!;
+  const last = tabbables[tabbables.length - 1]!;
+  const current = activeElement();
+
+  // Focus already outside — a stray programmatic move, or the trap opening
+  // while focus sat elsewhere. Pull it back rather than letting Tab continue
+  // from wherever it is.
+  if (!contains(node, current)) {
+    event.preventDefault();
+    focus(event.shiftKey ? last : first);
+    return;
+  }
+
+  if (event.shiftKey && current === first) {
+    event.preventDefault();
+    focus(last);
+    trap.options.onWrap?.("backward");
+  } else if (!event.shiftKey && current === last) {
+    event.preventDefault();
+    focus(first);
+    trap.options.onWrap?.("forward");
+  }
+}
+
+/** How many traps are active. Exposed so tests can assert cleanup is balanced. */
+export const focusTrapDepth = () => stack.length;
+
 export function createFocusTrap(
   container: () => HTMLElement | null,
   options: FocusTrapOptions = {}
@@ -55,55 +123,22 @@ export function createFocusTrap(
   // had focus when the component mounted, usually `<body>`, and closing the
   // dialog would send focus there instead of back to the trigger.
   let trigger: HTMLElement | null = null;
-  let active = false;
-
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (!active || event.key !== "Tab") return;
-    const node = container();
-    if (!node) return;
-
-    const tabbables = getTabbables(node);
-    if (tabbables.length === 0) {
-      // Nothing to move to, so Tab must not escape. The container itself holds
-      // focus — an empty dialog is still a trap.
-      event.preventDefault();
-      focus(node);
-      return;
-    }
-
-    const first = tabbables[0]!;
-    const last = tabbables[tabbables.length - 1]!;
-    const current = activeElement();
-
-    // Focus already outside — a stray programmatic move, or the trap opening
-    // while focus sat elsewhere. Pull it back rather than letting Tab continue
-    // from wherever it is.
-    if (!contains(node, current)) {
-      event.preventDefault();
-      focus(event.shiftKey ? last : first);
-      return;
-    }
-
-    if (event.shiftKey && current === first) {
-      event.preventDefault();
-      focus(last);
-      options.onWrap?.("backward");
-    } else if (!event.shiftKey && current === last) {
-      event.preventDefault();
-      focus(first);
-      options.onWrap?.("forward");
-    }
-  };
+  let entry: ActiveTrap | null = null;
 
   return {
     activate() {
-      if (active) return;
-      active = true;
+      if (entry) return;
       // Read before anything inside the trap takes focus.
       trigger = activeElement();
-      // Capture phase: a consumer's own keydown handler must not be able to
-      // stop propagation and let Tab escape.
-      document.addEventListener("keydown", onKeyDown, true);
+      entry = { container, options };
+      // The listener exists only while a trap does, so a page with no overlay
+      // open carries no document-level handler at all.
+      if (stack.length === 0) {
+        // Capture phase: a consumer's own keydown handler must not be able to
+        // stop propagation and let Tab escape.
+        document.addEventListener("keydown", onKeyDown, true);
+      }
+      stack.push(entry);
 
       const node = container();
       if (!node) return;
@@ -118,9 +153,13 @@ export function createFocusTrap(
     },
 
     deactivate() {
-      if (!active) return;
-      active = false;
-      document.removeEventListener("keydown", onKeyDown, true);
+      if (!entry) return;
+      // Spliced by identity, not popped: traps can close out of order, and
+      // popping would remove whichever happened to be on top.
+      const index = stack.indexOf(entry);
+      entry = null;
+      if (index !== -1) stack.splice(index, 1);
+      if (stack.length === 0) document.removeEventListener("keydown", onKeyDown, true);
 
       const target = options.returnFocus === undefined ? trigger : resolve(options.returnFocus);
       // Only restore if focus is still inside the trap. If something else has
