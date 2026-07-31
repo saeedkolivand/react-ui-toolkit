@@ -257,6 +257,12 @@ importers:
       '@crosskit-ui/zag-angular':
         specifier: workspace:^
         version: link:../zag-angular/dist
+      '@zag-js/dialog':
+        specifier: catalog:zag
+        version: 1.43.0
+      '@zag-js/presence':
+        specifier: catalog:zag
+        version: 1.43.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1

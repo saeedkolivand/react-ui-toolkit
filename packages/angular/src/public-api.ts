@@ -12,3 +12,4 @@ export { CkTextarea } from "./field/textarea.component";
 export { CkCheckbox, CkRadio, CkRadioGroup, CkSwitch } from "./toggle/toggle.components";
 export { CkAvatar, CkProgress } from "./feedback/avatar-progress.components";
 export { CkCol } from "./layout/col.component";
+export { CkModal, CkDrawer } from "./dialog/dialog.components";

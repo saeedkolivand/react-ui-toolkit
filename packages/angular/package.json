@@ -34,6 +34,8 @@
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
     "@crosskit-ui/zag-angular": "workspace:^",
+    "@zag-js/dialog": "catalog:zag",
+    "@zag-js/presence": "catalog:zag",
     "tslib": "^2.8.1"
   },
   "devDependencies": {

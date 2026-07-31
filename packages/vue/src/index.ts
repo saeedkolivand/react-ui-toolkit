@@ -17,3 +17,5 @@ export { default as Switch } from "./toggle/Switch.vue";
 export { default as Avatar } from "./avatar/Avatar.vue";
 export { default as Progress } from "./progress/Progress.vue";
 export { default as Col } from "./layout/Col.vue";
+export { default as Modal } from "./dialog/Modal.vue";
+export { default as Drawer } from "./dialog/Drawer.vue";

@@ -1,0 +1,317 @@
+/* Modal and Drawer.
+ *
+ * Both are @zag-js/dialog, so both emit data-scope="dialog". They are told apart
+ * by data-ck — the disambiguator that exists precisely because two components
+ * legitimately share one machine's scope. Drawer is ~15 lines of difference.
+ *
+ * Exit animations depend on the node surviving long enough to run them, which
+ * is what @zag-js/presence provides: gate rendering on presence, never on
+ * api.open, or [data-state="closed"] never gets a frame and every exit
+ * animation silently does nothing.
+ */
+@layer ck.components {
+  @keyframes ck-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes ck-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  /* Transcribed from v0's framer-motion values: opacity 0->1, scale .95->1,
+     y -20 -> -10. v0 also set an inline translateY(-10%) that framer overrode,
+     so the inline one was dead code and is not carried over. */
+  @keyframes ck-dialog-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -20px, 0) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, -10px, 0) scale(1);
+    }
+  }
+  @keyframes ck-dialog-out {
+    from {
+      opacity: 1;
+      transform: translate3d(0, -10px, 0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(0, -20px, 0) scale(0.95);
+    }
+  }
+
+  [data-scope="dialog"][data-part="backdrop"] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--ck-z-overlay);
+    background-color: var(--ck-overlay);
+  }
+  [data-scope="dialog"][data-part="backdrop"][data-state="open"] {
+    animation: ck-fade-in var(--ck-duration-md) var(--ck-ease-out);
+  }
+  [data-scope="dialog"][data-part="backdrop"][data-state="closed"] {
+    animation: ck-fade-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="dialog"][data-part="positioner"] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--ck-z-modal);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  @media (min-width: 40rem) {
+    [data-scope="dialog"][data-part="positioner"] {
+      padding: 1.5rem;
+    }
+  }
+  [data-ck="modal"][data-part="positioner"][data-centered] {
+    align-items: center;
+  }
+
+  [data-scope="dialog"][data-part="content"] {
+    position: relative;
+    width: 100%;
+    background-color: var(--ck-surface);
+    color: var(--ck-fg);
+    border-radius: var(--ck-radius-lg);
+    box-shadow: var(--ck-shadow-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+  }
+  [data-scope="dialog"][data-part="content"]:focus {
+    outline: none;
+  }
+
+  /* ------------------------------------------------------------------ Modal */
+  [data-ck="modal"][data-part="content"][data-size="sm"] {
+    max-width: 24rem;
+  }
+  [data-ck="modal"][data-part="content"][data-size="md"] {
+    max-width: 28rem;
+  }
+  [data-ck="modal"][data-part="content"][data-size="lg"] {
+    max-width: 32rem;
+  }
+  [data-ck="modal"][data-part="content"][data-size="xl"] {
+    max-width: 36rem;
+  }
+  [data-ck="modal"][data-part="content"][data-size="full"] {
+    max-width: none;
+    margin: 1rem;
+  }
+  [data-ck="modal"][data-part="content"][data-scrollable] {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  [data-ck="modal"][data-part="content"][data-state="open"] {
+    animation: ck-dialog-in var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-ck="modal"][data-part="content"][data-state="closed"] {
+    animation: ck-dialog-out var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+
+  /* ----------------------------------------------------------------- Drawer
+     Same machine, same scope, same file — only placement and the animation
+     differ. This is the copy-cost claim made good. */
+  @keyframes ck-slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes ck-slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes ck-slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes ck-slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes ck-slide-in-top {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes ck-slide-out-top {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+  @keyframes ck-slide-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes ck-slide-out-bottom {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+
+  [data-ck="drawer"][data-part="positioner"] {
+    padding: 0;
+    overflow: hidden;
+  }
+  [data-ck="drawer"][data-part="content"] {
+    position: fixed;
+    border-radius: 0;
+    max-width: none;
+    overflow-y: auto;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="right"],
+  [data-ck="drawer"][data-part="content"][data-placement="left"] {
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: var(--ck-drawer-size, 20rem);
+    max-width: 100vw;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="right"] {
+    right: 0;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="left"] {
+    left: 0;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"],
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"] {
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: var(--ck-drawer-size, 16rem);
+    max-height: 100vh;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"] {
+    top: 0;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"] {
+    bottom: 0;
+  }
+
+  [data-ck="drawer"][data-part="content"][data-size="sm"] {
+    --ck-drawer-size: 16rem;
+  }
+  [data-ck="drawer"][data-part="content"][data-size="md"] {
+    --ck-drawer-size: 20rem;
+  }
+  [data-ck="drawer"][data-part="content"][data-size="lg"] {
+    --ck-drawer-size: 28rem;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"][data-size="sm"],
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"][data-size="sm"] {
+    --ck-drawer-size: 12rem;
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"][data-size="lg"],
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"][data-size="lg"] {
+    --ck-drawer-size: 24rem;
+  }
+
+  [data-ck="drawer"][data-part="content"][data-placement="right"][data-state="open"] {
+    animation: ck-slide-in-right var(--ck-duration-lg) var(--ck-ease-out);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="right"][data-state="closed"] {
+    animation: ck-slide-out-right var(--ck-duration-lg) var(--ck-ease-in);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="left"][data-state="open"] {
+    animation: ck-slide-in-left var(--ck-duration-lg) var(--ck-ease-out);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="left"][data-state="closed"] {
+    animation: ck-slide-out-left var(--ck-duration-lg) var(--ck-ease-in);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"][data-state="open"] {
+    animation: ck-slide-in-top var(--ck-duration-lg) var(--ck-ease-out);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="top"][data-state="closed"] {
+    animation: ck-slide-out-top var(--ck-duration-lg) var(--ck-ease-in);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"][data-state="open"] {
+    animation: ck-slide-in-bottom var(--ck-duration-lg) var(--ck-ease-out);
+  }
+  [data-ck="drawer"][data-part="content"][data-placement="bottom"][data-state="closed"] {
+    animation: ck-slide-out-bottom var(--ck-duration-lg) var(--ck-ease-in);
+  }
+
+  /* ------------------------------------------------------- shared furniture */
+  [data-scope="dialog"][data-part="title"] {
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+  }
+  [data-scope="dialog"][data-part="description"] {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="dialog"][data-part="body"] {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  [data-scope="dialog"][data-part="footer"] {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  /* Positioned via its own attribute, not data-part: the element is already a
+     Button and needs data-part="root" for its own styling. One element cannot
+     carry two data-part values. */
+  [data-scope="dialog"] [data-close-trigger] {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope="dialog"][data-part] {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
