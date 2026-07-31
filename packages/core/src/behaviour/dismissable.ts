@@ -18,6 +18,17 @@ export interface DismissableOptions {
   exclude?: () => Array<HTMLElement | null | undefined>;
   escape?: boolean;
   outside?: boolean;
+  /**
+   * Whether focus landing outside dismisses too. Defaults to `outside`.
+   *
+   * Set false for a layer that traps focus. Such a layer cannot legitimately
+   * lose focus outward, so every `focusin` it sees is someone else's doing —
+   * and one case is routine: closing a stacked layer restores focus to its
+   * trigger, which lands outside the layer *below* at the instant that layer
+   * becomes topmost, dismissing it too. Two nested dialogs closed on one
+   * Escape.
+   */
+  focus?: boolean;
 }
 
 interface Layer {
@@ -69,6 +80,7 @@ function onPointerDown(event: PointerEvent) {
 function onFocusIn(event: FocusEvent) {
   const layer = topmost();
   if (!layer || layer.options.outside === false) return;
+  if (layer.options.focus === false) return;
 
   const node = layer.node();
   if (!node) return;

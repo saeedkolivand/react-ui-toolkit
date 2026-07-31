@@ -1,17 +1,17 @@
 "use client";
 
-import { useId, type ReactNode } from "react";
-import * as dialog from "@zag-js/dialog";
-import { useMachine, normalizeProps, Portal } from "@zag-js/react";
+import type { ReactNode } from "react";
 import { type Side, type Size } from "@crosskit-ui/core";
-import { usePresence } from "../use-presence";
+import { Portal } from "../portal/portal";
 import { Icon } from "../icon/icon";
 import { Button } from "../button/button";
+import { useOverlay } from "./use-overlay";
 
 export interface DrawerProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (details: { open: boolean }) => void;
+  onClose?: () => void;
   /** v0 called this `position`. */
   placement?: Side;
   size?: Size;
@@ -29,44 +29,49 @@ export interface DrawerProps {
 }
 
 /**
- * The same @zag-js/dialog machine as Modal. Only `data-ck="drawer"`,
- * `data-placement` and the animation differ — the focus trap, scroll lock,
- * Escape handling and ARIA wiring are all shared, which is the whole point of
- * putting behaviour in a machine.
+ * The same `useOverlay` as Modal. Only `data-ck="drawer"`, `data-placement` and
+ * the animation differ — the focus trap, scroll lock, background inert, Escape
+ * handling and ARIA wiring are all shared, which is the point of putting the
+ * behaviour in one hook.
  */
 export function Drawer({
   placement = "right",
   size = "md",
   showCloseButton = true,
-  id,
+  onClose,
   className,
   title,
   description,
   footer,
   children,
-  ...machineProps
+  ...overlay
 }: DrawerProps) {
-  const autoId = useId();
-  const service = useMachine(dialog.machine, { id: id ?? autoId, ...machineProps });
-  const api = dialog.connect(service, normalizeProps);
-  const { present, setNode } = usePresence(api.open);
+  const dialog = useOverlay({
+    ...overlay,
+    hasTitle: title != null,
+    hasDescription: description != null,
+  });
 
-  if (!present) return null;
+  if (!dialog.present) return null;
+
+  const close = () => {
+    onClose?.();
+    dialog.close();
+  };
 
   return (
     <Portal>
-      <div {...api.getBackdropProps()} data-ck="drawer" />
-      <div {...api.getPositionerProps()} data-ck="drawer">
+      <div {...dialog.backdropProps} data-ck="drawer" onClick={close} />
+      <div {...dialog.positionerProps} data-ck="drawer">
         <div
-          ref={setNode}
-          {...api.getContentProps()}
+          {...dialog.contentProps}
           data-ck="drawer"
           data-placement={placement}
           data-size={size}
           className={className}
         >
-          {title != null && <h2 {...api.getTitleProps()}>{title}</h2>}
-          {description != null && <p {...api.getDescriptionProps()}>{description}</p>}
+          {title != null && <h2 {...dialog.titleProps}>{title}</h2>}
+          {description != null && <p {...dialog.descriptionProps}>{description}</p>}
           <div data-scope="dialog" data-part="body" data-ck="drawer">
             {children}
           </div>
@@ -82,7 +87,7 @@ export function Drawer({
               icon={<Icon name="close" />}
               data-close-trigger=""
               aria-label="Close"
-              onClick={() => api.setOpen(false)}
+              onClick={close}
             />
           )}
         </div>

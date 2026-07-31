@@ -31,6 +31,7 @@ export { Switch, type SwitchProps } from "./toggle/switch";
 export { Avatar, getInitials, type AvatarProps, type AvatarStatus } from "./avatar/avatar";
 export { Progress, type ProgressProps, type ProgressVariant } from "./progress/progress";
 export { Col, type ColProps, type ColSpan, type ColOffset } from "./layout/col";
+export { Portal, type PortalProps } from "./portal/portal";
 export { Modal, type ModalProps } from "./dialog/modal";
 export { Drawer, type DrawerProps } from "./dialog/drawer";
 export {

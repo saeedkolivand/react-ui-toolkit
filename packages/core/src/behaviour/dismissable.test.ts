@@ -12,6 +12,9 @@ const press = (key: string, target: EventTarget = document) =>
 const pointerDown = (target: EventTarget) =>
   target.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
 
+const focusIn = (target: EventTarget) =>
+  target.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+
 afterEach(() => {
   document.body.innerHTML = "";
 });
@@ -143,6 +146,37 @@ describe("dismissable", () => {
     press("Escape");
     pointerDown(body.querySelector("#outside")!);
     expect(onDismiss).not.toHaveBeenCalled();
+    remove();
+  });
+
+  it("closes when focus lands outside, which a pointer press would not catch", () => {
+    // Tab out of an untrapped layer, or a screen reader moving focus.
+    const body = html('<div id="layer"></div><button id="outside">x</button>');
+    const onDismiss = vi.fn();
+    const remove = pushDismissable(() => body.querySelector("#layer"), { onDismiss });
+
+    focusIn(body.querySelector("#outside")!);
+    expect(onDismiss).toHaveBeenCalledWith("outside");
+    remove();
+  });
+
+  it("ignores focus for a layer that traps it, while still closing on a press", () => {
+    // A trapped layer cannot lose focus outward on its own, so a focusin outside
+    // it is someone else's doing — and the routine case dismisses the wrong
+    // layer: closing a stacked layer restores focus to its trigger at the exact
+    // moment the layer below becomes topmost, so both closed on one Escape.
+    const body = html('<div id="layer"></div><button id="outside">x</button>');
+    const onDismiss = vi.fn();
+    const remove = pushDismissable(() => body.querySelector("#layer"), {
+      onDismiss,
+      focus: false,
+    });
+
+    focusIn(body.querySelector("#outside")!);
+    expect(onDismiss).not.toHaveBeenCalled();
+
+    pointerDown(body.querySelector("#outside")!);
+    expect(onDismiss).toHaveBeenCalledWith("outside");
     remove();
   });
 
