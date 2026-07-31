@@ -25,3 +25,15 @@ export * from "./icons";
 export * from "./toast";
 export * from "./placement";
 export * from "./table";
+export * from "./table/compare";
+export { createTableStore as createTableStoreV2 } from "./table/store";
+export type {
+  TableRow,
+  SelectionState,
+  SortDirection,
+  SortRule,
+  TableColumnDef,
+  TableState,
+  TableStore as TableStoreV2,
+  TableStoreOptions as TableStoreV2Options,
+} from "./table/store";
