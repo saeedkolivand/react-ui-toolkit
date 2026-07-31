@@ -19,7 +19,7 @@ interface Locked {
     position: string;
     top: string;
     width: string;
-    paddingRight: string;
+    paddingInlineEnd: string;
   };
 }
 
@@ -38,11 +38,11 @@ export function lockScroll(): () => void {
     locked.count++;
   } else {
     const body = document.body;
-    const { overflow, position, top, width, paddingRight } = body.style;
+    const { overflow, position, top, width, paddingInlineEnd } = body.style;
     const scrollY = window.scrollY;
     const gap = scrollbarWidth();
 
-    locked = { count: 1, scrollY, style: { overflow, position, top, width, paddingRight } };
+    locked = { count: 1, scrollY, style: { overflow, position, top, width, paddingInlineEnd } };
 
     body.style.overflow = "hidden";
     body.style.position = "fixed";
@@ -51,8 +51,13 @@ export function lockScroll(): () => void {
     // stops a centred layout jumping sideways as the lock engages.
     body.style.width = "100%";
     if (gap > 0) {
-      const existing = parseFloat(getComputedStyle(body).paddingRight) || 0;
-      body.style.paddingRight = `${existing + gap}px`;
+      // Logical, not `padding-right`. In RTL the document scrollbar sits on the
+      // left — which is inline-end — so compensating on the right both fails to
+      // fill the gap it left and adds one on the other side: content jumps by
+      // twice the gutter the moment a dialog opens, in the one direction this
+      // compensation exists to prevent.
+      const existing = parseFloat(getComputedStyle(body).paddingInlineEnd) || 0;
+      body.style.paddingInlineEnd = `${existing + gap}px`;
     }
   }
 

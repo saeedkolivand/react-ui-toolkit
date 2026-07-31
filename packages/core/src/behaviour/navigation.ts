@@ -118,9 +118,11 @@ export function navigate(
     // Holding one letter cycles through everything starting with it, so search
     // from the current item; a real multi-character query restarts from the top
     // so it can match the item already selected.
+    // `search` with `after = null` already starts at index 0 and wraps through
+    // every item, so there is nothing a second call could find.
     const item = isRepeat(query)
       ? collection.search(query[0]!, current)
-      : (collection.search(query, null) ?? collection.search(query, current));
+      : collection.search(query, null);
     return item ? { value: item.value, handled: true } : { handled: true };
   }
 

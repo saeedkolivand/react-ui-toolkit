@@ -38,6 +38,16 @@ export function createPresence(open: boolean, options: PresenceOptions = {}): Pr
   let present = open;
   let node: HTMLElement | null = null;
   let timer: ReturnType<typeof setTimeout> | undefined;
+  /**
+   * Bumped whenever a pending exit stops being valid.
+   *
+   * The scheduled frame cannot be cancelled by checking `present`: an exit is
+   * the only thing that sets it false, so it is always still true when the
+   * frame runs. Reopening inside the same frame — routine for a tooltip, and
+   * what a double-invoked effect produces — therefore let the callback attach
+   * to the *enter* animation and unmount the node when that finished.
+   */
+  let generation = 0;
 
   const set = (next: boolean) => {
     if (present === next) return;
@@ -46,6 +56,8 @@ export function createPresence(open: boolean, options: PresenceOptions = {}): Pr
   };
 
   const clear = () => {
+    // Invalidates any frame already scheduled, as well as the timer.
+    generation++;
     if (timer !== undefined) clearTimeout(timer);
     timer = undefined;
     node?.removeEventListener("animationend", onEnd);
@@ -64,12 +76,13 @@ export function createPresence(open: boolean, options: PresenceOptions = {}): Pr
   const beginExit = () => {
     clear();
     if (!node) return void set(false);
+    const exit = ++generation;
 
     // Read after a frame: the adapter has to render `data-state="closed"`
     // before the animation it triggers can be observed, and asking now would
     // always see the enter animation or nothing at all.
     requestAnimationFrame(() => {
-      if (!node || present === false) return;
+      if (!node || exit !== generation) return;
       const animated = node.getAnimations({ subtree: false }).some(a => a.playState === "running");
 
       if (!animated) return void set(false);

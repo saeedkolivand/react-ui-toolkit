@@ -58,7 +58,11 @@ export function isTabbable(element: HTMLElement): boolean {
       ...group.querySelectorAll<HTMLInputElement>(
         `input[type="radio"][name="${CSS.escape(element.name)}"]`
       ),
-    ].filter(isVisible);
+      // Disabled radios are excluded from `FOCUSABLE` already, but they must
+      // also be kept out of *this* election: letting one win it means every
+      // enabled sibling answers false and the whole group leaves the tab order,
+      // where a browser would simply make the first enabled radio the stop.
+    ].filter(radio => !radio.disabled && isVisible(radio));
     const checked = radios.find(r => r.checked);
     if (checked) return checked === element;
     return radios[0] === element;
@@ -68,6 +72,12 @@ export function isTabbable(element: HTMLElement): boolean {
 
 /**
  * Every tabbable descendant, in tab order.
+ *
+ * Light DOM only — `querySelectorAll` does not descend into shadow roots, so a
+ * consumer's web component counts as one stop rather than however many its
+ * shadow content holds. `contains` below deliberately *does* cross shadow
+ * boundaries, because "did this click land inside the layer" has to be true for
+ * shadow content; the two answer different questions.
  *
  * Positive `tabindex` values sort ahead of everything in document order, which
  * is what the specification says and what screen readers follow — even though

@@ -48,8 +48,13 @@ export function createFocusTrap(
   container: () => HTMLElement | null,
   options: FocusTrapOptions = {}
 ): FocusTrap {
-  // Captured at creation, before anything inside the trap has taken focus.
-  const trigger = activeElement();
+  // Captured at `activate()`, not here.
+  //
+  // Adapters build the trap at mount — mandatory in Angular, where the machine
+  // must be a field initializer — so capturing at construction records whatever
+  // had focus when the component mounted, usually `<body>`, and closing the
+  // dialog would send focus there instead of back to the trigger.
+  let trigger: HTMLElement | null = null;
   let active = false;
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -94,6 +99,8 @@ export function createFocusTrap(
     activate() {
       if (active) return;
       active = true;
+      // Read before anything inside the trap takes focus.
+      trigger = activeElement();
       // Capture phase: a consumer's own keydown handler must not be able to
       // stop propagation and let Tab escape.
       document.addEventListener("keydown", onKeyDown, true);

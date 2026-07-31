@@ -118,5 +118,5 @@ export function pushDismissable(
   };
 }
 
-/** How many layers are open. Exposed for tests and for scroll-lock counting. */
+/** How many layers are open. Exposed so tests can assert cleanup is balanced. */
 export const dismissableDepth = () => stack.length;
