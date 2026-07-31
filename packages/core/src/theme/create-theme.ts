@@ -187,10 +187,15 @@ export function createTheme(config: ThemeConfig = {}): CompiledTheme {
     // Component tokens are just custom properties scoped by data-scope, so they
     // cost nothing beyond one rule and still cascade into every part.
     if (component.token && Object.keys(component.token).length > 0) {
+      // Same category of input as `config.token`, so the same guard. Without
+      // it a `;` in a value closes the block early and everything after it
+      // becomes a live rule.
       const scoped = Object.fromEntries(
-        Object.entries(component.token).map(([k, v]) => [k, String(v)])
+        Object.entries(component.token).map(([k, v]) => [k, assertSafeValue(k, String(v))])
       );
-      blocks.push(`[data-scope="${manifest.scope}"] {\n${declarations(scoped)}\n}`);
+      blocks.push(
+        `[data-scope="${escapeAttributeValue(manifest.scope)}"] {\n${declarations(scoped)}\n}`
+      );
     }
 
     if (component.styleOverrides) {

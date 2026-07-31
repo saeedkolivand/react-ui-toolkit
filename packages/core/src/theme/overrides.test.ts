@@ -207,6 +207,87 @@ describe("compileOverrides", () => {
     );
   });
 
+  it("does not repeat unchanged declarations under a nested attribute selector", () => {
+    // The delta reduction used to be defeated here: a regex stripping variant
+    // attributes could not tell `[data-size="large"]` (added by the compiler)
+    // from `[data-state="open"]` (written by the author), so it removed both,
+    // the base lookup missed, and box-shadow was re-emitted for every size.
+    const css = serializeRules(
+      compileOverrides(
+        BUTTON,
+        {
+          root: ({ ownerState }) => ({
+            padding: ownerState.size === "large" ? 16 : 8,
+            '&[data-state="open"]': { boxShadow: "var(--ck-shadow-md)" },
+          }),
+        },
+        theme
+      )
+    );
+    expect(css.match(/box-shadow/g)).toHaveLength(1);
+    expect(css).toContain(
+      '[data-scope="button"][data-part="root"][data-state="open"] { box-shadow: var(--ck-shadow-md) }'
+    );
+  });
+
+  it("reverts a declaration a variant drops", () => {
+    // `size === "large" ? {} : { padding: 8 }` produced nothing for large, so
+    // the base rule still applied 8px — the CSS disagreeing with the function.
+    const css = serializeRules(
+      compileOverrides(
+        BUTTON,
+        { root: ({ ownerState }) => ({ ...(ownerState.size === "large" ? {} : { padding: 8 }) }) },
+        theme
+      )
+    );
+    expect(css).toContain('[data-size="large"] { padding: revert-layer }');
+  });
+
+  it("reverts a whole nested block that a variant drops", () => {
+    const css = serializeRules(
+      compileOverrides(
+        BUTTON,
+        {
+          root: ({ ownerState }) => ({
+            color: "red",
+            ...(ownerState.type === "text" ? {} : { "&:hover": { opacity: 0.5 } }),
+          }),
+        },
+        theme
+      )
+    );
+    expect(css).toContain('[data-type="text"]:hover { opacity: revert-layer }');
+  });
+
+  it("escapes a scope that would close its attribute selector", () => {
+    const css = serializeRules(
+      compileOverrides(
+        { ...BUTTON, scope: 'x"] { color: red } [y="' },
+        { root: { color: "blue" } },
+        theme
+      )
+    );
+    expect(css).toContain('[data-scope="x\\"] { color: red } [y=\\""]');
+  });
+
+  it("refuses a boolean variant, which would compile to a selector matching nothing", () => {
+    // Booleans here are presence attributes — dataAttr() renders `data-loading=""`
+    // or nothing — so `[data-loading="true"]` matches no element any adapter
+    // renders, and the override would silently do nothing.
+    expect(() =>
+      compileOverrides(
+        {
+          scope: "button",
+          parts: ["root"],
+          variants: { loading: ["false", "true"] },
+          defaults: { loading: "false" },
+        },
+        { root: { opacity: 0.5 } },
+        theme
+      )
+    ).toThrow(/presence attributes.*&\[data-loading\]/s);
+  });
+
   it("is deterministic", () => {
     const build = () =>
       serializeRules(

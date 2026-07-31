@@ -13,6 +13,7 @@
  * properties already, and it is the one documented boundary of this API.
  */
 
+import { escapeAttributeValue } from "./css";
 import { variantCombinations, type ComponentManifest } from "./manifest";
 
 /** A style object: declarations, plus nested `&`-relative or at-rule blocks. */
@@ -100,24 +101,61 @@ export function flattenStyle(
   return [...own, ...nested];
 }
 
-/** Declarations present in `next` that `base` does not already produce. */
-function diff(base: Rule[], next: Rule[]): Rule[] {
-  const seen = new Set(
-    base.flatMap(r => r.declarations.map(d => `${r.conditions.join("|")}||${r.selector}||${d}`))
-  );
-  return next
-    .map(r => ({
-      ...r,
-      declarations: r.declarations.filter(
-        d => !seen.has(`${r.conditions.join("|")}||${stripVariants(r.selector)}||${d}`)
-      ),
-    }))
-    .filter(r => r.declarations.length > 0);
-}
+const property = (declaration: string) => declaration.slice(0, declaration.indexOf(":"));
 
-/** Drops the variant attribute selectors, so a rule can be compared to its base. */
-const stripVariants = (selector: string) =>
-  selector.replace(/\[data-(?!scope|part)[a-z-]+="[^"]*"\]/g, "");
+/**
+ * What a combination adds to, or removes from, the base rule.
+ *
+ * Base rules are projected into the combination's own selector space rather
+ * than the combination's being stripped back with a regex. Stripping cannot
+ * tell an attribute this compiler added from one the author wrote in a nested
+ * key — `&[data-state="open"]` is indistinguishable from `[data-size="large"]`
+ * to a pattern — so it removed both, the lookup missed, and every unchanged
+ * declaration was re-emitted for the whole cross product. That silently
+ * cancels the reduction this function exists for.
+ */
+function diff(base: Rule[], next: Rule[], toVariant: (selector: string) => string): Rule[] {
+  const key = (conditions: string[], selector: string) => `${conditions.join("|")}||${selector}`;
+  const projected = new Map(base.map(r => [key(r.conditions, toVariant(r.selector)), r]));
+
+  const out: Rule[] = [];
+  const matched = new Set<string>();
+
+  for (const rule of next) {
+    const k = key(rule.conditions, rule.selector);
+    matched.add(k);
+    const counterpart = projected.get(k);
+    const inherited = new Set(counterpart?.declarations ?? []);
+    const present = new Set(rule.declarations.map(property));
+
+    const declarations = [
+      ...rule.declarations.filter(d => !inherited.has(d)),
+      // A property the base sets and this combination does not must be undone,
+      // or `size === "large" ? {} : { padding: 8 }` still gets 8px. `revert-layer`
+      // falls back to the component's own stylesheet, which is what "the style
+      // function said nothing here" should mean.
+      ...(counterpart?.declarations ?? [])
+        .map(property)
+        .filter(p => !present.has(p))
+        .map(p => `${p}: revert-layer`),
+    ];
+
+    if (declarations.length) out.push({ ...rule, declarations });
+  }
+
+  // A nested block that vanishes entirely for this combination still needs its
+  // declarations undone, and has no rule in `next` to hang them on.
+  for (const [k, rule] of projected) {
+    if (matched.has(k)) continue;
+    out.push({
+      selector: toVariant(rule.selector),
+      conditions: rule.conditions,
+      declarations: rule.declarations.map(d => `${property(d)}: revert-layer`),
+    });
+  }
+
+  return out;
+}
 
 export function serializeRules(rules: Rule[]): string {
   return rules
@@ -181,7 +219,24 @@ export function compileOverrides<Theme>(
       );
     }
 
-    const base = `[data-scope="${manifest.scope}"][data-part="${part}"]`;
+    // A variant compiles to `[data-name="value"]`, and every boolean in this
+    // library is a *presence* attribute — `dataAttr()` renders `data-loading=""`
+    // or nothing at all. So `loading: ["true", "false"]` would compile to
+    // `[data-loading="true"]`, which matches nothing any adapter renders, and
+    // the override would silently do nothing. Nested keys are the answer, the
+    // same as for interactive states.
+    for (const [name, values] of Object.entries(manifest.variants)) {
+      const boolean = values.find(v => v === "true" || v === "false");
+      if (boolean !== undefined) {
+        throw new Error(
+          `Variant "${name}" declares "${boolean}", but booleans are presence attributes here — ` +
+            `data-${name}="" or absent, never "true"/"false". Target it with a nested key ` +
+            `instead: { '&[data-${name}]': { … } }.`
+        );
+      }
+    }
+
+    const base = `[data-scope="${escapeAttributeValue(manifest.scope)}"][data-part="${part}"]`;
     const evaluate = (ownerState: Record<string, string>) =>
       typeof override === "function" ? override({ theme, ownerState }) : override;
 
@@ -203,15 +258,21 @@ export function compileOverrides<Theme>(
       const selector =
         base +
         Object.entries(combination)
-          .map(([name, v]) => `[data-${name}="${v}"]`)
+          .map(([name, v]) => `[data-${name}="${escapeAttributeValue(v)}"]`)
           .join("");
+
+      // Base selectors carry `base` verbatim, including inside nested keys, so
+      // swapping it for the variant selector projects the whole rule set —
+      // pseudo-classes, descendants and at-rules included.
+      const toVariant = (s: string) => s.split(base).join(selector);
 
       // Dimensions the style ignores are held at their defaults, so the
       // evaluated result depends only on what ends up in the selector.
       rules.push(
         ...diff(
           baseRules,
-          flattenStyle(evaluate({ ...manifest.defaults, ...combination }), selector)
+          flattenStyle(evaluate({ ...manifest.defaults, ...combination }), selector),
+          toVariant
         )
       );
     }

@@ -260,6 +260,19 @@ describe("createTheme", () => {
       expect(css.trimEnd().endsWith("}")).toBe(true);
     });
 
+    it("rejects a component token value that would end its own declaration", () => {
+      // Same category of input as the top-level `token`, so it needs the same
+      // guard: a `;` here closes the block and makes everything after it live.
+      expect(() =>
+        createTheme({
+          manifests,
+          components: {
+            Button: { token: { "accent-solid": "red; } [data-scope=dialog] { display: none" } },
+          },
+        })
+      ).toThrow(/unsafe value/);
+    });
+
     it("names the component when no manifest exists, rather than emitting dead CSS", () => {
       expect(() =>
         createTheme({ manifests, components: { Buton: { styleOverrides: { root: {} } } } })
