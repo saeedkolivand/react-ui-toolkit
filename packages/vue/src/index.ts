@@ -14,3 +14,6 @@ export { default as Checkbox } from "./toggle/Checkbox.vue";
 export { default as Radio } from "./toggle/Radio.vue";
 export { default as RadioGroup } from "./toggle/RadioGroup.vue";
 export { default as Switch } from "./toggle/Switch.vue";
+export { default as Avatar } from "./avatar/Avatar.vue";
+export { default as Progress } from "./progress/Progress.vue";
+export { default as Col } from "./layout/Col.vue";

@@ -1,0 +1,195 @@
+@layer ck.components {
+  /* ----------------------------------------------------------------- Avatar */
+  [data-scope="avatar"][data-part="root"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: var(--ck-color-neutral-200);
+    color: var(--ck-color-neutral-600);
+    border-radius: var(--ck-radius-full);
+    font-weight: 500;
+    /* `overflow: hidden` is what clips the image to the shape, so the img
+       itself needs no matching border-radius — v0 set it in both places. */
+  }
+  [data-scope="avatar"][data-part="root"][data-squared] {
+    border-radius: var(--ck-radius-lg);
+  }
+  [data-scope="avatar"][data-part="root"][data-bordered] {
+    border: 2px solid var(--ck-surface);
+    box-shadow: 0 0 0 2px var(--ck-color-neutral-200);
+  }
+
+  [data-scope="avatar"][data-part="root"][data-size="sm"] {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+  }
+  [data-scope="avatar"][data-part="root"][data-size="md"] {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.875rem;
+  }
+  [data-scope="avatar"][data-part="root"][data-size="lg"] {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+  }
+  [data-scope="avatar"][data-part="root"][data-size="xl"] {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+  }
+
+  [data-scope="avatar"] [data-part="image"] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Hide the image until it has loaded, so the fallback shows instead of a
+     broken-image glyph. v0 had no loaded/error state at all, so a slow or
+     failed image left a visible gap. */
+  [data-scope="avatar"] [data-part="image"][data-state="error"],
+  [data-scope="avatar"] [data-part="image"]:not([data-state="loaded"]) {
+    display: none;
+  }
+  [data-scope="avatar"] [data-part="fallback"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+
+  [data-scope="avatar"] [data-part="status"] {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border-radius: var(--ck-radius-full);
+    box-shadow: 0 0 0 2px var(--ck-surface);
+    width: 0.625rem;
+    height: 0.625rem;
+    background-color: var(--ck-color-neutral-400);
+  }
+  [data-scope="avatar"][data-size="sm"] [data-part="status"] {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  [data-scope="avatar"][data-size="xl"] [data-part="status"] {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  [data-scope="avatar"] [data-part="status"][data-status="online"] {
+    background-color: var(--ck-success-solid);
+  }
+  [data-scope="avatar"] [data-part="status"][data-status="offline"] {
+    background-color: var(--ck-color-neutral-400);
+  }
+  [data-scope="avatar"] [data-part="status"][data-status="busy"] {
+    background-color: var(--ck-danger-solid);
+  }
+  [data-scope="avatar"] [data-part="status"][data-status="away"] {
+    background-color: var(--ck-warning-solid);
+  }
+
+  /* --------------------------------------------------------------- Progress */
+  @keyframes ck-progress-stripes {
+    from {
+      background-position: 1rem 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }
+  @keyframes ck-progress-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
+  }
+
+  [data-scope="progress"][data-part="root"] {
+    width: 100%;
+  }
+  [data-scope="progress"] [data-part="track"] {
+    position: relative;
+    width: 100%;
+    min-width: 8rem;
+    overflow: hidden;
+    border-radius: var(--ck-radius-full);
+    background-color: var(--ck-color-neutral-200);
+  }
+  [data-scope="progress"] [data-part="track"][data-size="sm"] {
+    height: 0.25rem;
+  }
+  [data-scope="progress"] [data-part="track"][data-size="md"] {
+    height: 0.5rem;
+  }
+  [data-scope="progress"] [data-part="track"][data-size="lg"] {
+    height: 0.75rem;
+  }
+
+  [data-scope="progress"] [data-part="range"] {
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--ck-progress-color, var(--ck-accent-solid));
+    /* Driven by an inline --ck-progress-percent rather than an inline width, so
+       the value stays a token the CSS owns. */
+    width: calc(var(--ck-progress-percent, 0) * 1%);
+    transition: width var(--ck-duration-lg) var(--ck-ease-in-out);
+  }
+  [data-scope="progress"][data-variant="success"] [data-part="range"] {
+    --ck-progress-color: var(--ck-success-solid);
+  }
+  [data-scope="progress"][data-variant="warning"] [data-part="range"] {
+    --ck-progress-color: var(--ck-warning-solid);
+  }
+  [data-scope="progress"][data-variant="error"] [data-part="range"] {
+    --ck-progress-color: var(--ck-danger-solid);
+  }
+  [data-scope="progress"][data-variant="info"] [data-part="range"] {
+    --ck-progress-color: var(--ck-info-solid);
+  }
+
+  [data-scope="progress"] [data-part="range"][data-striped] {
+    background-image: linear-gradient(
+      45deg,
+      rgb(255 255 255 / 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgb(255 255 255 / 0.15) 50%,
+      rgb(255 255 255 / 0.15) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1rem 1rem;
+  }
+  [data-scope="progress"] [data-part="range"][data-striped][data-animated] {
+    animation: ck-progress-stripes 1s linear infinite;
+  }
+
+  /* Indeterminate: a fixed-width sliver sweeping the track. */
+  [data-scope="progress"][data-indeterminate] [data-part="range"] {
+    width: 33%;
+    animation: ck-progress-indeterminate 1.5s ease-in-out infinite;
+    transition: none;
+  }
+
+  [data-scope="progress"] [data-part="label"] {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg);
+    margin-bottom: 0.25rem;
+  }
+  [data-scope="progress"] [data-part="value-text"] {
+    color: var(--ck-fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+}

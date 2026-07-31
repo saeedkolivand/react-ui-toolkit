@@ -1,0 +1,382 @@
+/* Col — the 12-column grid.
+ *
+ * GENERATED shape (12 spans + 11 offsets, across 5 breakpoints). Static CSS by
+ * design: v0 built `w-${span}/12` and `ml-${offset}/12` as runtime Tailwind
+ * classes, which only resolved because this repo's own config happened to
+ * contain them. In a consumer's build they produced nothing — and `ml-${n}/12`
+ * was never valid Tailwind syntax at all, so `offset` and all four responsive
+ * offsets have NEVER worked. They work here.
+ *
+ * `order` stays an inline custom property because it is unbounded.
+ */
+@layer ck.components {
+  [data-scope="col"][data-part="root"] {
+    flex-shrink: 0;
+    flex-basis: auto;
+    order: var(--ck-col-order, 0);
+  }
+  [data-scope="col"][data-part="root"][data-order="first"] {
+    order: -9999;
+  }
+  [data-scope="col"][data-part="root"][data-order="last"] {
+    order: 9999;
+  }
+
+  [data-scope="col"][data-part="root"][data-span="1"] {
+    width: 8.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-span="2"] {
+    width: 16.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-span="3"] {
+    width: 25%;
+  }
+  [data-scope="col"][data-part="root"][data-span="4"] {
+    width: 33.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-span="5"] {
+    width: 41.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-span="6"] {
+    width: 50%;
+  }
+  [data-scope="col"][data-part="root"][data-span="7"] {
+    width: 58.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-span="8"] {
+    width: 66.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-span="9"] {
+    width: 75%;
+  }
+  [data-scope="col"][data-part="root"][data-span="10"] {
+    width: 83.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-span="11"] {
+    width: 91.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-span="12"] {
+    width: 100%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="1"] {
+    margin-inline-start: 8.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="2"] {
+    margin-inline-start: 16.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="3"] {
+    margin-inline-start: 25%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="4"] {
+    margin-inline-start: 33.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="5"] {
+    margin-inline-start: 41.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="6"] {
+    margin-inline-start: 50%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="7"] {
+    margin-inline-start: 58.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="8"] {
+    margin-inline-start: 66.666667%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="9"] {
+    margin-inline-start: 75%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="10"] {
+    margin-inline-start: 83.333333%;
+  }
+  [data-scope="col"][data-part="root"][data-offset="11"] {
+    margin-inline-start: 91.666667%;
+  }
+
+  @media (min-width: 40rem) {
+    [data-scope="col"][data-part="root"][data-span-sm="1"] {
+      width: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="2"] {
+      width: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="3"] {
+      width: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="4"] {
+      width: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="5"] {
+      width: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="6"] {
+      width: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="7"] {
+      width: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="8"] {
+      width: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="9"] {
+      width: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="10"] {
+      width: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="11"] {
+      width: 91.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-sm="12"] {
+      width: 100%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="1"] {
+      margin-inline-start: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="2"] {
+      margin-inline-start: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="3"] {
+      margin-inline-start: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="4"] {
+      margin-inline-start: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="5"] {
+      margin-inline-start: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="6"] {
+      margin-inline-start: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="7"] {
+      margin-inline-start: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="8"] {
+      margin-inline-start: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="9"] {
+      margin-inline-start: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="10"] {
+      margin-inline-start: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-sm="11"] {
+      margin-inline-start: 91.666667%;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    [data-scope="col"][data-part="root"][data-span-md="1"] {
+      width: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="2"] {
+      width: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="3"] {
+      width: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="4"] {
+      width: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="5"] {
+      width: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="6"] {
+      width: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="7"] {
+      width: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="8"] {
+      width: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="9"] {
+      width: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="10"] {
+      width: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="11"] {
+      width: 91.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-md="12"] {
+      width: 100%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="1"] {
+      margin-inline-start: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="2"] {
+      margin-inline-start: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="3"] {
+      margin-inline-start: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="4"] {
+      margin-inline-start: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="5"] {
+      margin-inline-start: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="6"] {
+      margin-inline-start: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="7"] {
+      margin-inline-start: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="8"] {
+      margin-inline-start: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="9"] {
+      margin-inline-start: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="10"] {
+      margin-inline-start: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-md="11"] {
+      margin-inline-start: 91.666667%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    [data-scope="col"][data-part="root"][data-span-lg="1"] {
+      width: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="2"] {
+      width: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="3"] {
+      width: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="4"] {
+      width: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="5"] {
+      width: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="6"] {
+      width: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="7"] {
+      width: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="8"] {
+      width: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="9"] {
+      width: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="10"] {
+      width: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="11"] {
+      width: 91.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-lg="12"] {
+      width: 100%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="1"] {
+      margin-inline-start: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="2"] {
+      margin-inline-start: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="3"] {
+      margin-inline-start: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="4"] {
+      margin-inline-start: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="5"] {
+      margin-inline-start: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="6"] {
+      margin-inline-start: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="7"] {
+      margin-inline-start: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="8"] {
+      margin-inline-start: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="9"] {
+      margin-inline-start: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="10"] {
+      margin-inline-start: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-lg="11"] {
+      margin-inline-start: 91.666667%;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    [data-scope="col"][data-part="root"][data-span-xl="1"] {
+      width: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="2"] {
+      width: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="3"] {
+      width: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="4"] {
+      width: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="5"] {
+      width: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="6"] {
+      width: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="7"] {
+      width: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="8"] {
+      width: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="9"] {
+      width: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="10"] {
+      width: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="11"] {
+      width: 91.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-span-xl="12"] {
+      width: 100%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="1"] {
+      margin-inline-start: 8.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="2"] {
+      margin-inline-start: 16.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="3"] {
+      margin-inline-start: 25%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="4"] {
+      margin-inline-start: 33.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="5"] {
+      margin-inline-start: 41.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="6"] {
+      margin-inline-start: 50%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="7"] {
+      margin-inline-start: 58.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="8"] {
+      margin-inline-start: 66.666667%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="9"] {
+      margin-inline-start: 75%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="10"] {
+      margin-inline-start: 83.333333%;
+    }
+    [data-scope="col"][data-part="root"][data-offset-xl="11"] {
+      margin-inline-start: 91.666667%;
+    }
+  }
+}
