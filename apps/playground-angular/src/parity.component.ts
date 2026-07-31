@@ -111,8 +111,8 @@ import { FIXTURE } from "./fixture";
     <section class="parity-section" data-fixture="card">
       <h2>Card &amp; Divider</h2>
       <div class="parity-grid">
-        <ck-card variant="elevated">{{ fixture.text }}</ck-card>
-        <ck-card variant="outline">{{ fixture.text }}</ck-card>
+        <ck-card variant="default">{{ fixture.text }}</ck-card>
+        <ck-card variant="primary">{{ fixture.text }}</ck-card>
       </div>
       <ck-divider label="or" />
     </section>
@@ -156,8 +156,8 @@ import { FIXTURE } from "./fixture";
     <section class="parity-section" data-fixture="layout">
       <h2>Layout</h2>
       <ck-row [spacing]="4">
-        <ck-col [span]="8"><ck-card variant="filled">span 8</ck-card></ck-col>
-        <ck-col [span]="4"><ck-card variant="filled">span 4</ck-card></ck-col>
+        <ck-col [span]="8"><ck-card variant="default">span 8</ck-card></ck-col>
+        <ck-col [span]="4"><ck-card variant="default">span 4</ck-card></ck-col>
       </ck-row>
     </section>
 

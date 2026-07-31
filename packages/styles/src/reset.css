@@ -15,3 +15,39 @@
     margin: 0;
   }
 }
+
+/* Angular hosts that WRAP their root part rather than being it.
+   
+   React, Vue and Svelte render the root element directly. Several Angular
+   components cannot: a <label> needs `for`, and a zag root needs its prop-getter
+   spread onto a real element, neither of which a host binding can express. So
+   the host is an extra element in the tree — and an unknown element defaults to
+   display:inline, which stops the real root being a flex item of its parent and
+   shifts every child's box.
+
+   display:contents makes those hosts generate no box at all, so the element
+   below behaves exactly as its React counterpart. Safe here, unlike on the
+   Tooltip trigger, because these hosts carry no event handlers — the reason
+   display:contents was rejected there was pointerenter/leave not firing on a
+   box-less element, and nothing listens on these.
+
+   Hosts that ARE their root part — ck-card, ck-alert, ck-tag, ck-badge,
+   ck-avatar, ck-progress, ck-container, ck-row, ck-col, ck-divider, ck-spinner,
+   ck-input, ck-textarea, ck-radio-group — are deliberately absent. */
+@layer ck.reset {
+  ck-checkbox,
+  ck-switch,
+  ck-radio,
+  ck-select,
+  ck-tabs,
+  ck-accordion,
+  ck-table,
+  ck-modal,
+  ck-drawer,
+  ck-tooltip,
+  ck-menu,
+  ck-toaster,
+  ck-toast-item {
+    display: contents;
+  }
+}

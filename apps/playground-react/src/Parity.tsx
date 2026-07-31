@@ -100,10 +100,10 @@ export function Parity() {
       <section className="parity-section" data-fixture="card">
         <h2>Card &amp; Divider</h2>
         <div className="parity-grid">
-          <Card variant="elevated">{FIXTURE.text}</Card>
-          <Card variant="outline">{FIXTURE.text}</Card>
+          <Card variant="default">{FIXTURE.text}</Card>
+          <Card variant="primary">{FIXTURE.text}</Card>
         </div>
-        <Divider label="or" />
+        <Divider>or</Divider>
       </section>
 
       <section className="parity-section" data-fixture="field">
@@ -146,10 +146,10 @@ export function Parity() {
         <h2>Layout</h2>
         <Row spacing={4}>
           <Col span={8}>
-            <Card variant="filled">span 8</Card>
+            <Card variant="default">span 8</Card>
           </Col>
           <Col span={4}>
-            <Card variant="filled">span 4</Card>
+            <Card variant="default">span 4</Card>
           </Col>
         </Row>
       </section>

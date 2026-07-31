@@ -11,6 +11,11 @@
  */
 @layer ck.components {
   [data-scope="col"][data-part="root"] {
+    /* Pinned, not inherited. Angular's adapters use element selectors, so this
+       part can be a <ck-card> rather than a <div> — and an unknown element
+       defaults to display:inline, which silently changes the box in one
+       framework only. Every root part declares its own display for that reason. */
+    display: block;
     flex-shrink: 0;
     flex-basis: auto;
     order: var(--ck-col-order, 0);

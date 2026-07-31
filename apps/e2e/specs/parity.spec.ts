@@ -26,24 +26,7 @@ const SECTIONS = [
  * unlisted section still fails — and a gap that quietly closes fails the test
  * until it is removed, so the list cannot rot.
  */
-const KNOWN_GAPS = new Set<string>([
-  // ONE cause, and this suite is what pinned it down.
-  //
-  // Several Angular components render their root part INSIDE the host rather
-  // than on it: <ck-checkbox> wraps <label data-part="root">, where React, Vue
-  // and Svelte emit that label directly. So the host is an extra element in the
-  // layout — it defaults to display:inline, it stops the real root from being a
-  // flex item of the surrounding row, and it shifts every child's box.
-  //
-  // The fix is mechanical: hoist data-scope/data-part onto the host with
-  // Angular's `host:` block, which CkInput and CkRadioGroup already do. It is
-  // its own batch rather than a hurried edit at the end of this one.
-  "angular/card",
-  "angular/field",
-  "angular/toggle",
-  "angular/display",
-  "angular/layout",
-]);
+const KNOWN_GAPS = new Set<string>([]);
 
 /** Layout-visible properties. Compared as strings, so a rem/px difference shows. */
 const PROPS = [

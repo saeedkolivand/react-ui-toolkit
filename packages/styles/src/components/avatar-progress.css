@@ -114,6 +114,11 @@
   }
 
   [data-scope="progress"][data-part="root"] {
+    /* Pinned, not inherited. Angular's adapters use element selectors, so this
+       part can be a <ck-card> rather than a <div> — and an unknown element
+       defaults to display:inline, which silently changes the box in one
+       framework only. Every root part declares its own display for that reason. */
+    display: block;
     width: 100%;
   }
   [data-scope="progress"] [data-part="track"] {

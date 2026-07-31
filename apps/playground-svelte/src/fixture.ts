@@ -28,8 +28,8 @@ export const FIXTURE = {
     "warning",
     "info",
   ] as const,
-  badgeVariants: ["primary", "neutral", "success", "error", "warning", "info"] as const,
-  tagColors: ["neutral", "primary", "success", "error", "warning", "info"] as const,
+  badgeVariants: ["primary", "secondary", "success", "error", "warning", "info"] as const,
+  tagColors: ["default", "primary", "success", "error", "warning", "info"] as const,
   alertVariants: ["info", "success", "warning", "error"] as const,
   icons: ["check", "close", "search", "settings", "heart", "star"] as const,
   countries: [
