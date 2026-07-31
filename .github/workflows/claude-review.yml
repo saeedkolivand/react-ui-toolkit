@@ -47,16 +47,40 @@ jobs:
       contains(github.event.comment.body, '@claude review') &&
       github.event.comment.user.login == github.repository_owner
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Raised from 30 with the install, build, browser download and the suites the
+    # review is now told to run. On timeout the job is killed and posts nothing,
+    # so the cost of this being too low is a review that silently never arrives.
+    timeout-minutes: 45
     permissions:
       contents: read
       pull-requests: write
       id-token: write # the action exchanges an OIDC token for an App token
+      # Cache read AND write. An explicit permissions block makes every scope it
+      # omits `none`, so without this the caches are not merely un-saved, they
+      # are un-restored — the action's own post step already fails with "cache
+      # write denied: token has no writable scopes", and `cache: pnpm` below
+      # would be inert in both directions, cold-installing on every review.
+      actions: write
 
     steps:
+      # `ref` is required, not decoration. An `issue_comment` event sets
+      # GITHUB_REF and GITHUB_SHA to the DEFAULT BRANCH, so a checkout without it
+      # lands on `main` — confirmed in the log of the review this PR's own first
+      # round ran: `git checkout --progress --force -B main refs/remotes/origin/main`.
+      # claude-code-action then checks the PR branch out for itself, which is why
+      # the review still read the right diff and the bug stayed invisible.
+      #
+      # Every step this PR adds runs BEFORE that, so without the ref they would
+      # install main's lockfile and build main's sources into `packages/*/dist`.
+      # `dist` is gitignored, so it survives the action's branch switch intact and
+      # the playgrounds import it — trap 2 in CLAUDE.md, automated. That is worse
+      # than the status quo it replaces: today the review says it could not run
+      # the gate; with the wrong ref it would report a confident green measured
+      # against main.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # full history, so the review can diff against the base
+          ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
 
       # Everything below exists so the review can RUN the code rather than only
       # read it. Reviews were closing with "I could not run the gate: this
@@ -65,9 +89,18 @@ jobs:
       # reading cannot settle: whether an assertion still fails when the fix is
       # reverted, and whether a jsdom green survives a real browser.
       #
-      # Installing here rather than letting the agent do it keeps the lockfile
-      # frozen, gets the pnpm store cache, and means the allowed-tools list below
-      # never has to include a command that mutates dependencies.
+      # Installing here rather than leaving it to the agent keeps the lockfile
+      # frozen and gets the pnpm store cache. It does NOT make the job incapable
+      # of mutating dependencies — `Bash(pnpm --filter:*)` below is a prefix rule
+      # and so matches `pnpm --filter <pkg> add <dep>`, as `Bash(node:*)` matches
+      # `node -e`. What actually bounds this job is the owner gate above.
+      #
+      # With the ref pinned, these steps run PR-authored code — install lifecycle
+      # scripts included (`allowBuilds` in pnpm-workspace.yaml permits esbuild,
+      # @tailwindcss/oxide, lmdb) — in a job holding a subscription token. That is
+      # already true of the agent step, which runs the suites; the ref only moves
+      # it earlier and makes it explicit. The owner gate is the whole mitigation:
+      # nobody but the owner can start this, on any PR, fork or not.
       - uses: pnpm/action-setup@v6 # reads packageManager from package.json
 
       - uses: actions/setup-node@v7
@@ -96,10 +129,19 @@ jobs:
           # shows up as a job that reviews the code and then posts nothing, with
           # "No buffered inline comments" in the log.
           #
-          # A bare `@claude review` mention runs the action in TAG mode instead,
-          # which grants those tools. `--append-system-prompt` adds our review
-          # standards without flipping modes.
+          # A bare `@claude review` mention runs the action in TAG mode instead.
+          # Tag mode does NOT grant the inline-comment tools on its own, though:
+          # at this pin the inline-comment MCP server is only started when
+          # `--allowedTools` names one (src/mcp/install-mcp-server.ts:80,138-142),
+          # and tag mode's own list is Glob/Grep/LS/Read plus the comment-update
+          # and CI tools (src/modes/tag/index.ts:123-133). That is why every
+          # review so far has opened by saying it can only update one comment.
+          # Naming the tool below is what starts the server.
+          #
+          # `--append-system-prompt` adds our review standards without flipping
+          # modes, and the flag does not clobber tag mode's list: `allowedTools`
+          # is an accumulating flag and every occurrence is unioned.
           claude_args: |
             --model claude-opus-5
-            --allowedTools "Bash(pnpm turbo run:*),Bash(pnpm --filter:*),Bash(pnpm vitest:*),Bash(pnpm lint:*),Bash(pnpm typecheck:*),Bash(node:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
-            --append-system-prompt "Review this pull request against CLAUDE.md and CONTRIBUTING.md, which encode the conventions that keep four framework adapters identical. Review only the changed files. Weight these highest, because each has silently shipped a bug here before: booleans rendered as data-x=\"false\" rather than absent (\"false\" matches [data-x] in CSS, so the wrong styles apply); class names appearing in markup instead of data-scope/data-part/data-state; consumer attributes not spread last; a root part with no declared display; rendering gated on open rather than on presence, which silently kills exit animations; CSS authored outside a cascade layer; physical CSS properties where logical ones are required for RTL; and any new runtime dependency in a published package.json. Hand-rolled behaviour in packages/core is the intended v2 design — do not flag it as reinventing a wheel. Dependencies are installed and the packages are built before you start, and you can run the suites: `pnpm turbo run lint typecheck build test` for the gate, `pnpm --filter <pkg> vitest run <path>` for one file, `pnpm --filter @crosskit-ui/e2e test:browser` for the browser suite (Chromium is installed) and `test:e2e` for cross-framework parity. Prefer running over reasoning. When you suspect a defect, reproduce it first; when you believe a test is weak, revert the fix or delete the code it covers and confirm the test actually fails. Report a finding you could not reproduce as unconfirmed, and say what you ran. Report only defects introduced by this diff, and only where you can quote the specific rule broken or demonstrate the failure. If you are not certain an issue is real, do not raise it: false positives erode trust. Post findings as inline comments on the changed lines. Advisory only — do not approve or block."
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(pnpm turbo run:*),Bash(pnpm --filter:*),Bash(pnpm vitest:*),Bash(pnpm lint:*),Bash(pnpm typecheck:*),Bash(node:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git checkout:*),Bash(git restore:*),Bash(git stash:*)"
+            --append-system-prompt "Review this pull request against CLAUDE.md and CONTRIBUTING.md, which encode the conventions that keep four framework adapters identical. Review only the changed files. Weight these highest, because each has silently shipped a bug here before: booleans rendered as data-x=\"false\" rather than absent (\"false\" matches [data-x] in CSS, so the wrong styles apply); class names appearing in markup instead of data-scope/data-part/data-state; consumer attributes not spread last; a root part with no declared display; rendering gated on open rather than on presence, which silently kills exit animations; CSS authored outside a cascade layer; physical CSS properties where logical ones are required for RTL; and any new runtime dependency in a published package.json. Hand-rolled behaviour in packages/core is the intended v2 design — do not flag it as reinventing a wheel. Dependencies are installed and the packages are built before you start, and you can run the suites: `pnpm turbo run lint typecheck build test` for the gate, `pnpm --filter <pkg> vitest run <path>` for one file, `pnpm --filter @crosskit-ui/e2e test:e2e` for cross-framework parity, and `pnpm --filter @crosskit-ui/e2e test:browser` for the browser suite (Chromium is installed). Those two are disjoint, not one a superset of the other: the parity config ignores the position and overlay specs, so only test:browser runs them. Prefer running over reasoning. When you suspect a defect, reproduce it first; when you believe a test is weak, revert the fix or delete the code it covers and confirm the test actually fails. Restore every file you touch before you finish — `git checkout --` and `git stash` are available — and never commit, push, or leave the tree dirty: your edits are auto-approved inside the workspace and this branch is the contributor's. Report a finding you could not reproduce as unconfirmed, and say what you ran. Report only defects introduced by this diff, and only where you can quote the specific rule broken or demonstrate the failure. If you are not certain an issue is real, do not raise it: false positives erode trust. Post findings as inline comments on the changed lines. Advisory only — do not approve or block."
