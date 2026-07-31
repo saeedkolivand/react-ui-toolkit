@@ -63,6 +63,40 @@ jobs:
       actions: write
 
     steps:
+      # Forks execute nothing here. The owner gate above decides who may TRIGGER
+      # a review, not whose code the job then runs — and the ordinary sequence is
+      # the dangerous one: a stranger opens a pull request, the owner reads it and
+      # comments `@claude review`. With the head checked out, that PR's install
+      # lifecycle scripts (`allowBuilds` permits esbuild, @tailwindcss/oxide, lmdb)
+      # execute with this job's subscription token, `pull-requests: write` and
+      # `actions: write` — the last of which also means cache entries a later run
+      # on `main` restores.
+      #
+      # `ci.yml` builds fork PRs safely because `pull_request` gives it a
+      # read-only token and no secrets. This job has both, so it needs the head to
+      # be a branch of this repository. The `issue_comment` payload cannot say —
+      # `issue.pull_request` carries only URLs — so it is resolved through the API.
+      #
+      # Resolving the SHA rather than trusting `refs/pull/N/head` also closes the
+      # window between this check and the checkout, since that ref moves when the
+      # contributor pushes.
+      - id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          head=$(gh pr view "$NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json headRepositoryOwner,headRepository,headRefOid \
+            --jq '"\(.headRepositoryOwner.login)/\(.headRepository.name) \(.headRefOid)"')
+          repo=${head%% *}
+          sha=${head##* }
+          if [ "$repo" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::PR #$NUMBER's head is $repo, not $GITHUB_REPOSITORY. This job installs and builds the tree it checks out, with a subscription token and write scopes, so it runs code from this repository only. Review a fork by hand." >&2
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
       # `ref` is required, not decoration. An `issue_comment` event sets
       # GITHUB_REF and GITHUB_SHA to the DEFAULT BRANCH, so a checkout without it
       # lands on `main` — confirmed in the log of the review this PR's own first
@@ -80,7 +114,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # full history, so the review can diff against the base
-          ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
+          ref: ${{ steps.pr.outputs.sha }} # verified same-repo above, pinned
 
       # Everything below exists so the review can RUN the code rather than only
       # read it. Reviews were closing with "I could not run the gate: this
@@ -95,12 +129,12 @@ jobs:
       # and so matches `pnpm --filter <pkg> add <dep>`, as `Bash(node:*)` matches
       # `node -e`. What actually bounds this job is the owner gate above.
       #
-      # With the ref pinned, these steps run PR-authored code — install lifecycle
-      # scripts included (`allowBuilds` in pnpm-workspace.yaml permits esbuild,
-      # @tailwindcss/oxide, lmdb) — in a job holding a subscription token. That is
-      # already true of the agent step, which runs the suites; the ref only moves
-      # it earlier and makes it explicit. The owner gate is the whole mitigation:
-      # nobody but the owner can start this, on any PR, fork or not.
+      # These steps run the checked-out tree's own code, install lifecycle scripts
+      # included. The same-repo gate above is what makes that acceptable: the code
+      # is then this repository's, at the same trust level as the `main` that runs
+      # it. Scripts stay enabled rather than `--ignore-scripts` so this install
+      # matches `ci.yml`'s byte for byte — a review measuring a different install
+      # than the gate is the whole failure mode being fixed here.
       - uses: pnpm/action-setup@v6 # reads packageManager from package.json
 
       - uses: actions/setup-node@v7
