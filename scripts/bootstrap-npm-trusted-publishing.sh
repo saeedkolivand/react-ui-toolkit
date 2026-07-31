@@ -28,7 +28,14 @@ PACKAGES=(core styles zag-angular react vue svelte angular)
 
 cd "$(dirname "$0")/.."
 
-echo "==> npm CLI: $(npm --version)  (need >= 11.5.1 for OIDC, >= 11.15 for 'npm trust')"
+# 11.5.1 is the real floor for the OIDC exchange. `npm trust` was documented as
+# 11.15+, but it is present and takes this exact syntax in 11.14.1 — verified
+# against `npm trust --help` — so the check reports rather than gates.
+echo "==> npm CLI: $(npm --version)  (needs >= 11.5.1 for the OIDC exchange)"
+npm trust --help >/dev/null 2>&1 || {
+  echo "This npm has no 'npm trust'. Upgrade: npm i -g npm@latest"
+  exit 1
+}
 npm whoami >/dev/null 2>&1 || { echo "Not logged in. Run: npm login"; exit 1; }
 echo "==> logged in as: $(npm whoami)"
 
