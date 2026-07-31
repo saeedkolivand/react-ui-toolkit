@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { Orientation } from "@crosskit-ui/core";
 
-const props = withDefaults(
-  defineProps<{ orientation?: Orientation; label?: string; name?: string }>(),
-  { orientation: "horizontal" }
-);
+const props = withDefaults(defineProps<{ orientation?: Orientation; label?: string }>(), {
+  orientation: "horizontal",
+});
 </script>
 
 <!-- A grouping wrapper, not a controller: native radios already handle

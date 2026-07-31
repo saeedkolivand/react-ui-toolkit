@@ -125,7 +125,7 @@ export function Parity() {
           <Switch label="Off" />
           <Switch label="On" defaultChecked />
         </div>
-        <RadioGroup name="parity-size" label="Size">
+        <RadioGroup label="Size">
           {FIXTURE.sizes.map(size => (
             <Radio key={size} value={size} label={size} defaultChecked={size === "md"} />
           ))}

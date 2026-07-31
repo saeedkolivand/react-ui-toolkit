@@ -45,8 +45,12 @@ export function Radio({
 }
 
 export interface RadioGroupProps {
-  /** Shared `name`, which is what makes native radios mutually exclusive. */
-  name?: string;
+  /**
+   * NOTE: there is deliberately no `name` here. Native radios are made mutually
+   * exclusive by sharing a `name`, and only the radios themselves can carry it —
+   * the group cannot inject props into arbitrary children. v0's group took a
+   * `name` and silently dropped it. Put `name` on each `<Radio>`.
+   */
   orientation?: Orientation;
   label?: ReactNode;
   /** Marks the whole group invalid. aria-invalid is NOT supported on role="radio" — it belongs on the radiogroup. Only svelte-check flags this, so it shipped in all four adapters; data-invalid stays for styling. */
@@ -61,7 +65,6 @@ export interface RadioGroupProps {
  * semantics screen readers need, which v0 never provided.
  */
 export function RadioGroup({
-  name,
   orientation = "horizontal",
   label,
   invalid = false,
@@ -77,7 +80,6 @@ export function RadioGroup({
       data-orientation={orientation}
       data-invalid={dataAttr(invalid)}
       aria-invalid={ariaAttr(invalid)}
-      data-name={name}
       className={className}
     >
       {children}

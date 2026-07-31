@@ -107,7 +107,7 @@
     <Switch label="Off" />
     <Switch label="On" checked />
   </div>
-  <RadioGroup name="parity-size" label="Size">
+  <RadioGroup label="Size">
     {#each FIXTURE.sizes as size (size)}
       <Radio value={size} label={size} bind:group={radioValue} />
     {/each}
