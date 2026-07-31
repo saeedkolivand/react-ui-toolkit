@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — positioner harness</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        font: 12px/1.4 ui-monospace, monospace;
+      }
+      #anchor {
+        position: fixed;
+        background: #0284c7;
+        color: #fff;
+        display: grid;
+        place-items: center;
+      }
+      #floating {
+        /* The positioner mandates fixed: see position-dom.ts. */
+        position: fixed;
+        background: #1e293b;
+        color: #fff;
+        display: grid;
+        place-items: center;
+        border-radius: 6px;
+      }
+      #arrow {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: inherit;
+        rotate: 45deg;
+      }
+      [data-placement^="top"] #arrow {
+        bottom: -4px;
+        left: var(--ck-arrow-x);
+      }
+      [data-placement^="bottom"] #arrow {
+        top: -4px;
+        left: var(--ck-arrow-x);
+      }
+      [data-placement^="left"] #arrow {
+        right: -4px;
+        top: var(--ck-arrow-y);
+      }
+      [data-placement^="right"] #arrow {
+        left: -4px;
+        top: var(--ck-arrow-y);
+      }
+      [data-arrow-detached] #arrow {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="anchor">anchor</div>
+    <div id="floating"><span id="label">floating</span><i id="arrow"></i></div>
+    <script type="module" src="/position.ts"></script>
+  </body>
+</html>
