@@ -76,6 +76,15 @@ const { component } = Astro.props;
     <p class="note">
       Prop names are identical in all four frameworks. Only two-way binding differs, and each
       framework uses its own idiom over the same underlying prop.
+      {
+        component.props.some(p => p.reactFirst) && (
+          <>
+            {" "}
+            The rows marked <span class="react-first">React first</span> are the exception, and a
+            temporary one: they exist in React while the other three adapters catch up.
+          </>
+        )
+      }
     </p>
   </section>
 

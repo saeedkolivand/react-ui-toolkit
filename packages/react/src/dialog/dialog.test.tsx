@@ -239,6 +239,52 @@ describe("Modal", () => {
       await closed();
     });
 
+    it("advances Tab inside a nested dialog, not only at the wrap boundaries", async () => {
+      const user = userEvent.setup();
+      // Two live traps used to fight. The outer one kept its own document
+      // listener, ran first, and — because the inner overlay marks the outer
+      // positioner inert, so its container has no tabbables — took the
+      // "nothing to move to" branch and preventDefault()ed every Tab. The inner
+      // trap then only moved focus at its two boundaries, so Tab from the middle
+      // of a nested dialog did nothing while Tab from the last still wrapped.
+      function Harness() {
+        const [inner, setInner] = useState(false);
+        return (
+          <Modal defaultOpen title="Outer" id="outer" footer={null}>
+            <button onClick={() => setInner(true)}>open inner</button>
+            <Modal
+              open={inner}
+              onOpenChange={d => setInner(d.open)}
+              title="Inner"
+              id="inner"
+              footer={null}
+              showCloseButton={false}
+            >
+              <button>a</button>
+              <button>b</button>
+            </Modal>
+          </Modal>
+        );
+      }
+      render(<Harness />);
+      await opened();
+      await user.click(screen.getByText("open inner"));
+      await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(2));
+
+      screen.getByText("a").focus();
+      await user.tab();
+      expect(document.activeElement).toBe(screen.getByText("b"));
+      // And still wraps at the end, within the inner dialog only.
+      await user.tab();
+      expect(document.activeElement).toBe(screen.getByText("a"));
+
+      // The outer trap resumes once the inner one leaves.
+      await user.keyboard("{Escape}");
+      await waitFor(() => expect(document.querySelectorAll(CONTENT)).toHaveLength(1));
+      await user.tab();
+      expect(document.querySelector(CONTENT)!.contains(document.activeElement)).toBe(true);
+    });
+
     it("keeps focus put across a re-render while open", async () => {
       const user = userEvent.setup();
       // An inline onOpenChange is a new identity every render. While the setup

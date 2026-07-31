@@ -31,3 +31,9 @@ busy until it settles.
 
 `@zag-js/dialog` is dropped from `@crosskit-ui/react`'s dependencies — nothing
 imports it now that Modal and Drawer are rebuilt.
+
+`createFocusTrap` gains a layer stack, matching `pushDismissable` and
+`lockScroll`. Without it, nested overlays left two traps active: the outer one
+ran first, found its container empty because an inner overlay had marked it
+inert, and cancelled every Tab — so Tab from the middle of a nested dialog did
+nothing at all. `focusTrapDepth()` is exported for tests.

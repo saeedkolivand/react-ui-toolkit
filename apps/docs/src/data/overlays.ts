@@ -159,10 +159,10 @@ export const overlays: ComponentDoc[] = [
         description: "Escape, a press on the mask, and the close button all arrive here.",
       },
       {
-        name: "open, defaultOpen, onOpenChange, role, modal, closeOnEscape, closeOnInteractOutside, showCloseButton, id, className, title, description, footer",
+        name: "open, defaultOpen, onOpenChange, role, modal, closeOnEscape, closeOnInteractOutside, showCloseButton, id, className, title, description",
         type: "",
         description:
-          "Identical to Modal. Listed rather than implied with an ellipsis: Modal also has centered, scrollable, width and the whole confirm/cancel set, and a Drawer has none of them.",
+          "Identical to Modal. Listed rather than implied with an ellipsis: Modal also has centered, scrollable, width and the whole confirm/cancel set, and a Drawer has none of them. `footer` exists on both but differs — Drawer's is a plain slot with no default.",
       },
     ],
     samples: {
