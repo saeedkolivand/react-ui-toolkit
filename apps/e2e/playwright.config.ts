@@ -17,6 +17,10 @@ export const FRAMEWORKS = [
 
 export default defineConfig({
   testDir: "./specs",
+  // In CI: an HTML report to upload on failure, plus inline annotations. The
+  // failure output here names a property and two values, so having it attached
+  // to the run is the difference between fixing it and re-running it locally.
+  reporter: process.env.CI ? [["html", { open: "never" }], ["github"]] : "list",
   fullyParallel: false,
   workers: 1,
   // A fixed viewport and no animation: the parity spec compares screenshots

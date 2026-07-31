@@ -60,6 +60,45 @@ jobs:
           # Not fatal: forks and Dependabot PRs cannot read CODECOV_TOKEN.
           fail_ci_if_error: false
 
+  # The cross-framework parity suite. This is the one check that can catch an
+  # adapter diverging from the other three — every bug it has found so far
+  # passed lint, typecheck, build and the unit tests first. Deliberately NOT
+  # --affected: a change to @crosskit-ui/styles or /core affects all four
+  # adapters, and turbo cannot know that a CSS edit moved one framework's box.
+  parity:
+    name: Cross-framework parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The playgrounds import each adapter's dist, so a stale build means the
+      # suite tests the previous commit — which has already happened once, and
+      # produced a page of meaningless results.
+      - name: Build packages
+        run: pnpm turbo run build --filter="./packages/*"
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @crosskit-ui/e2e exec playwright install --with-deps chromium
+
+      - name: Run parity suite
+        run: pnpm --filter @crosskit-ui/e2e test:e2e
+
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: parity-report
+          path: apps/e2e/playwright-report/
+          retention-days: 7
+
   commitlint:
     name: Commit messages
     runs-on: ubuntu-latest
