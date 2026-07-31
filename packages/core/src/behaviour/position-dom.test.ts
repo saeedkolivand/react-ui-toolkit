@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { applyPosition, rectOf, viewportRect, type PositionResult } from "./position-dom";
+import { applyPosition, measure, rectOf, viewportRect, type PositionResult } from "./position-dom";
 
 const el = () => document.getElementById("floating")!;
 
@@ -78,6 +78,26 @@ describe("applyPosition", () => {
       expect(el().style.getPropertyValue("--ck-arrow-x")).toBe("");
       expect(el().dataset.arrowDetached).toBeUndefined();
     });
+  });
+});
+
+describe("measure", () => {
+  it("makes the element fixed before reading its rect", () => {
+    // The read is what depends on the precondition, not the write: a block
+    // element with no width fills its container while static and shrinks to its
+    // content once fixed, so measuring first hands `computePosition` a box the
+    // element will never have. Recorded here so the order cannot be reversed
+    // without a failure; the e2e suite proves the consequence in a real layout.
+    const positionsWhenRead: string[] = [];
+    Element.prototype.getBoundingClientRect = function (this: HTMLElement) {
+      if (this.id === "floating") positionsWhenRead.push(this.style.position);
+      return { x: 0, y: 0, width: 10, height: 10 } as DOMRect;
+    };
+
+    document.body.innerHTML = '<div id="anchor"></div><div id="floating"></div>';
+    measure(document.getElementById("anchor")!, document.getElementById("floating")!);
+
+    expect(positionsWhenRead).toEqual(["fixed"]);
   });
 });
 

@@ -37,7 +37,8 @@ export interface PlaceRequest extends ComputePositionOptions {
   placement: PlacementAlias;
   spot: Spot;
   anchorSize?: [number, number];
-  floatingSize?: [number, number];
+  /** "auto" leaves the element to size itself, which is where a static box differs. */
+  floatingSize?: [number, number] | "auto";
 }
 
 function place(request: PlaceRequest) {
@@ -60,8 +61,13 @@ function place(request: PlaceRequest) {
   anchor.style.left = `${Math.round((vw - anchorSize[0]) * fx)}px`;
   anchor.style.top = `${Math.round((vh - anchorSize[1]) * fy)}px`;
 
-  floating.style.width = `${floatingSize[0]}px`;
-  floating.style.height = `${floatingSize[1]}px`;
+  if (floatingSize === "auto") {
+    floating.style.width = "";
+    floating.style.height = "";
+  } else {
+    floating.style.width = `${floatingSize[0]}px`;
+    floating.style.height = `${floatingSize[1]}px`;
+  }
   label.textContent = request.placement;
 
   const result = measure(anchor, floating, { ...options, rtl, arrow: { size: 8, padding: 6 } });

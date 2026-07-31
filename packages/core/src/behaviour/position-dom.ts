@@ -9,11 +9,16 @@
  *    `position: relative` wrappers and scroll containers — the usual reasons
  *    an absolutely positioned popup drifts — stop mattering entirely.
  *
- *    `applyPosition` sets it alongside the coordinates rather than leaving it
- *    to a stylesheet. A rule can be overridden, scoped away, or simply never
- *    written for a component someone adds later — and the failure is silent,
- *    because the element still renders, just in the wrong place. Written here
- *    it travels with the values it is a precondition for.
+ *    Set in `measure` *and* `applyPosition`, rather than left to a stylesheet.
+ *    A rule can be overridden, scoped away, or simply never written for a
+ *    component someone adds later — and the failure is silent, because the
+ *    element still renders, just in the wrong place.
+ *
+ *    Setting it on the write alone is not enough, because it is the **read**
+ *    that depends on it: a block element with no width fills its container
+ *    while static and shrinks to its content once fixed, so measuring first
+ *    hands `computePosition` a box the element will never have, and flip and
+ *    shift both decide against it.
  *
  *    **`fixed` is not a complete escape, and it is worth being exact about
  *    what it does not fix.** A `transform`, `filter`, `perspective`,
@@ -74,6 +79,10 @@ export function measure(
   floating: HTMLElement,
   options: ComputePositionOptions = {}
 ): PositionResult {
+  // Before the rect below is read, not only before it is written. The measured
+  // box has to be the box the element will actually be laid out as.
+  floating.style.position = "fixed";
+
   // Read direction off the anchor rather than taking it as a prop: it is what
   // the `dir` attribute sets on an ancestor, and the DOM already resolves
   // inheritance for us.
@@ -92,9 +101,8 @@ export function measure(
  * what the user sees.
  */
 export function applyPosition(floating: HTMLElement, position: PositionResult): void {
-  // The coordinates below are viewport-relative, which is only what `fixed`
-  // means. Under `absolute` they would be measured from whichever ancestor
-  // happens to be the containing block — a different, silently wrong place.
+  // Also set here, not only in `measure`, so a caller applying a position it
+  // computed elsewhere still gets the coordinate space those numbers assume.
   floating.style.position = "fixed";
   floating.style.left = `${position.x}px`;
   floating.style.top = `${position.y}px`;

@@ -39,8 +39,9 @@ Do not name other UI or behaviour libraries in shipped code, comments, docs or c
 
 6. **Anchored overlays must portal to `document.body`.** The positioner writes viewport
    coordinates and sets `position: fixed`, but `fixed` is captured by any ancestor with a
-   `transform`, `filter`, `perspective`, `backdrop-filter`, `contain: paint` or `will-change` —
-   that ancestor becomes the containing block and the popup lands somewhere else. Portalling is
+   `transform`, `filter`, `perspective`, `backdrop-filter`, `contain: paint`, or a `will-change`
+   naming one of those — that ancestor becomes the containing block and the popup lands somewhere
+   else. (`will-change: opacity` does not; only the properties that would create one themselves.) Portalling is
    the only fix, and it cannot be enforced from `core`.
 
 7. **Prop names are identical in all four adapters.** Only two-way binding differs, each using its
