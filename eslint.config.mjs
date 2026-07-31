@@ -19,7 +19,6 @@ export default tseslint.config(
       "**/.turbo/**",
       "**/.astro/**",
       // v0 source kept only as porting reference; deleted at v1.0.0.
-      "legacy/**",
     ],
   },
 
