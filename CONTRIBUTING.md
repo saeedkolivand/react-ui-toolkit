@@ -1,56 +1,114 @@
-# Contributing to React UI Toolkit
+# Contributing to CrossKit
 
-We love your input! We want to make contributing to React UI Toolkit as easy and transparent as possible, whether it's:
+The hard part of this repository is not any one component — it is that **four adapters have to stay
+identical**. Most of what follows exists to make divergence fail loudly instead of shipping.
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
-- Becoming a maintainer
+```bash
+pnpm install
+pnpm turbo run lint typecheck build test check:exports   # the gate CI runs
+pnpm --filter @crosskit-ui/e2e test:e2e                  # cross-framework parity
+```
 
-## Development Process
+Node 22+, pnpm 11+. Nothing else to set up.
 
-We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
+## The layout
 
-1. Fork the repo and create your branch from `main`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints.
-6. Issue that pull request!
+```
+packages/
+  core/         icon data, table and toast stores, shared types — no framework anywhere
+  styles/       the whole visual layer, precompiled. Tailwind is author-time only.
+  zag-angular/  Angular signals binding for @zag-js/core
+  react/ vue/ svelte/ angular/    thin adapters, nothing else
+apps/
+  docs/         the site, and the registry MIGRATION.md is generated from
+  storybook/    React-only visual catalogue and styles review surface
+  e2e/          the cross-framework parity suite
+  playground-*/ one page per framework, driven by e2e
+```
 
-## Pull Request Process
+## The two files you copy
 
-1. Update the README.md with details of changes to the interface, if applicable.
-2. Update the documentation with any new features or changes.
-3. The PR will be merged once you have the sign-off of at least one maintainer.
+Every new component starts as a copy of one of these. Read them before writing anything.
 
-## Any contributions you make will be under the MIT Software License
+- **Presentational** — `packages/react/src/button/button.tsx`. Props in, data attributes out.
+- **Machine-driven** — `packages/react/src/dialog/modal.tsx`. Portal, presence, controlled and
+  uncontrolled, four content areas.
 
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+## Conventions that keep four adapters honest
 
-## Report bugs using GitHub's [issue tracker](https://github.com/saeedkolivand/react-ui-toolkit/issues)
+1. **Prop names are identical in all four.** Only two-way binding differs, and each framework uses
+   its own idiom over the same underlying prop: React `open`/`onOpenChange`, Vue `v-model:open`,
+   Svelte `bind:open`, Angular `[(open)]`. All four feed the same machine props, so there is no
+   branching logic to write.
 
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/saeedkolivand/react-ui-toolkit/issues/new).
+2. **No class names in markup, ever.** Components emit `data-scope`, `data-part` and `data-state`.
+   `data-scope` must match the zag machine's own scope name exactly where a machine exists — zag
+   emits it from its prop-getters, so renaming means the CSS silently stops matching.
 
-## Write bug reports with detail, background, and sample code
+3. **Booleans are presence attributes, never `="false"`.** Funnel every one through `dataAttr()`.
+   Binding a raw boolean makes Vue and Angular render `data-loading="false"`, which **matches**
+   `[data-loading]` in CSS and applies the wrong styles. This has its own assertion in the parity
+   suite because it is the single most likely divergence.
 
-**Great Bug Reports** tend to have:
+4. **Consumer attributes spread last**, after our own `data-*`, so a consumer — and a composing
+   component — can override anything. It is what makes `<Icon data-part="icon">` inside Button work.
 
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can.
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+5. **Continuous values are inline custom properties, not attributes.** Enumerable props
+   (`span` 1–12) are static CSS; unbounded ones (`Row.spacing`) are `--ck-*` written inline.
 
-## Use a Consistent Coding Style
+6. **Every root part declares its own `display`.** Angular's adapters use element selectors, so a
+   root can be a `<ck-progress>` rather than a `<div>` — and an unknown element defaults to
+   `display: inline`. A root that does not state its display is one framework away from a different
+   box.
 
-- Use TypeScript for all code files
-- Use Prettier for code formatting
-- Follow the existing code style
+7. **Gate rendering on presence, never on `api.open`.** Otherwise the node unmounts the instant
+   `open` flips, `data-state="closed"` never gets a frame, and every exit animation silently does
+   nothing.
 
-## License
+## Angular, specifically
 
-By contributing, you agree that your contributions will be licensed under its MIT License.
+Two rules that are not obvious and have both cost real debugging time:
+
+- **`useMachine` must be a field initializer**, never `ngOnInit` — it needs an injection context.
+  Which also means **inputs are not readable yet**: an `input.required` read while building a
+  machine throws NG0950 and blanks the component tree, and anything snapshotted there sees
+  `undefined`. `bindable` seeds lazily for exactly this reason.
+- **Declare no `styles`.** Component-scoped styles add `_ngcontent-*` attributes and never reach
+  portaled content. All styling comes from the global sheet. Never reach for `ViewEncapsulation.None`
+  or `::ng-deep`.
+
+## Definition of done for a component
+
+1. CSS in `packages/styles/src/components/`
+2. Four adapters, in the order React → Svelte → Vue → Angular
+3. React tests — render, `data-part` present, props pass through, booleans absent-not-false
+4. An entry in `apps/docs/src/data/` (which also generates its MIGRATION.md rows)
+5. A Storybook story
+6. Added to the parity page in all four playgrounds if it renders statically
+
+## Testing, and what each layer is for
+
+Deliberately unequal:
+
+- **Core unit tests** carry the logic budget — pagination windows, column mapping, placement
+  translation. No framework involved.
+- **Adapter tests** assert the same six things per component so divergence is obvious. Behaviour is
+  zag's job; do not re-test it four times.
+- **The parity suite** is the real guarantee. Assertions never branch on framework, and the visual
+  check compares the frameworks against **each other**, not against a stored golden image — which is
+  what keeps it useful while the CSS is still moving.
+
+If you find a divergence the parity suite did not catch, add the assertion that would have.
+
+## Commits and releases
+
+Conventional commits (enforced by commitlint). Add a changeset for anything user-visible:
+
+```bash
+pnpm changeset
+```
+
+Versions are lockstep across all seven packages. Releases are manual — see
+[docs/releasing.md](./docs/releasing.md).
+
+By contributing you agree your contributions are licensed under the MIT License.
