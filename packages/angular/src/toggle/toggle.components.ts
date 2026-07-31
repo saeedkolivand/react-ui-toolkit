@@ -134,7 +134,7 @@ export class CkSwitch {
         [disabled]="disabled()"
         [attr.name]="name()"
         [value]="value()"
-        [checked]="checked()"
+        [checked]="isChecked()"
         (change)="selected.set(value())"
       />
       @if (label()) {
@@ -153,6 +153,18 @@ export class CkRadio {
   readonly checked = input(false, { transform: booleanAttribute });
   readonly id = input<string>();
   readonly selected = model<string | undefined>(undefined);
+
+  /**
+   * `selected` wins when it is bound, otherwise the standalone `checked` input.
+   *
+   * The template used to render `checked()` alone, so `[(selected)]` wrote the
+   * value OUT on change and was never read back IN — a controlled radio group
+   * could not display its own value. The parity matrix caught it: React showed
+   * a checked radio where Angular showed none.
+   */
+  protected readonly isChecked = computed(() =>
+    this.selected() !== undefined ? this.selected() === this.value() : this.checked()
+  );
 
   private readonly instanceId = `ck-radio-${++uid}`;
   protected readonly inputId = computed(() => this.id() ?? this.instanceId);

@@ -340,6 +340,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.1
         version: 6.2.4(svelte@5.56.8(@typescript-eslint/types@8.65.0))(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.1(supports-color@7.2.0))(sass@1.102.0)(yaml@2.9.0))
+      svelte-check:
+        specifier: ^4.4.4
+        version: 4.7.4(picomatch@4.0.5)(svelte@5.56.8(@typescript-eslint/types@8.65.0))(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -371,6 +374,9 @@ importers:
       vite:
         specifier: catalog:frameworks
         version: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.1(supports-color@7.2.0))(sass@1.102.0)(yaml@2.9.0)
+      vue-tsc:
+        specifier: catalog:frameworks
+        version: 3.3.8(typescript@6.0.3)
 
   apps/storybook:
     dependencies:
