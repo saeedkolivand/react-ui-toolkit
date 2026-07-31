@@ -19,3 +19,4 @@ export { CkTabs, CkAccordion, CkPanel } from "./disclosure/disclosure.components
 export type { CkTabItem, CkAccordionItem } from "./disclosure/disclosure.components";
 export { CkTooltip, CkMenu } from "./overlay/overlay.components";
 export type { CkMenuItem, CkMenuSeparator, CkMenuEntry } from "./overlay/overlay.components";
+export { CkTable, CkTableCell } from "./table/table.component";

@@ -324,10 +324,17 @@ importers:
     publishDirectory: dist
 
   packages/core:
+    dependencies:
+      '@tanstack/table-core':
+        specifier: catalog:table
+        version: 8.21.3
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: 'catalog:'
         version: 0.18.5
+      jsdom:
+        specifier: 'catalog:'
+        version: 30.0.1
       publint:
         specifier: 'catalog:'
         version: 0.3.22
@@ -337,6 +344,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@26.1.2)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.1(supports-color@7.2.0))(sass@1.102.0)(yaml@2.9.0))
 
   packages/react:
     dependencies:
@@ -431,9 +441,6 @@ importers:
       '@crosskit-ui/styles':
         specifier: workspace:^
         version: link:../styles
-      '@tanstack/table-core':
-        specifier: catalog:table
-        version: 8.21.3
       '@zag-js/accordion':
         specifier: catalog:zag
         version: 1.43.0

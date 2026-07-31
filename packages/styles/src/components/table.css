@@ -1,0 +1,225 @@
+/* Table. No machine behind this one — the row model is @tanstack/table-core,
+   bound once in @crosskit-ui/core — so every attribute here is written by the
+   adapters rather than by zag. */
+@layer ck.components {
+  [data-scope="table"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* v0 took scroll.x / scroll.y as numbers and inlined them; they are custom
+       properties now, so a consumer can also set them from a stylesheet. */
+    max-width: var(--ck-table-max-width, none);
+  }
+
+  [data-scope="table"][data-part="scroll"] {
+    overflow: auto;
+    max-height: var(--ck-table-max-height, none);
+    border-radius: var(--ck-radius-lg);
+  }
+  [data-scope="table"][data-bordered] [data-part="scroll"] {
+    border: 1px solid var(--ck-border);
+  }
+
+  [data-scope="table"][data-part="table"] {
+    width: 100%;
+    min-width: var(--ck-table-min-width, auto);
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg);
+  }
+
+  [data-scope="table"][data-part="header"],
+  [data-scope="table"][data-part="cell"] {
+    text-align: start;
+    padding: var(--ck-table-cell-padding, 0.75rem 1rem);
+    vertical-align: middle;
+  }
+  [data-scope="table"][data-part="header"][data-align="center"],
+  [data-scope="table"][data-part="cell"][data-align="center"] {
+    text-align: center;
+  }
+  [data-scope="table"][data-part="header"][data-align="end"],
+  [data-scope="table"][data-part="cell"][data-align="end"] {
+    text-align: end;
+  }
+
+  /* v0's `size`, renamed to density to stop colliding with the Size type used
+     by every other component. */
+  [data-scope="table"][data-density="small"] {
+    --ck-table-cell-padding: 0.375rem 0.625rem;
+  }
+  [data-scope="table"][data-density="middle"] {
+    --ck-table-cell-padding: 0.75rem 1rem;
+  }
+  [data-scope="table"][data-density="large"] {
+    --ck-table-cell-padding: 1rem 1.25rem;
+  }
+
+  [data-scope="table"][data-part="head"] {
+    background-color: var(--ck-surface-hover);
+  }
+  /* Free with position:sticky once the scroll container has a max-height. */
+  [data-scope="table"][data-sticky-header] [data-part="head"] [data-part="header"] {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--ck-surface-hover);
+  }
+
+  [data-scope="table"][data-part="header"] {
+    font-weight: 600;
+    color: var(--ck-fg-muted);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--ck-border);
+  }
+
+  /* v0's sortable <th> had a bare onClick — no tabindex, no role, no Enter
+     handler, so it was unreachable by keyboard. It is a real button now. */
+  [data-scope="table"][data-part="sort-trigger"] {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-weight: inherit;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  [data-scope="table"][data-part="sort-trigger"]:hover {
+    color: var(--ck-fg);
+  }
+  [data-scope="table"][data-part="sort-trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 2px;
+    border-radius: var(--ck-radius-sm);
+  }
+  [data-scope="table"] [data-part="sort-indicator"] {
+    opacity: 0.4;
+    transition: opacity var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="table"] [data-part="sort-indicator"][data-sorted] {
+    opacity: 1;
+    color: var(--ck-accent-solid);
+  }
+  [data-scope="table"] [data-part="sort-indicator"][data-sorted="desc"] {
+    rotate: 180deg;
+  }
+
+  [data-scope="table"][data-part="row"] {
+    border-bottom: 1px solid var(--ck-border);
+    transition: background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="table"][data-part="body"] [data-part="row"]:last-child {
+    border-bottom: 0;
+  }
+  [data-scope="table"][data-hoverable] [data-part="body"] [data-part="row"]:hover {
+    background-color: var(--ck-surface-hover);
+  }
+  [data-scope="table"][data-striped] [data-part="body"] [data-part="row"]:nth-child(even) {
+    background-color: color-mix(in oklab, var(--ck-fg) 3%, transparent);
+  }
+  [data-scope="table"][data-bordered] [data-part="cell"],
+  [data-scope="table"][data-bordered] [data-part="header"] {
+    border-inline-end: 1px solid var(--ck-border);
+  }
+  [data-scope="table"][data-bordered] [data-part="cell"]:last-child,
+  [data-scope="table"][data-bordered] [data-part="header"]:last-child {
+    border-inline-end: 0;
+  }
+
+  [data-scope="table"][data-part="empty"] {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--ck-fg-muted);
+  }
+
+  /* The overlay keeps the current rows in place while new ones load, rather
+     than collapsing the table to a spinner and losing scroll position. */
+  [data-scope="table"][data-part="scroll"] {
+    position: relative;
+  }
+  [data-scope="table"][data-part="loading-overlay"] {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: color-mix(in oklab, var(--ck-surface) 65%, transparent);
+    backdrop-filter: blur(1px);
+  }
+
+  /* ------------------------------------------------------------ pagination */
+  [data-scope="table"][data-part="pagination"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  [data-scope="table"][data-part="summary"] {
+    color: var(--ck-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  [data-scope="table"][data-part="pages"] {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  [data-scope="table"][data-part="page-trigger"] {
+    appearance: none;
+    font: inherit;
+    font-size: 0.875rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: var(--ck-radius-md);
+    border: 1px solid var(--ck-border);
+    background-color: var(--ck-surface);
+    color: var(--ck-fg);
+    cursor: pointer;
+    transition:
+      background-color var(--ck-duration-md) var(--ck-ease-in-out),
+      border-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="table"][data-part="page-trigger"]:hover:not(:disabled) {
+    background-color: var(--ck-surface-hover);
+  }
+  [data-scope="table"][data-part="page-trigger"][aria-current="page"] {
+    background-color: var(--ck-accent-solid);
+    border-color: var(--ck-accent-solid);
+    color: var(--ck-accent-fg);
+  }
+  [data-scope="table"][data-part="page-trigger"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  [data-scope="table"][data-part="page-trigger"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 2px;
+  }
+
+  [data-scope="table"][data-part="page-ellipsis"] {
+    padding: 0 0.25rem;
+    color: var(--ck-fg-muted);
+    user-select: none;
+  }
+
+  [data-scope="table"][data-part="page-size"] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    color: var(--ck-fg-muted);
+    font-size: 0.875rem;
+  }
+  [data-scope="table"][data-part="page-size"] [data-scope="select"][data-part="root"] {
+    width: auto;
+    min-width: 5.5rem;
+  }
+}

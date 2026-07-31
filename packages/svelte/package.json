@@ -46,7 +46,6 @@
   "dependencies": {
     "@crosskit-ui/core": "workspace:^",
     "@crosskit-ui/styles": "workspace:^",
-    "@tanstack/table-core": "catalog:table",
     "@zag-js/accordion": "catalog:zag",
     "@zag-js/dialog": "catalog:zag",
     "@zag-js/presence": "catalog:zag",
