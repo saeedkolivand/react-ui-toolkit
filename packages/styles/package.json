@@ -1,0 +1,46 @@
+{
+  "name": "@crosskit-ui/styles",
+  "version": "0.0.0",
+  "description": "The CrossKit stylesheet. Precompiled CSS keyed to data-scope/data-part/data-state; consumers do not need Tailwind.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./dist/index.css",
+    "./theme.css": "./dist/theme.css",
+    "./themes/*.css": "./dist/themes/*.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedkolivand/crosskit.git",
+    "directory": "packages/styles"
+  },
+  "homepage": "https://crosskit.iamsaeed.dev/",
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
+  "author": "Saeed Kolivand",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "scripts": {
+    "build": "node ./build.mjs",
+    "lint": "echo \"(css only)\"",
+    "check:exports": "publint --strict"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "publint": "catalog:",
+    "tailwindcss": "^4.3.3"
+  }
+}

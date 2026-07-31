@@ -1,0 +1,107 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+# pnpm blocks dependency lifecycle scripts by default. Omitting these produces
+# cryptic "cannot find module" failures from Tailwind/esbuild at BUILD time
+# rather than an install error, so they are easy to misdiagnose.
+# (pnpm 11 renamed this from `onlyBuiltDependencies` to `allowBuilds`.)
+allowBuilds:
+  "@tailwindcss/oxide": true
+  esbuild: true
+  "@parcel/watcher": true
+  unrs-resolver: true
+
+linkWorkspacePackages: true
+saveWorkspaceProtocol: rolling
+
+# Default catalog: one version of the shared toolchain across every package.
+# NOTE: typescript is pinned to 6.0.x deliberately. TS 7.0.2 exists but
+# typescript-eslint peers `<6.1.0` and ng-packagr peers `>=6.0 <6.1`, so
+# adopting 7 would break linting repo-wide AND the Angular build.
+catalog:
+  typescript: "~6.0.3"
+  vitest: "^4.1.10"
+  "@vitest/coverage-v8": "^4.1.10"
+  jsdom: "^30.0.1"
+  publint: "^0.3.22"
+  "@arethetypeswrong/cli": "^0.18.5"
+  tsdown: "^0.22.14"
+  "@playwright/test": "^1.62.1"
+  "@testing-library/dom": "^10.4.1"
+  "@testing-library/jest-dom": "^7.0.0"
+
+catalogs:
+  # Every @zag-js/* package must move in lockstep, or the machines and the
+  # adapters disagree about @zag-js/core's shape.
+  zag:
+    "@zag-js/core": "^1.43.0"
+    "@zag-js/types": "^1.43.0"
+    "@zag-js/utils": "^1.43.0"
+    "@zag-js/dom-query": "^1.43.0"
+    "@zag-js/react": "^1.43.0"
+    "@zag-js/vue": "^1.43.0"
+    "@zag-js/svelte": "^1.43.0"
+    "@zag-js/accordion": "^1.43.0"
+    "@zag-js/avatar": "^1.43.0"
+    "@zag-js/checkbox": "^1.43.0"
+    "@zag-js/collection": "^1.43.0"
+    "@zag-js/dialog": "^1.43.0"
+    "@zag-js/menu": "^1.43.0"
+    "@zag-js/popper": "^1.43.0"
+    "@zag-js/presence": "^1.43.0"
+    "@zag-js/progress": "^1.43.0"
+    "@zag-js/radio-group": "^1.43.0"
+    "@zag-js/select": "^1.43.0"
+    "@zag-js/switch": "^1.43.0"
+    "@zag-js/tabs": "^1.43.0"
+    "@zag-js/toast": "^1.43.0"
+    "@zag-js/tooltip": "^1.43.0"
+
+  # TanStack Table is v8; v9 is beta only. NOTE: there is deliberately no
+  # svelte-table entry — @tanstack/svelte-table@8 peers svelte ^3||^4 and does
+  # NOT support Svelte 5, so the Svelte adapter binds table-core directly.
+  table:
+    "@tanstack/table-core": "^8.21.3"
+    "@tanstack/react-table": "^8.21.3"
+    "@tanstack/vue-table": "^8.21.3"
+    "@tanstack/angular-table": "^8.21.4"
+
+  angular:
+    "@angular/core": "^22.1.0"
+    "@angular/common": "^22.1.0"
+    "@angular/compiler": "^22.1.0"
+    "@angular/compiler-cli": "^22.1.0"
+    "@angular/platform-browser": "^22.1.0"
+    ng-packagr: "^22.1.0"
+
+  frameworks:
+    react: "^19.2.8"
+    react-dom: "^19.2.8"
+    vue: "^3.5.40"
+    svelte: "^5.56.8"
+    "@vitejs/plugin-vue": "^6.0.8"
+    "@sveltejs/package": "^2.5.8"
+    vue-tsc: "^3.3.8"
+    vite: "^8.2.0"
+
+minimumReleaseAgeExclude:
+  - '@playwright/test@1.62.1'
+  - playwright-core@1.62.1
+  - playwright@1.62.1
+  - '@types/react-dom@19.2.4'
+  - '@types/react@19.2.18'
+  - vite@8.2.0
+  - '@eslint-react/ast@5.18.1'
+  - '@eslint-react/core@5.18.1'
+  - '@eslint-react/eslint-plugin@5.18.1'
+  - '@eslint-react/eslint@5.18.1'
+  - '@eslint-react/jsx@5.18.1'
+  - '@eslint-react/shared@5.18.1'
+  - '@eslint-react/var@5.18.1'
+  - eslint-plugin-react-dom@5.18.1
+  - eslint-plugin-react-jsx@5.18.1
+  - eslint-plugin-react-naming-convention@5.18.1
+  - eslint-plugin-react-rsc@5.18.1
+  - eslint-plugin-react-web-api@5.18.1
+  - eslint-plugin-react-x@5.18.1

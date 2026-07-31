@@ -1,0 +1,231 @@
+/* Spinner, Badge, Card, Divider — the presentational batch.
+   Transcribed from the v0 components. Every dark: utility they carried is gone:
+   the semantic tokens already flip in themes/dark.css. */
+@layer ck.components {
+  /* ---------------------------------------------------------------- Spinner */
+  @keyframes ck-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  [data-scope="spinner"][data-part="root"] {
+    display: inline-block;
+    line-height: 0;
+  }
+  [data-scope="spinner"] [data-part="indicator"] {
+    display: inline-block;
+    border-radius: var(--ck-radius-full);
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: ck-spin 1s linear infinite;
+    color: var(--ck-spinner-color, var(--ck-accent-solid));
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  [data-scope="spinner"] [data-part="indicator"][data-size="sm"] {
+    width: 1rem;
+    height: 1rem;
+  }
+  [data-scope="spinner"] [data-part="indicator"][data-size="md"] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  [data-scope="spinner"] [data-part="indicator"][data-size="lg"] {
+    width: 2rem;
+    height: 2rem;
+  }
+  [data-scope="spinner"][data-part="root"][data-variant="secondary"] {
+    --ck-spinner-color: var(--ck-neutral-solid);
+  }
+  [data-scope="spinner"][data-part="root"][data-variant="success"] {
+    --ck-spinner-color: var(--ck-success-solid);
+  }
+  [data-scope="spinner"][data-part="root"][data-variant="warning"] {
+    --ck-spinner-color: var(--ck-warning-solid);
+  }
+  [data-scope="spinner"][data-part="root"][data-variant="error"] {
+    --ck-spinner-color: var(--ck-danger-solid);
+  }
+
+  /* Visually hidden, still announced. Replaces Tailwind's sr-only utility. */
+  [data-part="visually-hidden"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* ------------------------------------------------------------------ Badge */
+  [data-scope="badge"][data-part="root"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: var(--ck-radius-base);
+    border: 1px solid transparent;
+    background-color: var(--ck-badge-bg);
+    color: var(--ck-badge-fg);
+    transition: background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="badge"][data-part="root"][data-rounded] {
+    border-radius: var(--ck-radius-full);
+  }
+  [data-scope="badge"][data-part="root"][data-size="sm"] {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    padding: 0.125rem 0.5rem;
+  }
+  [data-scope="badge"][data-part="root"][data-size="md"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.125rem 0.625rem;
+  }
+  [data-scope="badge"][data-part="root"][data-size="lg"] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  [data-scope="badge"][data-part="root"] {
+    --ck-badge-bg: var(--ck-accent-muted);
+    --ck-badge-fg: var(--ck-accent-text);
+    --ck-badge-border: var(--ck-accent-border);
+  }
+  [data-scope="badge"][data-part="root"][data-variant="secondary"] {
+    --ck-badge-bg: var(--ck-color-neutral-100);
+    --ck-badge-fg: var(--ck-color-neutral-800);
+    --ck-badge-border: var(--ck-neutral-solid);
+  }
+  [data-scope="badge"][data-part="root"][data-variant="success"] {
+    --ck-badge-bg: color-mix(in oklab, var(--ck-success-solid) 15%, transparent);
+    --ck-badge-fg: var(--ck-success-solid);
+    --ck-badge-border: var(--ck-success-solid);
+  }
+  [data-scope="badge"][data-part="root"][data-variant="warning"] {
+    --ck-badge-bg: color-mix(in oklab, var(--ck-warning-solid) 15%, transparent);
+    --ck-badge-fg: var(--ck-warning-solid);
+    --ck-badge-border: var(--ck-warning-solid);
+  }
+  [data-scope="badge"][data-part="root"][data-variant="error"] {
+    --ck-badge-bg: color-mix(in oklab, var(--ck-danger-solid) 15%, transparent);
+    --ck-badge-fg: var(--ck-danger-solid);
+    --ck-badge-border: var(--ck-danger-solid);
+  }
+  [data-scope="badge"][data-part="root"][data-outlined] {
+    --ck-badge-bg: transparent;
+    border-color: var(--ck-badge-border);
+  }
+
+  /* ------------------------------------------------------------------- Card */
+  [data-scope="card"][data-part="root"] {
+    border-radius: var(--ck-radius-lg);
+    overflow: hidden;
+    background-color: var(--ck-card-bg, var(--ck-surface));
+    color: var(--ck-fg);
+    transition:
+      box-shadow var(--ck-duration-md) var(--ck-ease-in-out),
+      transform var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="card"][data-part="root"][data-bordered] {
+    border: 1px solid var(--ck-card-border, var(--ck-border));
+  }
+  [data-scope="card"][data-part="root"][data-elevated] {
+    box-shadow: var(--ck-shadow-md);
+  }
+  [data-scope="card"][data-part="root"][data-hoverable]:hover {
+    box-shadow: var(--ck-shadow-lg);
+    transform: translateY(-2px);
+  }
+  [data-scope="card"][data-part="root"]:not([data-full-width]) {
+    display: inline-block;
+  }
+
+  [data-scope="card"][data-part="root"][data-variant="primary"] {
+    --ck-card-bg: var(--ck-accent-subtle);
+    --ck-card-border: var(--ck-accent-border);
+  }
+  [data-scope="card"][data-part="root"][data-variant="secondary"] {
+    --ck-card-bg: var(--ck-color-neutral-50);
+    --ck-card-border: var(--ck-color-neutral-200);
+  }
+  [data-scope="card"][data-part="root"][data-variant="success"] {
+    --ck-card-bg: color-mix(in oklab, var(--ck-success-solid) 10%, transparent);
+    --ck-card-border: var(--ck-success-solid);
+  }
+  [data-scope="card"][data-part="root"][data-variant="warning"] {
+    --ck-card-bg: color-mix(in oklab, var(--ck-warning-solid) 10%, transparent);
+    --ck-card-border: var(--ck-warning-solid);
+  }
+  [data-scope="card"][data-part="root"][data-variant="error"] {
+    --ck-card-bg: color-mix(in oklab, var(--ck-danger-solid) 10%, transparent);
+    --ck-card-border: var(--ck-danger-solid);
+  }
+
+  [data-scope="card"][data-part="header"] {
+    border-bottom: 1px solid var(--ck-card-border, var(--ck-border));
+  }
+  [data-scope="card"][data-part="footer"] {
+    border-top: 1px solid var(--ck-card-border, var(--ck-border));
+  }
+  [data-scope="card"][data-size="sm"] [data-part="header"],
+  [data-scope="card"][data-size="sm"] [data-part="body"],
+  [data-scope="card"][data-size="sm"] [data-part="footer"] {
+    padding: 0.75rem;
+  }
+  [data-scope="card"][data-size="md"] [data-part="header"],
+  [data-scope="card"][data-size="md"] [data-part="body"],
+  [data-scope="card"][data-size="md"] [data-part="footer"] {
+    padding: 1rem;
+  }
+  [data-scope="card"][data-size="lg"] [data-part="header"],
+  [data-scope="card"][data-size="lg"] [data-part="body"],
+  [data-scope="card"][data-size="lg"] [data-part="footer"] {
+    padding: 1.5rem;
+  }
+
+  /* ---------------------------------------------------------------- Divider */
+  [data-scope="divider"][data-part="root"] {
+    --ck-divider-style: solid;
+    border-color: var(--ck-border);
+  }
+  [data-scope="divider"][data-part="root"][data-dashed] {
+    --ck-divider-style: dashed;
+  }
+  [data-scope="divider"][data-part="root"][data-orientation="horizontal"] {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-block: 1rem;
+  }
+  [data-scope="divider"][data-part="root"][data-orientation="vertical"] {
+    display: inline-block;
+    align-self: stretch;
+    width: 0;
+    min-height: 1em;
+    border-left: 2px var(--ck-divider-style) var(--ck-border);
+    margin-inline: 0.5rem;
+  }
+  /* the rules either side of an optional label */
+  [data-scope="divider"][data-part="line"] {
+    flex: 1 1 0%;
+    border-top: 2px var(--ck-divider-style) var(--ck-border);
+  }
+  [data-scope="divider"][data-part="label"] {
+    padding-inline: 0.75rem;
+    color: var(--ck-fg-muted);
+    white-space: nowrap;
+  }
+  /* label alignment shrinks the rule on one side */
+  [data-scope="divider"][data-align="start"] [data-part="line"]:first-child {
+    flex: 0 0 5%;
+  }
+  [data-scope="divider"][data-align="end"] [data-part="line"]:last-child {
+    flex: 0 0 5%;
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "name": "@crosskit-ui/vue",
+  "version": "0.0.0",
+  "description": "CrossKit components for Vue 3.",
+  "//check:exports": "publint only, no attw. The emitted index.d.ts re-exports './button/Button.vue', which node16 resolution cannot resolve by design — every SFC-based Vue library has this shape. Consumers resolve it through the Vue plugin / vue-tsc, and 'bundler' resolution handles it correctly.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedkolivand/crosskit.git",
+    "directory": "packages/vue"
+  },
+  "homepage": "https://crosskit.iamsaeed.dev/",
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
+  "author": "Saeed Kolivand",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "scripts": {
+    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src",
+    "check:exports": "publint --strict"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@crosskit-ui/core": "workspace:^",
+    "@crosskit-ui/styles": "workspace:^",
+    "@zag-js/vue": "catalog:zag",
+    "@zag-js/dialog": "catalog:zag",
+    "@zag-js/presence": "catalog:zag"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
+    "@vitejs/plugin-vue": "catalog:frameworks",
+    "publint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:frameworks",
+    "vue": "catalog:frameworks",
+    "vue-tsc": "catalog:frameworks"
+  }
+}

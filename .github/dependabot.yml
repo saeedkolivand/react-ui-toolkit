@@ -1,6 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: npm
+    # `npm` covers pnpm workspaces, including catalogs (GA since Feb 2025).
     directory: /
     schedule:
       interval: weekly
@@ -12,20 +13,36 @@ updates:
     # fifteen. Letting these drift independently is how this repo ended up
     # ~20 majors behind.
     groups:
+      # Every @zag-js/* package must move together, or the machines and the
+      # adapters disagree about @zag-js/core's shape.
+      zag:
+        patterns: ["@zag-js/*"]
+      angular:
+        patterns: ["@angular/*", "ng-packagr", "@analogjs/*"]
+      tanstack:
+        patterns: ["@tanstack/*"]
+      frameworks:
+        patterns: ["react", "react-dom", "vue", "svelte", "@sveltejs/*", "@vitejs/*", "vue-tsc"]
+      vitest:
+        patterns: ["vitest", "@vitest/*", "jsdom", "@testing-library/*"]
+      playwright:
+        patterns: ["@playwright/test", "playwright"]
+      build:
+        patterns: ["turbo", "tsdown", "vite", "publint", "@arethetypeswrong/cli"]
+      changesets:
+        patterns: ["@changesets/*"]
       storybook:
         patterns: ["storybook", "@storybook/*", "eslint-plugin-storybook"]
       eslint:
         patterns: ["eslint", "eslint-*", "@typescript-eslint/*", "typescript-eslint"]
-      babel:
-        patterns: ["@babel/*"]
-      jest:
-        patterns: ["jest", "jest-*", "@types/jest", "@testing-library/*"]
-      rollup:
-        patterns: ["rollup", "rollup-plugin-*", "@rollup/*"]
       types:
         patterns: ["@types/*"]
-      semantic-release:
-        patterns: ["semantic-release", "@semantic-release/*"]
+    ignore:
+      # Held back deliberately: typescript-eslint peers `<6.1.0` and ng-packagr
+      # peers `>=6.0 <6.1`, so TS 7 would break linting AND the Angular build.
+      # Remove this entry once both support 7.x.
+      - dependency-name: typescript
+        versions: ["7.x"]
 
   - package-ecosystem: github-actions
     directory: /

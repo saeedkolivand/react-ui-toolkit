@@ -1,0 +1,17 @@
+/* Scoped reset ONLY. Deliberately not Tailwind's Preflight: that resets `*`
+   globally and would wreck a consumer's own styles. We only touch elements we
+   render, identified by the data-part contract. */
+@layer ck.reset {
+  [data-scope][data-part] {
+    box-sizing: border-box;
+  }
+
+  button[data-part="root"],
+  input[data-part="input"],
+  textarea[data-part="input"],
+  select[data-part="trigger"] {
+    font: inherit;
+    color: inherit;
+    margin: 0;
+  }
+}

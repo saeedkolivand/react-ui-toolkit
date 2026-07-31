@@ -1,0 +1,25 @@
+{
+  "name": "@crosskit-ui/docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/react": "^6.0.2",
+    "@crosskit-ui/react": "workspace:*",
+    "@crosskit-ui/styles": "workspace:*",
+    "astro": "^7.1.6",
+    "react": "catalog:frameworks",
+    "react-dom": "catalog:frameworks"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "typescript": "catalog:"
+  }
+}

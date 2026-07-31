@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": false
+  },
+  "angularCompilerOptions": {
+    "//": "partial Ivy: fully-compiled libraries are explicitly discouraged for npm, and partial output is forward-compatible via the Angular linker.",
+    "compilationMode": "partial",
+    "strictTemplates": true
+  },
+  "include": ["src"]
+}

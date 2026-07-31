@@ -1,0 +1,22 @@
+/* @crosskit-ui/styles — the whole visual layer, precompiled. Consumers import
+   this once and need no Tailwind of their own.
+
+   The layer declaration MUST come first: our selectors are
+   [data-scope][data-part][data-variant] (specificity 0,3,0), which would beat a
+   consumer's own `.my-button { ... }` (0,1,0). Because unlayered CSS always wins
+   over layered CSS regardless of specificity, putting everything we ship inside
+   named layers is what makes the `class` passthrough override story work.
+   Verified in spike 0b. */
+@layer ck.reset, ck.tokens, ck.components, ck.overrides;
+
+@import "./_variants.css";
+
+@import "./tokens/palette.css" layer(ck.tokens);
+@import "./tokens/scale.css" layer(ck.tokens);
+@import "./themes/light.css" layer(ck.tokens);
+@import "./themes/dark.css" layer(ck.tokens);
+
+@import "./reset.css";
+@import "./components/icon.css";
+@import "./components/button.css";
+@import "./components/feedback.css";

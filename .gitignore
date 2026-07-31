@@ -48,3 +48,13 @@ Thumbs.db
 # Build output
 landing-dist
 site
+
+# turborepo
+.turbo/
+
+# package build output
+packages/*/dist/
+apps/*/dist/
+
+# svelte-package intermediate output
+.svelte-kit/

@@ -4,7 +4,6 @@ import tseslint from "typescript-eslint";
 // (it calls context.getFilename(), removed in v10) and has no release that does.
 import react from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
-import storybook from "eslint-plugin-storybook";
 import prettierPlugin from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier/flat";
 import unusedImports from "eslint-plugin-unused-imports";
@@ -13,30 +12,45 @@ import globals from "globals";
 export default tseslint.config(
   {
     ignores: [
-      "dist/**",
-      "landing-dist/**",
-      "storybook-static/**",
-      "coverage/**",
-      // Standalone sample apps with their own toolchains — not part of this build.
-      "examples/**",
+      "**/dist/**",
+      "**/.svelte-kit/**",
+      "**/storybook-static/**",
+      "**/coverage/**",
+      "**/.turbo/**",
+      "**/.astro/**",
+      // v0 source kept only as porting reference; deleted at v1.0.0.
+      "legacy/**",
     ],
   },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  react.configs.recommended,
-  reactHooks.configs.flat.recommended,
-  ...storybook.configs["flat/recommended"],
   prettierConfig,
 
   {
     plugins: { prettier: prettierPlugin, "unused-imports": unusedImports },
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node, ...globals.jest },
+      globals: { ...globals.browser, ...globals.node },
     },
     rules: {
       "prettier/prettier": "error",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
+      ],
+    },
+  },
 
+  // React rules apply ONLY to the React adapter. Applying them repo-wide would
+  // flag Vue/Svelte/Angular code that merely looks like JSX or hooks.
+  {
+    files: ["packages/react/**/*.{ts,tsx}", "apps/storybook/**/*.{ts,tsx}"],
+    extends: [react.configs.recommended, reactHooks.configs.flat.recommended],
+    rules: {
       // @eslint-react and eslint-plugin-react-hooks ship 12 rules under identical
       // names, so every hook problem was being reported twice. eslint-plugin-react-hooks
       // is the authority here: it is the canonical React implementation, and its
@@ -59,20 +73,19 @@ export default tseslint.config(
       "@eslint-react/static-components": "off",
       "@eslint-react/unsupported-syntax": "off",
       "@eslint-react/use-memo": "off",
-
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": "off",
-      "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": [
-        "warn",
-        { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
-      ],
     },
+  },
+
+  // The Angular binding re-implements Zag's own loosely-typed machine contract;
+  // `any` there mirrors upstream and is not worth 40 casts to launder.
+  {
+    files: ["packages/zag-angular/**/*.ts"],
+    rules: { "@typescript-eslint/no-explicit-any": "off" },
   },
 
   {
     files: ["**/*.test.*", "**/*.spec.*"],
+    languageOptions: { globals: { ...globals.node, ...globals.vitest } },
     rules: { "@typescript-eslint/no-empty-function": "off" },
-  }
+  },
 );

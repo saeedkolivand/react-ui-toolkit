@@ -1,0 +1,50 @@
+name: Version
+
+# Keeps a "Version Packages" PR up to date as changesets land on main. Merging
+# that PR applies the version bumps and changelogs; it does NOT publish —
+# publishing stays manual in release.yml.
+#
+# Splitting version from publish is the recommended answer to
+# changesets/action#515, and it preserves this repo's existing
+# releases-are-deliberate policy.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: version
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    name: Update the version PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Known and accepted: PRs opened by GITHUB_TOKEN do not trigger other
+      # workflows, so CI will not run on the Version Packages PR. For a PR that
+      # contains only version bumps and changelog text that is fine — using a
+      # PAT to work around it would trade a real credential for a cosmetic gain.
+      - uses: changesets/action@v1
+        with:
+          version: pnpm run version-packages
+          title: "chore: version packages"
+          commit: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

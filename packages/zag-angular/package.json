@@ -1,0 +1,64 @@
+{
+  "name": "@crosskit-ui/zag-angular",
+  "version": "0.0.0",
+  "description": "Angular signals binding for Zag.js state machines. Standalone and framework-complete: usable without the rest of CrossKit.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedkolivand/crosskit.git",
+    "directory": "packages/zag-angular"
+  },
+  "homepage": "https://crosskit.iamsaeed.dev/",
+  "bugs": {
+    "url": "https://github.com/saeedkolivand/crosskit/issues"
+  },
+  "author": "Saeed Kolivand",
+  "license": "MIT",
+  "keywords": [
+    "zag",
+    "zag-js",
+    "angular",
+    "signals",
+    "headless",
+    "accessibility"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "directory": "dist"
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json && node ./postbuild.mjs",
+    "lint": "eslint src",
+    "check:exports": "publint --strict ./dist"
+  },
+  "peerDependencies": {
+    "@angular/common": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/core": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@zag-js/core": "^1.43.0",
+    "@zag-js/presence": "^1.43.0"
+  },
+  "peerDependenciesMeta": {
+    "@zag-js/presence": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/common": "catalog:angular",
+    "@angular/compiler": "catalog:angular",
+    "@angular/compiler-cli": "catalog:angular",
+    "@angular/core": "catalog:angular",
+    "@zag-js/core": "catalog:zag",
+    "@zag-js/presence": "catalog:zag",
+    "@zag-js/types": "catalog:zag",
+    "@zag-js/utils": "catalog:zag",
+    "ng-packagr": "catalog:angular",
+    "publint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

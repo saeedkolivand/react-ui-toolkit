@@ -1,0 +1,42 @@
+/* OPT-IN bridge for consumers who also run Tailwind. Importing this gives them
+   `bg-primary-600`, `dark:`, `rounded-lg` etc. resolved from the SAME --ck-*
+   tokens our components use, so both retheme together at runtime.
+
+   `inline` is required: the values reference other custom properties, and a
+   plain @theme would bake in indirection that breaks runtime retheming.
+   Verified in spike 0c — `.bg-primary-600` compiles to
+   `background-color: var(--ck-color-primary-600)`. */
+@import "./_variants.css";
+
+/* NOTE: this file ships uncompiled — it is imported into the CONSUMER's Tailwind
+   build, which is what causes these variables to be emitted. */
+@theme inline {
+  --color-primary-50: var(--ck-color-primary-50);
+  --color-primary-100: var(--ck-color-primary-100);
+  --color-primary-200: var(--ck-color-primary-200);
+  --color-primary-300: var(--ck-color-primary-300);
+  --color-primary-400: var(--ck-color-primary-400);
+  --color-primary-500: var(--ck-color-primary-500);
+  --color-primary-600: var(--ck-color-primary-600);
+  --color-primary-700: var(--ck-color-primary-700);
+  --color-primary-800: var(--ck-color-primary-800);
+  --color-primary-900: var(--ck-color-primary-900);
+
+  --color-neutral-50: var(--ck-color-neutral-50);
+  --color-neutral-100: var(--ck-color-neutral-100);
+  --color-neutral-200: var(--ck-color-neutral-200);
+  --color-neutral-300: var(--ck-color-neutral-300);
+  --color-neutral-400: var(--ck-color-neutral-400);
+  --color-neutral-500: var(--ck-color-neutral-500);
+  --color-neutral-600: var(--ck-color-neutral-600);
+  --color-neutral-700: var(--ck-color-neutral-700);
+  --color-neutral-800: var(--ck-color-neutral-800);
+  --color-neutral-900: var(--ck-color-neutral-900);
+
+  --radius-sm: var(--ck-radius-sm);
+  --radius-md: var(--ck-radius-md);
+  --radius-lg: var(--ck-radius-lg);
+  --radius-xl: var(--ck-radius-xl);
+
+  --font-sans: var(--ck-font-sans);
+}
