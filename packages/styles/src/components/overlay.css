@@ -1,0 +1,153 @@
+/* Tooltip and Menu. Both are Floating-UI positioned through zag, so neither
+   sets a top/left of its own — and both read zag's own inline
+   `z-index: var(--z-index)`, which beats any stylesheet rule, so the token is
+   supplied as that variable rather than as `z-index`. */
+@layer ck.components {
+  /* --------------------------------------------------------------- Tooltip */
+
+  /* The trigger wraps the consumer's element rather than cloning props onto it.
+     It is deliberately a real box (inline-flex), NOT display:contents: zag's
+     trigger handlers are pointerenter/pointerleave, which do not bubble, so a
+     box-less wrapper would never receive them outside React — whose synthetic
+     events fake bubbling and would have hidden the divergence. */
+  [data-scope="tooltip"][data-part="trigger"] {
+    display: inline-flex;
+  }
+
+  [data-scope="tooltip"][data-part="positioner"] {
+    --z-index: var(--ck-z-popover);
+  }
+
+  [data-scope="tooltip"][data-part="content"] {
+    background-color: var(--ck-tooltip-bg, var(--ck-fg));
+    color: var(--ck-tooltip-fg, var(--ck-bg));
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-md);
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    max-width: var(--ck-tooltip-max-width, 16rem);
+    /* v0 clamped this in JS on every reposition. */
+    overflow-wrap: break-word;
+  }
+  [data-scope="tooltip"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="tooltip"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-size: 0.5rem;
+    --arrow-background: var(--ck-tooltip-bg, var(--ck-fg));
+  }
+
+  /* ------------------------------------------------------------------ Menu */
+
+  [data-scope="menu"][data-part="positioner"] {
+    --z-index: var(--ck-z-popover);
+  }
+
+  [data-scope="menu"][data-part="content"] {
+    background-color: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    padding: 0.25rem;
+    min-width: 10rem;
+    max-height: var(--available-height, 20rem);
+    overflow-y: auto;
+  }
+  [data-scope="menu"][data-part="content"]:focus-visible {
+    outline: none;
+  }
+  [data-scope="menu"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="menu"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="menu"][data-part="item"],
+  [data-scope="menu"][data-part="trigger-item"] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--ck-radius-base);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg);
+    cursor: pointer;
+    user-select: none;
+  }
+  /* data-highlighted is the machine's cursor, shared by keyboard and pointer —
+     which is why arrow keys and the mouse can never disagree about the active
+     row the way a :hover rule would. */
+  [data-scope="menu"][data-part="item"][data-highlighted],
+  [data-scope="menu"][data-part="trigger-item"][data-highlighted] {
+    background-color: var(--ck-surface-hover);
+  }
+  [data-scope="menu"][data-part="item"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  /* v0's `danger` menu item. */
+  [data-scope="menu"][data-part="item"][data-danger] {
+    color: var(--ck-danger-solid);
+  }
+  [data-scope="menu"][data-part="item"][data-danger][data-highlighted] {
+    background-color: var(--ck-danger-subtle);
+  }
+
+  [data-scope="menu"][data-part="separator"] {
+    height: 1px;
+    margin: 0.25rem -0.25rem;
+    background-color: var(--ck-border);
+    border: 0;
+  }
+
+  [data-scope="menu"][data-part="item-group-label"] {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    color: var(--ck-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Submenu triggers get the chevron for free from the machine's own state. */
+  [data-scope="menu"][data-part="trigger-item"] {
+    justify-content: space-between;
+  }
+
+  /* --------------------------------------------------------------- shared */
+  @keyframes ck-overlay-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes ck-overlay-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope="tooltip"][data-part="content"],
+    [data-scope="menu"][data-part="content"] {
+      animation-duration: 1ms;
+    }
+  }
+}

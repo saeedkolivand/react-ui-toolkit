@@ -3,7 +3,7 @@ import { computed, useId } from "vue";
 import * as dialog from "@zag-js/dialog";
 import { useMachine, normalizeProps } from "@zag-js/vue";
 import type { Side, Size } from "@crosskit-ui/core";
-import { usePresence } from "./usePresence";
+import { usePresence } from "../usePresence";
 import Button from "../button/Button.vue";
 
 defineOptions({ inheritAttrs: false });
