@@ -21,7 +21,11 @@ export interface PopoverProps {
   /** SECONDS. */
   mouseLeaveDelay?: number;
   arrow?: boolean;
+  /** Never opens, and closes if it already was. */
+  disabled?: boolean;
   overlayClassName?: string;
+  /** Lands on the trigger wrapper, which is this component's root. */
+  className?: string;
   id?: string;
 }
 
@@ -33,6 +37,7 @@ export function Popover({
   trigger = "hover",
   arrow = true,
   overlayClassName,
+  className,
   ...rest
 }: PopoverProps) {
   const anchored = useAnchored({
@@ -52,6 +57,7 @@ export function Popover({
     <AnchoredView
       anchored={anchored}
       arrow={arrow}
+      className={className}
       overlayClassName={overlayClassName}
       body={
         <>

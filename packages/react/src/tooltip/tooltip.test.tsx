@@ -79,6 +79,21 @@ describe("Tooltip", () => {
     expect(trigger()).not.toHaveClass("overlay");
   });
 
+  it("puts the consumer's className on the trigger wrapper, which is the root", () => {
+    setup({ className: "mine" });
+    // Rule 2: a consumer's class lands on the root untouched. The root a
+    // Tooltip renders in place is the wrapper — the popup is portalled and is
+    // nobody's idea of a root, and has `overlayClassName` of its own.
+    expect(trigger()).toHaveClass("mine");
+  });
+
+  it("stays shut when disabled, even with a title", async () => {
+    const user = userEvent.setup();
+    setup({ disabled: true });
+    await user.hover(button());
+    expect(content()).not.toBeInTheDocument();
+  });
+
   it("accepts the camelCase placement names", () => {
     setup({ open: true, onOpenChange: () => {}, placement: "bottomRight" });
     expect(content()).toBeInTheDocument();

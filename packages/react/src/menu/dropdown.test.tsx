@@ -41,6 +41,11 @@ describe("Dropdown", () => {
     expect(trigger().closest("button")).toBe(trigger());
   });
 
+  it("puts the consumer's className on the trigger wrapper", () => {
+    setup({ className: "mine" });
+    expect(document.querySelector('[data-scope="menu"][data-part="trigger"]')).toHaveClass("mine");
+  });
+
   it("renders nothing until opened", () => {
     setup();
     expect(content()).not.toBeInTheDocument();

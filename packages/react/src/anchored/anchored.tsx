@@ -22,7 +22,13 @@ export interface AnchoredViewProps {
   /** What goes inside the content box. */
   body: ReactNode;
   arrow?: boolean;
-  /** Ant's name for a class on the popup rather than on the trigger. */
+  /**
+   * The consumer's own class. Lands on the trigger wrapper, which is the root
+   * this component renders in place — the popup is portalled and is nobody's
+   * idea of "the root". Spread last so it can override ours.
+   */
+  className?: string;
+  /** The name for a class on the popup rather than on the trigger. */
   overlayClassName?: string;
   /** Merged onto the content AFTER ours, so a caller can override anything. */
   contentProps?: Record<string, unknown>;
@@ -53,6 +59,7 @@ export function AnchoredView({
   children,
   body,
   arrow = true,
+  className,
   overlayClassName,
   contentProps,
 }: AnchoredViewProps) {
@@ -64,7 +71,9 @@ export function AnchoredView({
           measures, and `contents` generates none — `getBoundingClientRect` on it
           returns zeros, so the popup would anchor to the top-left corner of the
           page. It is also what receives the pointer and focus listeners. */}
-      <span {...triggerProps}>{withAria(children, triggerAria)}</span>
+      <span {...triggerProps} className={className}>
+        {withAria(children, triggerAria)}
+      </span>
       {/* Gate on presence, NEVER on `open`, or [data-state="closed"] never gets
           a frame and the exit animation silently does nothing. */}
       {present && (

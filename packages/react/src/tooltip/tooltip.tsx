@@ -26,10 +26,14 @@ export interface TooltipProps {
   /** SECONDS. */
   mouseLeaveDelay?: number;
   arrow?: boolean;
+  /** Never opens, and closes if it already was. */
+  disabled?: boolean;
   /** Any CSS colour. Sets the background and, with it, the arrow's. */
   color?: string;
   /** A class on the popup rather than on the trigger. */
   overlayClassName?: string;
+  /** Lands on the trigger wrapper, which is this component's root. */
+  className?: string;
   id?: string;
 }
 
@@ -41,8 +45,10 @@ export function Tooltip({
   placement = "top",
   trigger = DEFAULT_TRIGGER,
   arrow = true,
+  disabled,
   color,
   overlayClassName,
+  className,
   ...rest
 }: TooltipProps) {
   // An empty title means there is nothing to say. Checked before the hook is
@@ -55,7 +61,8 @@ export function Tooltip({
     placement,
     trigger,
     arrow,
-    disabled: empty,
+    // Either reason closes it: an explicit `disabled`, or nothing to say.
+    disabled: disabled || empty,
     scope: "tooltip",
     role: "tooltip",
   });
@@ -64,6 +71,7 @@ export function Tooltip({
     <AnchoredView
       anchored={anchored}
       arrow={arrow}
+      className={className}
       overlayClassName={overlayClassName}
       contentProps={
         // A custom property rather than `background`, so one value drives the

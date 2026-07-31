@@ -109,6 +109,13 @@ describe("Popover", () => {
     expect(content()).toHaveAttribute("data-state", "closed");
   });
 
+  it("puts the consumer's className on the trigger wrapper", () => {
+    setup({ className: "mine" });
+    expect(document.querySelector('[data-scope="popover"][data-part="trigger"]')).toHaveClass(
+      "mine"
+    );
+  });
+
   it("closes on Escape", async () => {
     const user = userEvent.setup();
     setup({ trigger: "click" });

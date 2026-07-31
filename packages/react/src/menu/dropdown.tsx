@@ -65,6 +65,8 @@ export interface DropdownProps {
   disabled?: boolean;
   arrow?: boolean;
   overlayClassName?: string;
+  /** Lands on the trigger wrapper, which is this component's root. */
+  className?: string;
   id?: string;
 }
 
@@ -85,6 +87,7 @@ export function Dropdown({
   arrow = false,
   disabled,
   overlayClassName,
+  className,
   onOpenChange,
   ...rest
 }: DropdownProps) {
@@ -196,6 +199,7 @@ export function Dropdown({
     <AnchoredView
       anchored={anchored}
       arrow={arrow}
+      className={className}
       overlayClassName={overlayClassName}
       contentProps={{
         tabIndex: -1,
