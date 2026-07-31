@@ -1,0 +1,167 @@
+/* Input and Textarea — and the shared field furniture (label, helper, error)
+   that Select, Checkbox and Radio will reuse. */
+@layer ck.components {
+  /* ---------------------------------------------------------- shared field */
+  [data-part="field"] {
+    display: block;
+  }
+  [data-part="field"][data-full-width] {
+    width: 100%;
+  }
+
+  [data-part="label"] {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: var(--ck-fg);
+    margin-bottom: 0.25rem;
+  }
+  [data-part="helper-text"] {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-part="error-text"] {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ck-danger-solid);
+  }
+
+  /* ------------------------------------------------------ input / textarea */
+  [data-scope="input"][data-part="input"],
+  [data-scope="textarea"][data-part="input"] {
+    width: 100%;
+    border-radius: var(--ck-radius-md);
+    border: 1px solid var(--ck-field-border, var(--ck-border));
+    background-color: var(--ck-field-bg, var(--ck-surface));
+    color: var(--ck-fg);
+    transition:
+      border-color var(--ck-duration-md) var(--ck-ease-in-out),
+      background-color var(--ck-duration-md) var(--ck-ease-in-out);
+  }
+  [data-scope="input"][data-part="input"]::placeholder,
+  [data-scope="textarea"][data-part="input"]::placeholder {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="input"][data-part="input"]:focus,
+  [data-scope="textarea"][data-part="input"]:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: var(--ck-field-ring, var(--ck-ring));
+    box-shadow:
+      0 0 0 2px var(--ck-ring-offset),
+      0 0 0 4px var(--ck-field-ring, var(--ck-ring));
+  }
+
+  [data-scope="input"][data-size="sm"] [data-part="input"],
+  [data-scope="input"][data-part="input"][data-size="sm"],
+  [data-scope="textarea"][data-part="input"][data-size="sm"] {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  [data-scope="input"][data-part="input"][data-size="md"],
+  [data-scope="textarea"][data-part="input"][data-size="md"] {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  [data-scope="input"][data-part="input"][data-size="lg"],
+  [data-scope="textarea"][data-part="input"][data-size="lg"] {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  /* variants */
+  [data-scope="input"][data-variant="filled"] [data-part="input"],
+  [data-scope="textarea"][data-variant="filled"] [data-part="input"] {
+    --ck-field-bg: var(--ck-surface-hover);
+    --ck-field-border: transparent;
+  }
+  [data-scope="input"][data-variant="outline"] [data-part="input"],
+  [data-scope="textarea"][data-variant="outline"] [data-part="input"] {
+    --ck-field-bg: transparent;
+  }
+
+  /* error + disabled */
+  [data-scope="input"][data-invalid] [data-part="input"],
+  [data-scope="textarea"][data-invalid] [data-part="input"] {
+    --ck-field-border: var(--ck-danger-solid);
+    --ck-field-ring: var(--ck-danger-solid);
+  }
+  [data-scope="input"] [data-part="input"]:disabled,
+  [data-scope="textarea"] [data-part="input"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--ck-surface-hover);
+  }
+
+  /* prefix / suffix */
+  [data-scope="input"][data-part="control"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  [data-scope="input"] [data-part="prefix"],
+  [data-scope="input"] [data-part="suffix"] {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    color: var(--ck-fg-muted);
+    pointer-events: none;
+  }
+  [data-scope="input"] [data-part="prefix"] {
+    left: 0.75rem;
+  }
+  [data-scope="input"] [data-part="suffix"] {
+    right: 0.75rem;
+  }
+  [data-scope="input"][data-has-prefix] [data-part="input"] {
+    padding-left: 2.25rem;
+  }
+  [data-scope="input"][data-has-suffix] [data-part="input"] {
+    padding-right: 2.25rem;
+  }
+
+  /* ------------------------------------------------- textarea auto-resize
+     v0 grew the textarea by writing e.target.style.height inside its change
+     handler, which only fired on user typing — a paste via the context menu, a
+     programmatic value change or an initial multi-line value all left it the
+     wrong height. This is CSS-only and therefore hook-free in all four
+     frameworks, and correct in every one of those cases.
+
+     `field-sizing: content` does it natively where supported. The fallback
+     overlays the textarea on an invisible replica of its own text, so the grid
+     cell (and thus the textarea) is exactly as tall as the content. */
+  [data-scope="textarea"][data-part="control"][data-auto-resize] {
+    display: grid;
+  }
+  [data-scope="textarea"][data-part="control"][data-auto-resize]::after {
+    content: attr(data-value) " ";
+    visibility: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    grid-area: 1 / 1 / 2 / 2;
+    font: inherit;
+    padding: inherit;
+    border: inherit;
+  }
+  [data-scope="textarea"][data-part="control"][data-auto-resize] [data-part="input"] {
+    grid-area: 1 / 1 / 2 / 2;
+    resize: none;
+    overflow: hidden;
+  }
+  @supports (field-sizing: content) {
+    [data-scope="textarea"][data-part="control"][data-auto-resize] [data-part="input"] {
+      field-sizing: content;
+    }
+    [data-scope="textarea"][data-part="control"][data-auto-resize]::after {
+      content: none;
+    }
+  }
+}
