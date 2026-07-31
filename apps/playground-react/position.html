@@ -20,8 +20,9 @@
         place-items: center;
       }
       #floating {
-        /* The positioner mandates fixed: see position-dom.ts. */
-        position: fixed;
+        /* Deliberately no `position` here. `applyPosition` sets it, and the
+           e2e assertions below only mean something if the code is what puts
+           the element in the viewport coordinate space it computed for. */
         background: #1e293b;
         color: #fff;
         display: grid;

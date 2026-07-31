@@ -5,10 +5,33 @@
  * Two decisions worth stating, because both are load-bearing:
  *
  * 1. **The floating element is `position: fixed`, always.** Viewport
- *    coordinates mean `getBoundingClientRect()` needs no correction, and the
- *    entire class of offset-parent bugs — a `transform` on an ancestor
- *    silently becoming the containing block, `position: relative` wrappers,
- *    scroll containers — simply cannot happen. The stylesheet enforces it.
+ *    coordinates mean `getBoundingClientRect()` needs no correction, and
+ *    `position: relative` wrappers and scroll containers — the usual reasons
+ *    an absolutely positioned popup drifts — stop mattering entirely.
+ *
+ *    Set in `measure` *and* `applyPosition`, rather than left to a stylesheet.
+ *    A rule can be overridden, scoped away, or simply never written for a
+ *    component someone adds later — and the failure is silent, because the
+ *    element still renders, just in the wrong place.
+ *
+ *    Setting it on the write alone is not enough, because it is the **read**
+ *    that depends on it: a block element with no width fills its container
+ *    while static and shrinks to its content once fixed, so measuring first
+ *    hands `computePosition` a box the element will never have, and flip and
+ *    shift both decide against it.
+ *
+ *    **`fixed` is not a complete escape, and it is worth being exact about
+ *    what it does not fix.** A `transform`, `filter`, `perspective`,
+ *    `backdrop-filter`, `contain: paint` or `will-change` on *any* ancestor
+ *    makes that ancestor the containing block for fixed descendants too — the
+ *    coordinates are then measured from it rather than from the viewport, and
+ *    the element lands somewhere else. Verified, not assumed: the e2e suite
+ *    puts a transform on `<body>` and watches it move.
+ *
+ *    The answer is to portal the floating element out to `document.body`,
+ *    which every overlay component must do. That is a component-level
+ *    requirement this module cannot enforce, so it is stated here rather than
+ *    implied.
  *
  * 2. **Position is written to `left`/`top`, not `transform`.** `transform` is
  *    reserved for the animation layer, which scales and translates these same
@@ -56,6 +79,10 @@ export function measure(
   floating: HTMLElement,
   options: ComputePositionOptions = {}
 ): PositionResult {
+  // Before the rect below is read, not only before it is written. The measured
+  // box has to be the box the element will actually be laid out as.
+  floating.style.position = "fixed";
+
   // Read direction off the anchor rather than taking it as a prop: it is what
   // the `dir` attribute sets on an ancestor, and the DOM already resolves
   // inheritance for us.
@@ -74,6 +101,9 @@ export function measure(
  * what the user sees.
  */
 export function applyPosition(floating: HTMLElement, position: PositionResult): void {
+  // Also set here, not only in `measure`, so a caller applying a position it
+  // computed elsewhere still gets the coordinate space those numbers assume.
+  floating.style.position = "fixed";
   floating.style.left = `${position.x}px`;
   floating.style.top = `${position.y}px`;
   floating.dataset.placement = position.placement;
