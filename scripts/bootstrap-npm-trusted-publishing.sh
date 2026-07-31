@@ -55,6 +55,15 @@ for p in "${PACKAGES[@]}"; do
   # These are 0.0.0 placeholders that exist purely so `npm trust` has a package
   # to attach to; nobody installs them. v1.0.0 goes out from release.yml with
   # provenance intact, which is the version that matters.
+  #
+  # Resumable. Each publish needs its own OTP, so a run WILL sometimes die
+  # partway — a mistyped code, an expired one, a browser tab left too long.
+  # Re-running then skips whatever already landed, rather than failing on
+  # EPUBLISHCONFLICT and leaving you to work out how far it got.
+  if npm view "@crosskit-ui/$p" version >/dev/null 2>&1; then
+    echo "--- @crosskit-ui/$p — already published, skipping"
+    continue
+  fi
   echo "--- @crosskit-ui/$p"
   ( cd "$dir" && npm publish --access public --no-provenance )
 done
@@ -62,6 +71,11 @@ done
 echo
 echo "==> Step 2/3: register GitHub Actions as the trusted publisher"
 for p in "${PACKAGES[@]}"; do
+  # Same reasoning as above: safe to re-run.
+  if npm trust list "@crosskit-ui/$p" 2>/dev/null | grep -qi github; then
+    echo "--- @crosskit-ui/$p — trusted publisher already set, skipping"
+    continue
+  fi
   echo "--- @crosskit-ui/$p"
   npm trust github "@crosskit-ui/$p" \
     --repository "$REPO" \
