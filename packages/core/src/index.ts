@@ -9,6 +9,8 @@ export * from "./behaviour/presence";
 export * from "./behaviour/scroll-lock";
 export * from "./behaviour/collection";
 export * from "./behaviour/navigation";
+export * from "./motion/spring";
+export * from "./motion/animate";
 export * from "./theme/color";
 export * from "./theme/css";
 export * from "./theme/ramp";
