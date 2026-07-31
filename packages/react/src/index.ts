@@ -21,3 +21,5 @@ export { Progress, type ProgressProps, type ProgressVariant } from "./progress/p
 export { Col, type ColProps, type ColSpan, type ColOffset } from "./layout/col";
 export { Modal, type ModalProps } from "./dialog/modal";
 export { Drawer, type DrawerProps } from "./dialog/drawer";
+export { Tabs, type TabsProps, type TabItem } from "./tabs/tabs";
+export { Accordion, type AccordionProps, type AccordionItem } from "./accordion/accordion";

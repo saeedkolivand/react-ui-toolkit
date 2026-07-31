@@ -36,7 +36,7 @@
   const uid = $props.id();
   const inputId = $derived(id ?? uid);
   const describedBy = $derived(
-    errorMessage ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined,
+    errorMessage ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
   );
 </script>
 

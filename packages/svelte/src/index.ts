@@ -19,3 +19,5 @@ export { default as Progress } from "./progress/Progress.svelte";
 export { default as Col } from "./layout/Col.svelte";
 export { default as Modal } from "./dialog/Modal.svelte";
 export { default as Drawer } from "./dialog/Drawer.svelte";
+export { default as Tabs } from "./tabs/Tabs.svelte";
+export { default as Accordion } from "./accordion/Accordion.svelte";

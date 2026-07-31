@@ -35,9 +35,7 @@
   // `order` is unbounded, so it stays an inline custom property. Spans and
   // offsets are enumerable and therefore static CSS.
   const styleAttr = $derived(
-    typeof order === "number"
-      ? `${style ? style + ";" : ""}--ck-col-order:${order}`
-      : style,
+    typeof order === "number" ? `${style ? style + ";" : ""}--ck-col-order:${order}` : style
   );
 </script>
 
