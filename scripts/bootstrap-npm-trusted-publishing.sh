@@ -95,9 +95,13 @@ for p in "${PACKAGES[@]}"; do
     continue
   fi
   echo "--- @crosskit-ui/$p"
+  # --allow-publish is mandatory: since May 2026 a trusted-publisher config must
+  # state its permissions explicitly. Publishing is all this workflow does, so
+  # --allow-stage-publish is deliberately not granted.
   npm trust github "@crosskit-ui/$p" \
     --repository "$REPO" \
     --file "$WORKFLOW" \
+    --allow-publish \
     --yes
   sleep 2   # npm docs suggest spacing these out to avoid rate limiting
 done
