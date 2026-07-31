@@ -8,7 +8,7 @@
 //   onDestroy               ->  DestroyRef.onDestroy
 //
 // MUST be called in an injection context (i.e. a field initializer), never ngOnInit.
-import { afterNextRender, computed, DestroyRef, inject, Injector } from "@angular/core";
+import { afterNextRender, computed, DestroyRef, inject, Injector } from '@angular/core';
 import {
   createScope,
   findTransition,
@@ -18,11 +18,11 @@ import {
   MachineStatus,
   matchesState,
   resolveStateValue,
-} from "@zag-js/core";
-import { callAll, compact, ensure, isFunction, isString, toArray, warn } from "@zag-js/utils";
-import { bindable } from "./bindable";
-import { useRefs } from "./refs";
-import { track } from "./track";
+} from '@zag-js/core';
+import { callAll, compact, ensure, isFunction, isString, toArray, warn } from '@zag-js/utils';
+import { bindable } from './bindable';
+import { useRefs } from './refs';
+import { track } from './track';
 
 function access<T>(userProps: T | (() => T)): T {
   if (isFunction(userProps)) return (userProps as () => T)();
@@ -45,7 +45,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
   const propsSignal = computed(
     () =>
       machine.props?.({ props: compact(access(userProps)), scope: scopeSignal() }) ??
-      access(userProps)
+      access(userProps),
   );
   const prop = (key: string) => (propsSignal() as any)[key];
 
@@ -87,9 +87,9 @@ export function useMachine(machine: any, userProps: any = {}): any {
   };
 
   let effects = new Map<string, VoidFunction>();
-  const transitionRef: { current: any } = { current: null };
-  const previousEventRef: { current: any } = { current: null };
-  const eventRef: { current: any } = { current: { type: "" } };
+  let transitionRef: { current: any } = { current: null };
+  let previousEventRef: { current: any } = { current: null };
+  let eventRef: { current: any } = { current: { type: '' } };
 
   const getEvent = () => ({
     ...eventRef.current,
@@ -100,7 +100,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
   const getState = () => ({
     ...state,
     hasTag: (tag: string) => hasTag(machine, state.get(), tag),
-    matches: (...values: any[]) => values.some(v => matchesState(state.get(), v)),
+    matches: (...values: any[]) => values.some((v) => matchesState(state.get(), v)),
   });
 
   const refs = useRefs(machine.refs?.({ prop, context: ctx }) ?? {});
@@ -152,7 +152,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
       const cleanup = fn?.(getParams());
       if (cleanup) cleanups.push(cleanup);
     }
-    return () => cleanups.forEach(fn => fn?.());
+    return () => cleanups.forEach((fn) => fn?.());
   };
 
   const choose = (transitions: any) =>
@@ -184,7 +184,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
           machine,
           prevState,
           nextState,
-          transitionRef.current?.reenter
+          transitionRef.current?.reenter,
         );
         exiting.forEach((item: any) => {
           const exitEffects = effects.get(item.path);
@@ -211,7 +211,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
         entering.forEach((item: any) => action(item.state?.entry));
       },
     }),
-    injector
+    injector,
   );
 
   let status = MachineStatus.NotStarted;
@@ -223,24 +223,48 @@ export function useMachine(machine: any, userProps: any = {}): any {
     () => {
       const started = status === MachineStatus.Started;
       status = MachineStatus.Started;
-      debug(started ? "rehydrating..." : "initializing...");
+      debug(started ? 'rehydrating...' : 'initializing...');
       state.invoke(state.initial, INIT_STATE);
     },
-    { injector }
+    { injector },
   );
 
   destroyRef.onDestroy(() => {
     if (status !== MachineStatus.Started) return;
-    debug("unmounting...");
+    debug('unmounting...');
     status = MachineStatus.Stopped;
-    effects.forEach(fn => fn?.());
+    effects.forEach((fn) => fn?.());
     effects = new Map();
     transitionRef.current = null;
     action(machine.exit);
   });
 
+  // Re-entrancy guard. bindable.set() flushes change detection so the DOM is
+  // committed before zag's rAF-deferred effects resolve their elements — but
+  // that flush runs Angular effects, and one of those is `track`, which can
+  // call send() again *in the middle of the current transition*. Processing a
+  // nested event before the outer one has registered its state effects leaves
+  // the machine with listeners from the wrong state (observed as a dialog that
+  // opens but no longer responds to Escape). Queue instead, and drain after.
+  let sending = false;
+  const sendQueue: any[] = [];
+
   const send = (event: any) => {
     if (status !== MachineStatus.Started) return;
+    if (sending) {
+      sendQueue.push(event);
+      return;
+    }
+    sending = true;
+    try {
+      sendImpl(event);
+    } finally {
+      sending = false;
+      while (sendQueue.length) sendImpl(sendQueue.shift());
+    }
+  };
+
+  const sendImpl = (event: any) => {
     previousEventRef.current = eventRef.current;
     eventRef.current = event;
 
@@ -251,7 +275,7 @@ export function useMachine(machine: any, userProps: any = {}): any {
 
     transitionRef.current = transition;
     const target = resolveStateValue(machine, transition.target ?? currentState, source);
-    debug("transition", event.type, transition.target || currentState, `(${transition.actions})`);
+    debug('transition', event.type, transition.target || currentState, `(${transition.actions})`);
 
     const changed = target !== currentState;
     if (changed) state.set(target);

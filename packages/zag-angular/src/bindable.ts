@@ -50,6 +50,16 @@ export function bindable<T>(props: () => BindableParams<T>, injector?: Injector)
     injector ? { injector } : undefined
   );
 
+  /** Commit pending template updates, ignoring a recursive call from inside CD. */
+  const flush = () => {
+    try {
+      appRef.tick();
+    } catch {
+      // NG0103: already inside change detection, so the DOM is being committed
+      // anyway. Nothing to do.
+    }
+  };
+
   const setValueFn = (v: T | ((prev: T) => T)) => {
     const next = isFunction(v) ? (v as (p: T) => T)(valueRef.current) : v;
     const prev = prevValue.current;
@@ -66,12 +76,13 @@ export function bindable<T>(props: () => BindableParams<T>, injector?: Injector)
       // Flushing here is the real equivalent of Svelte/React's flushSync: the
       // template renders the new state, so the element exists when the rAF fires.
       // Without it the focus trap never attaches — silently, with correct ARIA.
-      try {
-        appRef.tick();
-      } catch {
-        // Already inside change detection (NG0103); the DOM is being committed
-        // anyway, so proceed.
-      }
+      //
+      // Upstream applies flushSync only when `props.sync` is set (the presence
+      // machine's `initial` context is the one that asks for it). We flush
+      // unconditionally: Angular has no synchronous DOM commit outside of
+      // tick(), and the cost of an extra flush is far smaller than the cost of
+      // the silent, hard-to-diagnose failures caused by skipping it.
+      flush();
       props().onChange?.(next, prev);
     }
     prevValue.current = next;

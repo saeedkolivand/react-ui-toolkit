@@ -17,7 +17,7 @@ export { track } from "./track";
 export { normalizeProps, DOM_PROPERTY_KEYS, toStyleString } from "./normalize-props";
 export { ZagSpread } from "./spread.directive";
 export { CkPortal } from "./portal";
-export { usePresence } from "./presence";
+export { usePresence, CkPresenceNode, type PresenceApi } from "./presence";
 
 /**
  * Angular removes an attribute when the bound value is `null`, not `undefined`
