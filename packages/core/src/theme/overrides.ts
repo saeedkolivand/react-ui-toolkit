@@ -59,7 +59,12 @@ const value = (property: string, raw: string | number) =>
 const isStyleObject = (v: unknown): v is StyleObject =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
-export interface Rule {
+/**
+ * One emitted CSS rule. Named `CssRule` rather than `Rule` because the form
+ * engine's validation rule has the stronger claim on the bare name, and two
+ * `Rule`s on one barrel is the ambiguous-star-export trap.
+ */
+export interface CssRule {
   selector: string;
   /** Wrapping at-rules, outermost first, e.g. `["@media (min-width: 40em)"]`. */
   conditions: string[];
@@ -75,9 +80,9 @@ export function flattenStyle(
   style: StyleObject,
   selector: string,
   conditions: string[] = []
-): Rule[] {
+): CssRule[] {
   const declarations: string[] = [];
-  const nested: Rule[] = [];
+  const nested: CssRule[] = [];
 
   for (const [key, raw] of Object.entries(style)) {
     if (raw === undefined) continue;
@@ -114,11 +119,15 @@ const property = (declaration: string) => declaration.slice(0, declaration.index
  * declaration was re-emitted for the whole cross product. That silently
  * cancels the reduction this function exists for.
  */
-function diff(base: Rule[], next: Rule[], toVariant: (selector: string) => string): Rule[] {
+function diff(
+  base: CssRule[],
+  next: CssRule[],
+  toVariant: (selector: string) => string
+): CssRule[] {
   const key = (conditions: string[], selector: string) => `${conditions.join("|")}||${selector}`;
   const projected = new Map(base.map(r => [key(r.conditions, toVariant(r.selector)), r]));
 
-  const out: Rule[] = [];
+  const out: CssRule[] = [];
   const matched = new Set<string>();
 
   for (const rule of next) {
@@ -157,7 +166,7 @@ function diff(base: Rule[], next: Rule[], toVariant: (selector: string) => strin
   return out;
 }
 
-export function serializeRules(rules: Rule[]): string {
+export function serializeRules(rules: CssRule[]): string {
   return rules
     .map(({ selector, conditions, declarations }) => {
       let out = `${selector} { ${declarations.join("; ")} }`;
@@ -209,8 +218,8 @@ export function compileOverrides<Theme>(
   manifest: ComponentManifest,
   overrides: Record<string, StyleOverride<Theme, Record<string, string>>>,
   theme: Theme
-): Rule[] {
-  const rules: Rule[] = [];
+): CssRule[] {
+  const rules: CssRule[] = [];
 
   for (const [part, override] of Object.entries(overrides)) {
     if (!manifest.parts.includes(part)) {
