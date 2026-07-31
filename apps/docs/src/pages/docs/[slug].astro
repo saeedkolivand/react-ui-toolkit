@@ -1,0 +1,201 @@
+---
+import Docs from "../../layouts/Docs.astro";
+import Samples from "../../components/Samples.astro";
+import { components } from "../../data";
+
+export function getStaticPaths() {
+  return components.map(component => ({
+    params: { slug: component.slug },
+    props: { component },
+  }));
+}
+
+const { component } = Astro.props;
+---
+
+<Docs title={component.name} description={component.summary} active={component.slug}>
+  <header class="stack-sm" style="margin-bottom: var(--site-xl);">
+    <p class="eyebrow">{component.group}</p>
+    <h1 class="display-lg">{component.name}</h1>
+    <p class="subhead">{component.summary}</p>
+    <p class="scope">
+      <code class="code-inline">data-scope="{component.scope}"</code>
+      {
+        component.machine && (
+          <>
+            <span aria-hidden="true"> · </span>
+            <code class="code-inline">{component.machine}</code>
+          </>
+        )
+      }
+    </p>
+  </header>
+
+  {
+    component.gains && (
+      <section class="stack-sm block">
+        <h2 class="h3">What the machine gives you</h2>
+        <ul class="gains">
+          {component.gains.map(gain => (
+            <li>{gain}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="block">
+    <h2 class="h3">Usage</h2>
+    <Samples samples={component.samples} />
+  </section>
+
+  <section class="block">
+    <h2 class="h3">Props</h2>
+    <div class="table-wrap">
+      <table class="api">
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          {
+            component.props.map(prop => (
+              <tr>
+                <td><code class="code-inline">{prop.name}</code></td>
+                <td class="type">{prop.type}</td>
+                <td>{prop.default ? <code class="code-inline">{prop.default}</code> : "—"}</td>
+                <td>{prop.description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Prop names are identical in all four frameworks. Only two-way binding differs, and each
+      framework uses its own idiom over the same underlying prop.
+    </p>
+  </section>
+
+  {
+    component.parts && (
+      <section class="block">
+        <h2 class="h3">Parts</h2>
+        <div class="table-wrap">
+          <table class="api">
+            <thead>
+              <tr>
+                <th>data-part</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {component.parts.map(part => (
+                <tr>
+                  <td>
+                    <code class="code-inline">{part.part}</code>
+                  </td>
+                  <td>{part.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    component.changes && (
+      <section class="block">
+        <h2 class="h3">Migrating from react-ui-toolkit</h2>
+        <div class="table-wrap">
+          <table class="api">
+            <thead>
+              <tr>
+                <th>v0</th>
+                <th>v1</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {component.changes.map(change => (
+                <tr>
+                  <td>
+                    <code class="code-inline">{change.from}</code>
+                  </td>
+                  <td>
+                    <code class="code-inline">{change.to}</code>
+                  </td>
+                  <td>{change.note ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+</Docs>
+
+<style>
+  .block {
+    margin-bottom: var(--site-xxl);
+  }
+  .h3 {
+    font-family: var(--site-font-display);
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    margin-bottom: var(--site-md);
+  }
+  .scope {
+    color: var(--site-ink-muted);
+    font-size: 13px;
+  }
+  .gains {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--site-ink-muted);
+    line-height: 1.7;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-lg);
+  }
+  .api {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .api th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--site-ink-muted);
+    padding: var(--site-sm) var(--site-md);
+    border-bottom: 1px solid var(--site-hairline);
+    white-space: nowrap;
+  }
+  .api td {
+    padding: var(--site-sm) var(--site-md);
+    border-bottom: 1px solid var(--site-hairline-soft);
+    vertical-align: top;
+    color: var(--site-ink-muted);
+  }
+  .api tr:last-child td {
+    border-bottom: 0;
+  }
+  .api .type {
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 12px;
+    color: var(--site-ink);
+    max-width: 22rem;
+  }
+  .note {
+    margin-top: var(--site-sm);
+    font-size: 13px;
+    color: var(--site-ink-muted);
+  }
+</style>

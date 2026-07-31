@@ -1,0 +1,106 @@
+---
+import Base from "./Base.astro";
+import { byGroup } from "../data";
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: string;
+}
+
+const { title, description, active } = Astro.props;
+const groups = byGroup();
+---
+
+<Base title={`${title} — CrossKit`} description={description}>
+  <div class="docs">
+    <aside class="docs-nav">
+      <nav>
+        <a class={`docs-link${active === "overview" ? " is-active" : ""}`} href="/docs/">
+          Overview
+        </a>
+        {
+          groups.map(({ group, items }) => (
+            <section class="docs-group">
+              <h2 class="docs-group-title">{group}</h2>
+              {items.map(item => (
+                <a
+                  class={`docs-link${active === item.slug ? " is-active" : ""}`}
+                  href={`/docs/${item.slug}/`}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </section>
+          ))
+        }
+      </nav>
+    </aside>
+    <article class="docs-body">
+      <slot />
+    </article>
+  </div>
+</Base>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--site-xxl);
+    max-width: var(--site-max-width);
+    margin: 0 auto;
+    padding: var(--site-xxl) var(--site-lg) var(--site-section);
+  }
+  @media (max-width: 860px) {
+    .docs {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--site-xl);
+    }
+    .docs-nav {
+      position: static;
+      height: auto;
+    }
+  }
+
+  .docs-nav {
+    position: sticky;
+    top: var(--site-xl);
+    align-self: start;
+    max-height: calc(100vh - var(--site-xxl));
+    overflow-y: auto;
+  }
+  .docs-group {
+    margin-bottom: var(--site-lg);
+  }
+  .docs-group-title {
+    font-family: var(--site-font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-ink-muted);
+    margin: var(--site-lg) 0 var(--site-xs);
+  }
+  .docs-link {
+    display: block;
+    padding: 5px 10px;
+    margin-left: -10px;
+    border-radius: var(--site-radius-sm);
+    font-size: 14px;
+    color: var(--site-ink-muted);
+    text-decoration: none;
+    transition: color 200ms ease, background-color 200ms ease;
+  }
+  .docs-link:hover {
+    color: var(--site-ink);
+    background: var(--site-surface-1);
+  }
+  .docs-link.is-active {
+    color: var(--site-ink);
+    background: var(--site-surface-2);
+  }
+
+  .docs-body {
+    min-width: 0;
+  }
+</style>
