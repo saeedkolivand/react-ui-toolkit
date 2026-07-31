@@ -24,3 +24,5 @@
 @import "./components/layout.css";
 @import "./components/field.css";
 @import "./components/toggle.css";
+@import "./components/avatar-progress.css";
+@import "./components/col.css";

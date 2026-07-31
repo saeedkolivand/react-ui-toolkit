@@ -14,3 +14,6 @@ export { default as Checkbox } from "./toggle/Checkbox.svelte";
 export { default as Radio } from "./toggle/Radio.svelte";
 export { default as RadioGroup } from "./toggle/RadioGroup.svelte";
 export { default as Switch } from "./toggle/Switch.svelte";
+export { default as Avatar } from "./avatar/Avatar.svelte";
+export { default as Progress } from "./progress/Progress.svelte";
+export { default as Col } from "./layout/Col.svelte";
