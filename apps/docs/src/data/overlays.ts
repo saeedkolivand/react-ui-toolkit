@@ -195,7 +195,12 @@ export const overlays: ComponentDoc[] = [
         description:
           "The tooltip text. An empty one never opens, so `title={row.note}` is safe without a conditional around it.",
       },
-      { name: "content", type: "ReactNode", description: "Tooltip body. v2 React: `title`." },
+      {
+        name: "content",
+        reactRemoved: true,
+        type: "ReactNode",
+        description: "Tooltip body. v2 React: `title`.",
+      },
       {
         name: "placement",
         type: "Placement | PlacementAlias",
@@ -291,6 +296,111 @@ export const overlays: ComponentDoc[] = [
       angular: `<ck-tooltip content="Copy to clipboard" placement="top">
   <button ckButton icon="copy" aria-label="Copy"></button>
 </ck-tooltip>`,
+    },
+  },
+  {
+    slug: "popover",
+    name: "Popover",
+    group: "Overlays",
+    scope: "popover",
+    gains: [
+      "A title and a body, both of which may hold real controls",
+      "role=dialog rather than tooltip, so what is inside stays reachable",
+      "Hovering the popup keeps it open, so a link in it can be reached",
+      "The same twelve placements, collision handling and arrow as Tooltip",
+    ],
+    summary:
+      "The interactive half of Tooltip, and the reason the two are separate components rather than one with a flag. A tooltip DESCRIBES its trigger, so a screen reader flattens its contents into the trigger's description; a popover is a thing the trigger opens, so a button inside it stays a button. New in v2, React first.",
+    props: [
+      {
+        name: "content",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "The body. Unlike a tooltip's, it may contain interactive elements.",
+      },
+      {
+        name: "title",
+        reactFirst: true,
+        type: "ReactNode",
+        description: "An optional heading. The part is omitted entirely when absent.",
+      },
+      {
+        name: "placement",
+        reactFirst: true,
+        type: "Placement | PlacementAlias",
+        default: '"top"',
+        description: "The same twelve names Tooltip takes.",
+      },
+      {
+        name: "trigger",
+        reactFirst: true,
+        type: '"hover" | "focus" | "click" | Array<…>',
+        default: '"hover"',
+        description:
+          "A tap toggles it whatever this says — a touch device has no hover state, and a control it cannot open is a dead one.",
+      },
+      {
+        name: "open, defaultOpen, onOpenChange",
+        reactFirst: true,
+        type: "boolean / (d: { open }) => void",
+        description: "Controlled or uncontrolled, the same pair every overlay takes.",
+      },
+      {
+        name: "mouseEnterDelay, mouseLeaveDelay",
+        reactFirst: true,
+        type: "number",
+        default: "0.1",
+        description:
+          "SECONDS. The leave delay is also the window in which moving onto the popup keeps it open.",
+      },
+      {
+        name: "disabled",
+        reactFirst: true,
+        type: "boolean",
+        description: "Never opens, and closes if it already was.",
+      },
+      {
+        name: "arrow",
+        reactFirst: true,
+        type: "boolean",
+        default: "true",
+        description: "Hidden automatically when it can no longer reach the anchor.",
+      },
+      {
+        name: "className",
+        reactFirst: true,
+        type: "string",
+        description: "Lands on the trigger wrapper, which is the root rendered in place.",
+      },
+      {
+        name: "overlayClassName",
+        reactFirst: true,
+        type: "string",
+        description: "Lands on the popup instead.",
+      },
+    ],
+    parts: [
+      { part: "trigger", description: "The wrapper around your element. A real inline-flex box." },
+      { part: "positioner", description: "Portalled to the body and given viewport coordinates." },
+      { part: "content", description: "The popup box." },
+      { part: "title", description: "Rendered only when a title is given." },
+      { part: "body", description: "Wraps `content`." },
+      {
+        part: "arrow",
+        description: "A sibling of the content, so a scrolling box cannot clip it.",
+      },
+    ],
+    samples: {
+      react: `<Popover
+  title="Delete this record?"
+  content={<Button type="primary" size="small">Yes</Button>}
+  trigger="click"
+>
+  <Button>Delete</Button>
+</Popover>`,
+      vue: "// Vue lands in the next phase.",
+      svelte: "// Svelte lands in the next phase.",
+      angular: "// Angular lands in the next phase.",
     },
   },
   {

@@ -130,3 +130,62 @@ test("repositions when the page scrolls under the trigger", async ({ page }) => 
   const [t, c] = [await box(trigger), await box(positioner(page, "tooltip"))];
   expect(t.y - (c.y + c.height)).toBeLessThan(24);
 });
+
+test("gives menu focus back to the trigger, but not over a press outside", async ({ page }) => {
+  await page.locator("#menu-trigger").click();
+  await expect(content(page, "menu")).toBeVisible();
+  await expect(content(page, "menu")).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(content(page, "menu")).toHaveCount(0);
+  // Taking focus on open and dropping it on close leaves <body> focused, so the
+  // next Tab restarts at the top of the page.
+  await expect(page.locator("#menu-trigger")).toBeFocused();
+
+  await page.locator("#menu-trigger").click();
+  await expect(content(page, "menu")).toBeVisible();
+  // The outcome, not the mechanism. No pointer path can observe the restore
+  // guard: the browser assigns focus from the press AFTER the close effect has
+  // run, so the trigger never keeps it either way — checked against both a
+  // focusable target and empty space, with the guard neutered. What this pins
+  // is that a dismissed menu does not drag focus back to its trigger, however
+  // that ends up being true. The guard itself is covered where it IS decisive,
+  // by the controlled-close test in `dropdown.test.tsx`.
+  await page.mouse.click(960, 40);
+  await expect(content(page, "menu")).toHaveCount(0);
+  await expect(page.locator("#menu-trigger")).not.toBeFocused();
+});
+
+/**
+ * The arrow, in both directions.
+ *
+ * A centred arrow is blind to mirroring — `--ck-arrow-x` is symmetric there, so
+ * every "centred on its trigger" assertion above passes whether the CSS reads
+ * the offset from the correct edge or the opposite one. Only a SIDE placement
+ * separates them, which is what these two use.
+ */
+for (const dir of ["ltr", "rtl"] as const) {
+  test(`points the arrow at the trigger in ${dir}`, async ({ page }) => {
+    await page.evaluate(d => {
+      document.documentElement.dir = d;
+    }, dir);
+    await page.locator("#popover-trigger").click();
+    await expect(content(page, "popover")).toBeVisible();
+
+    const pos = await box(positioner(page, "popover"));
+    const arrow = await box(positioner(page, "popover").locator('[data-part="arrow"]'));
+    const trigger = await box(page.locator("#popover-trigger"));
+
+    // The arrow sits on the popup's edge that FACES the trigger. In rtl the
+    // popup lands on the other side, so which edge that is flips with it —
+    // computed from the measured boxes rather than hard-coded per direction.
+    const triggerIsAfter = trigger.x > pos.x;
+    const facingEdge = triggerIsAfter ? pos.x + pos.width : pos.x;
+    const arrowCentre = arrow.x + arrow.width / 2;
+    expect(Math.abs(arrowCentre - facingEdge)).toBeLessThan(2);
+
+    // And on the trigger's side of the popup rather than the far one: reading
+    // the offset from the wrong edge put this a full popup width out.
+    expect(Math.abs(arrowCentre - (trigger.x + trigger.width / 2))).toBeLessThan(pos.width);
+  });
+}

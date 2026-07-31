@@ -104,6 +104,8 @@ export interface Anchored {
    * remember to call ours as well.
    */
   contentNode: HTMLElement | null;
+  /** The trigger wrapper, for a caller that has to give focus back to it. */
+  triggerNode: HTMLElement | null;
   triggerProps: Div & { ref: (node: HTMLElement | null) => void };
   /**
    * The ARIA that has to sit on the element the user actually focuses, which is
@@ -276,15 +278,33 @@ export function useAnchored(options: AnchoredOptions): Anchored {
   if (!disabled) {
     if (hover) {
       triggerProps.onPointerEnter = event => {
-        // Touch fires pointerenter on tap and never fires pointerleave, so a
-        // hover-only overlay opened this way could never be closed by leaving.
-        // Touch users get the press instead, which does toggle.
+        // A tap fires pointerenter and never fires a matching pointerleave, so
+        // opening on it would produce an overlay nothing could close. Touch is
+        // handled by the tap-to-toggle below instead.
         if (event.pointerType === "touch") return;
         schedule(true, ms(mouseEnterDelay));
       };
       triggerProps.onPointerLeave = event => {
         if (event.pointerType === "touch") return;
         schedule(false, ms(mouseLeaveDelay));
+      };
+    }
+
+    // Tap to toggle, for hover overlays a pointer alone can never reach.
+    //
+    // A touch device has no hover state to enter, and the focus path is no help
+    // either: it is gated on `isFocusVisible`, which is false for focus a
+    // pointer moved. So without this a tap dispatches pointerenter(touch) —
+    // ignored just above — and then a click nothing is listening for, and the
+    // overlay never opens at all. A tooltip a touch user cannot read is a
+    // degradation; a menu they cannot open is a dead control, and hover is its
+    // default.
+    //
+    // Only when `click` is absent, or the two would both fire and cancel out.
+    if (hover && !click) {
+      triggerProps.onPointerUp = event => {
+        if (event.pointerType !== "touch") return;
+        schedule(!open, 0);
       };
     }
 
@@ -364,6 +384,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     setOpen,
     contentId,
     contentNode: content,
+    triggerNode: anchor,
     triggerProps,
     triggerAria,
     positionerProps,

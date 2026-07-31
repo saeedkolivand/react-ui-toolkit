@@ -187,15 +187,25 @@
      the positioner, which inherit down to this element, and sets
      `data-arrow-detached` when the arrow has been pushed far enough along the
      edge that it no longer points at its anchor — at which point an arrow is
-     worse than none, because it points at something else. */
+     worse than none, because it points at something else.
+
+     PHYSICAL properties here, and this is the one place in the file where that
+     is correct rather than a rule 9 violation. Everything the arrow is
+     positioned from is already physical and already mirrored: `applyPosition`
+     writes `style.left`, `--ck-arrow-x` is an offset from the floating box's
+     LEFT edge, and `data-placement` carries the side after `mirror()` has
+     applied RTL. Feeding those to `inset-inline-start` mirrors them a second
+     time, so under `dir="rtl"` a side-placed popup put its arrow on the edge
+     facing away from the trigger — measured at a full popup width, 96.8px, off.
+     Rule 9 protects RTL; here the logical property was what broke it. */
   :is([data-scope="tooltip"], [data-scope="popover"], [data-scope="menu"])[data-part="arrow"] {
     position: absolute;
     width: var(--arrow-size, 0.5rem);
     height: var(--arrow-size, 0.5rem);
     background-color: var(--arrow-background, var(--ck-surface));
     transform: rotate(45deg);
-    inset-inline-start: var(--ck-arrow-x);
-    inset-block-start: var(--ck-arrow-y);
+    left: var(--ck-arrow-x);
+    top: var(--ck-arrow-y);
   }
   [data-part="positioner"][data-arrow-detached] > [data-part="arrow"] {
     visibility: hidden;
@@ -209,8 +219,8 @@
       [data-scope="menu"]
     )[data-part="positioner"][data-placement^="top"]
     [data-part="arrow"] {
-    inset-block-start: 100%;
-    margin-block-start: calc(var(--arrow-size, 0.5rem) / -2);
+    top: 100%;
+    margin-top: calc(var(--arrow-size, 0.5rem) / -2);
   }
   :is(
       [data-scope="tooltip"],
@@ -218,7 +228,7 @@
       [data-scope="menu"]
     )[data-part="positioner"][data-placement^="bottom"]
     [data-part="arrow"] {
-    inset-block-start: calc(var(--arrow-size, 0.5rem) / -2);
+    top: calc(var(--arrow-size, 0.5rem) / -2);
   }
   :is(
       [data-scope="tooltip"],
@@ -226,8 +236,8 @@
       [data-scope="menu"]
     )[data-part="positioner"][data-placement^="left"]
     [data-part="arrow"] {
-    inset-inline-start: 100%;
-    margin-inline-start: calc(var(--arrow-size, 0.5rem) / -2);
+    left: 100%;
+    margin-left: calc(var(--arrow-size, 0.5rem) / -2);
   }
   :is(
       [data-scope="tooltip"],
@@ -235,7 +245,7 @@
       [data-scope="menu"]
     )[data-part="positioner"][data-placement^="right"]
     [data-part="arrow"] {
-    inset-inline-start: calc(var(--arrow-size, 0.5rem) / -2);
+    left: calc(var(--arrow-size, 0.5rem) / -2);
   }
 
   @keyframes ck-overlay-in {

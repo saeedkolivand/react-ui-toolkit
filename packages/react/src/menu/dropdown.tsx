@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
+  contains,
   createCollection,
   createTypeahead,
   dataAttr,
+  getTabbables,
   navigate,
   type IconName,
   type Placement,
@@ -141,7 +143,7 @@ export function Dropdown({
     scope: "menu",
     role: "menu",
   });
-  const { open, setOpen, contentId, contentNode } = anchored;
+  const { open, setOpen, contentId, contentNode, triggerNode } = anchored;
 
   // Read through `open` so a closed menu never reports a highlight, whatever
   // reset the last close did or did not run — including a controlled consumer
@@ -154,13 +156,32 @@ export function Dropdown({
   // one keeps a single element focused, so closing has exactly one place to
   // restore from — and it is what the stylesheet already assumes, since
   // `data-highlighted` is the only thing it paints.
+  //
+  // Restoring is the other half, and it is not optional: taking focus on open
+  // and dropping it on close leaves `document.body` focused, so the next Tab
+  // restarts at the top of the page rather than after the menu the user was
+  // just in.
+  const wasOpenRef = useRef(false);
   useEffect(() => {
-    if (!open) {
-      typeaheadRef.current.clear();
+    if (open) {
+      wasOpenRef.current = true;
+      contentNode?.focus({ preventScroll: true });
       return;
     }
-    contentNode?.focus({ preventScroll: true });
-  }, [open, contentNode]);
+    typeaheadRef.current.clear();
+    // Guarded on having been open, or the first mount would pull focus to a
+    // trigger nobody touched.
+    if (!wasOpenRef.current) return;
+    wasOpenRef.current = false;
+    // Only when focus is still inside the menu — the same rule `createFocusTrap`
+    // applies, and deliberately not a looser one. A press outside has already
+    // moved focus, so restoring would take it back from wherever the user just
+    // put it. At this point the content is still mounted, because presence
+    // outlives `open`.
+    if (!contentNode || !contains(contentNode, document.activeElement)) return;
+    const target = triggerNode ? (getTabbables(triggerNode)[0] ?? triggerNode) : null;
+    target?.focus({ preventScroll: true });
+  }, [open, contentNode, triggerNode]);
 
   const select = (key: string) => {
     const item = menu.items.filter(isItem).find(i => i.key === key);

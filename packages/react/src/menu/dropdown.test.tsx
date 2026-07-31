@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Dropdown, type DropdownMenuEntry } from "./dropdown";
 
@@ -25,6 +25,23 @@ const trigger = () => screen.getByRole("button", { name: "Actions" });
 const content = () => document.querySelector('[data-scope="menu"][data-part="content"]');
 const items = () => [...document.querySelectorAll('[data-scope="menu"][data-part="item"]')];
 const highlighted = () => document.querySelector("[data-highlighted]")?.textContent;
+/**
+ * A touch tap, as a browser dispatches it.
+ *
+ * `userEvent` has no touch pointer type, so the sequence is built by hand —
+ * which is the only way to tell a tap from a mouse click here, and the whole
+ * point: the two take different paths through the trigger.
+ */
+const tap = async (element: Element) => {
+  const opts = { pointerType: "touch", bubbles: true, cancelable: true };
+  await act(async () => {
+    for (const type of ["pointerover", "pointerenter", "pointerdown", "pointerup"]) {
+      element.dispatchEvent(new PointerEvent(type, opts));
+    }
+    element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  });
+};
+
 const openWithKeyboard = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.tab();
   await user.keyboard("{ArrowDown}");
@@ -186,6 +203,24 @@ describe("Dropdown", () => {
     expect(content()).toBeInTheDocument();
   });
 
+  it("opens on a tap, with the hover default a touch device cannot use", async () => {
+    setup();
+    // What a tap actually dispatches. `hover` is the default trigger and a
+    // touch device has no hover state to enter, so without tap-to-toggle this
+    // control cannot be opened at all — and it is the configuration the docs
+    // sample and the Storybook story both use.
+    await tap(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+  });
+
+  it("closes on a second tap", async () => {
+    setup();
+    await tap(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await tap(trigger());
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+  });
+
   // ------------------------------------------------------------------- ARIA
 
   it("announces the trigger as a menu button", async () => {
@@ -218,6 +253,57 @@ describe("Dropdown", () => {
     expect(content()).toHaveAttribute("role", "menu");
     expect(items()[0]).toHaveAttribute("role", "menuitem");
     expect(items()[2]).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("gives focus back to the trigger after Escape", async () => {
+    const user = userEvent.setup();
+    setup();
+    await openWithKeyboard(user);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    // Taking focus on open and dropping it on close leaves <body> focused, so
+    // the next Tab restarts at the top of the page instead of after the menu.
+    expect(trigger()).toHaveFocus();
+  });
+
+  it("gives focus back to the trigger after selecting", async () => {
+    const user = userEvent.setup();
+    setup();
+    await openWithKeyboard(user);
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(trigger()).toHaveFocus();
+  });
+
+  it("does not take focus back when it was closed while focus sat elsewhere", async () => {
+    const { rerender } = render(
+      <>
+        <button>elsewhere</button>
+        <Dropdown menu={{ items: ITEMS }} open onOpenChange={() => {}}>
+          <button>Actions</button>
+        </Dropdown>
+      </>
+    );
+    await waitFor(() => expect(content()).toBeInTheDocument());
+
+    const elsewhere = screen.getByRole("button", { name: "elsewhere" });
+    elsewhere.focus();
+    // Controlled, closed by the consumer rather than by a press. This is the
+    // case the guard is actually for, and the only one that can observe it: on
+    // any pointer path the browser assigns focus to what was pressed AFTER the
+    // close effect has run, so the restore is overwritten either way — verified
+    // in Chromium against both a focusable target and empty space.
+    rerender(
+      <>
+        <button>elsewhere</button>
+        <Dropdown menu={{ items: ITEMS }} open={false} onOpenChange={() => {}}>
+          <button>Actions</button>
+        </Dropdown>
+      </>
+    );
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(elsewhere).toHaveFocus();
+    expect(trigger()).not.toHaveFocus();
   });
 
   it("moves focus into the menu when it opens", async () => {
