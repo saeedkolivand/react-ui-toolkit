@@ -1,0 +1,99 @@
+---
+import type { Samples } from "../data/types";
+
+interface Props {
+  samples: Samples;
+}
+
+const { samples } = Astro.props;
+
+// A stable id per instance. Deliberately not random: the same page must render
+// identically on every build, or the HTML diff is noise.
+const id = "fx-" + samples.react.length.toString(36) + "-" + samples.angular.length.toString(36);
+
+const tabs = [
+  { name: "React", code: samples.react },
+  { name: "Vue", code: samples.vue },
+  { name: "Svelte", code: samples.svelte },
+  { name: "Angular", code: samples.angular },
+];
+---
+
+{/* Pure CSS tabs via radio inputs, so the samples work with zero JavaScript. */}
+<div class="fx">
+  <div class="fx-tabs" role="tablist">
+    {
+      tabs.map((t, i) => (
+        <>
+          <input type="radio" name={id} id={`${id}-${i}`} class="fx-radio" checked={i === 0} />
+          <label class="fx-tab" for={`${id}-${i}`}>
+            {t.name}
+          </label>
+        </>
+      ))
+    }
+    {tabs.map(t => <pre class="fx-panel"><code>{t.code}</code></pre>)}
+  </div>
+</div>
+
+<style>
+  .fx {
+    background: var(--site-surface-1);
+    border-radius: var(--site-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--site-hairline);
+  }
+  .fx-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--site-xs);
+    padding: var(--site-sm);
+    border-bottom: 1px solid var(--site-hairline);
+  }
+  .fx-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fx-tab {
+    padding: 6px 12px;
+    border-radius: var(--site-radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--site-ink-muted);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 200ms ease;
+  }
+  .fx-tab:hover {
+    color: var(--site-ink);
+  }
+  /* selected = one surface step up, never a chromatic fill */
+  .fx-radio:checked + .fx-tab {
+    background: var(--site-surface-2);
+    color: var(--site-ink);
+  }
+  .fx-radio:focus-visible + .fx-tab {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--site-accent-blue) 60%, transparent);
+  }
+  .fx-panel {
+    display: none;
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 0;
+    padding: var(--site-lg);
+    overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--site-ink);
+    tab-size: 2;
+  }
+  /* Pair the Nth checked radio with the Nth panel. */
+  .fx-radio:nth-of-type(1):checked ~ .fx-panel:nth-of-type(1),
+  .fx-radio:nth-of-type(2):checked ~ .fx-panel:nth-of-type(2),
+  .fx-radio:nth-of-type(3):checked ~ .fx-panel:nth-of-type(3),
+  .fx-radio:nth-of-type(4):checked ~ .fx-panel:nth-of-type(4) {
+    display: block;
+  }
+</style>

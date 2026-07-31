@@ -59,14 +59,14 @@ automatically for the tag, the release and the comments.
 The trust is configured on npmjs.com under **Package → Settings → Trusted Publisher**, and must match
 the workflow exactly:
 
-| Field             | Value                     |
-| ----------------- | ------------------------- |
-| Publisher         | GitHub Actions            |
-| Organization/user | `saeedkolivand`           |
-| Repository        | `react-ui-toolkit`        |
-| Workflow filename | `release.yml`             |
-| Environment name  | _(blank)_                 |
-| Allowed actions   | Allow `npm publish`       |
+| Field             | Value               |
+| ----------------- | ------------------- |
+| Publisher         | GitHub Actions      |
+| Organization/user | `saeedkolivand`     |
+| Repository        | `react-ui-toolkit`  |
+| Workflow filename | `release.yml`       |
+| Environment name  | _(blank)_           |
+| Allowed actions   | Allow `npm publish` |
 
 Renaming `.github/workflows/release.yml` therefore breaks publishing until the trusted publisher is
 updated to match. Provenance is generated automatically under OIDC.

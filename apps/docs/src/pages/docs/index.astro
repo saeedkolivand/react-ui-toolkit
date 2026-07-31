@@ -1,0 +1,145 @@
+---
+import Docs from "../../layouts/Docs.astro";
+import Samples from "../../components/Samples.astro";
+import { byGroup, components } from "../../data";
+
+const groups = byGroup();
+const machineBacked = components.filter(c => c.machine).length;
+
+const install = {
+  react: `pnpm add @crosskit-ui/react
+
+# then, once, at your app entry
+import "@crosskit-ui/styles";`,
+  vue: `pnpm add @crosskit-ui/vue
+
+# then, once, at your app entry
+import "@crosskit-ui/styles";`,
+  svelte: `pnpm add @crosskit-ui/svelte
+
+# then, once, at your app entry
+import "@crosskit-ui/styles";`,
+  angular: `pnpm add @crosskit-ui/angular
+
+# angular.json
+"styles": ["@crosskit-ui/styles", "src/styles.css"]`,
+};
+---
+
+<Docs
+  title="Components"
+  description="Every CrossKit component, with the same API in React, Vue, Svelte and Angular."
+  active="overview"
+>
+  <header class="stack-sm" style="margin-bottom: var(--site-xl);">
+    <p class="eyebrow">Reference</p>
+    <h1 class="display-lg">Components</h1>
+    <p class="subhead">
+      {components.length} components, identical in four frameworks. {machineBacked} of them are driven
+      by state machines, which is where the focus traps, keyboard navigation and ARIA come from.
+    </p>
+  </header>
+
+  <section class="block">
+    <h2 class="h3">Install</h2>
+    <Samples samples={install} />
+    <p class="note">
+      One stylesheet, imported once. Consumers need no Tailwind of their own — it is an authoring
+      tool here, not a runtime dependency.
+    </p>
+  </section>
+
+  <section class="block">
+    <h2 class="h3">How the styling works</h2>
+    <p class="prose">
+      Every component emits <code class="code-inline">data-scope</code>, <code class="code-inline"
+        >data-part</code
+      > and <code class="code-inline">data-state</code> — never a class name. Your own
+      <code class="code-inline">class</code> lands on the root untouched, and because everything
+      shipped sits inside a CSS cascade layer, your unlayered rules win regardless of specificity.
+    </p>
+    <p class="prose">
+      Retheming is CSS custom properties: about 48 semantic <code class="code-inline">--ck-*</code>
+      variables, with dark mode a single <code class="code-inline">[data-theme="dark"]</code> block.
+    </p>
+  </section>
+
+  {
+    groups.map(({ group, items }) => (
+      <section class="block">
+        <h2 class="h3">{group}</h2>
+        <div class="grid">
+          {items.map(item => (
+            <a class="tile" href={`/docs/${item.slug}/`}>
+              <span class="tile-name">{item.name}</span>
+              <span class="tile-summary">{item.summary}</span>
+              {item.machine && <span class="tile-machine">{item.machine}</span>}
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</Docs>
+
+<style>
+  .block {
+    margin-bottom: var(--site-xxl);
+  }
+  .h3 {
+    font-family: var(--site-font-display);
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    margin-bottom: var(--site-md);
+  }
+  .prose {
+    color: var(--site-ink-muted);
+    line-height: 1.7;
+    max-width: 62ch;
+    margin-bottom: var(--site-sm);
+  }
+  .note {
+    margin-top: var(--site-sm);
+    font-size: 13px;
+    color: var(--site-ink-muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--site-md);
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--site-md);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-lg);
+    background: var(--site-surface-1);
+    text-decoration: none;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+  .tile:hover {
+    background: var(--site-surface-2);
+    border-color: var(--site-hairline);
+  }
+  .tile-name {
+    font-weight: 600;
+    color: var(--site-ink);
+  }
+  .tile-summary {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--site-ink-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tile-machine {
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 11px;
+    color: var(--site-accent-blue);
+  }
+</style>
