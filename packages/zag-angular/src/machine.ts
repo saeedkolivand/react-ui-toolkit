@@ -246,21 +246,25 @@ export function useMachine(machine: any, userProps: any = {}): any {
   // nested event before the outer one has registered its state effects leaves
   // the machine with listeners from the wrong state (observed as a dialog that
   // opens but no longer responds to Escape). Queue instead, and drain after.
+  //
+  // The drain MUST happen while `sending` is still true. An earlier version
+  // reset the flag first and then drained; a queued event's own flush could
+  // then fire a `send` that saw `sending === false` and re-entered
+  // synchronously, in the middle of the drain — reintroducing exactly the
+  // interleaving the guard exists to prevent, and only under rapid toggling.
   let sending = false;
   const sendQueue: any[] = [];
 
   const send = (event: any) => {
     if (status !== MachineStatus.Started) return;
-    if (sending) {
-      sendQueue.push(event);
-      return;
-    }
+    sendQueue.push(event);
+    if (sending) return;
     sending = true;
     try {
-      sendImpl(event);
+      while (sendQueue.length) sendImpl(sendQueue.shift());
     } finally {
       sending = false;
-      while (sendQueue.length) sendImpl(sendQueue.shift());
+      sendQueue.length = 0;
     }
   };
 

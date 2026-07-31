@@ -55,8 +55,10 @@ export function bindable<T>(props: () => BindableParams<T>, injector?: Injector)
     try {
       appRef.tick();
     } catch {
-      // NG0103: already inside change detection, so the DOM is being committed
-      // anyway. Nothing to do.
+      // NG0101 (recursive tick) or NG0103 (already inside change detection).
+      // Reaching here means the DOM will NOT be committed before the caller's
+      // machine effects run — see track.ts for why every controlled-prop change
+      // used to land here, and why it no longer does.
     }
   };
 

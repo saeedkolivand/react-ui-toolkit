@@ -4,7 +4,6 @@
 // "framer-motion is deleted" true rather than "deleted, and exit animations gone".
 import {
   computed,
-  DestroyRef,
   Directive,
   ElementRef,
   inject,
@@ -25,8 +24,31 @@ export function usePresence(props: () => { present: boolean }, _injector?: Injec
   const service = useMachine(presence.machine, () => ({ present: props().present }));
   const api = computed(() => presence.connect(service, normalizeProps));
   return {
-    present: computed(() => api().present),
-    setNode: (el: HTMLElement | null) => api().setNode(el),
+    // The OR with the raw input is load-bearing on entry, and it is what fixed
+    // the intermittent "dialog opens but Escape does nothing".
+    //
+    // Reaching the presence machine's `mounted` state costs two Angular ticks:
+    // a `track` effect has to observe `present` and send PRESENCE.CHANGED, then
+    // the template has to render. Meanwhile the *dialog* machine's entry effects
+    // — the focus trap and the dismissable-element listener that handles Escape
+    // — defer by exactly one requestAnimationFrame and then resolve their target
+    // element, bailing SILENTLY if it is null. Whether the node won that race was
+    // a coin flip, which is why it failed on a different iteration every run
+    // while ARIA stayed perfectly correct.
+    //
+    // Reading the input directly means the node is in the template on the very
+    // first flush, so there is no race left. The machine's own `present` still
+    // governs the exit, which is the half that actually needs a state machine.
+    present: computed(() => props().present || api().present),
+    // Never forwards null. Angular can construct the next node's directive
+    // before destroying the previous one's, so a teardown that nulls
+    // unconditionally can wipe the node the machine has only just been handed —
+    // and zag's effects then bail silently on the null. A new element always
+    // replaces the old one, so clearing is unnecessary; at most one detached
+    // node is held, until the next open.
+    setNode: (el: HTMLElement | null) => {
+      if (el) api().setNode(el);
+    },
   };
 }
 
@@ -53,6 +75,5 @@ export class CkPresenceNode {
     const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     // Deferred by a microtask so the required input is bound before we read it.
     queueMicrotask(() => this.ckPresenceNode()(el));
-    inject(DestroyRef).onDestroy(() => this.ckPresenceNode()(null));
   }
 }
