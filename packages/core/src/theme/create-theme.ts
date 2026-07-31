@@ -14,6 +14,8 @@
 import { parseToOklch } from "./color";
 import { assertSafeValue, escapeAttributeValue } from "./css";
 import { deriveNeutralRamp, deriveRamp, RAMP_STEPS, type Ramp, type RampAlgorithm } from "./ramp";
+import { manifests, type ComponentManifest } from "./manifest";
+import { compileOverrides, serializeRules, type StyleOverride } from "./overrides";
 import {
   defaultSeed,
   DURATION_RATIO,
@@ -38,10 +40,41 @@ export interface ThemeConfig {
   /** One algorithm or a composed list, applied in order. */
   algorithm?: ThemeAlgorithm | ThemeAlgorithm[];
   /**
+   * Per-component customisation: token overrides scoped to one component, and
+   * arbitrary CSS per part.
+   *
+   * ```ts
+   * components: {
+   *   Button: {
+   *     token: { "accent-solid": "#059669" },
+   *     styleOverrides: {
+   *       root: ({ theme, ownerState }) => ({
+   *         padding: ownerState.size === "large" ? 16 : 8,
+   *       }),
+   *     },
+   *   },
+   * }
+   * ```
+   */
+  components?: Record<string, ComponentConfig>;
+  /**
+   * Variant manifests to compile `styleOverrides` against. Defaults to the
+   * library's own registry; pass extras to theme components built on the same
+   * token system.
+   */
+  manifests?: Record<string, ComponentManifest>;
+  /**
    * Emit under `[data-ck-theme="<scope>"]` instead of `:root`, so a theme can
    * apply to part of a page. Nested themes use this.
    */
   scope?: string;
+}
+
+export interface ComponentConfig {
+  /** Alias tokens re-pointed for this component only, scoped by `data-scope`. */
+  token?: Record<string, string | number>;
+  /** Arbitrary CSS per part, compiled across the component's variant space. */
+  styleOverrides?: Record<string, StyleOverride<CompiledTheme, Record<string, string>>>;
 }
 
 export interface CompiledTheme {
@@ -135,9 +168,44 @@ export function createTheme(config: ThemeConfig = {}): CompiledTheme {
   const selector = config.scope
     ? `[data-ck-theme="${escapeAttributeValue(config.scope)}"]`
     : ":root";
-  const css = `@layer ck.overrides {\n${selector} {\n${declarations(vars)}\n}\n}\n`;
+  const blocks = [`${selector} {\n${declarations(vars)}\n}`];
 
-  return { seed, map, css };
+  const theme: CompiledTheme = { seed, map, css: "" };
+  const registry = { ...manifests, ...config.manifests };
+
+  for (const [name, component] of Object.entries(config.components ?? {})) {
+    const manifest = registry[name];
+    if (!manifest) {
+      const known = Object.keys(registry);
+      throw new Error(
+        `No variant manifest for "${name}".` +
+          (known.length ? ` Known components: ${known.join(", ")}.` : "") +
+          " Pass one via `manifests` to theme a component the library does not ship."
+      );
+    }
+
+    // Component tokens are just custom properties scoped by data-scope, so they
+    // cost nothing beyond one rule and still cascade into every part.
+    if (component.token && Object.keys(component.token).length > 0) {
+      // Same category of input as `config.token`, so the same guard. Without
+      // it a `;` in a value closes the block early and everything after it
+      // becomes a live rule.
+      const scoped = Object.fromEntries(
+        Object.entries(component.token).map(([k, v]) => [k, assertSafeValue(k, String(v))])
+      );
+      blocks.push(
+        `[data-scope="${escapeAttributeValue(manifest.scope)}"] {\n${declarations(scoped)}\n}`
+      );
+    }
+
+    if (component.styleOverrides) {
+      const rules = serializeRules(compileOverrides(manifest, component.styleOverrides, theme));
+      if (rules) blocks.push(rules);
+    }
+  }
+
+  theme.css = `@layer ck.overrides {\n${blocks.join("\n")}\n}\n`;
+  return theme;
 }
 
 /**
