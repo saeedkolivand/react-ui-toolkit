@@ -28,6 +28,61 @@ const SECTIONS = [
  */
 const KNOWN_GAPS = new Set<string>([]);
 
+/**
+ * Sections whose contract has moved in some frameworks but not yet all.
+ *
+ * The v2 rewrite migrates React first and freezes the API there before the
+ * other three follow, so for a while the same component genuinely renders
+ * different markup per framework — React's Button emits `data-type`, the others
+ * still emit `data-variant`. Comparing those is not a bug report, it is the
+ * plan.
+ *
+ * Listed rather than deleted, and skipped by *framework and section* like
+ * KNOWN_GAPS, so every other section stays enforced. An entry that stops
+ * diverging fails the assertion below, which is what forces it to be removed as
+ * each framework lands rather than left to rot.
+ *
+ * The hole this mechanism opens, and why the test below it exists: React is the
+ * comparison baseline, so a React regression does not read as "React broke", it
+ * reads as *the other three* diverging — and an excused section swallows that
+ * wholesale. A dead React stylesheet would be reported as three excused gaps and
+ * pass. Relative comparison cannot see it by construction, so the excused
+ * sections need an absolute assertion as well.
+ */
+const MIGRATING = new Set<string>(["vue/button", "svelte/button", "angular/button"]);
+
+/**
+ * Sections carrying an absolute assertion, because a relative one cannot cover
+ * them. Every section named in MIGRATING needs an entry here; the test below
+ * enforces that, so the hole cannot reopen as more sections migrate.
+ */
+const RESOLVED: Record<string, { part: string; expect: Record<string, string | RegExp> }> = {
+  // The first button in every fixture is the default type. All four adapters
+  // pass this today against different contracts — React's v2 rules and v1's for
+  // the rest — which is the point: it asks whether the stylesheet is alive, not
+  // whether the two agree.
+  button: {
+    part: '[data-part="root"]',
+    expect: {
+      // Authored as `inline-flex`, but the fixture row is a flex container and a
+      // flex item's display is blockified, so it computes to `flex`. Either is
+      // the rule having applied; `block` or `inline-block` is the UA default and
+      // means it did not.
+      display: /^(inline-)?flex$/,
+      // The rule that actually broke: renaming the contract left every selector
+      // unmatched, and with no fallback on --ck-button-bg every button rendered
+      // transparent and unpadded. Anything but a transparent background means a
+      // type rule matched.
+      backgroundColor: /^(?!rgba\(0, 0, 0, 0\)$)/,
+      // Non-zero, so a button that lost its size rule fails too.
+      paddingLeft: /^(?!0px$)/,
+      // Nothing about the border: whether the first button in the fixture has
+      // one is a property of which type it happens to be, so asserting it would
+      // be checking the fixture rather than the stylesheet.
+    },
+  },
+};
+
 /** Layout-visible properties. Compared as strings, so a rem/px difference shows. */
 const PROPS = [
   "display",
@@ -152,11 +207,48 @@ test("frameworks render identical styles and geometry", async ({ page }) => {
         }
       }
 
-      if (local.length && !KNOWN_GAPS.has(gapKey)) differences.push(...local.slice(0, 3));
-      if (!local.length && KNOWN_GAPS.has(gapKey)) unexpectedlyFixed.push(gapKey);
+      const excused = KNOWN_GAPS.has(gapKey) || MIGRATING.has(gapKey);
+      if (local.length && !excused) differences.push(...local.slice(0, 3));
+      if (!local.length && excused) unexpectedlyFixed.push(gapKey);
     }
   }
 
   expect(differences, "adapters that diverge from React").toEqual([]);
-  expect(unexpectedlyFixed, "KNOWN_GAPS entries that now pass — remove them").toEqual([]);
+  expect(unexpectedlyFixed, "KNOWN_GAPS or MIGRATING entries that now pass — remove them").toEqual(
+    []
+  );
 });
+
+test("every excused section has an absolute assertion to fall back on", () => {
+  const uncovered = [...MIGRATING, ...KNOWN_GAPS]
+    .map(key => key.split("/")[1]!)
+    .filter(section => !(section in RESOLVED));
+  expect(uncovered, "excused sections with nothing checking them absolutely").toEqual([]);
+});
+
+/**
+ * The absolute half: each adapter's own styles resolve, judged against fixed
+ * values rather than against another framework.
+ *
+ * Runs per framework rather than React-only. React is where the hole is, but a
+ * stylesheet can die on any of the four, and the same assertion covers all of
+ * them for the same three lines.
+ */
+for (const framework of FRAMEWORKS) {
+  test(`${framework.name} resolves its own styles, not only the same ones`, async ({ page }) => {
+    await settle(page, framework.url);
+    for (const [section, { part, expect: expected }] of Object.entries(RESOLVED)) {
+      const element = page.locator(`[data-fixture="${section}"] ${part}`).first();
+      const computed = await element.evaluate((node, props) => {
+        const style = getComputedStyle(node);
+        return Object.fromEntries(props.map(prop => [prop, style[prop as never] as string]));
+      }, Object.keys(expected));
+
+      for (const [prop, want] of Object.entries(expected)) {
+        const got = computed[prop]!;
+        if (typeof want === "string") expect(got, `${section} ${prop}`).toBe(want);
+        else expect(got, `${section} ${prop}`).toMatch(want);
+      }
+    }
+  });
+}

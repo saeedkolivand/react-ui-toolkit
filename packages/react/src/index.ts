@@ -1,7 +1,19 @@
+export * from "./config/config-provider";
+export * from "./locale/en-US";
 // NEVER put "use client" in this barrel. With sideEffects:false + ESM the
 // per-file directives tree-shake correctly, but a directive here would poison
 // the entire library for React Server Components consumers.
-export { Button, type ButtonProps } from "./button/button";
+export {
+  Button,
+  // The union, not only ButtonProps: that one declares `href?: undefined`, so a
+  // consumer wrapper typed with it rejects the anchor form entirely.
+  type AnyButtonProps,
+  type ButtonProps,
+  type ButtonShape,
+  type ButtonSize,
+  type ButtonType,
+  type LinkButtonProps,
+} from "./button/button";
 export { Icon, type IconProps } from "./icon/icon";
 export { Spinner, type SpinnerProps, type SpinnerVariant } from "./spinner/spinner";
 export { Badge, type BadgeProps, type BadgeVariant } from "./badge/badge";

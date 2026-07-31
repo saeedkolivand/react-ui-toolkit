@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button } from "@crosskit-ui/react";
+import { Button, Icon } from "@crosskit-ui/react";
+
+const TYPES = ["default", "primary", "dashed", "text", "link"] as const;
 
 const meta = {
   title: "Components/Button",
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {
-    variant: {
-      control: "select",
-      options: ["primary", "secondary", "outline", "ghost", "success", "error", "warning", "info"],
-    },
-    size: { control: "inline-radio", options: ["sm", "md", "lg"] },
+    type: { control: "select", options: TYPES },
+    size: { control: "inline-radio", options: ["small", "middle", "large"] },
+    shape: { control: "inline-radio", options: ["default", "circle", "round"] },
   },
   args: { children: "Button" },
 } satisfies Meta<typeof Button>;
@@ -18,72 +18,114 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const Row = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>{children}</div>
+);
+
 export const Playground: Story = {};
 
-export const Variants: Story = {
+export const Types: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-      {(
-        ["primary", "secondary", "outline", "ghost", "success", "error", "warning", "info"] as const
-      ).map(v => (
-        <Button key={v} variant={v}>
-          {v}
+    <Row>
+      {TYPES.map(type => (
+        <Button key={type} type={type}>
+          {type}
         </Button>
       ))}
-    </div>
+    </Row>
+  ),
+};
+
+/** `danger` is orthogonal to `type`, so a text button can be destructive too. */
+export const Danger: Story = {
+  render: () => (
+    <Row>
+      {TYPES.map(type => (
+        <Button key={type} type={type} danger>
+          {type}
+        </Button>
+      ))}
+    </Row>
   ),
 };
 
 export const Sizes: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-      <Button size="sm">Small</Button>
-      <Button size="md">Medium</Button>
-      <Button size="lg">Large</Button>
-    </div>
+    <Row>
+      <Button size="small">Small</Button>
+      <Button size="middle">Middle</Button>
+      <Button size="large">Large</Button>
+    </Row>
   ),
 };
 
+export const Shapes: Story = {
+  render: () => (
+    <Row>
+      <Button shape="default">Default</Button>
+      <Button shape="round">Round</Button>
+      <Button shape="circle" icon={<Icon name="search" />} aria-label="Search" />
+    </Row>
+  ),
+};
+
+/** `icon` takes a node, so any glyph composes — not only the bundled set. */
 export const WithIcons: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-      <Button icon="plus">Left icon</Button>
-      <Button icon="chevronRight" iconPosition="right">
-        Right icon
+    <Row>
+      <Button icon={<Icon name="plus" />}>Leading</Button>
+      <Button icon={<Icon name="chevronRight" />} iconPosition="end">
+        Trailing
       </Button>
-      <Button icon="search" variant="outline" />
-    </div>
+      <Button icon={<Icon name="search" />} type="dashed" aria-label="Search" />
+    </Row>
   ),
 };
 
 export const States: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+    <Row>
       <Button>Default</Button>
       <Button loading>Loading</Button>
       <Button disabled>Disabled</Button>
-    </div>
+    </Row>
   ),
 };
 
-export const FullWidth: Story = {
-  args: { fullWidth: true, children: "Full width" },
+export const Block: Story = {
+  args: { block: true, children: "Block" },
   parameters: { layout: "padded" },
 };
 
 /**
+ * An `href` renders an `<a>` rather than a button that navigates by script, so
+ * it works with a keyboard and with "open in new tab". Disabling it drops the
+ * href rather than only styling it.
+ */
+export const AsLink: Story = {
+  render: () => (
+    <Row>
+      <Button href="https://crosskit.iamsaeed.dev">Docs</Button>
+      <Button href="https://crosskit.iamsaeed.dev" disabled>
+        Disabled link
+      </Button>
+    </Row>
+  ),
+};
+
+/**
  * The override story: an unlayered consumer rule beats our layered
- * `[data-scope][data-part][data-variant]` despite lower specificity, because
+ * `[data-scope][data-part][data-type]` despite lower specificity, because
  * everything we ship lives inside `@layer ck.*`.
  */
 export const ConsumerOverride: Story = {
   render: () => (
     <>
       <style>{`.brand-button { background-color: rebeccapurple; border-radius: 999px }`}</style>
-      <div style={{ display: "flex", gap: 12 }}>
+      <Row>
         <Button>Ours</Button>
         <Button className="brand-button">Overridden</Button>
-      </div>
+      </Row>
     </>
   ),
 };

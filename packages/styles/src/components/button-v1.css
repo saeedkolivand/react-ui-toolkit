@@ -1,0 +1,111 @@
+/* The v1 Button contract, kept alive while the migration is in flight.
+
+   React moved to `data-type` / small|middle|large; Vue, Svelte and Angular
+   still emit `data-variant` / sm|md|lg. Rewriting button.css for the new
+   contract left all three rendering transparent, borderless buttons -- the base
+   rule still matched (`data-scope`/`data-part` did not change) but no type rule
+   set --ck-button-bg, so every fallback applied.
+
+   Only the parts of the contract that actually differ live here; everything
+   keyed on scope/part alone is shared with button.css. DELETE THIS FILE, and
+   its @import, once the last adapter emits `data-type` -- the absolute
+   assertions in apps/e2e/specs/parity.spec.ts are what catch its absence. */
+@layer ck.components {
+  [data-scope="button"][data-part="root"][data-size="sm"] {
+    padding-block: 0.375rem;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    --ck-button-gap: 0.5rem;
+  }
+  [data-scope="button"][data-part="root"][data-size="md"] {
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    --ck-button-gap: 0.5rem;
+  }
+  [data-scope="button"][data-part="root"][data-size="lg"] {
+    padding-block: 0.75rem;
+    padding-inline: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    --ck-button-gap: 0.625rem;
+  }
+
+  [data-scope="button"][data-part="root"][data-variant="primary"] {
+    --ck-button-bg: var(--ck-accent-solid);
+    --ck-button-bg-hover: var(--ck-accent-solid-hover);
+    --ck-button-fg: var(--ck-accent-fg);
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="secondary"] {
+    --ck-button-bg: var(--ck-neutral-solid);
+    --ck-button-bg-hover: var(--ck-neutral-solid-hover);
+    --ck-button-fg: var(--ck-neutral-fg);
+    --ck-button-ring: var(--ck-neutral-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="outline"] {
+    --ck-button-bg: transparent;
+    --ck-button-bg-hover: var(--ck-accent-subtle);
+    --ck-button-fg: var(--ck-accent-text);
+    --ck-button-border: var(--ck-accent-border);
+    --ck-button-border-width: 1px;
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="ghost"] {
+    --ck-button-bg: transparent;
+    --ck-button-bg-hover: var(--ck-accent-subtle);
+    --ck-button-fg: var(--ck-accent-text);
+    --ck-button-ring: var(--ck-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="success"] {
+    --ck-button-bg: var(--ck-success-solid);
+    --ck-button-bg-hover: var(--ck-success-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-success-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="error"] {
+    --ck-button-bg: var(--ck-danger-solid);
+    --ck-button-bg-hover: var(--ck-danger-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-danger-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="warning"] {
+    --ck-button-bg: var(--ck-warning-solid);
+    --ck-button-bg-hover: var(--ck-warning-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-warning-ring);
+  }
+  [data-scope="button"][data-part="root"][data-variant="info"] {
+    --ck-button-bg: var(--ck-info-solid);
+    --ck-button-bg-hover: var(--ck-info-solid-hover);
+    --ck-button-fg: #fff;
+    --ck-button-ring: var(--ck-info-ring);
+  }
+
+  [data-scope="button"][data-part="root"][data-full-width] {
+    inline-size: 100%;
+  }
+
+  /* v1 has no spinner *part* -- the adapters compose a separate <Spinner>, so the
+     busy state is a wash over the whole button rather than a glyph. */
+  [data-scope="button"][data-part="root"][data-loading]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgb(255 255 255 / 0.15);
+    border-radius: inherit;
+  }
+  [data-scope="button"][data-part="root"][data-loading] {
+    position: relative;
+  }
+
+  /* Composed children, targeted by their own scope rather than by a data-part
+     the parent would have to stamp on -- stamping replaces the child's own part
+     and silently breaks its styling. */
+  [data-scope="button"] > [data-scope="icon"],
+  [data-scope="button"] > [data-scope="spinner"] {
+    flex-shrink: 0;
+  }
+}
