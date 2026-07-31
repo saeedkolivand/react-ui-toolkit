@@ -80,10 +80,19 @@ export function Modal({
   const confirm = async () => {
     if (!onOk) return;
     const result = onOk();
-    if (!(result instanceof Promise)) return;
+    // Any thenable, not only a native Promise: an async function from a
+    // transpiled target, or a library's own deferred, is the same signal.
+    if (typeof (result as PromiseLike<void> | undefined)?.then !== "function") return;
     setSubmitting(true);
     try {
       await result;
+    } catch {
+      // Swallowed deliberately. The promise is a busy signal here, not an error
+      // channel — a failed submit is something `onOk` handles itself. Rethrowing
+      // (or omitting this) would surface the consumer's own already-handled
+      // rejection as an unhandled one, since React discards what onClick returns:
+      // an "Uncaught (in promise)" in the console, the dev error overlay, and any
+      // global unhandledrejection reporter, for a 422 the consumer caught.
     } finally {
       setSubmitting(false);
     }

@@ -28,3 +28,6 @@ Two fixes in `core` that this turned up:
 their `max-width` fallback — previously an inline `inline-size` was clamped by
 the size rule and had no effect. An async `onOk` now holds the confirm button
 busy until it settles.
+
+`@zag-js/dialog` is dropped from `@crosskit-ui/react`'s dependencies — nothing
+imports it now that Modal and Drawer are rebuilt.

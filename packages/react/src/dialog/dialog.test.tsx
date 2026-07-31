@@ -7,6 +7,20 @@ import { Drawer } from "./drawer";
 
 const CONTENT = '[data-scope="dialog"][data-part="content"]';
 const POSITIONER = '[data-scope="dialog"][data-part="positioner"]';
+/**
+ * Node's unhandled-rejection hook, typed locally.
+ *
+ * jsdom does not dispatch the DOM `unhandledrejection` event, so this is the
+ * only place a rejection escaping a handler is observable — and `@types/node`
+ * is not worth a dependency for one assertion.
+ */
+const nodeProcess = globalThis as unknown as {
+  process: {
+    on(event: "unhandledRejection", listener: () => void): void;
+    off(event: "unhandledRejection", listener: () => void): void;
+  };
+};
+
 const frame = () =>
   new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 const content = () => document.querySelector<HTMLElement>(CONTENT);
@@ -369,6 +383,32 @@ describe("Modal", () => {
 
       release();
       await waitFor(() => expect(ok).toBeEnabled());
+    });
+
+    it("clears the busy state when onOk rejects, without an unhandled rejection", async () => {
+      const user = userEvent.setup();
+      const unhandled = vi.fn();
+      nodeProcess.process.on("unhandledRejection", unhandled);
+      // A failed submit is the ordinary case, and the consumer handles it inside
+      // onOk. React discards what onClick returns, so without a catch here their
+      // own already-handled rejection resurfaced as an unhandled one: a console
+      // error, the dev overlay, and any global reporter, for a 422 they caught.
+      const onOk = vi.fn(() => Promise.reject(new Error("422")));
+      render(
+        <Modal defaultOpen title="T" onOk={onOk}>
+          body
+        </Modal>
+      );
+      await opened();
+      const ok = screen.getByText("OK").closest("button")!;
+
+      await user.click(ok);
+      await waitFor(() => expect(ok).toBeEnabled());
+      // Still open, so the consumer can show the error next to the field.
+      expect(content()).not.toBeNull();
+      await frame();
+      expect(unhandled).not.toHaveBeenCalled();
+      nodeProcess.process.off("unhandledRejection", unhandled);
     });
 
     it("removes the footer for null, and replaces it for anything else", async () => {

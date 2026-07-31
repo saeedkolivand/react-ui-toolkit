@@ -1,12 +1,14 @@
 /* Modal and Drawer.
  *
- * Both are @zag-js/dialog, so both emit data-scope="dialog". They are told apart
- * by data-ck — the disambiguator that exists precisely because two components
- * legitimately share one machine's scope. Drawer is ~15 lines of difference.
+ * Both are one behaviour — the overlay primitives in packages/core: focus trap,
+ * dismissable layer stack, presence, scroll lock — so both emit
+ * data-scope="dialog". They are told apart by data-ck, the disambiguator that
+ * exists precisely because two components legitimately share one scope. Drawer
+ * is about fifteen lines of difference.
  *
  * Exit animations depend on the node surviving long enough to run them, which
- * is what @zag-js/presence provides: gate rendering on presence, never on
- * api.open, or [data-state="closed"] never gets a frame and every exit
+ * is what core's presence controller is for: gate rendering on presence, never
+ * on `open`, or [data-state="closed"] never gets a frame and every exit
  * animation silently does nothing.
  */
 @layer ck.components {

@@ -70,6 +70,11 @@ export interface Overlay {
  *
  * Applied to body children rather than to one wrapper, because the overlay is
  * portalled and is therefore a sibling of the app root, not a descendant.
+ *
+ * That sweeps up the overlay's own backdrop, which is a body child that does not
+ * contain the content. Harmless rather than intended: the backdrop holds nothing
+ * and the positioner covers it anyway. Give the backdrop content one day and this
+ * needs an exclusion.
  */
 function inertBackground(content: HTMLElement): () => void {
   const changed: HTMLElement[] = [];
