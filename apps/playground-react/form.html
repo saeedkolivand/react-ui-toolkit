@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — form harness</title>
+  </head>
+  <body>
+    <!-- Three things jsdom cannot answer. The horizontal layout shares one label
+         column across every row through `subgrid`, and a shared track width is
+         layout by definition. The required marker is generated content, which
+         has no node to query. And which side the label column sits on is the
+         whole RTL claim. -->
+    <div id="root"></div>
+    <script type="module" src="/form.tsx"></script>
+  </body>
+</html>
