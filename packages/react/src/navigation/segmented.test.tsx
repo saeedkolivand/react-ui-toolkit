@@ -84,6 +84,20 @@ describe("Segmented", () => {
     expect(tabbable()[0]).toHaveAccessibleName("B");
   });
 
+  it("arrows on from where focus is, not from where the selection is", async () => {
+    // The two differ in exactly one case, and it is one this component ships
+    // on purpose: the tab stop moves off a disabled selected option, so
+    // stepping from the *selection* starts on an option nothing is focused on.
+    // The first keypress then lands back where focus already was and looks
+    // like a dead key — and under a controlled `value` it never stops doing it.
+    render(
+      <Segmented options={[{ label: "A", value: "a", disabled: true }, "B", "C"]} value="a" />
+    );
+    items()[1]!.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    expect(items()[2]).toHaveFocus();
+  });
+
   it("selects as it moves, because a radio group has no panel to defer for", async () => {
     const onChange = vi.fn();
     render(<Segmented options={OPTIONS} onChange={onChange} />);

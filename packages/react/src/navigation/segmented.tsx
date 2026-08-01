@@ -97,7 +97,13 @@ export function Segmented({
     // so it already has the node — and merging a private ref with the
     // consumer's is code that exists only to re-derive it.
     const root = event.currentTarget;
-    const result = navigate(event, collection, selected, {
+    // Anchored on the tab stop, not on the selection. The two are the same
+    // everywhere except the case this component handles on purpose — a
+    // disabled selected option, where the tab stop has already moved on — and
+    // stepping from the selection there starts on an option nothing is focused
+    // on, so the first key lands back where focus already was. Tabs anchors on
+    // `focused ?? active` for the same reason.
+    const result = navigate(event, collection, rovingValue, {
       // Both axes, and looping, because that is the radio-group pattern rather
       // than the tablist one — `vertical` changes how it looks, not which keys
       // work, and a user who does not know the visual orientation still gets

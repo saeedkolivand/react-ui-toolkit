@@ -32,6 +32,18 @@ describe("Breadcrumb", () => {
     expect(parts("breadcrumb", "separator")).toHaveLength(2);
   });
 
+  it("marks the current crumb as a presence attribute", () => {
+    render(<Breadcrumb items={CRUMBS} />);
+    const crumbs = parts("breadcrumb", "item");
+    // Not `data-current="false"` on the others — `[data-current]` matches that
+    // string, so every crumb in the trail would be styled as the page you are
+    // on. This file is the template the other three adapters get built from,
+    // which is why the negative case is asserted and not only the positive one.
+    expect(crumbs[2]!.getAttribute("data-current")).toBe("");
+    expect(crumbs[0]!.hasAttribute("data-current")).toBe(false);
+    expect(crumbs[1]!.hasAttribute("data-current")).toBe(false);
+  });
+
   it("renders no separator when it is conditioned away", () => {
     const withSeparator = false;
     render(<Breadcrumb items={CRUMBS} separator={withSeparator && "/"} />);
