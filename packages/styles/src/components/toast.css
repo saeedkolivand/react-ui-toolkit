@@ -214,20 +214,16 @@
       animation-duration: 1ms !important;
     }
   }
-}
-
-/* Outside the layer on purpose: `@keyframes` is not a style rule, so a cascade
-   layer does nothing for it, and nesting it inside only makes it look as though
-   layer order applies to animations. */
-@keyframes ck-toast-in-top {
-  from {
-    opacity: 0;
-    translate: 0 -0.5rem;
+  @keyframes ck-toast-in-top {
+    from {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
   }
-}
-@keyframes ck-toast-in-bottom {
-  from {
-    opacity: 0;
-    translate: 0 0.5rem;
+  @keyframes ck-toast-in-bottom {
+    from {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
   }
 }

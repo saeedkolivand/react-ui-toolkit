@@ -172,6 +172,26 @@ describe("Toaster", () => {
     expect(resume).toHaveBeenCalled();
   });
 
+  it("keeps holding while one of the two signals is still raised", async () => {
+    const user = userEvent.setup();
+    const toaster = createToastQueue();
+    render(<Toaster toaster={toaster} />);
+    toaster.create({ title: "Saved" });
+    await waitFor(() => expect(roots()).toHaveLength(1));
+
+    const resume = vi.spyOn(toaster, "resume");
+    root().focus();
+    await user.hover(root());
+    await user.unhover(root());
+    // Pointer and focus are independent holds. Driving both through one
+    // pause/resume pair meant whichever ended first released the other's — so
+    // brushing the pointer over a group that already had focus restarted the
+    // countdown with focus still in it.
+    expect(resume).not.toHaveBeenCalled();
+    await user.tab();
+    expect(resume).toHaveBeenCalled();
+  });
+
   it("focuses the group on alt+T once there is something to read", async () => {
     const user = userEvent.setup();
     const toaster = createToastQueue();

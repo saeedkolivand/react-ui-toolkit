@@ -56,8 +56,22 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
 
   // Hovering or focusing anywhere in the group holds every countdown, so a
   // toast cannot expire out from under a pointer heading for its action.
-  const pause = useCallback(() => toaster.pause(), [toaster]);
-  const resume = useCallback(() => toaster.resume(), [toaster]);
+  //
+  // Two independent signals, counted separately rather than both driving one
+  // `pause()`/`resume()` pair: whichever ended first used to release the
+  // other's hold, so brushing the pointer across a group that already had
+  // focus in it started the countdown again with focus still there — the exact
+  // thing these handlers exist to prevent.
+  const held = useRef({ pointer: false, focus: false });
+  const hold = useCallback(
+    (signal: "pointer" | "focus", next: boolean) => {
+      held.current[signal] = next;
+      const any = held.current.pointer || held.current.focus;
+      if (any) toaster.pause();
+      else toaster.resume();
+    },
+    [toaster]
+  );
 
   return (
     <div
@@ -81,10 +95,10 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
       aria-live="polite"
       aria-relevant="additions text"
       aria-atomic="false"
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onFocus={pause}
-      onBlur={resume}
+      onMouseEnter={() => hold("pointer", true)}
+      onMouseLeave={() => hold("pointer", false)}
+      onFocus={() => hold("focus", true)}
+      onBlur={() => hold("focus", false)}
     >
       {toasts.map(item => (
         <ToastView

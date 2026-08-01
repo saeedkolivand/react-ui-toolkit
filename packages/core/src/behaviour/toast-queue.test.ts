@@ -147,6 +147,48 @@ describe("createToastQueue", () => {
     expect(states(q)).toEqual(["closed"]);
   });
 
+  it("re-derives the duration when an update changes the type", () => {
+    const q = createToastQueue();
+    const id = q.loading({ title: "Uploading" });
+    vi.advanceTimersByTime(60_000);
+    expect(states(q)).toEqual(["open"]);
+    // The type carries the duration with it. Resolving once at create left this
+    // toast infinite, so the update-in-place path the docs advertise hung on
+    // screen forever.
+    q.update(id, { title: "Uploaded", type: "success" });
+    vi.advanceTimersByTime(4999);
+    expect(states(q)).toEqual(["open"]);
+    vi.advanceTimersByTime(1);
+    expect(states(q)).toEqual(["closed"]);
+  });
+
+  it("stops counting when an update turns a toast into a loading one", () => {
+    const q = createToastQueue();
+    const id = q.success({ title: "Saved" });
+    q.update(id, { title: "Saving again", type: "loading" });
+    vi.advanceTimersByTime(60_000);
+    expect(states(q)).toEqual(["open"]);
+  });
+
+  it("keeps a duration the caller chose across a type change", () => {
+    const q = createToastQueue();
+    const id = q.create({ title: "a", type: "info", duration: 1000 });
+    q.update(id, { type: "success" });
+    vi.advanceTimersByTime(999);
+    expect(states(q)).toEqual(["open"]);
+    vi.advanceTimersByTime(1);
+    expect(states(q)).toEqual(["closed"]);
+  });
+
+  it("never expires a loading toast on the group duration", () => {
+    const q = createToastQueue({ duration: 100 });
+    q.loading({ title: "Uploading" });
+    // A group default replaces the finite per-type defaults, not the infinite
+    // one: loading ends when the work it reports ends.
+    vi.advanceTimersByTime(60_000);
+    expect(states(q)).toEqual(["open"]);
+  });
+
   it("holds overflow back rather than dropping it", () => {
     const q = createToastQueue({ max: 2 });
     q.create({ id: "a", title: "a", duration: 1000 });

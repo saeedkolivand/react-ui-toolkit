@@ -179,6 +179,26 @@ test("stacks the newest nearest the top edge it enters from", async ({ page }) =
   expect(newest.y).toBeLessThan(oldest.y);
 });
 
+test("lets a consumer override the enter keyframes from ck.overrides", async ({ page }) => {
+  // Rule 8, applied to animations. `@keyframes` authored outside a cascade
+  // layer wins over any layered redefinition, so a consumer overriding the name
+  // in `ck.overrides` would be silently ignored — the one thing the layer
+  // architecture exists to prevent.
+  await page.addStyleTag({
+    content: "@layer ck.overrides { @keyframes ck-toast-in-bottom { from { opacity: 0.42 } } }",
+  });
+  await page.click("#add-bottom-end");
+  const root = rootsIn(page, "bottom-end").first();
+  await expect(root).toHaveCount(1);
+
+  // Read the resolved keyframes rather than racing a frame of the animation.
+  const from = await root.evaluate(
+    node =>
+      (node.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes()[0]?.opacity
+  );
+  expect(String(from)).toBe("0.42");
+});
+
 test("animates the enter, not only the exit", async ({ page }) => {
   const started = page.evaluate(
     () =>

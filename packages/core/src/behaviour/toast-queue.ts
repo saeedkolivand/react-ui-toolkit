@@ -118,8 +118,22 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
   // id re-created during its own exit window is deleted moments later by the
   // previous toast's pending removal.
   const removals = new Map<string, ReturnType<typeof setTimeout>>();
+  // Ids whose duration the caller chose. A type change re-derives the default
+  // for the new type, but must not overwrite a number someone asked for.
+  const chosenDurations = new Set<string>();
   const listeners = new Set<() => void>();
   let snapshot: readonly ToastItem[] = live;
+
+  /**
+   * A group-wide `duration` replaces the finite per-type defaults, and never
+   * the infinite one: `loading` ends when the work it reports ends, so a group
+   * default expiring it would be the one thing it must not do.
+   */
+  const resolveDuration = (type: ToastType, chosen: number | undefined) => {
+    if (chosen !== undefined) return chosen;
+    const fallback = DEFAULT_DURATION[type];
+    return Number.isFinite(fallback) ? (groupDuration ?? fallback) : fallback;
+  };
 
   const publish = () => {
     snapshot = live;
@@ -192,10 +206,12 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
       ...o,
       id,
       type,
-      duration: o.duration ?? groupDuration ?? DEFAULT_DURATION[type],
+      duration: resolveDuration(type, o.duration),
       removeDelay: o.removeDelay ?? groupRemoveDelay,
       state: "open",
     };
+    if (o.duration !== undefined) chosenDurations.add(id);
+    else chosenDurations.delete(id);
     if (live.length >= max) {
       waiting.push(item);
     } else {
@@ -214,13 +230,25 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     }
     const before = live.find(item => item.id === id);
     if (!before) return;
-    const updated = patch(id, { ...o, id, type: o.type ?? before.type });
-    // A new duration restarts the countdown; without this, `update` could only
-    // ever shorten a toast's life by accident. Not while paused, though — that
-    // is the promise-toast path: a `loading` toast held open under the pointer
-    // resolves, and starting a countdown here expires it under the hand
-    // reaching for its action.
-    if (updated && o.duration !== undefined && updated.state === "open") {
+    if (o.duration !== undefined) chosenDurations.add(id);
+    const type = o.type ?? before.type;
+    // The type carries the duration with it, so a `loading` toast updated to
+    // `success` has to stop being infinite — and a `success` updated to
+    // `loading` has to stop counting down. Resolving once in `create` left
+    // `update(id, { type })` — the update-in-place path the docs advertise —
+    // hanging forever in the first case and expiring in the second.
+    //
+    // A duration the caller chose survives the change; only a defaulted one is
+    // re-derived.
+    const retyped = type !== before.type && !chosenDurations.has(id);
+    const duration = o.duration ?? (retyped ? resolveDuration(type, undefined) : before.duration);
+    const updated = patch(id, { ...o, id, type, duration });
+    // A new or re-derived duration restarts the countdown; without this,
+    // `update` could only ever shorten a toast's life by accident. Not while
+    // paused, though — that is the promise-toast path: a `loading` toast held
+    // open under the pointer resolves, and starting a countdown here expires
+    // it under the hand reaching for its action.
+    if (updated && (o.duration !== undefined || retyped) && updated.state === "open") {
       hold(id);
       countdowns.delete(id);
       if (!paused) start(updated);
@@ -259,6 +287,7 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     hold(id);
     countdowns.delete(id);
     cancelRemoval(id);
+    chosenDurations.delete(id);
     live = [...live.slice(0, index), ...live.slice(index + 1)];
     promote();
     publish();
