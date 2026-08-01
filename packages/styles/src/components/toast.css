@@ -1,6 +1,8 @@
-/* Toast. The group is positioned by the machine through inline custom
-   properties, so this file styles appearance only — no fixed/top/right of its
-   own beyond what zag needs to be laid out at all. */
+/* Toast. Two layouts share this file for now. The v1 adapters have their group
+   positioned from inline custom properties, so those rules style appearance
+   only. The v2 group carries `data-ck-layout="flow"` and gets its placement
+   and stacking from the `flow` section at the bottom — no inline geometry, no
+   per-toast offset maths. */
 @layer ck.components {
   [data-scope="toast"][data-part="group"] {
     position: fixed;
@@ -121,9 +123,107 @@
     outline-offset: 2px;
   }
 
+  /* ------------------------------------------------------------------ flow */
+  /* v2 lays the group out as a flex column and leaves every toast in normal
+     flow, so there is no per-toast offset, scale or index to compute. The v1
+     adapters position each root absolutely from inline custom properties, and
+     inline styles beat any layer — but `translate` and `opacity` below are
+     stylesheet declarations that would fight v1's, so both sets are keyed apart
+     on `data-ck-layout` rather than left to source order.
+
+     Child combinator at both hops: a Toaster rendered inside another group's
+     toast would otherwise take these rules from the outer group. */
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"] {
+    gap: 0.75rem;
+    padding: 1rem;
+    /* The group spans the edge it is pinned to and lets pointer events through,
+       so a full-width fixed layer does not swallow clicks on the page under it.
+       Each toast takes them back. */
+    inset-inline: 0;
+    width: auto;
+    max-width: none;
+    pointer-events: none;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"] {
+    inset-block-start: 0;
+    /* Newest nearest the edge it enters from. DOM order is creation order, so
+       the newest toast is the last child — which `column` puts furthest from a
+       top edge and `column-reverse` puts against it. The bottom side needs no
+       rule for the same reason: last child is already nearest the bottom. */
+    flex-direction: column-reverse;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"] {
+    inset-block-end: 0;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-align="start"] {
+    align-items: flex-start;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-align="end"] {
+    align-items: flex-end;
+  }
+
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"] > [data-part="root"] {
+    position: relative;
+    width: 22rem;
+    max-width: calc(100vw - 2rem);
+    pointer-events: auto;
+    /* Deliberately `md`, not the `lg` the shared rule above uses: this has to
+       finish inside the queue's `removeDelay`, which defaults to the same
+       200ms. At `lg` the node is removed 100ms early and the last third of
+       every exit is cut off mid-flight. The two numbers are a pair — changing
+       one without the other brings the clipping back. */
+    transition-duration: var(--ck-duration-md);
+  }
+  /* Exit runs off `data-state`, which is why the queue keeps a dismissed toast
+     in the list for `removeDelay` rather than dropping it on the spot — the
+     closed state needs a frame to be in.
+
+     Enter cannot work the same way. A node inserted straight at its resting
+     style has nothing to transition from, so this is a keyframe animation
+     instead: it runs on insertion, needs no starting style, and stops
+     mattering the moment it ends. */
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"]
+    > [data-part="root"][data-state="closed"] {
+    opacity: 0;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"]
+    > [data-part="root"][data-state="closed"] {
+    translate: 0 -0.5rem;
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"]
+    > [data-part="root"][data-state="closed"] {
+    translate: 0 0.5rem;
+  }
+
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"]
+    > [data-part="root"] {
+    animation: ck-toast-in-top var(--ck-duration-md) var(--ck-ease-out);
+  }
+  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"]
+    > [data-part="root"] {
+    animation: ck-toast-in-bottom var(--ck-duration-md) var(--ck-ease-out);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="toast"][data-part="root"] {
-      transition-duration: 1ms;
+    [data-scope="toast"][data-part="root"],
+    [data-scope="toast"][data-part="group"][data-ck-layout="flow"] > [data-part="root"] {
+      transition-duration: 1ms !important;
+      /* The enter is an animation, not a transition, so the line above does not
+         reach it — which is the same mistake this file would have shipped in
+         `overlay.css` had it not been caught there first. */
+      animation-duration: 1ms !important;
+    }
+  }
+  @keyframes ck-toast-in-top {
+    from {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+  @keyframes ck-toast-in-bottom {
+    from {
+      opacity: 0;
+      translate: 0 0.5rem;
     }
   }
 }

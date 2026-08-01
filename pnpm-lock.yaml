@@ -94,9 +94,6 @@ catalogs:
     '@zag-js/presence':
       specifier: ^1.43.0
       version: 1.43.0
-    '@zag-js/react':
-      specifier: ^1.43.0
-      version: 1.43.0
     '@zag-js/select':
       specifier: ^1.43.0
       version: 1.43.0
@@ -513,12 +510,6 @@ importers:
       '@crosskit-ui/styles':
         specifier: workspace:^
         version: link:../styles
-      '@zag-js/react':
-        specifier: catalog:zag
-        version: 1.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@zag-js/toast':
-        specifier: catalog:zag
-        version: 1.43.0
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: 'catalog:'
@@ -3942,12 +3933,6 @@ packages:
 
   '@zag-js/presence@1.43.0':
     resolution: {integrity: sha512-pfNmHIsIJvTSLOxrLy6Of3jZvBhhL7NikxmcPk9vdVt5d0NELs158YzcohQpmd1Ci8RcQTEGcTh6J5R2tyjUNg==}
-
-  '@zag-js/react@1.43.0':
-    resolution: {integrity: sha512-UGgZcPZw69p5DUE0XiUBdPHK8m/JmsRD8RC/DRHMKyAlrYqKxzp7TKhheCeJ52ZwXMG/QryUA6TWEBOVuYG1Tg==}
-    peerDependencies:
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
 
   '@zag-js/rect-utils@1.43.0':
     resolution: {integrity: sha512-Cj4Y9trhY4+NpVN74dkLb5ZOkLFieypnIRFvOovo0JrexZ/wtj1srG9Y35zWgBsmWDTkvp9bexdFg0rggPcNGQ==}
@@ -9794,15 +9779,6 @@ snapshots:
       '@zag-js/core': 1.43.0
       '@zag-js/dom-query': 1.43.0
       '@zag-js/types': 1.43.0
-
-  '@zag-js/react@1.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@zag-js/core': 1.43.0
-      '@zag-js/store': 1.43.0
-      '@zag-js/types': 1.43.0
-      '@zag-js/utils': 1.43.0
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
 
   '@zag-js/rect-utils@1.43.0': {}
 

@@ -2,8 +2,6 @@ import * as toast from "@zag-js/toast";
 
 export type Toaster = toast.Store;
 export type ToasterOptions = toast.StoreProps;
-export type ToastOptions = toast.Options;
-export type ToastType = toast.Type;
 
 /**
  * The toast queue is a plain store with no framework in it, so the toaster is a
