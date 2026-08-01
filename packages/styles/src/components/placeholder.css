@@ -1,0 +1,269 @@
+/* Skeleton, Empty and Result — the three states a screen is in when it has no
+   content to show: loading, nothing to show, and finished with something to say. */
+@layer ck.components {
+  /* --------------------------------------------------------------- Skeleton */
+  /* The shimmer keyframes are declared INSIDE the layer deliberately. Duplicate
+     `@keyframes` names resolve by layer, and unlayered beats layered — so an
+     unlayered consumer rule named `ck-skeleton-shimmer` overrides this one.
+     Authored outside the layer, that override would not work. */
+  @keyframes ck-skeleton-shimmer {
+    from {
+      background-position-x: 100%;
+    }
+    to {
+      background-position-x: -100%;
+    }
+  }
+
+  [data-scope="skeleton"][data-part="root"] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ck-space-md);
+    inline-size: 100%;
+  }
+  [data-scope="skeleton"] > [data-part="content"] {
+    /* `min-inline-size: 0` because a flex item's automatic minimum size is its
+       content, and a percentage-width row inside would otherwise be measured
+       against a box it is itself widening. */
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* Every block shares one fill so a consumer retints all of them by setting
+     `--ck-skeleton-fill` once, at whatever scope they like. */
+  [data-scope="skeleton"] [data-part="title"],
+  [data-scope="skeleton"] [data-part="row"],
+  [data-scope="skeleton"][data-part="avatar"],
+  [data-scope="skeleton"][data-part="button"],
+  [data-scope="skeleton"][data-part="input"],
+  [data-scope="skeleton"][data-part="image"],
+  [data-scope="skeleton"][data-part="node"] {
+    background-color: var(--ck-skeleton-fill, var(--ck-border));
+    border-radius: var(--ck-radius-base);
+  }
+
+  [data-scope="skeleton"] [data-part="title"] {
+    display: block;
+    block-size: 1rem;
+    inline-size: 38%;
+    margin-block-end: var(--ck-space-md);
+  }
+  [data-scope="skeleton"] [data-part="paragraph"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  [data-scope="skeleton"] [data-part="row"] {
+    display: block;
+    block-size: 1rem;
+  }
+  [data-scope="skeleton"][data-part="root"][data-round] [data-part="title"],
+  [data-scope="skeleton"][data-part="root"][data-round] [data-part="row"] {
+    border-radius: var(--ck-radius-full);
+  }
+
+  /* The five standalone blocks. Each declares its own display: an Angular
+     adapter can render these as custom elements, which default to inline. */
+  [data-scope="skeleton"][data-part="avatar"],
+  [data-scope="skeleton"][data-part="button"],
+  [data-scope="skeleton"][data-part="input"],
+  [data-scope="skeleton"][data-part="image"],
+  [data-scope="skeleton"][data-part="node"] {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  [data-scope="skeleton"][data-part="avatar"] {
+    block-size: 2.5rem;
+    inline-size: 2.5rem;
+    flex: none;
+  }
+  [data-scope="skeleton"][data-part="avatar"][data-size="small"] {
+    block-size: 1.5rem;
+    inline-size: 1.5rem;
+  }
+  [data-scope="skeleton"][data-part="avatar"][data-size="large"] {
+    block-size: 2.5rem;
+    inline-size: 2.5rem;
+  }
+  [data-scope="skeleton"][data-part="avatar"][data-shape="circle"] {
+    border-radius: var(--ck-radius-full);
+  }
+  [data-scope="skeleton"][data-part="avatar"][data-shape="square"] {
+    border-radius: var(--ck-radius-base);
+  }
+
+  [data-scope="skeleton"][data-part="button"] {
+    block-size: 2rem;
+    inline-size: 4rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-size="small"] {
+    block-size: 1.5rem;
+    inline-size: 3.5rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-size="large"] {
+    block-size: 2.5rem;
+    inline-size: 5rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-shape="circle"] {
+    border-radius: var(--ck-radius-full);
+    inline-size: 2rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-shape="circle"][data-size="small"] {
+    inline-size: 1.5rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-shape="circle"][data-size="large"] {
+    inline-size: 2.5rem;
+  }
+  [data-scope="skeleton"][data-part="button"][data-shape="round"] {
+    border-radius: var(--ck-radius-full);
+  }
+
+  [data-scope="skeleton"][data-part="input"] {
+    block-size: 2rem;
+    inline-size: 10rem;
+  }
+  [data-scope="skeleton"][data-part="input"][data-size="small"] {
+    block-size: 1.5rem;
+  }
+  [data-scope="skeleton"][data-part="input"][data-size="large"] {
+    block-size: 2.5rem;
+  }
+
+  [data-scope="skeleton"][data-part="image"] {
+    block-size: 6rem;
+    inline-size: 6rem;
+  }
+
+  [data-scope="skeleton"][data-part="node"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 6rem;
+    inline-size: 6rem;
+    color: var(--ck-fg-muted);
+  }
+
+  /* `block` fills the inline axis, which is what a placeholder standing in for a
+     full-width control needs. */
+  [data-scope="skeleton"][data-block] {
+    display: block;
+    inline-size: 100%;
+  }
+
+  /* The shimmer. A single gradient panned across a 200%-wide background, so it
+     costs one animated property and no layout. */
+  [data-scope="skeleton"][data-active] [data-part="title"],
+  [data-scope="skeleton"][data-active] [data-part="row"],
+  [data-scope="skeleton"][data-part="avatar"][data-active],
+  [data-scope="skeleton"][data-part="button"][data-active],
+  [data-scope="skeleton"][data-part="input"][data-active],
+  [data-scope="skeleton"][data-part="image"][data-active],
+  [data-scope="skeleton"][data-part="node"][data-active] {
+    background-image: linear-gradient(
+      90deg,
+      transparent 25%,
+      var(--ck-skeleton-sheen, var(--ck-border-hover)) 37%,
+      transparent 63%
+    );
+    background-size: 200% 100%;
+    animation: ck-skeleton-shimmer 1.4s ease infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope="skeleton"] [data-part="title"],
+    [data-scope="skeleton"] [data-part="row"],
+    [data-scope="skeleton"][data-part="avatar"],
+    [data-scope="skeleton"][data-part="button"],
+    [data-scope="skeleton"][data-part="input"],
+    [data-scope="skeleton"][data-part="image"],
+    [data-scope="skeleton"][data-part="node"] {
+      /* `!important`, because the rule being cancelled is one attribute more
+         specific — it carries `[data-active]` and this one cannot, or it would
+         only ever cancel the shimmer on blocks that were not shimmering. */
+      animation: none !important;
+    }
+  }
+
+  /* ------------------------------------------------------------------ Empty */
+  [data-scope="empty"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ck-space-sm);
+    padding-block: var(--ck-space-lg);
+    text-align: center;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="empty"] [data-part="image"] {
+    display: block;
+    block-size: 4rem;
+  }
+  [data-scope="empty"] [data-part="illustration"] {
+    display: block;
+    block-size: 100%;
+    inline-size: auto;
+  }
+  [data-scope="empty"] [data-part="description"] {
+    font-size: 0.875rem;
+  }
+  [data-scope="empty"] [data-part="footer"] {
+    margin-block-start: var(--ck-space-sm);
+  }
+
+  /* ----------------------------------------------------------------- Result */
+  [data-scope="result"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ck-space-sm);
+    padding-block: var(--ck-space-lg);
+    text-align: center;
+  }
+  [data-scope="result"] [data-part="icon"] {
+    display: flex;
+    color: var(--ck-fg-muted);
+  }
+  /* Three attributes, so this outweighs icon.css's own two-attribute
+     `[data-scope="icon"][data-size="md"]`. Result's icon is larger than the
+     Icon scale goes, so it is sized here rather than by picking a `size`. */
+  [data-scope="result"] [data-part="icon"] [data-scope="icon"] {
+    width: 3rem;
+    height: 3rem;
+  }
+  [data-scope="result"][data-status="success"] [data-part="icon"] {
+    color: var(--ck-success-solid);
+  }
+  [data-scope="result"][data-status="error"] [data-part="icon"],
+  [data-scope="result"][data-status="500"] [data-part="icon"] {
+    color: var(--ck-danger-solid);
+  }
+  [data-scope="result"][data-status="warning"] [data-part="icon"],
+  [data-scope="result"][data-status="403"] [data-part="icon"] {
+    color: var(--ck-warning-solid);
+  }
+  [data-scope="result"][data-status="info"] [data-part="icon"] {
+    color: var(--ck-info-solid);
+  }
+  [data-scope="result"] [data-part="title"] {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ck-fg);
+  }
+  [data-scope="result"] [data-part="subtitle"] {
+    font-size: 0.875rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="result"] [data-part="content"] {
+    inline-size: 100%;
+    margin-block-start: var(--ck-space-md);
+  }
+  [data-scope="result"] [data-part="extra"] {
+    display: flex;
+    gap: var(--ck-space-sm);
+    margin-block-start: var(--ck-space-md);
+  }
+}

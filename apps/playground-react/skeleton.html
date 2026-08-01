@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — skeleton harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because the only thing worth asserting here is one the
+         unit suite cannot see: whether the shimmer actually runs, and whether
+         `prefers-reduced-motion` actually stops it. jsdom runs no animations at
+         all, so a block that never shimmered and a block correctly silenced by
+         the media query are the same measurement there. -->
+    <div id="root"></div>
+    <script type="module" src="/skeleton.tsx"></script>
+  </body>
+</html>

@@ -100,4 +100,48 @@
   [data-scope="row"][data-part="root"][data-align="baseline"] {
     align-items: baseline;
   }
+
+  /* ------------------------------------------------------------------- Flex */
+  /* Almost nothing lives here on purpose. `justify`, `align`, `flex` and a
+     non-preset `gap` accept the entire CSS value space, so there is no finite
+     set of selectors to compile them into — they are inline, and this file owns
+     only the two things that *are* enumerable. */
+  [data-scope="flex"][data-part="root"] {
+    display: flex;
+  }
+  [data-scope="flex"][data-part="root"][data-vertical] {
+    flex-direction: column;
+  }
+
+  /* ------------------------------------------------------------------ Space */
+  [data-scope="space"][data-part="root"] {
+    /* inline-flex, so a Space sits in a sentence the way its children would.
+       Its own children are wrapped in `item` parts rather than being spaced
+       directly: `gap` alone cannot put a split *between* them. */
+    display: inline-flex;
+    column-gap: var(--ck-space-x, var(--ck-space-sm));
+    row-gap: var(--ck-space-y, var(--ck-space-sm));
+  }
+  [data-scope="space"][data-part="root"][data-direction="vertical"] {
+    flex-direction: column;
+  }
+  [data-scope="space"][data-part="root"][data-wrap] {
+    flex-wrap: wrap;
+  }
+  [data-scope="space"][data-part="root"][data-align="start"] {
+    align-items: flex-start;
+  }
+  [data-scope="space"][data-part="root"][data-align="center"] {
+    align-items: center;
+  }
+  [data-scope="space"][data-part="root"][data-align="end"] {
+    align-items: flex-end;
+  }
+  [data-scope="space"][data-part="root"][data-align="baseline"] {
+    align-items: baseline;
+  }
+  [data-scope="space"] > [data-part="split"] {
+    display: flex;
+    align-items: center;
+  }
 }
