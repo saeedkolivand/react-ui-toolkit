@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Button, Dropdown, Popover, Tabs, Tooltip } from "@crosskit-ui/react";
+import { Button, Dropdown, Popover, Select, Tabs, Tooltip } from "@crosskit-ui/react";
 
 /**
  * The anchored overlay harness.
@@ -192,6 +192,29 @@ function Harness() {
           tabPosition="bottom"
           type="card"
           items={[{ key: "b1", label: "Bottom", children: "panel" }]}
+        />
+      </div>
+
+      {/* Near the TOP, with a tall page below it — which is what exposes the
+          jump. Placed at the bottom instead, the buggy scroll had nowhere left
+          to go and the test passed with the fix reverted.
+
+          The jump itself:
+          the highlight-into-view effect ran before `attachPosition` had made
+          the popup `fixed`, so the option was still in normal flow at the end of
+          `<body>` and `scrollIntoView` walked the whole document to it. */}
+      <div
+        style={{ position: "absolute", insetBlockStart: 200, insetInlineStart: 480, width: 442 }}
+      >
+        <Select
+          label="Country"
+          defaultValue="za"
+          options={[
+            { value: "ng", label: "Nigeria" },
+            { value: "gh", label: "Ghana" },
+            { value: "ke", label: "Kenya" },
+            { value: "za", label: "South Africa" },
+          ]}
         />
       </div>
 

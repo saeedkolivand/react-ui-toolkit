@@ -140,6 +140,12 @@ export interface Position {
    * before and would not after.
    */
   available?: { width: number; height: number };
+  /**
+   * The anchor's width, for a popup that should match it rather than its own
+   * content — a listbox belongs to its trigger and should not resize as the
+   * options change. Optional for the same reason `available` is.
+   */
+  anchorWidth?: number;
 }
 
 const isVertical = (side: Side) => side === "top" || side === "bottom";
@@ -295,6 +301,7 @@ export function computePosition(
     // Never negative: an anchor scrolled off the edge would otherwise produce a
     // `max-height` a browser rejects, silently restoring the unbounded box.
     available: { width: Math.max(0, available.width), height: Math.max(0, available.height) },
+    anchorWidth: anchor.width,
   };
 
   if (arrow) {

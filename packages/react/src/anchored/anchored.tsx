@@ -33,6 +33,17 @@ export interface AnchoredViewProps {
   /** Merged onto the content AFTER ours, so a caller can override anything. */
   contentProps?: Record<string, unknown>;
   /**
+   * What the wrapper calls itself. Defaults to `trigger`, which is right when
+   * the wrapper IS the trigger — a tooltip around arbitrary content.
+   *
+   * Select passes `control`, because its own button is the trigger part its
+   * stylesheet has always styled. Leaving both as `trigger` put the same
+   * scope and part on two nested elements, which every `[data-scope][data-part]`
+   * rule then matched twice — caught by the cross-framework contract spec, not
+   * by anything in this package.
+   */
+  triggerPart?: string;
+  /**
    * Merged onto the positioner, which is the only element that is an ancestor
    * of BOTH the content and the arrow.
    *
@@ -73,6 +84,7 @@ export function AnchoredView({
   overlayClassName,
   contentProps,
   positionerProps: extraPositionerProps,
+  triggerPart = "trigger",
 }: AnchoredViewProps) {
   const { present, triggerProps, triggerAria, positionerProps, arrowProps } = anchored;
 
@@ -82,7 +94,7 @@ export function AnchoredView({
           measures, and `contents` generates none — `getBoundingClientRect` on it
           returns zeros, so the popup would anchor to the top-left corner of the
           page. It is also what receives the pointer and focus listeners. */}
-      <span {...triggerProps} className={className}>
+      <span {...triggerProps} data-part={triggerPart} className={className}>
         {withAria(children, triggerAria)}
       </span>
       {/* Gate on presence, NEVER on `open`, or [data-state="closed"] never gets

@@ -10,6 +10,11 @@ const SECTIONS = [
   "alert",
   "card",
   "field",
+  // Splitting Select out of `field` is only half the fix — this list is the one
+  // the comparison loop iterates, so a section missing from it is never
+  // captured, its MIGRATING entries cost nothing, and the rot-guard that should
+  // fail when the other three catch up can never fire.
+  "select",
   "toggle",
   "display",
   "layout",
@@ -62,6 +67,17 @@ const MIGRATING = new Set<string>([
   "vue/accordion",
   "svelte/accordion",
   "angular/accordion",
+  // React's Select is a button plus a portalled listbox, with `data-size` in a
+  // different vocabulary from the v1 `sm`/`md`/`lg` the others still render.
+  //
+  // `select`, not `field`. An entry here excuses a whole SECTION, and `field`
+  // holds two Inputs and a Textarea beside the Select — excusing it stopped
+  // checking those three in three frameworks, for a change that never touched
+  // them. The fixture gives Select its own section in all four playgrounds so
+  // this entry costs exactly what it should.
+  "vue/select",
+  "svelte/select",
+  "angular/select",
 ]);
 
 /**
@@ -81,6 +97,18 @@ const RESOLVED: Record<string, { part: string; expect: Record<string, string | R
       // with no gap, so either wrong value means the rule never applied.
       display: "flex",
       gap: /^(4px|0\.25rem)$/,
+    },
+  },
+  // A base rule again, for the reason the button entry gives: the question is
+  // whether the stylesheet reached the control at all, not whether two
+  // contracts agree about its size vocabulary.
+  select: {
+    part: '[data-scope="select"][data-part="trigger"]',
+    expect: {
+      // A button's UA default is `inline-block` with a real border; both being
+      // replaced is the rule having applied.
+      display: "flex",
+      cursor: "pointer",
     },
   },
   accordion: {

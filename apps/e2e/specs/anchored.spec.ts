@@ -460,6 +460,43 @@ test("mirrors a card tab's open edge when its list moves below", async ({ page }
   expect(bottom.startRadius).toBe(top.endRadius);
 });
 
+test("opens a select without scrolling the page to find it", async ({ page }) => {
+  const trigger = page.getByRole("combobox", { name: "Country" });
+  // At the top of a tall page, so a stray `scrollIntoView` on a popup that is
+  // still in normal flow at the end of `<body>` has somewhere to go.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(trigger).toBeInViewport();
+  const before = await page.evaluate(() => window.scrollY);
+
+  await trigger.click();
+  await expect(page.getByRole("listbox")).toBeVisible();
+
+  // The highlight-into-view effect ran before `attachPosition` had made the
+  // popup `fixed`, so the option was a block in normal flow at the end of
+  // `<body>` and this scrolled the document to it — measured `scrollY` going
+  // from 663 to the page maximum, leaving the trigger 385px above the viewport.
+  expect(await page.evaluate(() => window.scrollY)).toBe(before);
+
+  // Against the trigger rather than off-screen, on whichever side it landed —
+  // asserting one would be asserting the absence of flip. Measured
+  // `bottom-start` here, since the fixture is near the TOP of a tall page.
+  //
+  // Off the POSITIONER, not the listbox — the same trap the note at the top of
+  // this file describes, and one I walked into again here: the content runs
+  // `ck-select-in`, a `transform: scale(.97)`, so its box reads 428.7 against a
+  // 442px control for the length of the animation.
+  const [t, l] = [(await trigger.boundingBox())!, await box(await positioned(page, "select"))];
+  const gap = Math.min(Math.abs(l.y - (t.y + t.height)), Math.abs(t.y - (l.y + l.height)));
+  expect(gap).toBeLessThan(24);
+  // Sized to the trigger rather than to its own content: `--ck-anchor-width`
+  // unset gave a 101px list against a 442px control.
+  expect(Math.abs(l.width - t.width)).toBeLessThan(2);
+  // And actually over it. Equal widths passed while the fixture hung 222px off
+  // the right edge and `shift` had moved the list 222px left of its trigger —
+  // two boxes the same size that never overlapped.
+  expect(Math.abs(l.x - t.x)).toBeLessThan(2);
+});
+
 /**
  * The arrow, in both directions.
  *

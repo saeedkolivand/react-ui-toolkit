@@ -1,15 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Checkbox,
-  Input,
-  Option,
-  Radio,
-  RadioGroup,
-  Select,
-  Switch,
-  Textarea,
-} from "@crosskit-ui/react";
+import { Checkbox, Input, Radio, RadioGroup, Select, Switch, Textarea } from "@crosskit-ui/react";
 
 const meta = {
   title: "Components/Forms",
@@ -107,20 +98,17 @@ export const Selects: Story = {
     return (
       <div style={grid}>
         <Select
-          label="Country (data)"
-          items={COUNTRIES}
+          label="Country"
+          options={COUNTRIES}
           value={value}
-          onValueChange={details => setValue(details.value)}
+          onChange={next => setValue(next)}
           helperText={`Selected: ${value || "nothing"}`}
         />
-        {/* The same component also accepts <Option> children. */}
-        <Select label="Country (children)" defaultValue="gh">
-          <Option value="ng">Nigeria</Option>
-          <Option value="gh">Ghana</Option>
-          <Option value="ke">Kenya</Option>
-        </Select>
-        <Select label="Invalid" items={COUNTRIES} invalid errorMessage="Pick one" />
-        <Select label="Disabled" items={COUNTRIES} disabled />
+        {(["small", "middle", "large"] as const).map(size => (
+          <Select key={size} label={size} size={size} options={COUNTRIES} defaultValue="gh" />
+        ))}
+        <Select label="Invalid" options={COUNTRIES} status="error" errorMessage="Pick one" />
+        <Select label="Disabled" options={COUNTRIES} disabled />
       </div>
     );
   },

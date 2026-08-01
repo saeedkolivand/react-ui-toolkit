@@ -241,7 +241,29 @@ export function Dropdown({
    */
   useEffect(() => {
     if (!open || !active || !contentNode) return;
-    contentNode.querySelector(`[id="${itemId(active)}"]`)?.scrollIntoView({ block: "nearest" });
+    // Not until the popup is actually positioned. `attachPosition` writes
+    // `position: fixed` and the coordinates from `autoUpdate`'s first
+    // ResizeObserver callback, which is a frame after this effect can first
+    // run — and until then the popup is a portalled block in normal flow at
+    // the END of `<body>`, so `scrollIntoView` scrolls the whole document down
+    // to it. Measured on Select: a click took `scrollY` from 663 to the
+    // document maximum and left the trigger 385px above the viewport.
+    //
+    // `data-placement` is written in the same call as `left` and `top`, so its
+    // presence is the signal that all of them are there — the same barrier the
+    // browser specs use before measuring geometry.
+    let frame = 0;
+    const scrollWhenPlaced = () => {
+      // Waits rather than skips: the attribute is not a dependency, so an early
+      // return here would never run again once positioning landed.
+      if (!contentNode.parentElement?.dataset.placement) {
+        frame = requestAnimationFrame(scrollWhenPlaced);
+        return;
+      }
+      contentNode.querySelector(`[id="${itemId(active)}"]`)?.scrollIntoView({ block: "nearest" });
+    };
+    scrollWhenPlaced();
+    return () => cancelAnimationFrame(frame);
   }, [open, active, contentNode, itemId]);
 
   return (

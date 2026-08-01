@@ -107,6 +107,18 @@ export function applyPosition(floating: HTMLElement, position: PositionResult): 
   floating.style.left = `${position.x}px`;
   floating.style.top = `${position.y}px`;
   floating.dataset.placement = position.placement;
+  // The anchor's own width, for popups that match it. A listbox is the case:
+  // it is the trigger's dropdown, not an independent box, and sizing it to its
+  // content makes a select jump about as the options change.
+  //
+  // Guarded like `available` below, and for a sharper reason than symmetry. The
+  // field is optional, and `?? 0` wrote `0px` for a hand-built position —
+  // which is WORSE than absent, because `select.css` reads it through a
+  // `var()` fallback: unset gives a shrink-to-fit list, `0px` gives a 10px one.
+  if (position.anchorWidth !== undefined) {
+    floating.style.setProperty("--ck-anchor-width", `${position.anchorWidth}px`);
+  }
+
   // For the popups that scroll. Written always rather than on request, because
   // it costs two custom properties and the alternative is every caller having
   // to know whether its own content might overflow.
