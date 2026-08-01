@@ -189,6 +189,35 @@ describe("createToastQueue", () => {
     expect(ids(q)).toEqual([]);
   });
 
+  it("does not start a countdown when an update lands while paused", () => {
+    const q = createToastQueue();
+    const id = q.loading({ title: "Uploading" });
+    q.pause();
+    // The promise-toast path: held open under the pointer, the promise
+    // resolves, and the update must not expire it under the hand reaching for
+    // its action.
+    q.update(id, { title: "Uploaded", type: "success", duration: 1000 });
+    vi.advanceTimersByTime(10_000);
+    expect(states(q)).toEqual(["open"]);
+    q.resume();
+    vi.advanceTimersByTime(1000);
+    expect(states(q)).toEqual(["closed"]);
+  });
+
+  it("re-creates an id that is still inside its exit window", () => {
+    const q = createToastQueue();
+    q.create({ id: "save", title: "Saving", removeDelay: 200 });
+    q.dismiss("save");
+    q.create({ id: "save", title: "Saved" });
+    // Open, not a patched corpse — and the earlier toast's pending removal must
+    // not delete the replacement when it fires.
+    expect(states(q)).toEqual(["open"]);
+    expect(q.getToasts()[0]!.title).toBe("Saved");
+    vi.advanceTimersByTime(400);
+    expect(q.getToasts()).toHaveLength(1);
+    expect(states(q)).toEqual(["open"]);
+  });
+
   it("removes immediately when asked, skipping the exit window", () => {
     const q = createToastQueue();
     const id = q.create({ title: "a" });

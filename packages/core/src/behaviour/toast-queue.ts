@@ -114,6 +114,10 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
   // should still show the sixth, not swallow it.
   const waiting: ToastItem[] = [];
   const countdowns = new Map<string, Countdown>();
+  // The `removeDelay` timers, kept so they can be cancelled. Without this an
+  // id re-created during its own exit window is deleted moments later by the
+  // previous toast's pending removal.
+  const removals = new Map<string, ReturnType<typeof setTimeout>>();
   const listeners = new Set<() => void>();
   let snapshot: readonly ToastItem[] = live;
 
@@ -151,6 +155,13 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     }
   };
 
+  const cancelRemoval = (id: string) => {
+    const handle = removals.get(id);
+    if (handle === undefined) return;
+    clearTimeout(handle);
+    removals.delete(id);
+  };
+
   const patch = (id: string, changes: Partial<ToastItem>) => {
     const index = live.findIndex(item => item.id === id);
     if (index < 0) return undefined;
@@ -162,10 +173,19 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
   const create = (o: ToastOptions = {}): string => {
     const id = o.id ?? `ck-toast-${++seq}`;
     // A repeated id updates rather than stacking a duplicate — which is what
-    // makes `create({ id: "save" })` usable as an upsert.
-    if (live.some(item => item.id === id) || waiting.some(item => item.id === id)) {
+    // makes `create({ id: "save" })` usable as an upsert. Only while the toast
+    // is still open, though: patching one inside its exit window leaves it
+    // `closed`, and the pending removal then deletes what the caller just
+    // created. `dismiss("save")` followed straight away by `create({ id:
+    // "save" })` has to produce a visible toast.
+    const existing = live.find(item => item.id === id);
+    if (existing?.state === "open" || waiting.some(item => item.id === id)) {
       update(id, o);
       return id;
+    }
+    if (existing) {
+      cancelRemoval(id);
+      live = live.filter(item => item.id !== id);
     }
     const type = o.type ?? "info";
     const item: ToastItem = {
@@ -196,11 +216,14 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     if (!before) return;
     const updated = patch(id, { ...o, id, type: o.type ?? before.type });
     // A new duration restarts the countdown; without this, `update` could only
-    // ever shorten a toast's life by accident.
+    // ever shorten a toast's life by accident. Not while paused, though — that
+    // is the promise-toast path: a `loading` toast held open under the pointer
+    // resolves, and starting a countdown here expires it under the hand
+    // reaching for its action.
     if (updated && o.duration !== undefined && updated.state === "open") {
       hold(id);
       countdowns.delete(id);
-      start(updated);
+      if (!paused) start(updated);
     }
     publish();
   };
@@ -222,7 +245,10 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     hold(id);
     countdowns.delete(id);
     const closed = patch(id, { state: "closed" });
-    setTimeout(() => remove(id), current.removeDelay);
+    removals.set(
+      id,
+      setTimeout(() => remove(id), current.removeDelay)
+    );
     publish();
     closed?.onStatusChange?.("closed");
   };
@@ -232,6 +258,7 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     if (index < 0) return;
     hold(id);
     countdowns.delete(id);
+    cancelRemoval(id);
     live = [...live.slice(0, index), ...live.slice(index + 1)];
     promote();
     publish();

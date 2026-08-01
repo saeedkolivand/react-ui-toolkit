@@ -79,6 +79,12 @@ function Harness() {
         <Button id="add-top-start" onClick={() => queues["top-start"].info({ title: "Top start" })}>
           add-top-start
         </Button>{" "}
+        <Button
+          id="add-top-start-2"
+          onClick={() => queues["top-start"].info({ title: "Top start two" })}
+        >
+          add-top-start-2
+        </Button>{" "}
         <Button id="add-top-end" onClick={() => queues["top-end"].info({ title: "Top end" })}>
           add-top-end
         </Button>{" "}

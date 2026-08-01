@@ -21,6 +21,19 @@ const groupFor = (page: Page, placement: string) =>
 const rootsIn = (page: Page, placement: string) =>
   page.locator(`[data-fixture="${placement}"] [data-scope="toast"][data-part="root"]`);
 
+/**
+ * Waits out whatever is currently animating on a node.
+ *
+ * The enter is a keyframe animation, so the first computed read after a toast
+ * appears describes a frame of that animation rather than the resting style —
+ * the same trap `anchored.spec.ts` documents for enter transitions, and it bit
+ * again here the moment the enter existed.
+ */
+const settled = (locator: ReturnType<Page["locator"]>) =>
+  locator.evaluate(async node => {
+    await Promise.all(node.getAnimations().map(animation => animation.finished));
+  });
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/toast.html");
   await expect(page.locator("#underneath")).toBeVisible();
@@ -99,6 +112,7 @@ test("animates the exit rather than vanishing", async ({ page }) => {
   const root = rootsIn(page, "bottom-end").first();
   await expect(root).toHaveCount(1);
   await expect(root).toHaveAttribute("data-state", "open");
+  await settled(root);
   const opaque = await root.evaluate(n => getComputedStyle(n).opacity);
 
   await page.click("#dismiss-sticky");
@@ -136,16 +150,51 @@ test("shows a held-back toast once a slot frees", async ({ page }) => {
   await expect(roots.filter({ hasText: "three" })).toHaveCount(1, { timeout: 10_000 });
 });
 
-test("stacks the newest nearest the edge it enters from", async ({ page }) => {
+test("stacks the newest nearest the bottom edge it enters from", async ({ page }) => {
   await page.click("#add-bottom-end");
   await page.click("#add-closable");
   const roots = rootsIn(page, "bottom-end");
   await expect(roots).toHaveCount(2);
 
-  const first = (await roots.first().boundingBox())!;
-  const second = (await roots.nth(1).boundingBox())!;
-  // DOM order is creation order; `column-reverse` puts the newest lowest in a
-  // bottom-anchored group. Without it the stack grows the wrong way and the
-  // newest toast is the one furthest from the corner.
-  expect(second.y).toBeLessThan(first.y);
+  const oldest = (await roots.first().boundingBox())!;
+  const newest = (await roots.nth(1).boundingBox())!;
+  // DOM order is creation order, so the newest is the last child. In a
+  // bottom-pinned group it belongs nearest the bottom — lower on the page, not
+  // higher. `column-reverse` here would pin the OLDEST to the edge and push
+  // each new one away from it.
+  expect(newest.y).toBeGreaterThan(oldest.y);
+});
+
+test("stacks the newest nearest the top edge it enters from", async ({ page }) => {
+  await page.click("#add-top-start");
+  await page.click("#add-top-start-2");
+  const roots = rootsIn(page, "top-start");
+  await expect(roots).toHaveCount(2);
+
+  const oldest = (await roots.first().boundingBox())!;
+  const newest = (await roots.nth(1).boundingBox())!;
+  // The mirror, and the side that had no coverage at all: pinned to the top,
+  // the newest belongs higher, which takes `column-reverse` rather than the
+  // default order.
+  expect(newest.y).toBeLessThan(oldest.y);
+});
+
+test("animates the enter, not only the exit", async ({ page }) => {
+  const started = page.evaluate(
+    () =>
+      new Promise<string[]>(resolve => {
+        const seen: string[] = [];
+        document.addEventListener("animationstart", event => {
+          seen.push((event.target as HTMLElement).dataset.part ?? "?");
+          resolve(seen);
+        });
+        setTimeout(() => resolve(seen), 2000);
+      })
+  );
+  await page.click("#add-bottom-end");
+  await expect(rootsIn(page, "bottom-end")).toHaveCount(1);
+  // A node inserted straight at its resting style has nothing to transition
+  // from, so the enter is a keyframe animation. Nothing firing here means the
+  // toast appears instantly however the CSS reads.
+  expect(await started).toContain("root");
 });

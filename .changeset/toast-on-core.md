@@ -34,3 +34,7 @@ layout does not have. Placement, `max` and `duration` are the same.
 Also fixed: the exit transition ran for 300ms while a dismissed toast was
 removed after 200ms, so the last third of every exit was cut off mid-flight.
 The two are now a documented pair, in both files.
+
+Toasts enter with an animation again. A node inserted straight at its resting
+style has nothing to transition from, so this is keyframes rather than a
+transition on `data-state` — which only ever drove the exit.
