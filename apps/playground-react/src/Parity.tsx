@@ -117,6 +117,16 @@ export function Parity() {
           <Input label="Email" placeholder={FIXTURE.email} helperText="Never shared." />
           <Input label="Broken" placeholder={FIXTURE.email} invalid errorMessage="Required" />
           <Textarea label="Notes" placeholder={FIXTURE.text} />
+        </div>
+      </section>
+
+      {/* Its own section, not part of `field`. React's Select diverges from the
+          other three while they catch up, and a MIGRATING entry excuses a whole
+          SECTION — leaving it beside Input and Textarea stopped checking those
+          two in three frameworks, for a change that never touched them. */}
+      <section className="parity-section" data-fixture="select">
+        <h2>Select</h2>
+        <div className="parity-grid">
           <Select label="Country" options={FIXTURE.countries} defaultValue="ng" />
         </div>
       </section>

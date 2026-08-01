@@ -123,6 +123,15 @@ import { FIXTURE } from "./fixture";
         <ck-input label="Email" [placeholder]="fixture.email" helperText="Never shared." />
         <ck-input label="Broken" [placeholder]="fixture.email" invalid errorMessage="Required" />
         <ck-textarea label="Notes" [placeholder]="fixture.text" />
+      </div>
+    </section>
+
+    <!-- Its own section, not part of \`field\` — a MIGRATING entry excuses a
+         whole section, and leaving Select beside Input and Textarea stopped
+         checking those two while React's Select diverges. -->
+    <section class="parity-section" data-fixture="select">
+      <h2>Select</h2>
+      <div class="parity-grid">
         <ck-select label="Country" [items]="fixture.countries" defaultValue="ng" />
       </div>
     </section>

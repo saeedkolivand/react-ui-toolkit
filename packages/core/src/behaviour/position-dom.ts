@@ -118,7 +118,14 @@ export function applyPosition(floating: HTMLElement, position: PositionResult): 
   // The anchor's own width, for popups that match it. A listbox is the case:
   // it is the trigger's dropdown, not an independent box, and sizing it to its
   // content makes a select jump about as the options change.
-  floating.style.setProperty("--ck-anchor-width", `${position.anchorWidth ?? 0}px`);
+  //
+  // Guarded like `available` below, and for a sharper reason than symmetry. The
+  // field is optional, and `?? 0` wrote `0px` for a hand-built position —
+  // which is WORSE than absent, because `select.css` reads it through a
+  // `var()` fallback: unset gives a shrink-to-fit list, `0px` gives a 10px one.
+  if (position.anchorWidth !== undefined) {
+    floating.style.setProperty("--ck-anchor-width", `${position.anchorWidth}px`);
+  }
 
   if (position.available) {
     floating.style.setProperty("--ck-available-width", `${position.available.width}px`);

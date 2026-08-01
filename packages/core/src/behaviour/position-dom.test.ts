@@ -9,6 +9,7 @@ const result = (overrides: Partial<PositionResult> = {}): PositionResult => ({
   placement: "bottom-start",
   rtl: false,
   available: { width: 800, height: 300 },
+  anchorWidth: 442,
   ...overrides,
 });
 
@@ -21,6 +22,15 @@ afterEach(() => {
 });
 
 describe("applyPosition available space", () => {
+  it("writes no anchor width when the result carries none", () => {
+    const { anchorWidth: _omitted, ...withoutWidth } = result();
+    applyPosition(el(), withoutWidth);
+    // Absent, not `0px`. A stylesheet reads this through a `var()` fallback, so
+    // a zero is worse than nothing: it collapses the popup instead of letting
+    // the fallback size it.
+    expect(el().style.getPropertyValue("--ck-anchor-width")).toBe("");
+  });
+
   it("still positions a result that carries no available space", () => {
     // The docblock invites a caller to apply a position it computed elsewhere,
     // and `available` arrived after that promise did. Required, it threw here —
