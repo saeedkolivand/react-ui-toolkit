@@ -229,7 +229,6 @@ export function FormItem({
     return form.register(path, configRef.current);
   }, [form, path]);
 
-  const showError = help === undefined ? error : undefined;
   const message = help === undefined ? error : help;
   const invalid = error !== undefined;
   const marked = required ?? rules?.some(rule => rule.required) ?? false;
@@ -238,6 +237,29 @@ export function FormItem({
     ? (children as ReactElement<Record<string, unknown>>)
     : null;
   const childProps = (child?.props ?? {}) as Record<string, unknown>;
+
+  /**
+   * Everything describing this field, ours and the child's.
+   *
+   * Keyed on whether a MESSAGE is rendered rather than on whether there is an
+   * error: a `help` string replaces the error text and renders in the same box
+   * under the same id, so pointing at the id only when an error exists left the
+   * box on screen with nothing referring to it — visible to a sighted reader
+   * and silent to everyone else.
+   *
+   * The child's own value is kept rather than overwritten. `cloneElement`
+   * writes an explicit `undefined` over an existing prop, so replacing this
+   * would ERASE a child's `aria-describedby="hint"` on any field with no error
+   * — the same swallow the trigger composition above exists to avoid.
+   */
+  const describedBy =
+    [
+      hasContent(message) ? errorId : undefined,
+      hasContent(extra) ? extraId : undefined,
+      childProps["aria-describedby"] as string | undefined,
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
   /**
    * The trigger's arguments, as a value.
@@ -277,14 +299,15 @@ export function FormItem({
           },
           id: (childProps.id as string | undefined) ?? controlId,
           disabled: (childProps.disabled as boolean | undefined) ?? context.disabled,
-          // The one place `="false"` would be wrong AND absent would be wrong:
+          // The asterisk beside the label is decoration — a screen reader that
+          // reads "asterisk Email" has told nobody the field is required. This
+          // is what actually carries it.
+          "aria-required": marked ? true : (childProps["aria-required"] as boolean | undefined),
           // `aria-invalid` is only meaningful when it is true, so it is omitted
-          // otherwise rather than stated as false.
-          "aria-invalid": invalid ? true : undefined,
-          "aria-describedby":
-            [showError ? errorId : undefined, hasContent(extra) ? extraId : undefined]
-              .filter(Boolean)
-              .join(" ") || undefined,
+          // rather than stated as false — and the child's own answer stands
+          // when this form has no error of its own to report.
+          "aria-invalid": invalid ? true : (childProps["aria-invalid"] as boolean | undefined),
+          "aria-describedby": describedBy,
         })
       : children;
 

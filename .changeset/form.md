@@ -50,8 +50,11 @@ column. `vertical` is the default and `inline` wraps.
 
 New in `@crosskit-ui/styles`: `form.css`, keyed on `data-scope="form"`. The
 required marker is generated content on `[data-required]`, so it cannot be
-mistaken for text by a screen reader — it is decoration, and `aria-invalid` plus
-the error's `aria-describedby` are what actually carry the state.
+mistaken for text by a screen reader — it is decoration. `aria-required`,
+`aria-invalid` and the message's `aria-describedby` are what carry the state,
+and all three keep whatever the child already declared rather than writing over
+it: `cloneElement` sets an explicit `undefined`, so replacing them would erase a
+consumer's own `aria-describedby` on every field with no error.
 
 Known gap, unchanged by this: `Select` feeds its `...rest` to the anchoring hook
 rather than to the DOM, so the `id` and `aria-*` a `Form.Item` injects do not

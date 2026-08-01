@@ -94,6 +94,61 @@ describe("Form", () => {
     expect(field("Email")).toHaveAttribute("aria-describedby", errorOf()!.id);
   });
 
+  it("carries the required state to assistive tech, not only to the eye", () => {
+    render(
+      <Form>
+        <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="note" label="Note">
+          <Input />
+        </Form.Item>
+      </Form>
+    );
+    // The asterisk is generated content, so a screen reader either ignores it or
+    // reads "asterisk Email" — neither of which says the field is required.
+    expect(field("Email")).toHaveAttribute("aria-required", "true");
+    expect(field("Note")).not.toHaveAttribute("aria-required");
+  });
+
+  it("keeps the child's own aria rather than writing over it", async () => {
+    const user = userEvent.setup();
+    render(
+      <Form>
+        <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+          <Input aria-describedby="external-hint" aria-invalid />
+        </Form.Item>
+      </Form>
+    );
+    // `cloneElement` writes an explicit `undefined` over an existing prop, so
+    // "no error yet" would otherwise ERASE both of these — the same swallow the
+    // composed onChange exists to prevent, one line further down.
+    expect(field("Email")).toHaveAttribute("aria-describedby", "external-hint");
+    expect(field("Email")).toHaveAttribute("aria-invalid", "true");
+
+    await user.click(field("Email"));
+    await user.tab();
+    await waitFor(() => expect(errorOf()).toBeInTheDocument());
+    // And ours is added alongside, not instead of.
+    const describedBy = field("Email").getAttribute("aria-describedby")!;
+    expect(describedBy.split(" ")).toContain(errorOf()!.id);
+    expect(describedBy.split(" ")).toContain("external-hint");
+  });
+
+  it("points the control at a help message too, not only at an error", () => {
+    render(
+      <Form>
+        <Form.Item name="email" label="Email" help="Use your work address">
+          <Input />
+        </Form.Item>
+      </Form>
+    );
+    // `help` renders in the same box under the same id as an error. Referencing
+    // it only when there IS an error leaves the box on screen with nothing
+    // pointing at it: visible to a sighted reader, silent to everyone else.
+    expect(field("Email")).toHaveAttribute("aria-describedby", errorOf()!.id);
+  });
+
   it("reports every failure at once rather than one per attempt", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
