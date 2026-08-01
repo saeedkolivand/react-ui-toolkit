@@ -277,10 +277,35 @@
     }
   }
 
+  /* `!important`, and reaching every part rather than naming one.
+     
+     The previous form selected `[data-scope][data-part="content"]` and lost to
+     the `[data-state]` animation rules above it — one attribute more specific,
+     same layer — so it did nothing at all and every anchored overlay animated
+     at full duration for a user who asked it not to. Measured 120ms where 1ms
+     was intended. Popover was not listed either, being newer than the rule.
+     
+     Specificity-matching would fix today's rules and break again the moment
+     anything more specific appears, silently, in the same way. A preference is
+     not a style to be out-ranked, so it is `!important` — which is what
+     `dialog.css` already does, and why that one was never broken.
+     
+     Two consequences of `!important` inside a layer, both deliberate and
+     neither obvious. Important declarations reverse layer order, so this beats
+     a consumer's `!important` in `ck.overrides` and their unlayered
+     `!important` as well — measured at 0.001s against both. That is the point:
+     a stated accessibility preference should not be losing an argument with a
+     stylesheet. And `animation-iteration-count: 1` would freeze a part that
+     legitimately loops, so a future spinner inside one of these scopes needs
+     its own carve-out, the way `button.css` keeps its own by living outside
+     them. */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="tooltip"][data-part="content"],
-    [data-scope="menu"][data-part="content"] {
-      animation-duration: 1ms;
+    [data-scope="tooltip"][data-part],
+    [data-scope="popover"][data-part],
+    [data-scope="menu"][data-part] {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
     }
   }
 }

@@ -117,7 +117,7 @@ of them, remove the workaround:
 | `overlayClassName` | `contentClassName` |  |
 | `contentClassName` | `overlayClassName` | React only, and back to the name v0 had: the prop names the popup, and `content` is what goes in it. |
 | `content` | `title` | React only. Frees `content` for Popover, where a title and a body are different things. |
-| `cloneElement onto your trigger` | `a wrapper element with display: inline-flex` | Zag's trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else. |
+| `cloneElement onto your trigger` | `a wrapper element with display: inline-flex` | The trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else. |
 
 #### Menu / Dropdown
 

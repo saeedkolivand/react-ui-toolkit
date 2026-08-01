@@ -180,7 +180,7 @@ export const overlays: ComponentDoc[] = [
     group: "Overlays",
     scope: "tooltip",
     gains: [
-      "Floating UI positioning with collision handling",
+      "Anchor positioning with collision handling",
       "Open/close delays with a shared group timer",
       "Correct aria-describedby wiring",
     ],
@@ -279,7 +279,7 @@ export const overlays: ComponentDoc[] = [
       {
         from: "cloneElement onto your trigger",
         to: "a wrapper element with display: inline-flex",
-        note: "Zag's trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else.",
+        note: "The trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else.",
       },
     ],
     samples: {
@@ -410,7 +410,6 @@ export const overlays: ComponentDoc[] = [
     scope: "menu",
     gains: [
       "Arrow-key navigation and typeahead",
-      "Roving tabindex",
       "aria-haspopup / aria-expanded / aria-activedescendant",
     ],
     summary:

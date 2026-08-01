@@ -7,7 +7,7 @@ describe("resolvePlacement", () => {
     expect(resolvePlacement(undefined, "bottom")).toBe("bottom");
   });
 
-  it("passes Floating UI names through untouched", () => {
+  it("passes canonical names through untouched", () => {
     expect(resolvePlacement("bottom-end")).toBe("bottom-end");
     expect(resolvePlacement("left")).toBe("left");
   });
