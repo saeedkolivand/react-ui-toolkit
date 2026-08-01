@@ -1,4 +1,5 @@
 ---
+"@crosskit-ui/core": major
 "@crosskit-ui/react": major
 "@crosskit-ui/styles": major
 ---
@@ -34,6 +35,10 @@ placement, dismissal, focus moving in on open and back on close, and a highlight
 scrolled into view. Keyboard comes from `navigation.ts`, `collection.ts` and
 `createTypeahead` — arrows, Home/End, typeahead, and stepping over disabled
 options.
+
+`applyPosition` also publishes `--ck-anchor-width`, so a popup that belongs to
+its trigger can match it rather than sizing to its own content — a listbox
+sized to its content jumps about as the options change.
 
 Opening lands on the current selection rather than the top of the list, on every
 route in rather than only the keyboard one.

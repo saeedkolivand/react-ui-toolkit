@@ -115,6 +115,11 @@ export function applyPosition(floating: HTMLElement, position: PositionResult): 
   // computed elsewhere, as the note above says, and a hand-built one threw here
   // — after `left`, `top` and `data-placement` had already been written, so the
   // element was left half-positioned.
+  // The anchor's own width, for popups that match it. A listbox is the case:
+  // it is the trigger's dropdown, not an independent box, and sizing it to its
+  // content makes a select jump about as the options change.
+  floating.style.setProperty("--ck-anchor-width", `${position.anchorWidth ?? 0}px`);
+
   if (position.available) {
     floating.style.setProperty("--ck-available-width", `${position.available.width}px`);
     floating.style.setProperty("--ck-available-height", `${position.available.height}px`);

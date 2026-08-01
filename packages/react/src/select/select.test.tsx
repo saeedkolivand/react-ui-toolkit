@@ -29,13 +29,13 @@ describe("Select", () => {
   it("shows the placeholder until something is chosen", () => {
     setup({ placeholder: "Pick one" });
     expect(trigger()).toHaveTextContent("Pick one");
-    expect(trigger()).toHaveAttribute("data-placeholder", "");
+    expect(trigger()).toHaveAttribute("data-placeholder-shown", "");
   });
 
   it("shows the label of the current value", () => {
     setup({ defaultValue: "gh" });
     expect(trigger()).toHaveTextContent("Ghana");
-    expect(trigger()).not.toHaveAttribute("data-placeholder");
+    expect(trigger()).not.toHaveAttribute("data-placeholder-shown");
   });
 
   it("renders nothing until opened", () => {

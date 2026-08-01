@@ -125,10 +125,19 @@
   }
 
   /* -------------------------------------------------------------- dropdown */
-  /* Zag writes `z-index: var(--z-index)` inline, which beats any stylesheet
-     rule — so the token is supplied as that variable rather than as z-index. */
+  /* Two positioning mechanisms, the same arrangement `overlay.css` documents.
+     v1 positions through a machine that writes `z-index: var(--z-index)`
+     inline, which beats any stylesheet rule, so the token has to reach it as
+     that variable. v2 positions from `packages/core`, which writes coordinates
+     and nothing else, so it needs the declaration. Delete `--z-index` when the
+     last v1 adapter goes.
+
+     Without the declaration the listbox computed `z-index: auto` and any
+     ordinary `z-index: 1` painted over it — `table.css`'s sticky header is one,
+     and Table renders a Select. */
   [data-scope="select"][data-part="positioner"] {
     --z-index: var(--ck-z-popover);
+    z-index: var(--ck-z-popover);
   }
 
   [data-scope="select"][data-part="content"] {
@@ -138,13 +147,24 @@
     box-shadow: var(--ck-shadow-lg);
     padding: 0.25rem;
     overflow-y: auto;
-    /* Still v1-only, so no `--ck-available-height` twin yet: Select has not
-       moved to the core positioner. Add it in the same edit that does. */
-    max-height: var(--available-height, 16rem);
-    /* The trigger's width is published by the positioner as a custom property,
-       so the list lines up with the control without measuring anything. */
-    width: var(--reference-width);
+    /* This is that edit. v1's machine writes `--available-height` inline and
+       wins; v2's positioner writes `--ck-available-height`. Without the twin
+       the list was pinned to the 16rem fallback while the real figure was
+       1135px. */
+    max-height: var(--available-height, var(--ck-available-height, 16rem));
+    /* The trigger's width, published by whichever positioner is driving, so the
+       list lines up with the control without measuring anything. v2 publishes
+       it as `--ck-anchor-width`; unset, the list sized to its own content and
+       came out 101px against a 442px trigger. */
+    width: var(--reference-width, var(--ck-anchor-width));
   }
+  /* `status` colours the control without claiming anything to assistive tech.
+     `error` already had a rule through `data-invalid`; `warning` had none, so
+     the prop accepted a value and did nothing. */
+  [data-scope="select"][data-status="warning"] [data-part="trigger"] {
+    border-color: var(--ck-warning-solid);
+  }
+
   [data-scope="select"][data-part="content"]:focus-visible {
     outline: none;
   }

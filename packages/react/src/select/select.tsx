@@ -203,7 +203,29 @@ export function Select({
 
   useEffect(() => {
     if (!open || !active || !contentNode) return;
-    contentNode.querySelector(`[id="${optionId(active)}"]`)?.scrollIntoView({ block: "nearest" });
+    // Not until the popup is actually positioned. `attachPosition` writes
+    // `position: fixed` and the coordinates from `autoUpdate`'s first
+    // ResizeObserver callback, which is a frame after this effect can first
+    // run — and until then the popup is a portalled block in normal flow at
+    // the END of `<body>`, so `scrollIntoView` scrolls the whole document down
+    // to it. Measured on Select: a click took `scrollY` from 663 to the
+    // document maximum and left the trigger 385px above the viewport.
+    //
+    // `data-placement` is written in the same call as `left` and `top`, so its
+    // presence is the signal that all of them are there — the same barrier the
+    // browser specs use before measuring geometry.
+    let frame = 0;
+    const scrollWhenPlaced = () => {
+      // Waits rather than skips: the attribute is not a dependency, so an early
+      // return here would never run again once positioning landed.
+      if (!contentNode.parentElement?.dataset.placement) {
+        frame = requestAnimationFrame(scrollWhenPlaced);
+        return;
+      }
+      contentNode.querySelector(`[id="${optionId(active)}"]`)?.scrollIntoView({ block: "nearest" });
+    };
+    scrollWhenPlaced();
+    return () => cancelAnimationFrame(frame);
   }, [open, active, contentNode, optionId]);
 
   const describedBy = errorMessage
@@ -251,7 +273,10 @@ export function Select({
               data-scope="select"
               data-part="item"
               data-highlighted={dataAttr(active === option.value)}
-              data-selected={dataAttr(isSelected)}
+              // `data-state`, which is what the stylesheet has always keyed
+              // the checked row on. A `data-selected` of my own was a second
+              // name for the same thing, and nothing styled it.
+              data-state={isSelected ? "checked" : "unchecked"}
               data-disabled={dataAttr(option.disabled)}
               // `onPointerMove`, not enter: a keyboard press that scrolls a
               // row under a stationary cursor would otherwise strand the
@@ -279,12 +304,12 @@ export function Select({
           disabled={disabled}
           data-scope="select"
           data-part="trigger"
-          data-placeholder={dataAttr(selectedOption == null)}
+          data-placeholder-shown={dataAttr(selectedOption == null)}
         >
           <span data-scope="select" data-part="value-text">
             {selectedOption?.label ?? placeholder}
           </span>
-          <span data-scope="select" data-part="indicator">
+          <span data-scope="select" data-part="indicator" data-state={open ? "open" : "closed"}>
             <Icon name="chevronDown" size="sm" />
           </span>
         </button>
