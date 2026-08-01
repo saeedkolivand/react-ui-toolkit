@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — nesting harness</title>
+  </head>
+  <body>
+    <!-- Every pairing is rendered twice: once inside a container and once
+         loose, so each is measured against itself rather than against a
+         number. `data-part` is a shared namespace across 33 names, and a
+         container's descendant rules reach into whatever it holds. -->
+    <div id="root"></div>
+    <script type="module" src="/nesting.tsx"></script>
+  </body>
+</html>

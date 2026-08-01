@@ -21,7 +21,7 @@
     gap: var(--ck-space-md);
     inline-size: 100%;
   }
-  [data-scope="skeleton"] > [data-part="content"] {
+  [data-scope="skeleton"][data-part="root"] > [data-part="content"] {
     /* `min-inline-size: 0` because a flex item's automatic minimum size is its
        content, and a percentage-width row inside would otherwise be measured
        against a box it is itself widening. */
@@ -31,8 +31,8 @@
 
   /* Every block shares one fill so a consumer retints all of them by setting
      `--ck-skeleton-fill` once, at whatever scope they like. */
-  [data-scope="skeleton"] [data-part="title"],
-  [data-scope="skeleton"] [data-part="row"],
+  [data-scope="skeleton"][data-part="root"] > [data-part="content"] > [data-part="title"],
+  [data-scope="skeleton"][data-part="root"] [data-part="paragraph"] > [data-part="row"],
   [data-scope="skeleton"][data-part="avatar"],
   [data-scope="skeleton"][data-part="button"],
   [data-scope="skeleton"][data-part="input"],
@@ -42,13 +42,13 @@
     border-radius: var(--ck-radius-base);
   }
 
-  [data-scope="skeleton"] [data-part="title"] {
+  [data-scope="skeleton"][data-part="root"] > [data-part="content"] > [data-part="title"] {
     display: block;
     block-size: 1rem;
     inline-size: 38%;
     margin-block-end: var(--ck-space-md);
   }
-  [data-scope="skeleton"] [data-part="paragraph"] {
+  [data-scope="skeleton"][data-part="root"] > [data-part="content"] > [data-part="paragraph"] {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -56,12 +56,16 @@
     padding: 0;
     list-style: none;
   }
-  [data-scope="skeleton"] [data-part="row"] {
+  [data-scope="skeleton"][data-part="root"] [data-part="paragraph"] > [data-part="row"] {
     display: block;
     block-size: 1rem;
   }
-  [data-scope="skeleton"][data-part="root"][data-round] [data-part="title"],
-  [data-scope="skeleton"][data-part="root"][data-round] [data-part="row"] {
+  [data-scope="skeleton"][data-part="root"][data-round]
+    > [data-part="content"]
+    > [data-part="title"],
+  [data-scope="skeleton"][data-part="root"][data-round]
+    [data-part="paragraph"]
+    > [data-part="row"] {
     border-radius: var(--ck-radius-full);
   }
 
@@ -179,8 +183,8 @@
 
   /* The shimmer. A single gradient panned across a 200%-wide background, so it
      costs one animated property and no layout. */
-  [data-scope="skeleton"][data-active] [data-part="title"],
-  [data-scope="skeleton"][data-active] [data-part="row"],
+  [data-scope="skeleton"][data-active] > [data-part="content"] > [data-part="title"],
+  [data-scope="skeleton"][data-active] [data-part="paragraph"] > [data-part="row"],
   [data-scope="skeleton"][data-part="avatar"][data-active],
   [data-scope="skeleton"][data-part="button"][data-active],
   [data-scope="skeleton"][data-part="input"][data-active],
@@ -197,8 +201,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="skeleton"] [data-part="title"],
-    [data-scope="skeleton"] [data-part="row"],
+    [data-scope="skeleton"][data-part="root"] > [data-part="content"] > [data-part="title"],
+    [data-scope="skeleton"][data-part="root"] [data-part="paragraph"] > [data-part="row"],
     [data-scope="skeleton"][data-part="avatar"],
     [data-scope="skeleton"][data-part="button"],
     [data-scope="skeleton"][data-part="input"],
@@ -221,19 +225,19 @@
     text-align: center;
     color: var(--ck-fg-muted);
   }
-  [data-scope="empty"] [data-part="image"] {
+  [data-scope="empty"][data-part="root"] > [data-part="image"] {
     display: block;
     block-size: 4rem;
   }
-  [data-scope="empty"] [data-part="illustration"] {
+  [data-scope="empty"][data-part="root"] > [data-part="image"] > [data-part="illustration"] {
     display: block;
     block-size: 100%;
     inline-size: auto;
   }
-  [data-scope="empty"] [data-part="description"] {
+  [data-scope="empty"][data-part="root"] > [data-part="description"] {
     font-size: 0.875rem;
   }
-  [data-scope="empty"] [data-part="footer"] {
+  [data-scope="empty"][data-part="root"] > [data-part="footer"] {
     margin-block-start: var(--ck-space-sm);
   }
 
@@ -246,45 +250,45 @@
     padding-block: var(--ck-space-lg);
     text-align: center;
   }
-  [data-scope="result"] [data-part="icon"] {
+  [data-scope="result"][data-part="root"] > [data-part="icon"] {
     display: flex;
     color: var(--ck-fg-muted);
   }
   /* Three attributes, so this outweighs icon.css's own two-attribute
      `[data-scope="icon"][data-size="md"]`. Result's icon is larger than the
      Icon scale goes, so it is sized here rather than by picking a `size`. */
-  [data-scope="result"] [data-part="icon"] [data-scope="icon"] {
+  [data-scope="result"][data-part="root"] > [data-part="icon"] > [data-scope="icon"] {
     width: 3rem;
     height: 3rem;
   }
-  [data-scope="result"][data-status="success"] [data-part="icon"] {
+  [data-scope="result"][data-status="success"] > [data-part="icon"] {
     color: var(--ck-success-solid);
   }
-  [data-scope="result"][data-status="error"] [data-part="icon"],
-  [data-scope="result"][data-status="500"] [data-part="icon"] {
+  [data-scope="result"][data-status="error"] > [data-part="icon"],
+  [data-scope="result"][data-status="500"] > [data-part="icon"] {
     color: var(--ck-danger-solid);
   }
-  [data-scope="result"][data-status="warning"] [data-part="icon"],
-  [data-scope="result"][data-status="403"] [data-part="icon"] {
+  [data-scope="result"][data-status="warning"] > [data-part="icon"],
+  [data-scope="result"][data-status="403"] > [data-part="icon"] {
     color: var(--ck-warning-solid);
   }
-  [data-scope="result"][data-status="info"] [data-part="icon"] {
+  [data-scope="result"][data-status="info"] > [data-part="icon"] {
     color: var(--ck-info-solid);
   }
-  [data-scope="result"] [data-part="title"] {
+  [data-scope="result"][data-part="root"] > [data-part="title"] {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--ck-fg);
   }
-  [data-scope="result"] [data-part="subtitle"] {
+  [data-scope="result"][data-part="root"] > [data-part="subtitle"] {
     font-size: 0.875rem;
     color: var(--ck-fg-muted);
   }
-  [data-scope="result"] [data-part="content"] {
+  [data-scope="result"][data-part="root"] > [data-part="content"] {
     inline-size: 100%;
     margin-block-start: var(--ck-space-md);
   }
-  [data-scope="result"] [data-part="extra"] {
+  [data-scope="result"][data-part="root"] > [data-part="extra"] {
     display: flex;
     gap: var(--ck-space-sm);
     margin-block-start: var(--ck-space-md);
