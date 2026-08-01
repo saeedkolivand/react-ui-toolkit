@@ -410,6 +410,29 @@ test("puts the tab panel's gap on the side its list is on", async ({ page }) => 
   expect(pad).toEqual({ top: "0px", bottom: "16px" });
 });
 
+test("does not let an outer tab type reach a nested Tabs", async ({ page }) => {
+  const trigger = (name: string) => page.getByRole("tab", { name });
+  const shape = (name: string) =>
+    trigger(name).evaluate(node => {
+      const s = getComputedStyle(node);
+      return {
+        end: s.borderBlockEndWidth,
+        start: s.borderBlockStartWidth,
+        radius: s.borderStartStartRadius,
+      };
+    });
+
+  // Scoping both ends to `[data-scope="tabs"]` keeps these rules off a Popover
+  // or Select trigger, but an inner Tabs' own triggers carry that scope too —
+  // and with both blocks at equal specificity, source order handed `card` the
+  // argument. The inner `line` tabs came out identical to the outer card ones.
+  const [inner, alone] = [await shape("Inner line"), await shape("Alone")];
+  expect(inner).toEqual(alone);
+
+  // And the outer is still a card, so the fix scoped rather than removed.
+  expect((await shape("Outer card")).radius).not.toBe("0px");
+});
+
 /**
  * The arrow, in both directions.
  *

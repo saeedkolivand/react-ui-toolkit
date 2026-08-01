@@ -144,6 +144,37 @@ function Harness() {
         />
       </div>
 
+      {/* A `line` Tabs inside a `card` Tabs. The type rules are scoped to
+          `[data-scope="tabs"]` at both ends, which keeps them off a Popover or
+          Select trigger — but an inner Tabs' triggers carry that scope by
+          construction, and both blocks are the same specificity, so source
+          order decided and `card` won. */}
+      <div
+        style={{ position: "absolute", insetBlockStart: 1040, insetInlineStart: 400, width: 360 }}
+      >
+        <Tabs
+          type="card"
+          items={[
+            {
+              key: "outer",
+              label: "Outer card",
+              children: (
+                <Tabs
+                  type="line"
+                  items={[{ key: "inner", label: "Inner line", children: "panel" }]}
+                />
+              ),
+            },
+          ]}
+        />
+      </div>
+
+      <div
+        style={{ position: "absolute", insetBlockStart: 1180, insetInlineStart: 400, width: 360 }}
+      >
+        <Tabs type="line" items={[{ key: "alone", label: "Alone", children: "panel" }]} />
+      </div>
+
       {/* `tabPosition="bottom"`, so the panel's gap can be measured on the side
           the list is actually on. */}
       <div

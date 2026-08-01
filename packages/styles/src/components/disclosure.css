@@ -61,7 +61,14 @@
      happened once here.
 
      Logical properties throughout, unlike the v1 block below it. Those are
-     physical and predate the rule; these are the ones RTL has to hold for. */
+     physical and predate the rule; these are the ones RTL has to hold for.
+
+     Child combinators, not descendants. Qualifying both ends with
+     `[data-scope="tabs"]` keeps these off a Popover or Select trigger, but not
+     off ANOTHER Tabs — an inner one's triggers carry that scope by
+     construction. Both blocks are the same specificity, so source order decided
+     and `card` won whatever a nested `line` asked for, down to the selected tab
+     taking the card fill instead of the accent underline. */
   [data-scope="tabs"][data-part="root"][data-tab-position="bottom"] {
     flex-direction: column-reverse;
   }
@@ -87,27 +94,35 @@
     padding-block-start: 0;
   }
 
-  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="list"] {
+  [data-scope="tabs"][data-type="line"] > [data-scope="tabs"][data-part="list"] {
     border-block-end: 1px solid var(--ck-border);
   }
-  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="trigger"] {
+  [data-scope="tabs"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
     border-block-end: 2px solid transparent;
     margin-block-end: -1px;
   }
-  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="trigger"][data-selected] {
+  [data-scope="tabs"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
     border-block-end-color: var(--ck-accent-solid);
   }
 
-  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="list"] {
+  [data-scope="tabs"][data-type="card"] > [data-scope="tabs"][data-part="list"] {
     border-block-end: 1px solid var(--ck-border);
   }
-  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="trigger"] {
+  [data-scope="tabs"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
     border: 1px solid transparent;
     border-start-start-radius: var(--ck-radius-md);
     border-start-end-radius: var(--ck-radius-md);
     margin-block-end: -1px;
   }
-  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="trigger"][data-selected] {
+  [data-scope="tabs"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
     border-color: var(--ck-border);
     border-block-end-color: var(--ck-surface);
     background-color: var(--ck-surface);
