@@ -110,15 +110,13 @@
     block-size: 2.5rem;
     inline-size: 5rem;
   }
+  /* A circle is as wide as it is tall at every size, so one `aspect-ratio`
+     replaces a width rule per size. That also keeps every button width rule at
+     three attributes, which is what lets `[data-block]` below win on order. */
   [data-scope="skeleton"][data-part="button"][data-shape="circle"] {
     border-radius: var(--ck-radius-full);
-    inline-size: 2rem;
-  }
-  [data-scope="skeleton"][data-part="button"][data-shape="circle"][data-size="small"] {
-    inline-size: 1.5rem;
-  }
-  [data-scope="skeleton"][data-part="button"][data-shape="circle"][data-size="large"] {
-    inline-size: 2.5rem;
+    aspect-ratio: 1;
+    inline-size: auto;
   }
   [data-scope="skeleton"][data-part="button"][data-shape="round"] {
     border-radius: var(--ck-radius-full);
@@ -162,6 +160,15 @@
      that stacks its child in the corner. */
   [data-scope="skeleton"][data-part="node"][data-block] {
     display: flex;
+  }
+  /* Button is the one part whose *width* varies by keyword, so its own rules
+     outrank the shared `[data-block]` above and it would apply the display
+     while silently dropping the thing it is named for. Restated at the same
+     three attributes and later, so `block` means block — and `aspect-ratio`
+     released, or a blocked circle would be as tall as the container is wide. */
+  [data-scope="skeleton"][data-part="button"][data-block] {
+    inline-size: 100%;
+    aspect-ratio: auto;
   }
 
   /* The shimmer. A single gradient panned across a 200%-wide background, so it

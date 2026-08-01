@@ -129,7 +129,9 @@ test("silences the skeleton shimmer, and only because it was shimmering", async 
 
 test("silences a standalone skeleton block too", async ({ page }) => {
   await page.goto("/skeleton.html");
-  const button = '[data-scope="skeleton"][data-part="button"]';
+  // By id: the harness grew a row of block buttons, and `motionOf` needs a
+  // selector that resolves to one element.
+  const button = "#active-button";
   await expect(page.locator(button)).toBeVisible();
   // The five standalone blocks are their own roots with their own `[data-active]`
   // — they are not descendants of a skeleton root, so a reduced-motion block

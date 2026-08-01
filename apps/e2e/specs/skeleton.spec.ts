@@ -40,3 +40,38 @@ test("gives each avatar keyword its own size", async ({ page }) => {
   expect(sizes[0]).toBeLessThan(sizes[1]!);
   expect(sizes[1]).toBeLessThan(sizes[2]!);
 });
+
+test("lets block win the inline axis against every keyword that sets a width", async ({ page }) => {
+  await page.goto("/skeleton.html");
+  const buttons = page.locator('#block-buttons [data-part="button"]');
+  await expect(buttons).toHaveCount(6);
+
+  const widths = await buttons.evaluateAll(els =>
+    els.map(el => Math.round(el.getBoundingClientRect().width))
+  );
+
+  // Button is the one part whose width varies by keyword, so its own rules
+  // outrank the shared `[data-block]` on specificity and `block` silently
+  // applies its display while dropping the thing it is named for.
+  expect(widths).toEqual([600, 600, 600, 600, 600, 600]);
+});
+
+test("keeps a circle button square at every size", async ({ page }) => {
+  await page.goto("/skeleton.html");
+  const circles = page.locator('#circle-buttons [data-part="button"]');
+  await expect(circles).toHaveCount(3);
+
+  const boxes = await circles.evaluateAll(els =>
+    els.map(el => {
+      const r = el.getBoundingClientRect();
+      return { w: Math.round(r.width), h: Math.round(r.height) };
+    })
+  );
+
+  // `aspect-ratio` replaced one width rule per size, which is what keeps every
+  // button width rule at three attributes. Squareness is what it bought that
+  // with, and the heights still have to differ or the sizes stopped working.
+  expect(boxes.map(b => b.w)).toEqual(boxes.map(b => b.h));
+  expect(boxes[0]!.h).toBeLessThan(boxes[1]!.h);
+  expect(boxes[1]!.h).toBeLessThan(boxes[2]!.h);
+});

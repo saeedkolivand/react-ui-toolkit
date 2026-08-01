@@ -22,9 +22,6 @@ function Harness() {
       </div>
       <Skeleton.Button id="active-button" active />
 
-      {/* A fixed-width parent, so "is the child centred" is a question with an
-          answer. A Node is the one block that centres what you put in it, and
-          `block` must not cost it that. */}
       {/* One per keyword, so "does `size` do anything" is measurable. A rule
           that restates the base values makes a keyword a silent no-op. */}
       <div id="avatar-sizes">
@@ -33,10 +30,34 @@ function Harness() {
         <Skeleton.Avatar size="large" />
       </div>
 
+      {/* A fixed-width parent, so "is the child centred" is a question with an
+          answer. A Node is the one block that centres what you put in it, and
+          `block` must not cost it that. */}
       <div style={{ inlineSize: 600 }}>
         <Skeleton.Node id="block-node" block>
           <span id="block-node-child">chart</span>
         </Skeleton.Node>
+      </div>
+
+      {/* Circles at every size. Their width comes from `aspect-ratio` rather
+          than from a width rule per size, so "is it still square" is a
+          question the refactor has to keep answering. */}
+      <div id="circle-buttons">
+        <Skeleton.Button shape="circle" size="small" />
+        <Skeleton.Button shape="circle" />
+        <Skeleton.Button shape="circle" size="large" />
+      </div>
+
+      {/* Every keyword combination that sets its own width, all told to fill.
+          Button is the only part where `block` and a keyword both want the
+          inline axis, so it is the only one that can lose the argument. */}
+      <div id="block-buttons" style={{ inlineSize: 600 }}>
+        <Skeleton.Button block />
+        <Skeleton.Button block size="large" />
+        <Skeleton.Button block size="small" />
+        <Skeleton.Button block shape="circle" />
+        <Skeleton.Button block shape="circle" size="small" />
+        <Skeleton.Button block shape="round" size="large" />
       </div>
     </main>
   );
