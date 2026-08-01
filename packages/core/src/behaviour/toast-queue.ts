@@ -297,6 +297,11 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
   };
 
   const remove = (id: string) => {
+    const waitingIndex = waiting.findIndex(item => item.id === id);
+    if (waitingIndex >= 0) {
+      waiting.splice(waitingIndex, 1);
+      return;
+    }
     const index = live.findIndex(item => item.id === id);
     if (index < 0) return;
     hold(id);

@@ -109,6 +109,9 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
     // anything with. The real behaviour is asserted in the browser suite.
     const under = at ? (document.elementFromPoint?.(at.x, at.y) ?? null) : null;
     held.current.pointer = under !== null && group.contains(under);
+    // A position that no longer lands in the group has stopped meaning "inside
+    // the group", so it must not survive to answer for the next toast.
+    if (!held.current.pointer) pointerAt.current = undefined;
     held.current.focus = group.contains(document.activeElement);
     apply();
   }, [toasts, apply]);

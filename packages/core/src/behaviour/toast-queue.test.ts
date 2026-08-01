@@ -290,6 +290,17 @@ describe("createToastQueue", () => {
     expect(states(q)).toEqual(["open"]);
   });
 
+  it("removes a waiting toast so it is never shown", () => {
+    const q = createToastQueue({ max: 1 });
+    q.create({ id: "a", title: "a", duration: 1000 });
+    q.create({ id: "b", title: "b" });
+    // The sibling of `dismiss`, which already handled this. Returning early on
+    // a waiting id meant `promote()` showed it a moment later anyway.
+    q.remove("b");
+    vi.advanceTimersByTime(1200);
+    expect(ids(q)).toEqual([]);
+  });
+
   it("removes immediately when asked, skipping the exit window", () => {
     const q = createToastQueue();
     const id = q.create({ title: "a" });

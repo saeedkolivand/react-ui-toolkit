@@ -125,6 +125,25 @@ test("counts down again after a toast is closed under the pointer", async ({ pag
   await expect(rootsIn(page, "bottom-end")).toHaveCount(0, { timeout: 10_000 });
 });
 
+test("does not hold a replacement that lands where the pointer used to be", async ({ page }) => {
+  await page.click("#add-closable");
+  const roots = rootsIn(page, "bottom-end");
+  await expect(roots).toHaveCount(1);
+  await roots.first().getByRole("button", { name: "Dismiss" }).click();
+  await expect(roots).toHaveCount(0);
+
+  // No pointer movement in between, which is the whole point: the freed slot is
+  // exactly where the next toast lands, so a last-known position that is never
+  // cleared goes on answering for a pointer that is no longer there.
+  //
+  // Same shape as the toast it replaces, deliberately. A shorter replacement
+  // puts the stale coordinate 3px above its top edge, and the test passes
+  // whether or not the coordinate was cleared.
+  await page.click("#add-closable");
+  await expect(rootsIn(page, "bottom-end")).toHaveCount(1);
+  await expect(rootsIn(page, "bottom-end")).toHaveCount(0, { timeout: 10_000 });
+});
+
 test("holds a toast that slides under the pointer when the one below closes", async ({ page }) => {
   await page.click("#add-bottom-end");
   await page.click("#add-closable");
