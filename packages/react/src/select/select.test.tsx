@@ -104,12 +104,45 @@ describe("Select", () => {
     expect(listbox()).toHaveAccessibleName("Country");
   });
 
+  it("announces itself invalid and required, not only colours itself", () => {
+    setup({ errorMessage: "Required", required: true });
+    // The root's `data-invalid` is the colour half. This is the half a screen
+    // reader hears, and `required` had no route at all — the only element
+    // carrying it is the hidden, aria-hidden native select.
+    expect(trigger()).toHaveAttribute("aria-invalid", "true");
+    expect(trigger()).toHaveAttribute("aria-required", "true");
+  });
+
   it("describes the trigger with its error rather than its helper", () => {
     setup({ helperText: "Pick a country", errorMessage: "Required" });
     expect(trigger()).toHaveAccessibleDescription("Required");
   });
 
   // ---------------------------------------------------------------- keyboard
+
+  it("answers a letter while closed, the way a native select does", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup({ defaultValue: "ng" });
+    trigger().focus();
+    // Changes the selection WITHOUT opening. The three adapters still on the
+    // machine do this, and so does a plain `<select>`; returning early on
+    // anything that was not Enter/Space/an arrow left React the only one that
+    // ignored it.
+    await user.keyboard("g");
+    expect(onChange).toHaveBeenCalledWith("gh", { value: "gh", label: "Ghana" });
+    expect(listbox()).not.toBeInTheDocument();
+  });
+
+  it("answers Home and End while closed", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup({ defaultValue: "gh" });
+    trigger().focus();
+    await user.keyboard("{End}");
+    expect(onChange).toHaveBeenLastCalledWith("za", { value: "za", label: "South Africa" });
+    await user.keyboard("{Home}");
+    expect(onChange).toHaveBeenLastCalledWith("ng", { value: "ng", label: "Nigeria" });
+    expect(listbox()).not.toBeInTheDocument();
+  });
 
   it("opens on Enter and lands on the current selection", async () => {
     const user = userEvent.setup();

@@ -204,7 +204,7 @@ function Harness() {
           the popup `fixed`, so the option was still in normal flow at the end of
           `<body>` and `scrollIntoView` walked the whole document to it. */}
       <div
-        style={{ position: "absolute", insetBlockStart: 200, insetInlineStart: 780, width: 442 }}
+        style={{ position: "absolute", insetBlockStart: 200, insetInlineStart: 480, width: 442 }}
       >
         <Select
           label="Country"

@@ -477,10 +477,9 @@ test("opens a select without scrolling the page to find it", async ({ page }) =>
   // from 663 to the page maximum, leaving the trigger 385px above the viewport.
   expect(await page.evaluate(() => window.scrollY)).toBe(before);
 
-  // And the listbox is against the trigger rather than off-screen. Either side:
-  // this fixture sits near the bottom of the page, so `bottomLeft` correctly
-  // flips above — asserting "below" would have been asserting the absence of a
-  // feature.
+  // Against the trigger rather than off-screen, on whichever side it landed —
+  // asserting one would be asserting the absence of flip. Measured
+  // `bottom-start` here, since the fixture is near the TOP of a tall page.
   //
   // Off the POSITIONER, not the listbox — the same trap the note at the top of
   // this file describes, and one I walked into again here: the content runs
@@ -492,6 +491,10 @@ test("opens a select without scrolling the page to find it", async ({ page }) =>
   // Sized to the trigger rather than to its own content: `--ck-anchor-width`
   // unset gave a 101px list against a 442px control.
   expect(Math.abs(l.width - t.width)).toBeLessThan(2);
+  // And actually over it. Equal widths passed while the fixture hung 222px off
+  // the right edge and `shift` had moved the list 222px left of its trigger —
+  // two boxes the same size that never overlapped.
+  expect(Math.abs(l.x - t.x)).toBeLessThan(2);
 });
 
 /**

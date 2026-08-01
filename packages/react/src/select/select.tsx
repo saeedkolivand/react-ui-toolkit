@@ -12,6 +12,7 @@ import {
 } from "react";
 import {
   createCollection,
+  ariaAttr,
   createTypeahead,
   dataAttr,
   navigate,
@@ -143,6 +144,21 @@ export function Select({
         event.preventDefault();
         state.setOpen(true);
         setHighlighted(selected || (collection.last()?.value ?? null));
+      } else {
+        // A closed select still answers letters, Home and End — it changes the
+        // selection without opening, which is what a native `<select>` does and
+        // what the three adapters still on the machine do. Returning here left
+        // React the only one that ignored them.
+        const jumped = navigate(
+          event,
+          collection,
+          selected || null,
+          { orientation: "vertical", typeahead: true },
+          typeaheadRef.current
+        );
+        if (!jumped.handled) return;
+        event.preventDefault();
+        if (jumped.value !== undefined) choose(jumped.value, state.setOpen);
       }
       return;
     }
@@ -301,6 +317,12 @@ export function Select({
           aria-controls={contentId}
           aria-labelledby={labelId}
           aria-describedby={describedBy}
+          aria-invalid={ariaAttr(status === "error" || errorMessage != null)}
+          aria-required={ariaAttr(required)}
+          // The colour half lives on the root's `data-invalid`; this is the half
+          // a screen reader hears. `required` had no route at all — the only
+          // element carrying it is the hidden, `aria-hidden` native select.
+
           disabled={disabled}
           data-scope="select"
           data-part="trigger"
