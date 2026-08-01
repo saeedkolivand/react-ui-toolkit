@@ -2,6 +2,7 @@
 import {
   Children,
   Fragment,
+  isValidElement,
   type CSSProperties,
   type HTMLAttributes,
   type ReactNode,
@@ -72,7 +73,16 @@ export function Space({
         // A fragment, not an element: the split and the item have to be
         // siblings of the flex container. Anything wrapping the pair becomes the
         // flex item and swallows the gap between them.
-        <Fragment key={index}>
+        //
+        // Keyed from the child, not from the index — otherwise the key
+        // `Children.toArray` just assigned is thrown away one line later. React
+        // then matches fragments by position, walks in, finds a single element
+        // whose key changed and remounts it rather than moving the node. The
+        // order still comes out right, so nothing looks wrong: what is lost is
+        // DOM identity, and with it a caret mid-edit, scroll position and any
+        // state the child holds. The index remains the fallback for the
+        // children that carry no key at all — bare strings and numbers.
+        <Fragment key={isValidElement(child) && child.key !== null ? child.key : index}>
           {index > 0 && hasContent(split) && (
             <span data-part="split" aria-hidden="true">
               {split}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { Flex } from "./flex";
 import { Space } from "./space";
 
@@ -226,6 +227,50 @@ describe("Space", () => {
       </Space>
     );
     expect(spaceRoot().hasAttribute("data-wrap")).toBe(false);
+  });
+
+  /**
+   * The same reorder, with and without a Space around it. `defaultValue` makes
+   * the input uncontrolled, so a value that survives means the DOM node did.
+   */
+  const reorder = (wrap: (children: ReactNode) => ReactNode) => {
+    const List = ({ order }: { order: string[] }) => (
+      <>{wrap(order.map(k => <input key={k} data-testid={k} defaultValue={k} />))}</>
+    );
+    const { rerender } = render(<List order={["a", "b"]} />);
+    const before = screen.getByTestId("a");
+    fireEvent.change(before, { target: { value: "typed" } });
+    before.focus();
+    rerender(<List order={["b", "a"]} />);
+    const after = screen.getByTestId("a") as HTMLInputElement;
+    return {
+      sameNode: after === before,
+      value: after.value,
+      focused: after === document.activeElement,
+    };
+  };
+
+  it("moves a reordered child rather than remounting it", () => {
+    // `Children.toArray` keys what survives — and the wrapper fragment threw
+    // that key away, so React matched fragments by position, walked in, found a
+    // changed key and remounted. The order looks right either way; what is lost
+    // is node identity, and with it a caret mid-edit, scroll position, media
+    // state and any child component state.
+    expect(reorder(children => <Space>{children}</Space>)).toEqual({
+      sameNode: true,
+      value: "typed",
+      focused: true,
+    });
+  });
+
+  it("measures that the same way an unwrapped list does", () => {
+    // The control. Without it, a harness where `rerender` always remounts would
+    // make the assertion above unfailable rather than true.
+    expect(reorder(children => <div>{children}</div>)).toEqual({
+      sameNode: true,
+      value: "typed",
+      focused: true,
+    });
   });
 
   it("keeps rendering the children themselves", () => {
