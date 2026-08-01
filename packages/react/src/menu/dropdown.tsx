@@ -129,14 +129,10 @@ export function Dropdown({
       if (current) selectKey(current, state.setOpen);
       return;
     }
-    if (event.key === "Tab") {
-      // Tab out closes rather than stepping through the items: a menu is a
-      // single stop in the tab order. The dismissable layer would catch the
-      // focus leaving anyway, but doing it here keeps the close synchronous
-      // with the key rather than one focus event later.
-      state.setOpen(false);
-      return;
-    }
+    // Tab is not handled here. The hook closes on it from either side — a menu
+    // is a single stop in the tab order — and closing here as well made one
+    // press fire `onOpenChange` twice, because a menu's items are never
+    // tabbable so both paths always agreed it was leaving.
     const result = navigate(
       event,
       collection,

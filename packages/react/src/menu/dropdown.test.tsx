@@ -257,6 +257,39 @@ describe("Dropdown", () => {
     expect(trigger()).toHaveFocus();
   });
 
+  it("reports one close per Tab, not two", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    setup({ onOpenChange });
+    await openWithKeyboard(user);
+    onOpenChange.mockClear();
+
+    // The hook closes on Tab from either side. A menu's items are never
+    // tabbable, so a caller closing on Tab as well always agreed it was leaving
+    // and both fired — one press, two `onOpenChange` calls, and a consumer
+    // logging or persisting on close would do it twice.
+    await user.keyboard("{Tab}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(onOpenChange.mock.calls).toEqual([[{ open: false }]]);
+  });
+
+  it("gives focus back after a pointer press inside a hover-opened menu", async () => {
+    const user = userEvent.setup();
+    // A real leave delay, unlike the rest of this file. At `mouseLeaveDelay={0}`
+    // the menu closes the instant the pointer leaves the trigger, so it is gone
+    // before the pointer can reach an item and the press never happens.
+    setup({ mouseLeaveDelay: 0.5 });
+    // The default configuration of this component, operated entirely by mouse.
+    // The press moves focus itself, so nothing of ours put it there — and the
+    // restore used to require that we had, leaving <body> focused and the next
+    // Tab restarting at the top of the page.
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await user.click(items()[0]!);
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(trigger()).toHaveFocus();
+  });
+
   it("gives focus back after Escape on the trigger-side key path too", async () => {
     const user = userEvent.setup();
     setup();

@@ -294,18 +294,23 @@ export function useAnchored(options: AnchoredOptions): Anchored {
 
   // Taking focus on open and dropping it on close leaves <body> focused, so the
   // next Tab restarts at the top of the page. Both halves belong together.
-  const wasOpenRef = useRef(false);
   useEffect(() => {
     if (!takeFocus) return;
     if (open) {
       // A pointer crossing a trigger is not a request for focus.
       if (reasonRef.current === "hover") return;
-      wasOpenRef.current = true;
       content?.focus({ preventScroll: true });
       return;
     }
-    if (!wasOpenRef.current) return;
-    wasOpenRef.current = false;
+    // Focus being inside is the whole condition, and there is deliberately no
+    // "did we put it there" flag alongside it. There was, and it was wrong in
+    // both directions: it is redundant, because `content` is null until the
+    // popup mounts and so the guard below already covers the first render; and
+    // it excluded the case that matters most, since a POINTER press inside the
+    // popup moves focus without us doing anything. The default configuration of
+    // both components is hover-open, so a press on a menu item left `<body>`
+    // focused and the next Tab restarted at the top of the page.
+    //
     // Only when focus is still inside — the same rule `createFocusTrap` applies.
     // A press outside has already moved it, and restoring would take it back
     // from wherever the user just put it. The content is still mounted here,
@@ -442,9 +447,18 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // focus, so the close has to give it back, and skipping the write left
       // `<body>` focused on exactly the path that had just moved focus. That
       // one IS covered, in both directions.
+      // Tab at the trigger with the popup open is the user leaving, and the
+      // hook answers it here rather than passing it on. It owns Tab on the
+      // content side too, and a caller that also closed on Tab — as Dropdown
+      // did — made one press fire `onOpenChange` twice.
+      if (open && takeFocus && event.key === "Tab") {
+        cancel();
+        setOpen(false);
+        return;
+      }
+
       if (open && takeFocus && !LEAVES_OR_MODIFIES.has(event.key)) {
         content?.focus({ preventScroll: true });
-        wasOpenRef.current = true;
       }
 
       onTriggerKeyDown?.(event, {
