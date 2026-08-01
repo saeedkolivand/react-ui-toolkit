@@ -257,6 +257,57 @@ test("tabs out of a hover-opened menu to the control after it", async ({ page })
   await expect(page.locator("#default-popover")).toBeFocused();
 });
 
+test("lets the keyboard leave a popover, forwards and backwards", async ({ page }) => {
+  const after = page.locator("#default-popover");
+  await after.focus();
+  await page.keyboard.press("Enter");
+  await expect(content(page, "popover")).toBeVisible();
+  await expect(content(page, "popover")).toBeFocused();
+
+  // Into the popup's own control, then past it. A Popover has no key handling
+  // of its own — Dropdown survives this because its menu closes on Tab — and
+  // `focus: role !== "dialog"` correctly stops the dismissable layer watching
+  // focus leave. So nothing observed a Tab out at all: the second press landed
+  // on `<body>`, outside the document, with the popover still open.
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#default-popover-button")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(content(page, "popover")).toHaveCount(0);
+  await expect(page.locator("body")).not.toBeFocused();
+
+  // Backwards out of it, which used to land on the LAST control on the page
+  // because the popup is portalled to the end of the document.
+  await after.focus();
+  await page.keyboard.press("Enter");
+  await expect(content(page, "popover")).toBeFocused();
+  await page.keyboard.down("Shift");
+  await page.keyboard.press("Tab");
+  await page.keyboard.up("Shift");
+  await expect(content(page, "popover")).toHaveCount(0);
+  await expect(page.locator("#transformed")).not.toBeFocused();
+});
+
+test("does not pull focus into a hover-opened popup on a bare modifier", async ({ page }) => {
+  await page.locator("#default-popover").hover();
+  await expect(content(page, "popover")).toBeVisible();
+  // Focus has to be ON the trigger for its keydown handler to see the key at
+  // all — a hover leaves it wherever it was, so pressing Shift with `<body>`
+  // focused observes nothing and passes whatever the filter does. Focused
+  // rather than clicked, because `click` is in this component's default trigger
+  // and would toggle the popup shut.
+  await page.locator("#default-popover").focus();
+  await expect(content(page, "popover")).toBeVisible();
+
+  // A Shift+Tab is two keydowns, `Shift` then `Tab`, and only the second was
+  // filtered — so the bare Shift pulled focus into a popup that the hover-open
+  // had deliberately declined to focus, and the Shift+Tab then ran from the
+  // portal at the end of the document.
+  await page.keyboard.down("Shift");
+  await expect(page.locator("#default-popover")).toBeFocused();
+  await expect(content(page, "popover")).not.toBeFocused();
+  await page.keyboard.up("Shift");
+});
+
 /**
  * The arrow, in both directions.
  *

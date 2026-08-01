@@ -141,6 +141,25 @@ export interface Anchored {
 
 const ARROW_SIZE = 8;
 
+/**
+ * Keys that must never pull focus into the popup.
+ *
+ * `Tab` is the user leaving. The rest are modifiers, and they matter because a
+ * modifier is its OWN keydown: a Shift+Tab is `Shift` then `Tab`, so filtering
+ * `Tab` alone still let the bare `Shift` move focus, and the Shift+Tab that
+ * followed then ran from the portal at the end of the document.
+ */
+const LEAVES_OR_MODIFIES = new Set([
+  "Tab",
+  "Shift",
+  "Control",
+  "Alt",
+  "Meta",
+  "CapsLock",
+  "NumLock",
+  "ScrollLock",
+]);
+
 /** Seconds in, milliseconds out. Ant's unit is the public one; ours is the timer's. */
 const ms = (seconds: number) => Math.max(0, seconds) * 1000;
 
@@ -423,7 +442,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // focus, so the close has to give it back, and skipping the write left
       // `<body>` focused on exactly the path that had just moved focus. That
       // one IS covered, in both directions.
-      if (open && takeFocus && event.key !== "Tab") {
+      if (open && takeFocus && !LEAVES_OR_MODIFIES.has(event.key)) {
         content?.focus({ preventScroll: true });
         wasOpenRef.current = true;
       }
@@ -456,7 +475,36 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     // focus here. Without it `.focus()` is a no-op on a plain div, so the popup
     // stays unreachable and the restore has nothing to restore from — and
     // adding it unconditionally would put a tooltip in the tab order.
-    ...(takeFocus ? { tabIndex: -1 } : {}),
+    ...(takeFocus
+      ? {
+          tabIndex: -1,
+          // Tab OUT of a popup that holds focus, and it closes.
+          //
+          // Out, not any Tab: focus starts on the container, so the first Tab
+          // steps into whatever the popup contains and must be left alone —
+          // closing on every Tab made the controls inside unreachable, which is
+          // the opposite of the bug being fixed. Leaving means the last tabbable
+          // going forward, or the container or first tabbable going back.
+          //
+          // Not `preventDefault`: the browser's own Tab then runs from wherever
+          // focus ends up, and the close restores it to the trigger — so the
+          // user lands on the control after the trigger rather than wherever the
+          // portal happens to sit in the document. Without this a Popover was a
+          // one-way trip: Tab past its last control reached `<body>`, outside
+          // the document, with the popover still open.
+          onKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => {
+            if (event.key !== "Tab" || !content) return;
+            const tabbables = getTabbables(content);
+            const active = content.ownerDocument.activeElement;
+            const leaving = event.shiftKey
+              ? active === content || active === tabbables[0]
+              : tabbables.length === 0 || active === tabbables[tabbables.length - 1];
+            if (!leaving) return;
+            cancel();
+            setOpen(false);
+          },
+        }
+      : {}),
     "data-scope": scope,
     "data-part": "content",
     "data-state": open ? "open" : "closed",

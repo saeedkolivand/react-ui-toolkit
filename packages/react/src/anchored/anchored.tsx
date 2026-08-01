@@ -100,7 +100,21 @@ export function AnchoredView({
                 `--ck-arrow-x/y` and `data-placement` onto the positioner, so
                 this is also the element those coordinates are relative to. */}
             {arrow && <span {...arrowProps} />}
-            <div {...anchored.contentProps} className={overlayClassName} {...contentProps}>
+            {/* `onKeyDown` is composed rather than overridden. Everything else
+                the caller passes wins outright, which is the rule — but the
+                hook puts the "Tab closes this" handler here, and a caller with
+                keys of its own (Dropdown has arrows, Home/End and typeahead)
+                would silently replace it and take the popup back out of the tab
+                order. */}
+            <div
+              {...anchored.contentProps}
+              className={overlayClassName}
+              {...contentProps}
+              onKeyDown={event => {
+                anchored.contentProps.onKeyDown?.(event);
+                (contentProps?.onKeyDown as ((e: typeof event) => void) | undefined)?.(event);
+              }}
+            >
               {body}
             </div>
           </div>
