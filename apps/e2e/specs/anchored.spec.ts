@@ -308,6 +308,32 @@ test("does not pull focus into a hover-opened popup on a bare modifier", async (
   await page.keyboard.up("Shift");
 });
 
+test("scrolls the highlighted row into view in a capped menu", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 400 });
+  await page.locator("#long-menu").click();
+  await expect(content(page, "menu")).toBeVisible();
+
+  await page.keyboard.press("End");
+  const highlighted = page.locator('[data-part="item"][data-highlighted]');
+  await expect(highlighted).toHaveText("Row 29");
+
+  // `aria-activedescendant` keeps one element focused, which is what makes the
+  // highlight announceable — but it gives up the scrolling that moving real
+  // focus would have done, and nothing else did it. The cap added earlier on
+  // this branch is what made it bite: the box now scrolls by construction, so
+  // End left the highlighted row hundreds of pixels below the fold with
+  // `scrollTop` still 0, and Enter selected something invisible.
+  await expect(highlighted).toBeInViewport();
+
+  const visible = await content(page, "menu").evaluate(box => {
+    const row = box.querySelector('[data-part="item"][data-highlighted]')!;
+    const b = box.getBoundingClientRect();
+    const r = row.getBoundingClientRect();
+    return r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+  });
+  expect(visible).toBe(true);
+});
+
 /**
  * The arrow, in both directions.
  *

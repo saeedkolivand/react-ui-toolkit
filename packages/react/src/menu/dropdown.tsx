@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import {
   createCollection,
   createTypeahead,
@@ -195,13 +203,13 @@ export function Dropdown({
     scope: "menu",
     role: "menu",
   });
-  const { open, setOpen, contentId } = anchored;
+  const { open, setOpen, contentId, contentNode } = anchored;
 
   // Read through `open` so a closed menu never reports a highlight, whatever
   // reset the last close did or did not run — including a controlled consumer
   // flipping `open` themselves, which calls no handler of ours at all.
   const active = open ? highlighted : null;
-  const itemId = (key: string) => `${contentId}-item-${key}`;
+  const itemId = useCallback((key: string) => `${contentId}-item-${key}`, [contentId]);
 
   // Focus the menu itself and drive the highlight with `aria-activedescendant`,
   // rather than moving DOM focus from item to item. Both are valid ARIA; this
@@ -216,6 +224,25 @@ export function Dropdown({
   useEffect(() => {
     if (!open) typeaheadRef.current.clear();
   }, [open]);
+
+  /**
+   * Keep the highlighted row visible.
+   *
+   * `aria-activedescendant` keeps one element focused, which is what makes the
+   * highlight announceable from a single node — but it gives up the scrolling
+   * that moving real focus would have done for free, and nothing else does it.
+   * That only started to bite once the menu began capping its own height
+   * against the room available, because the box now scrolls by construction:
+   * measured 968px of rows in a 469px box, with `End` putting the highlighted
+   * row 462px below the fold and `scrollTop` still 0, so Enter selected
+   * something the user could not see.
+   *
+   * `nearest`, so a row already visible is not yanked to an edge.
+   */
+  useEffect(() => {
+    if (!open || !active || !contentNode) return;
+    contentNode.querySelector(`[id="${itemId(active)}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [open, active, contentNode, itemId]);
 
   return (
     <AnchoredView

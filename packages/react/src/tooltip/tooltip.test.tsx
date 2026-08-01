@@ -193,11 +193,35 @@ describe("Tooltip", () => {
     setup();
     await user.tab();
     await waitFor(() => expect(content()).toBeInTheDocument());
-    // The dismissable layer only sees keys once focus is inside the content,
-    // which for a tooltip it never is — so without the trigger's own handler
-    // Escape does nothing and the tooltip is stuck until focus moves.
+    // Answered by the dismissable layer, which listens on the document in the
+    // capture phase and so sees this wherever focus is — including a hover
+    // tooltip, where focus is never inside the content. This test used to claim
+    // it covered a handler on the trigger; it never did, and that handler has
+    // since gone.
     await user.keyboard("{Escape}");
     await waitFor(() => expect(content()).not.toBeInTheDocument());
+  });
+
+  it("reports no open at all when disabled inside the enter delay", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const Harness = ({ off }: { off: boolean }) => (
+      <Tooltip title="Note" disabled={off} onOpenChange={onOpenChange}>
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    const { rerender } = render(<Harness off={false} />);
+    await user.hover(button());
+    // Disabled while the open timer is armed. Resetting the state converges
+    // what renders and stops there — the timer still ran and still notified, so
+    // a consumer heard `{open:true}` for a tooltip that is disabled and not in
+    // the document, and never heard a close. A controlled consumer mirroring
+    // that callback then holds `true` themselves and it reopens on re-enable.
+    rerender(<Harness off />);
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(content()).not.toBeInTheDocument();
   });
 
   it("stays shut when a title comes back after being disabled mid-hover", async () => {

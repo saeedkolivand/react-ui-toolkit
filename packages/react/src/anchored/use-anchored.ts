@@ -282,6 +282,21 @@ export function useAnchored(options: AnchoredOptions): Anchored {
   );
   useEffect(() => cancel, [cancel]);
 
+  /**
+   * Disabling also disarms whatever was already scheduled.
+   *
+   * Resetting the state converges what is RENDERED, and stops there: the timer
+   * `schedule` armed still runs, and `setOpen` notifies unconditionally. So a
+   * hover followed by a disable inside the enter delay reported `{open:true}`
+   * for an overlay that is disabled and not in the document, and never reported
+   * a close. A controlled consumer mirroring that callback then holds `true`
+   * themselves — which the render-time reset deliberately does not touch, since
+   * their value is their answer — and re-enabling reopens with no gesture.
+   */
+  useEffect(() => {
+    if (disabled) cancel();
+  }, [disabled, cancel]);
+
   // --------------------------------------------------------------- behaviour
 
   useEffect(() => {
@@ -432,9 +447,6 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       triggerProps.onClick = () => schedule(!open, 0);
     }
 
-    // Escape while focus is still on the trigger. The dismissable layer only
-    // sees keys once focus is inside the content, which for a hover tooltip it
-    // never is.
     triggerProps.onKeyDown = event => {
       // Escape is deliberately NOT handled here. `pushDismissable` listens on
       // the document in the CAPTURE phase, so it has already answered this key
