@@ -12,6 +12,17 @@ export interface PropDoc {
    * flag when the last adapter lands.
    */
   reactFirst?: boolean;
+  /**
+   * The mirror image: the prop still exists in the other three, and React has
+   * already replaced it.
+   *
+   * Needed for the same reason as `reactFirst` and pointing the other way. A
+   * Vue reader still passes `openDelay` and must keep finding it documented,
+   * while React no longer has it — so `check-props.mjs`, which validates rows
+   * against the React adapters alone, has to be told this one is not its
+   * business. Delete the row outright once that adapter moves to v2.
+   */
+  reactRemoved?: boolean;
 }
 
 export interface PartDoc {
@@ -47,6 +58,15 @@ export interface ComponentDoc {
    */
   machine?: string;
   gains?: string[];
+  /**
+   * Set for a component that has no v0 ancestor at all.
+   *
+   * The migration guide lists everything with no `changes` under "kept their v0
+   * prop names", which is true of a renamed-nothing component and false of a
+   * brand-new one — it would tell a migrating reader that a component they
+   * never had kept prop names it never had.
+   */
+  isNew?: boolean;
   props: PropDoc[];
   parts?: PartDoc[];
   changes?: ChangeDoc[];

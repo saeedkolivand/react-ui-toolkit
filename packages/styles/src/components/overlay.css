@@ -1,21 +1,36 @@
-/* Tooltip and Menu. Both are Floating-UI positioned through zag, so neither
-   sets a top/left of its own — and both read zag's own inline
-   `z-index: var(--z-index)`, which beats any stylesheet rule, so the token is
-   supplied as that variable rather than as `z-index`. */
+/* Tooltip, Popover and Menu — the anchored overlays.
+
+   Two positioning mechanisms coexist here on purpose, and will until Phase 5
+   moves the remaining adapters over.
+
+   - v2 (React) positions from `packages/core`, which writes `position: fixed`
+     and coordinates onto the positioner and nothing else. Its stacking has to
+     come from the `z-index` declaration below.
+   - v1 (Vue, Svelte, Angular) positions through a third-party machine that
+     writes an inline `z-index: var(--z-index)`. An inline declaration beats any
+     stylesheet rule, so those need the token supplied as that variable.
+
+   Declaring both costs one line and resolves to the same value either way.
+   Delete `--z-index` when the last v1 adapter goes. */
 @layer ck.components {
   /* --------------------------------------------------------------- Tooltip */
 
-  /* The trigger wraps the consumer's element rather than cloning props onto it.
-     It is deliberately a real box (inline-flex), NOT display:contents: zag's
-     trigger handlers are pointerenter/pointerleave, which do not bubble, so a
-     box-less wrapper would never receive them outside React — whose synthetic
-     events fake bubbling and would have hidden the divergence. */
-  [data-scope="tooltip"][data-part="trigger"] {
+  /* The trigger wraps the consumer's element rather than cloning handlers onto
+     it. Deliberately a real box (inline-flex), NOT display:contents, for two
+     independent reasons: `contents` generates no box, so it has no rect for the
+     positioner to measure and the popup would anchor to the page's top-left
+     corner; and pointerenter/pointerleave do not bubble, so a box-less wrapper
+     would never receive them outside React — whose synthetic events fake
+     bubbling and would have hidden that divergence. */
+  [data-scope="tooltip"][data-part="trigger"],
+  [data-scope="popover"][data-part="trigger"],
+  [data-scope="menu"][data-part="trigger"] {
     display: inline-flex;
   }
 
   [data-scope="tooltip"][data-part="positioner"] {
     --z-index: var(--ck-z-popover);
+    z-index: var(--ck-z-popover);
   }
 
   [data-scope="tooltip"][data-part="content"] {
@@ -46,6 +61,7 @@
 
   [data-scope="menu"][data-part="positioner"] {
     --z-index: var(--ck-z-popover);
+    z-index: var(--ck-z-popover);
   }
 
   [data-scope="menu"][data-part="content"] {
@@ -55,7 +71,15 @@
     box-shadow: var(--ck-shadow-lg);
     padding: 0.25rem;
     min-width: 10rem;
-    max-height: var(--available-height, 20rem);
+    /* Same two-mechanism story as `z-index` at the top of this file, and the
+       one variable that did not get it. v1 positions through a machine that
+       writes `--available-height` inline, which wins; v2 writes
+       `--ck-available-height` from `applyPosition`. Without the v2 half a long
+       menu simply took the 20rem fallback and ran off the bottom of the
+       viewport with its last items unreachable — flip and shift cannot help,
+       because content taller than both sides fits on neither.
+       Delete `--available-height` when the last v1 adapter goes. */
+    max-height: var(--available-height, var(--ck-available-height, 20rem));
     overflow-y: auto;
   }
   [data-scope="menu"][data-part="content"]:focus-visible {
@@ -122,7 +146,116 @@
     justify-content: space-between;
   }
 
+  /* --------------------------------------------------------------- Popover */
+
+  /* v2 only, so no `--z-index` twin: nothing renders this scope through a
+     machine that writes an inline z-index. */
+  [data-scope="popover"][data-part="positioner"] {
+    z-index: var(--ck-z-popover);
+  }
+
+  [data-scope="popover"][data-part="content"] {
+    display: flow-root;
+    background-color: var(--ck-surface);
+    color: var(--ck-fg);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    padding: 0.75rem 1rem;
+    max-width: var(--ck-popover-max-width, 20rem);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    overflow-wrap: break-word;
+  }
+  [data-scope="popover"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="popover"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="popover"][data-part="title"] {
+    font-weight: 600;
+    color: var(--ck-fg);
+    margin-block-end: 0.25rem;
+  }
+
+  [data-scope="popover"][data-part="body"] {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="popover"][data-part="arrow"] {
+    --arrow-size: 0.5rem;
+    --arrow-background: var(--ck-surface);
+  }
+
   /* --------------------------------------------------------------- shared */
+
+  /* The arrow the v2 positioner drives. It writes `--ck-arrow-x` / `-y` onto
+     the positioner, which inherit down to this element, and sets
+     `data-arrow-detached` when the arrow has been pushed far enough along the
+     edge that it no longer points at its anchor — at which point an arrow is
+     worse than none, because it points at something else.
+
+     PHYSICAL properties here, and this is the one place in the file where that
+     is correct rather than a rule 9 violation. Everything the arrow is
+     positioned from is already physical and already mirrored: `applyPosition`
+     writes `style.left`, `--ck-arrow-x` is an offset from the floating box's
+     LEFT edge, and `data-placement` carries the side after `mirror()` has
+     applied RTL. Feeding those to `inset-inline-start` mirrors them a second
+     time, so under `dir="rtl"` a side-placed popup put its arrow on the edge
+     facing away from the trigger — measured at a full popup width, 96.8px, off.
+     Rule 9 protects RTL; here the logical property was what broke it. */
+  :is([data-scope="tooltip"], [data-scope="popover"], [data-scope="menu"])[data-part="arrow"] {
+    position: absolute;
+    width: var(--arrow-size, 0.5rem);
+    height: var(--arrow-size, 0.5rem);
+    background-color: var(--arrow-background, var(--ck-surface));
+    transform: rotate(45deg);
+    left: var(--ck-arrow-x);
+    top: var(--ck-arrow-y);
+  }
+  [data-part="positioner"][data-arrow-detached] > [data-part="arrow"] {
+    visibility: hidden;
+  }
+  /* Sits on the far side of the box from wherever it actually landed, which is
+     `data-placement` AFTER any flip — the only value that matches what is on
+     screen. */
+  :is(
+      [data-scope="tooltip"],
+      [data-scope="popover"],
+      [data-scope="menu"]
+    )[data-part="positioner"][data-placement^="top"]
+    [data-part="arrow"] {
+    top: 100%;
+    margin-top: calc(var(--arrow-size, 0.5rem) / -2);
+  }
+  :is(
+      [data-scope="tooltip"],
+      [data-scope="popover"],
+      [data-scope="menu"]
+    )[data-part="positioner"][data-placement^="bottom"]
+    [data-part="arrow"] {
+    top: calc(var(--arrow-size, 0.5rem) / -2);
+  }
+  :is(
+      [data-scope="tooltip"],
+      [data-scope="popover"],
+      [data-scope="menu"]
+    )[data-part="positioner"][data-placement^="left"]
+    [data-part="arrow"] {
+    left: 100%;
+    margin-left: calc(var(--arrow-size, 0.5rem) / -2);
+  }
+  :is(
+      [data-scope="tooltip"],
+      [data-scope="popover"],
+      [data-scope="menu"]
+    )[data-part="positioner"][data-placement^="right"]
+    [data-part="arrow"] {
+    left: calc(var(--arrow-size, 0.5rem) / -2);
+  }
+
   @keyframes ck-overlay-in {
     from {
       opacity: 0;

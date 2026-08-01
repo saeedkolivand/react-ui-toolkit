@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — anchored overlay harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because everything asserted against this page needs
+         layout. jsdom reports every element as zero-sized, so a popup that
+         anchors to the wrong element, flips to the wrong side, or lands
+         underneath its own trigger is indistinguishable there from one that is
+         perfectly placed — every rect is 0×0 at the origin. -->
+    <div id="root"></div>
+    <script type="module" src="/anchored.tsx"></script>
+  </body>
+</html>

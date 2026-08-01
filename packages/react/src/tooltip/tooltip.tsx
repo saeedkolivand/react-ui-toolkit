@@ -1,88 +1,93 @@
 "use client";
 
-import { useId, type ReactNode } from "react";
-import * as tooltip from "@zag-js/tooltip";
-import { useMachine, normalizeProps, Portal } from "@zag-js/react";
-import {
-  isFocusVisible,
-  resolvePlacement,
-  type LegacyPlacement,
-  type Placement,
-} from "@crosskit-ui/core";
-import { usePresence } from "../use-presence";
+import type { CSSProperties, ReactNode } from "react";
+import type { Placement, PlacementAlias } from "@crosskit-ui/core";
+import { AnchoredView } from "../anchored/anchored";
+import { useAnchored, type TriggerKind } from "../anchored/use-anchored";
 
 export interface TooltipProps {
-  content: ReactNode;
+  /** The tooltip text. An empty one never opens, which is what makes
+   *  `title={row.note}` safe to write without a conditional around it. */
+  title?: ReactNode;
   children: ReactNode;
-  /** Accepts Floating UI names and v0's Ant names (`topLeft`, `rightBottom`, …). */
-  placement?: Placement | LegacyPlacement;
-  /** v0 called this `visible`. */
+  /** The twelve names: `top`, `topLeft`, `bottomRight`, `leftTop`, … */
+  placement?: PlacementAlias | Placement;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (details: { open: boolean }) => void;
-  /** v0 called this `showDelay`. */
-  openDelay?: number;
-  /** v0 called this `hideDelay`. */
-  closeDelay?: number;
+  /**
+   * Defaults to hover AND focus. Hover alone is the more faithful default but
+   * leaves the tooltip unreachable by keyboard, and a tooltip nobody can read
+   * without a mouse is not a tooltip.
+   */
+  trigger?: TriggerKind | TriggerKind[];
+  /** SECONDS. */
+  mouseEnterDelay?: number;
+  /** SECONDS. */
+  mouseLeaveDelay?: number;
+  arrow?: boolean;
+  /** Never opens, and closes if it already was. */
   disabled?: boolean;
-  /** v0 called this `overlayClassName`. */
-  contentClassName?: string;
-  id?: string;
+  /** Any CSS colour. Sets the background and, with it, the arrow's. */
+  color?: string;
+  /** A class on the popup rather than on the trigger. */
+  overlayClassName?: string;
+  /** Lands on the trigger wrapper, which is this component's root. */
   className?: string;
+  id?: string;
 }
 
+const DEFAULT_TRIGGER: TriggerKind[] = ["hover", "focus"];
+
 export function Tooltip({
-  content,
+  title,
   children,
-  placement,
-  openDelay,
-  closeDelay,
+  placement = "top",
+  trigger = DEFAULT_TRIGGER,
+  arrow = true,
   disabled,
-  contentClassName,
-  id,
+  color,
+  overlayClassName,
   className,
-  ...machineProps
+  ...rest
 }: TooltipProps) {
-  // Unconditional: `id ?? useId()` would be a conditional hook call.
-  const autoId = useId();
-  const service = useMachine(tooltip.machine, {
-    id: id ?? autoId,
-    openDelay,
-    closeDelay,
-    disabled,
-    positioning: { placement: resolvePlacement(placement) },
-    ...machineProps,
+  // An empty title means there is nothing to say. Checked before the hook is
+  // given `disabled` rather than around the render, so no timer is ever
+  // scheduled and no layer is ever pushed for a tooltip that cannot show.
+  const empty = title === undefined || title === null || title === "" || title === false;
+
+  const anchored = useAnchored({
+    ...rest,
+    placement,
+    trigger,
+    arrow,
+    // Either reason closes it: an explicit `disabled`, or nothing to say.
+    disabled: disabled || empty,
+    scope: "tooltip",
+    role: "tooltip",
   });
-  const api = tooltip.connect(service, normalizeProps);
-  const { present, setNode } = usePresence(api.open);
 
   return (
-    <>
-      {/* The trigger wraps rather than clones, so the consumer's element is
-          untouched. focusin/focusout stand in for zag's focus/blur, which do
-          not bubble up to a wrapper — see the note in overlay.css for why the
-          wrapper is a real box and not display:contents. */}
-      <span
-        {...api.getTriggerProps()}
-        className={className}
-        onFocus={e => {
-          if (isFocusVisible(e.target)) api.setOpen(true);
-        }}
-        onBlur={() => api.setOpen(false)}
-      >
-        {children}
-      </span>
-      {/* Gate on presence, NEVER on api.open, or [data-state="closed"] never
-          gets a frame and the exit animation silently does nothing. */}
-      {present && (
-        <Portal>
-          <div {...api.getPositionerProps()}>
-            <div ref={setNode} {...api.getContentProps()} className={contentClassName}>
-              {content}
-            </div>
-          </div>
-        </Portal>
-      )}
-    </>
+    <AnchoredView
+      anchored={anchored}
+      arrow={arrow}
+      className={className}
+      overlayClassName={overlayClassName}
+      positionerProps={
+        // A custom property rather than `background`, so one value drives the
+        // box and the arrow — which is a separate element and would otherwise
+        // end up a different colour from the thing it points at.
+        //
+        // On the POSITIONER, because that is the only ancestor of both. The
+        // arrow is a sibling of the content, not a child of it — it has to be,
+        // or a scrolling menu would clip it — so a property set on the content
+        // inherits to nothing that matters. Which is precisely the outcome this
+        // indirection exists to prevent, and it did not.
+        color ? { style: { "--ck-tooltip-bg": color } as CSSProperties } : undefined
+      }
+      body={title}
+    >
+      {children}
+    </AnchoredView>
   );
 }

@@ -5,30 +5,26 @@ import { Tooltip } from "./tooltip";
 
 const setup = (props: Partial<Parameters<typeof Tooltip>[0]> = {}) =>
   render(
-    <Tooltip content="Helpful" openDelay={0} closeDelay={0} {...props}>
+    <Tooltip title="Helpful" mouseEnterDelay={0} mouseLeaveDelay={0} {...props}>
       <button>Trigger</button>
     </Tooltip>
   );
 
-const triggerWrapper = () => document.querySelector('[data-scope="tooltip"][data-part="trigger"]');
+const trigger = () => document.querySelector('[data-scope="tooltip"][data-part="trigger"]');
 const content = () => document.querySelector('[data-scope="tooltip"][data-part="content"]');
+const button = () => screen.getByRole("button", { name: "Trigger" });
 
 describe("Tooltip", () => {
   it("wraps the trigger rather than replacing it", () => {
     setup();
-    expect(triggerWrapper()).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Trigger" })).toBeInTheDocument();
+    expect(trigger()).toBeInTheDocument();
+    expect(button()).toBeInTheDocument();
   });
 
   it("leaves the consumer's element as the wrapper's only child", () => {
     setup();
-    expect(triggerWrapper()?.children).toHaveLength(1);
-    expect(triggerWrapper()?.firstElementChild?.tagName).toBe("BUTTON");
-  });
-
-  it("passes className to the trigger wrapper", () => {
-    setup({ className: "mine" });
-    expect(triggerWrapper()).toHaveClass("mine");
+    expect(trigger()?.children).toHaveLength(1);
+    expect(trigger()?.firstElementChild?.tagName).toBe("BUTTON");
   });
 
   it("renders nothing until opened", () => {
@@ -38,39 +34,30 @@ describe("Tooltip", () => {
 
   it("reports the closed state on the trigger", () => {
     setup();
-    expect(triggerWrapper()).toHaveAttribute("data-state", "closed");
+    expect(trigger()).toHaveAttribute("data-state", "closed");
   });
 
   it("opens on pointer hover", async () => {
     const user = userEvent.setup();
     setup();
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    await user.hover(button());
     await waitFor(() => expect(content()).toBeInTheDocument());
   });
 
-  it("shows the content when open", async () => {
+  it("shows the title when open", async () => {
     const user = userEvent.setup();
-    setup({ content: "Helpful hint" });
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    setup({ title: "Helpful hint" });
+    await user.hover(button());
     await waitFor(() => expect(content()).toHaveTextContent("Helpful hint"));
-  });
-
-  it("describes the trigger while open, for assistive tech", async () => {
-    const user = userEvent.setup();
-    setup();
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
-    await waitFor(() => expect(triggerWrapper()).toHaveAttribute("aria-describedby"));
-    expect(triggerWrapper()?.getAttribute("aria-describedby")).toBe(content()?.id);
   });
 
   it("closes when the pointer leaves", async () => {
     const user = userEvent.setup();
     setup();
-    const btn = screen.getByRole("button", { name: "Trigger" });
-    await user.hover(btn);
+    await user.hover(button());
     await waitFor(() => expect(content()).toBeInTheDocument());
-    await user.unhover(btn);
-    await waitFor(() => expect(triggerWrapper()).toHaveAttribute("data-state", "closed"));
+    await user.unhover(button());
+    await waitFor(() => expect(trigger()).toHaveAttribute("data-state", "closed"));
   });
 
   it("opens for a controlled open prop with no interaction at all", () => {
@@ -82,32 +69,231 @@ describe("Tooltip", () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
     setup({ onOpenChange });
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    await user.hover(button());
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith({ open: true }));
   });
 
-  it("stays shut when disabled", async () => {
+  it("passes overlayClassName to the popup, not to the trigger", () => {
+    setup({ open: true, onOpenChange: () => {}, overlayClassName: "overlay" });
+    expect(content()).toHaveClass("overlay");
+    expect(trigger()).not.toHaveClass("overlay");
+  });
+
+  it("puts the consumer's className on the trigger wrapper, which is the root", () => {
+    setup({ className: "mine" });
+    // Rule 2: a consumer's class lands on the root untouched. The root a
+    // Tooltip renders in place is the wrapper — the popup is portalled and is
+    // nobody's idea of a root, and has `overlayClassName` of its own.
+    expect(trigger()).toHaveClass("mine");
+  });
+
+  it("stays shut when disabled, even with a title", async () => {
     const user = userEvent.setup();
     setup({ disabled: true });
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    await user.hover(button());
     expect(content()).not.toBeInTheDocument();
   });
 
-  it("passes contentClassName to the content", () => {
-    setup({ open: true, onOpenChange: () => {}, contentClassName: "overlay" });
-    expect(content()).toHaveClass("overlay");
-  });
-
-  // Both naming schemes are accepted; the mapping itself is unit-tested in
-  // core. Actual positioning is Playwright's job — jsdom reports every element
-  // as zero-sized, so Floating UI never resolves a placement here.
-  it("accepts v0's Ant placement names", () => {
+  it("accepts the camelCase placement names", () => {
     setup({ open: true, onOpenChange: () => {}, placement: "bottomRight" });
     expect(content()).toBeInTheDocument();
   });
 
-  it("accepts Floating UI placement names", () => {
+  it("accepts the canonical placement names", () => {
     setup({ open: true, onOpenChange: () => {}, placement: "left-start" });
     expect(content()).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------------------------- ARIA
+
+  it("describes the trigger's own child, not the wrapper", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.hover(button());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+
+    // The whole reason the ARIA is cloned onto the child rather than left on
+    // our span. A screen reader announces the description of the element the
+    // user FOCUSES — the button — so `aria-describedby` on a wrapper around it
+    // is announced by nobody, and the tooltip is silent exactly where it is the
+    // only thing conveying the information.
+    expect(button()).toHaveAttribute("aria-describedby", content()!.id);
+    expect(trigger()).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("stops describing the trigger once closed", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.hover(button());
+    await waitFor(() => expect(button()).toHaveAttribute("aria-describedby"));
+    await user.unhover(button());
+    // A dangling aria-describedby pointing at a removed node makes some screen
+    // readers announce nothing at all for the button.
+    await waitFor(() => expect(button()).not.toHaveAttribute("aria-describedby"));
+  });
+
+  it("puts color where both the box and its arrow can see it", () => {
+    setup({ open: true, onOpenChange: () => {}, color: "rgb(1, 2, 3)" });
+    const positioner = document.querySelector<HTMLElement>(
+      '[data-scope="tooltip"][data-part="positioner"]'
+    )!;
+    const arrow = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="arrow"]')!;
+
+    // The arrow is a SIBLING of the content — it has to be, or a scrolling menu
+    // would clip it — so a custom property set on the content inherits to
+    // nothing that matters, and the arrow keeps the stylesheet default while
+    // the box turns. The positioner is the only ancestor of both.
+    expect(arrow.parentElement).toBe(positioner);
+    expect(positioner.style.getPropertyValue("--ck-tooltip-bg")).toBe("rgb(1, 2, 3)");
+    expect(arrow.closest("[style*='--ck-tooltip-bg']")).toBe(positioner);
+  });
+
+  it("carries role=tooltip on the content", () => {
+    setup({ open: true, onOpenChange: () => {} });
+    expect(content()).toHaveAttribute("role", "tooltip");
+  });
+
+  it("does not claim the trigger opens a popup", () => {
+    setup({ open: true, onOpenChange: () => {} });
+    // aria-haspopup/aria-expanded belong to a menu or a dialog. A tooltip is a
+    // description of the trigger, and announcing it as expandable invites the
+    // user to interact with something they cannot reach.
+    expect(button()).not.toHaveAttribute("aria-haspopup");
+    expect(button()).not.toHaveAttribute("aria-expanded");
+  });
+
+  // ------------------------------------------------------------- empty title
+
+  it("never opens without a title", async () => {
+    const user = userEvent.setup();
+    setup({ title: undefined });
+    await user.hover(button());
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  it("treats an empty string as nothing to say", async () => {
+    const user = userEvent.setup();
+    setup({ title: "" });
+    await user.hover(button());
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  // ---------------------------------------------------------------- keyboard
+
+  it("opens on keyboard focus", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.tab();
+    expect(button()).toHaveFocus();
+    await waitFor(() => expect(content()).toBeInTheDocument());
+  });
+
+  it("closes on Escape while focus is still on the trigger", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.tab();
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    // Answered by the dismissable layer, which listens on the document in the
+    // capture phase and so sees this wherever focus is — including a hover
+    // tooltip, where focus is never inside the content. This test used to claim
+    // it covered a handler on the trigger; it never did, and that handler has
+    // since gone.
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+  });
+
+  it("reports no open at all when disabled inside the enter delay", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const Harness = ({ off }: { off: boolean }) => (
+      <Tooltip title="Note" disabled={off} onOpenChange={onOpenChange}>
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    const { rerender } = render(<Harness off={false} />);
+    await user.hover(button());
+    // Disabled while the open timer is armed. Resetting the state converges
+    // what renders and stops there — the timer still ran and still notified, so
+    // a consumer heard `{open:true}` for a tooltip that is disabled and not in
+    // the document, and never heard a close. A controlled consumer mirroring
+    // that callback then holds `true` themselves and it reopens on re-enable.
+    rerender(<Harness off />);
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  it("stays shut when a title comes back after being disabled mid-hover", async () => {
+    const user = userEvent.setup();
+    // The default enter delay, deliberately: the bug lives inside it.
+    const { rerender } = render(
+      <Tooltip title="Note">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.hover(button());
+    // Emptied while the open timer is still armed. `open` is derived, so
+    // nothing shows — but the timer still fires and writes the state
+    // underneath, invisibly.
+    rerender(
+      <Tooltip title="">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.unhover(button());
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // The pointer is nowhere near it by now, and this is the shape the docs
+    // recommend: `title={row.note}`, where the note arrives later.
+    rerender(
+      <Tooltip title="Note back">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  it("reports nothing at all for a hover shorter than its own delay", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    // The default enter delay, and a pointer that leaves before it elapses.
+    render(
+      <Tooltip title="Note" onOpenChange={onOpenChange}>
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.hover(button());
+    await user.unhover(button());
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // `setOpen` used to notify unconditionally, so the close fired for a
+    // tooltip that never opened: `[[{open:false}]]` with no open before it.
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  it("reports one close per Escape, not two", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    setup({ onOpenChange });
+    await user.tab();
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    onOpenChange.mockClear();
+
+    // `pushDismissable` answers Escape from a document-level CAPTURE listener,
+    // so it has already closed this before anything on the trigger could —
+    // wherever focus is. A second close here made one press report twice.
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(onOpenChange.mock.calls).toEqual([[{ open: false }]]);
+  });
+
+  it('does not render a boolean data attribute as "false"', () => {
+    setup({ open: true, onOpenChange: () => {} });
+    // "false" MATCHES [data-x] in CSS, so a rendered ="false" silently applies
+    // the wrong styles.
+    expect(document.body.innerHTML).not.toMatch(/data-[\w-]+="false"/);
   });
 });

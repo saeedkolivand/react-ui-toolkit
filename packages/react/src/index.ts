@@ -45,11 +45,23 @@ export { Tabs, type TabsProps, type TabItem } from "./tabs/tabs";
 export { Accordion, type AccordionProps, type AccordionItem } from "./accordion/accordion";
 export { Toaster, type ToasterProps } from "./toast/toaster";
 export { Tooltip, type TooltipProps } from "./tooltip/tooltip";
+export { Popover, type PopoverProps } from "./popover/popover";
 export {
-  Menu,
-  type MenuProps,
-  type MenuItem,
-  type MenuEntry,
-  type MenuSeparator,
-} from "./menu/menu";
+  Dropdown,
+  type DropdownProps,
+  type DropdownMenuProps,
+  type DropdownMenuItem,
+  type DropdownMenuDivider,
+  type DropdownMenuEntry,
+} from "./menu/dropdown";
+// Named exports rather than `export *`: two star sources exporting one name
+// makes it ambiguous, and TypeScript drops an ambiguous export from the barrel
+// rather than erroring — so a type vanishes from the public API with a clean
+// typecheck and a clean build.
+export {
+  useAnchored,
+  type AnchoredOptions,
+  type Anchored,
+  type TriggerKind,
+} from "./anchored/use-anchored";
 export { Table, type TableProps } from "./table/table";

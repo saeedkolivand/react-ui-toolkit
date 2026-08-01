@@ -8,6 +8,7 @@ const result = (overrides: Partial<PositionResult> = {}): PositionResult => ({
   y: 40,
   placement: "bottom-start",
   rtl: false,
+  available: { width: 800, height: 300 },
   ...overrides,
 });
 
@@ -17,6 +18,30 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = "";
+});
+
+describe("applyPosition available space", () => {
+  it("still positions a result that carries no available space", () => {
+    // The docblock invites a caller to apply a position it computed elsewhere,
+    // and `available` arrived after that promise did. Required, it threw here —
+    // after left, top and data-placement were already written, leaving the
+    // element half-positioned rather than failing cleanly.
+    const { available: _omitted, ...withoutAvailable } = result();
+    expect(() => applyPosition(el(), withoutAvailable)).not.toThrow();
+    expect(el().style.left).toBe("120px");
+    expect(el().dataset.placement).toBe("bottom-start");
+    expect(el().style.getPropertyValue("--ck-available-height")).toBe("");
+  });
+
+  it("publishes the room on the chosen side, for popups that scroll", () => {
+    applyPosition(el(), result({ available: { width: 640, height: 210 } }));
+    // A menu caps its own `max-height` against this. Without it the box takes
+    // its fallback height and runs off the bottom of the viewport with the last
+    // items unreachable — and neither flip nor shift can help, because content
+    // taller than both sides fits on neither.
+    expect(el().style.getPropertyValue("--ck-available-height")).toBe("210px");
+    expect(el().style.getPropertyValue("--ck-available-width")).toBe("640px");
+  });
 });
 
 describe("applyPosition", () => {

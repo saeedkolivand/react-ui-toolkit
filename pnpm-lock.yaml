@@ -516,12 +516,6 @@ importers:
       '@zag-js/accordion':
         specifier: catalog:zag
         version: 1.43.0
-      '@zag-js/menu':
-        specifier: catalog:zag
-        version: 1.43.0
-      '@zag-js/presence':
-        specifier: catalog:zag
-        version: 1.43.0
       '@zag-js/react':
         specifier: catalog:zag
         version: 1.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -532,9 +526,6 @@ importers:
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':
-        specifier: catalog:zag
-        version: 1.43.0
-      '@zag-js/tooltip':
         specifier: catalog:zag
         version: 1.43.0
     devDependencies:

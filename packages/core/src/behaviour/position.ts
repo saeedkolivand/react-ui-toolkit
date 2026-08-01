@@ -125,6 +125,21 @@ export interface Position {
   /** The placement actually used, which differs from the requested one after a flip. */
   placement: Placement;
   arrow?: ArrowPosition;
+  /**
+   * How much room the chosen side actually has, measured from the anchor to the
+   * boundary edge and already minus `offset` and `padding`.
+   *
+   * A scrolling popup — a menu, a listbox — has to cap itself against this or it
+   * runs off the screen with its last items unreachable, and neither flip nor
+   * shift can help once the content is taller than either side. Reported rather
+   * than applied, because only the caller knows whether its content scrolls.
+   *
+   * Optional so that adding it stayed a `minor`. `computePosition` always
+   * produces it, but this is an exported interface, and a caller hand-building
+   * a `Position` — which `applyPosition`'s own docblock invites — compiled
+   * before and would not after.
+   */
+  available?: { width: number; height: number };
 }
 
 const isVertical = (side: Side) => side === "top" || side === "bottom";
@@ -255,7 +270,32 @@ export function computePosition(
     }
   }
 
-  const result: Position = { x: pos.x, y: pos.y, placement: formatPlacement(side, align) };
+  // Measured on the side finally used, so a flip reports the room it flipped
+  // into rather than the room it rejected.
+  const gap = offset + padding;
+  const available = {
+    width:
+      side === "left"
+        ? anchor.x - boundary.x - gap
+        : side === "right"
+          ? boundary.x + boundary.width - (anchor.x + anchor.width) - gap
+          : boundary.width - padding * 2,
+    height:
+      side === "top"
+        ? anchor.y - boundary.y - gap
+        : side === "bottom"
+          ? boundary.y + boundary.height - (anchor.y + anchor.height) - gap
+          : boundary.height - padding * 2,
+  };
+
+  const result: Position = {
+    x: pos.x,
+    y: pos.y,
+    placement: formatPlacement(side, align),
+    // Never negative: an anchor scrolled off the edge would otherwise produce a
+    // `max-height` a browser rejects, silently restoring the unbounded box.
+    available: { width: Math.max(0, available.width), height: Math.max(0, available.height) },
+  };
 
   if (arrow) {
     const arrowPadding = arrow.padding ?? 0;

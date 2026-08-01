@@ -65,6 +65,7 @@ const { component } = Astro.props;
                 <td>{prop.default ? <code class="code-inline">{prop.default}</code> : "—"}</td>
                 <td>
                   {prop.reactFirst && <span class="react-first">React first</span>}
+                  {prop.reactRemoved && <span class="react-first">Not in React</span>}
                   {prop.description}
                 </td>
               </tr>
@@ -77,11 +78,13 @@ const { component } = Astro.props;
       Prop names are identical in all four frameworks. Only two-way binding differs, and each
       framework uses its own idiom over the same underlying prop.
       {
-        component.props.some(p => p.reactFirst) && (
+        component.props.some(p => p.reactFirst || p.reactRemoved) && (
           <>
             {" "}
-            The rows marked <span class="react-first">React first</span> are the exception, and a
-            temporary one: they exist in React while the other three adapters catch up.
+            The marked rows are the exception, and a temporary one, in both directions:{" "}
+            <span class="react-first">React first</span> exists in React while the other three
+            adapters catch up, and <span class="react-first">Not in React</span> is the prop it
+            replaced, still live everywhere else.
           </>
         )
       }
