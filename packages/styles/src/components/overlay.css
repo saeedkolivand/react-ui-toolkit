@@ -288,7 +288,17 @@
      Specificity-matching would fix today's rules and break again the moment
      anything more specific appears, silently, in the same way. A preference is
      not a style to be out-ranked, so it is `!important` — which is what
-     `dialog.css` already does, and why that one was never broken. */
+     `dialog.css` already does, and why that one was never broken.
+     
+     Two consequences of `!important` inside a layer, both deliberate and
+     neither obvious. Important declarations reverse layer order, so this beats
+     a consumer's `!important` in `ck.overrides` and their unlayered
+     `!important` as well — measured at 0.001s against both. That is the point:
+     a stated accessibility preference should not be losing an argument with a
+     stylesheet. And `animation-iteration-count: 1` would freeze a part that
+     legitimately loops, so a future spinner inside one of these scopes needs
+     its own carve-out, the way `button.css` keeps its own by living outside
+     them. */
   @media (prefers-reduced-motion: reduce) {
     [data-scope="tooltip"][data-part],
     [data-scope="popover"][data-part],

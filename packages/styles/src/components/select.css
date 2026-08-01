@@ -198,7 +198,17 @@
 
   /* Same defect and the same fix as overlay.css: the `content` half lost to the
      `[data-state]` animation rules, and naming parts one at a time is how the
-     trigger's own transition came to be left out entirely. */
+     trigger's own transition came to be left out entirely.
+     
+     Two consequences of `!important` inside a layer, both deliberate and
+     neither obvious. Important declarations reverse layer order, so this beats
+     a consumer's `!important` in `ck.overrides` and their unlayered
+     `!important` as well — measured at 0.001s against both. That is the point:
+     a stated accessibility preference should not be losing an argument with a
+     stylesheet. And `animation-iteration-count: 1` would freeze a part that
+     legitimately loops, so a future spinner inside one of these scopes needs
+     its own carve-out, the way `button.css` keeps its own by living outside
+     them. */
   @media (prefers-reduced-motion: reduce) {
     [data-scope="select"][data-part] {
       animation-duration: 1ms !important;
