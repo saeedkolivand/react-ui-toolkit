@@ -25,6 +25,12 @@ export interface SkeletonProps extends Omit<HTMLAttributes<HTMLDivElement>, "tit
    *
    * Leaving it off also shows the placeholder, so `<Skeleton/>` alone is a
    * placeholder and `<Skeleton loading={busy}>…</Skeleton>` is a switch.
+   *
+   * Once it is `false` the children are returned bare — no wrapper, and so no
+   * `className`, `id`, `ref` or spread attribute either. That is deliberate:
+   * keeping them would mean a box that appears the moment loading ends and
+   * changes the layout underneath it, which is worse than the thing it fixes.
+   * Put the class on something that is there in both states.
    */
   loading?: boolean;
   avatar?: boolean | SkeletonAvatarProps;

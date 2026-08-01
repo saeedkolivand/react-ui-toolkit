@@ -27,6 +27,18 @@ describe("Skeleton", () => {
     expect(document.querySelector('[data-scope="skeleton"]')).toBeNull();
   });
 
+  it("returns the children bare, wrapper and all its attributes included", () => {
+    render(
+      <Skeleton loading={false} className="card" id="s" data-testid="wrapper">
+        <p>real content</p>
+      </Skeleton>
+    );
+    // Documented, not accidental: keeping the wrapper would mean a box that
+    // appears the moment loading ends and shifts the layout under it.
+    expect(screen.queryByTestId("wrapper")).not.toBeInTheDocument();
+    expect(document.querySelector(".card")).toBeNull();
+  });
+
   it("keeps the placeholder while loading is true, children and all", () => {
     render(
       <Skeleton loading>

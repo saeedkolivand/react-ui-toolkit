@@ -35,7 +35,10 @@ controls of unequal height otherwise sit on different lines.
 (rows and per-row widths), `active` for the shimmer, `round`. Omitting `loading`
 shows the placeholder, so `<Skeleton />` on its own works and
 `<Skeleton loading={busy}>…</Skeleton>` is a switch. `Skeleton.Avatar`,
-`.Button`, `.Input`, `.Image` and `.Node` are standalone blocks. The container
+`.Button`, `.Input`, `.Image` and `.Node` are standalone blocks. With
+`loading={false}` the children are returned bare — no wrapper, so no
+`className`, `id` or `ref` either; put those on something present in both
+states. The container
 carries `aria-busy` rather than a live region — there is no text to announce.
 
 **`Empty`** is the no-data state: `description` (from the locale unless given —
