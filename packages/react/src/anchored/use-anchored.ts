@@ -101,7 +101,7 @@ export interface AnchoredOptions {
    * *describes* its trigger, while a menu or a popover is a thing the trigger
    * *opens*.
    */
-  role: "tooltip" | "menu" | "dialog";
+  role: "tooltip" | "menu" | "dialog" | "listbox";
   id?: string;
 }
 

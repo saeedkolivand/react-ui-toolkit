@@ -87,7 +87,7 @@ of them, remove the workaround:
 | --- | --- | --- |
 | `two competing change events` | `one native change event` | Handlers that ran twice, or not at all, now run exactly once. |
 
-#### Select & Option
+#### Select
 
 | v0 | v1 | Notes |
 | --- | --- | --- |
@@ -95,6 +95,9 @@ of them, remove the workaround:
 | `onChange(e) with e.target.value` | `onValueChange({ value, item })` |  |
 | `error` | `invalid` |  |
 | `<Option> children ignored` | `<Option> children build the collection` | v0 destructured them into `_children` and never rendered them, which is why Table's page-size dropdown was always empty. |
+| `<Option> children` | `options` | React only. One way to declare the options rather than two, and the one that survives being generated. |
+| `items` | `options (React)` |  |
+| `onValueChange({ value, item })` | `onChange(value, option) (React)` |  |
 
 ### Overlays
 

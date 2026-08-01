@@ -274,13 +274,13 @@ export function Table<T>({
               <Select
                 label="Rows per page"
                 fullWidth={false}
-                size="sm"
-                items={pageSizeOptions.map(size => ({
+                size="small"
+                options={pageSizeOptions.map(size => ({
                   value: String(size),
                   label: `${size} / page`,
                 }))}
                 value={String(currentPageSize)}
-                onValueChange={details => table.setPageSize(Number(details.value))}
+                onChange={value => table.setPageSize(Number(value))}
               />
             </div>
           )}

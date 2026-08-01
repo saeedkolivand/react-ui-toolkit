@@ -164,10 +164,9 @@ export const forms: ComponentDoc[] = [
   },
   {
     slug: "select",
-    name: "Select & Option",
+    name: "Select",
     group: "Forms",
     scope: "select",
-    machine: "@zag-js/select",
     gains: [
       "Arrow-key navigation and Home/End",
       "Typeahead",
@@ -177,11 +176,46 @@ export const forms: ComponentDoc[] = [
     summary:
       'The trigger is a real `<button role="combobox">`. v0 used `<input readOnly role="combobox">`, which is the ARIA pattern for a typeahead combobox and wrong for a plain select.',
     props: [
-      { name: "items", type: "SelectItem[]", description: "Options as data." },
+      {
+        name: "options",
+        reactFirst: true,
+        type: "SelectOption[]",
+        description: "The options, as data. Replaces `items`.",
+      },
+      {
+        name: "onChange",
+        reactFirst: true,
+        type: "(value: string, option: SelectOption) => void",
+        description:
+          "The value AND the option it came from — the second is what a consumer usually wants and would otherwise have to look up again.",
+      },
+      {
+        name: "size",
+        reactFirst: true,
+        type: '"small" | "middle" | "large"',
+        default: '"middle"',
+        description: "Emits `data-size` in that vocabulary, so v2 carries its own rules.",
+      },
+      {
+        name: "status",
+        reactFirst: true,
+        type: '"error" | "warning"',
+        description:
+          "Colours the control. Deliberately claims nothing to assistive tech — use `errorMessage` for something a screen reader should read.",
+      },
+      {
+        name: "placement",
+        reactFirst: true,
+        type: "Placement | PlacementAlias",
+        default: '"bottomLeft"',
+        description: "Where the listbox opens, from the same twelve names the overlays take.",
+      },
+      { name: "items", reactRemoved: true, type: "SelectItem[]", description: "Options as data." },
       { name: "value", type: "string", description: "Controlled value. Single-select in v1." },
       { name: "defaultValue", type: "string", description: "Uncontrolled initial value." },
       {
         name: "onValueChange",
+        reactRemoved: true,
         type: "(d: { value, item }) => void",
         description: "Replaces v0's synthesised change event.",
       },
@@ -203,18 +237,20 @@ export const forms: ComponentDoc[] = [
         to: "<Option> children build the collection",
         note: "v0 destructured them into `_children` and never rendered them, which is why Table's page-size dropdown was always empty.",
       },
+      {
+        from: "<Option> children",
+        to: "options",
+        note: "React only. One way to declare the options rather than two, and the one that survives being generated.",
+      },
+      { from: "items", to: "options (React)" },
+      { from: "onValueChange({ value, item })", to: "onChange(value, option) (React)" },
     ],
     samples: {
       react: `<Select
   label="Country"
-  items={[{ value: "ng", label: "Nigeria" }]}
-  onValueChange={d => setCountry(d.value)}
-/>
-
-{/* or declaratively */}
-<Select label="Country">
-  <Option value="ng">Nigeria</Option>
-</Select>`,
+  options={[{ value: "ng", label: "Nigeria" }]}
+  onChange={(value, option) => setCountry(option.label)}
+/>`,
       vue: `<Select label="Country" :items="items" @update:value="v => (country = v)" />
 
 <!-- or declaratively -->

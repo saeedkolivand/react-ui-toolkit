@@ -62,6 +62,11 @@ const MIGRATING = new Set<string>([
   "vue/accordion",
   "svelte/accordion",
   "angular/accordion",
+  // React's Select is a button plus a portalled listbox with `data-size` in
+  // Ant's vocabulary; the others still render the v1 markup and `sm`/`md`/`lg`.
+  "vue/field",
+  "svelte/field",
+  "angular/field",
 ]);
 
 /**
@@ -81,6 +86,18 @@ const RESOLVED: Record<string, { part: string; expect: Record<string, string | R
       // with no gap, so either wrong value means the rule never applied.
       display: "flex",
       gap: /^(4px|0\.25rem)$/,
+    },
+  },
+  // The section holding Select. A base rule again, for the reason the button
+  // entry gives: the question is whether the stylesheet reached the control at
+  // all, not whether two contracts agree about its size vocabulary.
+  field: {
+    part: '[data-scope="select"][data-part="trigger"]',
+    expect: {
+      // A button's UA default is `inline-block` with a real border; both being
+      // replaced is the rule having applied.
+      display: "flex",
+      cursor: "pointer",
     },
   },
   accordion: {

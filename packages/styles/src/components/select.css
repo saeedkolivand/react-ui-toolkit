@@ -54,6 +54,27 @@
   }
 
   /* Sizes match Input's exactly — the two sit next to each other in forms. */
+  /* v2 sizes. The block below is v1's `sm`/`md`/`lg`, which matches nothing a
+     v2 Select renders — same coexistence as the tab `data-type` rules and
+     `button-v1.css`, and the same reason: a rewrite that silently drops every
+     size is a regression that has already happened once here. Delete the v1
+     three when the last adapter moves. */
+  [data-scope="select"][data-size="small"] > [data-part="control"] [data-part="trigger"] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.375rem 0.5rem;
+  }
+  [data-scope="select"][data-size="middle"] > [data-part="control"] [data-part="trigger"] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+  [data-scope="select"][data-size="large"] > [data-part="control"] [data-part="trigger"] {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    padding: 0.75rem 1rem;
+  }
+
   [data-scope="select"][data-size="sm"] [data-part="trigger"] {
     font-size: 0.875rem;
     line-height: 1.25rem;

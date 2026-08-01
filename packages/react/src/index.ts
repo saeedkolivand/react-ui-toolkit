@@ -36,10 +36,10 @@ export { Modal, type ModalProps } from "./dialog/modal";
 export { Drawer, type DrawerProps } from "./dialog/drawer";
 export {
   Select,
-  Option,
   type SelectProps,
-  type SelectItem,
-  type OptionProps,
+  type SelectOption,
+  type SelectSize,
+  type SelectStatus,
 } from "./select/select";
 export { Tabs, type TabsProps, type TabItem, type TabsType, type TabPosition } from "./tabs/tabs";
 export { Collapse, type CollapseProps, type CollapseItem } from "./accordion/collapse";

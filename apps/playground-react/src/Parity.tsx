@@ -117,7 +117,7 @@ export function Parity() {
           <Input label="Email" placeholder={FIXTURE.email} helperText="Never shared." />
           <Input label="Broken" placeholder={FIXTURE.email} invalid errorMessage="Required" />
           <Textarea label="Notes" placeholder={FIXTURE.text} />
-          <Select label="Country" items={FIXTURE.countries} defaultValue="ng" />
+          <Select label="Country" options={FIXTURE.countries} defaultValue="ng" />
         </div>
       </section>
 

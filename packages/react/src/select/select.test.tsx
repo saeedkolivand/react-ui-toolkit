@@ -1,243 +1,207 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Select, Option } from "./select";
+import { Select } from "./select";
 
-const items = [
+const OPTIONS = [
   { value: "ng", label: "Nigeria" },
   { value: "gh", label: "Ghana" },
   { value: "ke", label: "Kenya", disabled: true },
+  { value: "za", label: "South Africa" },
 ];
 
+const setup = (props: Partial<Parameters<typeof Select>[0]> = {}) => {
+  const onChange = vi.fn();
+  const result = render(<Select options={OPTIONS} onChange={onChange} {...props} />);
+  return { ...result, onChange };
+};
+
 const trigger = () => screen.getByRole("combobox");
-const valueText = () => document.querySelector('[data-part="value-text"]');
-// The listbox is portaled to document.body, so it sits outside RTL's container.
-const rows = () => document.querySelectorAll('[data-part="item"]');
+const listbox = () => screen.queryByRole("listbox");
+const option = (name: string) => screen.getByRole("option", { name });
+const highlighted = () => document.querySelector("[data-highlighted]")?.textContent;
+const openIt = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(trigger());
+  await waitFor(() => expect(listbox()).toBeInTheDocument());
+};
 
 describe("Select", () => {
-  it("renders the root with scope and part", () => {
-    const { container } = render(<Select items={items} />);
-    expect(container.querySelector('[data-scope="select"][data-part="root"]')).toBeInTheDocument();
+  it("shows the placeholder until something is chosen", () => {
+    setup({ placeholder: "Pick one" });
+    expect(trigger()).toHaveTextContent("Pick one");
+    expect(trigger()).toHaveAttribute("data-placeholder", "");
   });
 
-  it("puts size and variant on the root as data attributes", () => {
-    const { container } = render(<Select items={items} size="lg" variant="filled" />);
-    const root = container.querySelector('[data-part="root"]');
-    expect(root).toHaveAttribute("data-size", "lg");
-    expect(root).toHaveAttribute("data-variant", "filled");
+  it("shows the label of the current value", () => {
+    setup({ defaultValue: "gh" });
+    expect(trigger()).toHaveTextContent("Ghana");
+    expect(trigger()).not.toHaveAttribute("data-placeholder");
   });
 
-  it("omits boolean data attributes rather than writing false", () => {
-    const { container } = render(<Select items={items} invalid={false} fullWidth={false} />);
-    const root = container.querySelector('[data-part="root"]');
-    expect(root).not.toHaveAttribute("data-invalid");
-    expect(root).not.toHaveAttribute("data-full-width");
+  it("renders nothing until opened", () => {
+    setup();
+    expect(listbox()).not.toBeInTheDocument();
   });
 
-  it("sets boolean data attributes when true", () => {
-    const { container } = render(<Select items={items} invalid />);
-    expect(container.querySelector('[data-part="root"]')).toHaveAttribute("data-invalid", "");
-  });
-
-  it("passes className through to the root", () => {
-    const { container } = render(<Select items={items} className="mine" />);
-    expect(container.querySelector('[data-part="root"]')).toHaveClass("mine");
-  });
-
-  it("renders a real button as the trigger, not a readonly input", () => {
-    render(<Select items={items} />);
-    expect(trigger().tagName).toBe("BUTTON");
-  });
-
-  it("shows the placeholder when nothing is selected", () => {
-    render(<Select items={items} placeholder="Pick one" />);
-    expect(valueText()).toHaveTextContent("Pick one");
-  });
-
-  it("marks the trigger as placeholder-shown when empty", () => {
-    render(<Select items={items} />);
-    expect(trigger()).toHaveAttribute("data-placeholder-shown");
-  });
-
-  it("drops the placeholder-shown flag once something is selected", () => {
-    render(<Select items={items} defaultValue="gh" />);
-    expect(trigger()).not.toHaveAttribute("data-placeholder-shown");
-  });
-
-  it("shows the selected label for defaultValue", () => {
-    render(<Select items={items} defaultValue="gh" />);
-    expect(valueText()).toHaveTextContent("Ghana");
-  });
-
-  it("renders a label and names the trigger with it", () => {
-    render(<Select items={items} label="Country" />);
-    expect(screen.getByText("Country")).toBeInTheDocument();
-    expect(trigger()).toHaveAccessibleName(/Country/);
-  });
-
-  it("leaves no dangling aria-labelledby when there is no label", () => {
-    render(<Select items={items} />);
-    expect(trigger()).not.toHaveAttribute("aria-labelledby");
-  });
-
-  it("renders helper text and links it via aria-describedby", () => {
-    render(<Select items={items} id="s" helperText="Where you live" />);
-    expect(trigger()).toHaveAttribute("aria-describedby", "s-helper");
-    expect(screen.getByText("Where you live")).toBeInTheDocument();
-  });
-
-  it("prefers the error message over helper text", () => {
-    render(<Select items={items} id="s" helperText="helper" errorMessage="Required" />);
-    expect(trigger()).toHaveAttribute("aria-describedby", "s-error");
-    expect(screen.queryByText("helper")).not.toBeInTheDocument();
-    expect(screen.getByText("Required")).toBeInTheDocument();
-  });
-
-  it("marks the trigger invalid for assistive tech", () => {
-    render(<Select items={items} invalid />);
-    expect(trigger()).toHaveAttribute("aria-invalid", "true");
-  });
-
-  it("disables the trigger", () => {
-    render(<Select items={items} disabled />);
-    expect(trigger()).toBeDisabled();
-  });
-
-  it("renders a hidden native select carrying name and options", () => {
-    const { container } = render(<Select items={items} name="country" />);
-    const hidden = container.querySelector("select");
-    expect(hidden).toHaveAttribute("name", "country");
-    expect(hidden?.querySelectorAll("option")).toHaveLength(3);
-  });
-
-  it("carries the selected value on the hidden select so forms submit it", () => {
-    const { container } = render(<Select items={items} name="country" defaultValue="ke" />);
-    expect(container.querySelector("select")).toHaveValue("ke");
-  });
-
-  it("marks the hidden select required", () => {
-    const { container } = render(<Select items={items} name="country" required />);
-    expect(container.querySelector("select")).toBeRequired();
-  });
-
-  it("renders one item per entry with the item part", () => {
-    render(<Select items={items} />);
-    expect(rows()).toHaveLength(3);
-  });
-
-  it("marks a disabled item without disabling the others", () => {
-    render(<Select items={items} />);
-    expect(rows()[0]).not.toHaveAttribute("data-disabled");
-    expect(rows()[2]).toHaveAttribute("data-disabled");
-  });
-
-  it("marks the selected item checked", () => {
-    render(<Select items={items} defaultValue="gh" />);
-    expect(rows()[1]).toHaveAttribute("data-state", "checked");
-    expect(rows()[0]).toHaveAttribute("data-state", "unchecked");
-  });
-
-  it("opens on trigger click", async () => {
+  it("chooses on click and reports the value and its option", async () => {
     const user = userEvent.setup();
-    render(<Select items={items} />);
-    await user.click(trigger());
-    expect(trigger()).toHaveAttribute("aria-expanded", "true");
+    const { onChange } = setup();
+    await openIt(user);
+    await user.click(option("Ghana"));
+
+    // The option, not just the value — a consumer almost always wants the label
+    // too, and would otherwise have to look it up again.
+    expect(onChange).toHaveBeenCalledWith("gh", { value: "gh", label: "Ghana" });
+    await waitFor(() => expect(listbox()).not.toBeInTheDocument());
+    expect(trigger()).toHaveTextContent("Ghana");
   });
 
-  it("reports the open state on the indicator so CSS can rotate it", async () => {
+  it("ignores a click on a disabled option", async () => {
     const user = userEvent.setup();
-    const { container } = render(<Select items={items} />);
-    await user.click(trigger());
-    expect(container.querySelector('[data-part="indicator"]')).toHaveAttribute(
-      "data-state",
-      "open"
-    );
+    const { onChange } = setup();
+    await openIt(user);
+    await user.click(option("Kenya"));
+    expect(onChange).not.toHaveBeenCalled();
+    expect(listbox()).toBeInTheDocument();
   });
 
-  it("selects an item on click and reports value plus item", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
-    render(<Select items={items} onValueChange={onValueChange} />);
-    await user.click(trigger());
-    await user.click(screen.getByRole("option", { name: /Ghana/ }));
-    expect(onValueChange).toHaveBeenCalledWith({
-      value: "gh",
-      item: expect.objectContaining({ value: "gh" }),
-    });
-  });
+  // -------------------------------------------------------------------- ARIA
 
-  it("closes after a selection", async () => {
+  it("announces itself as a combobox owning a listbox", async () => {
     const user = userEvent.setup();
-    render(<Select items={items} />);
-    await user.click(trigger());
-    await user.click(screen.getByRole("option", { name: /Nigeria/ }));
+    setup();
+    expect(trigger()).toHaveAttribute("aria-haspopup", "listbox");
     expect(trigger()).toHaveAttribute("aria-expanded", "false");
+    await openIt(user);
+    expect(trigger()).toHaveAttribute("aria-expanded", "true");
+    expect(trigger()).toHaveAttribute("aria-controls", listbox()!.id);
   });
 
-  it("does not select a disabled item", async () => {
+  it("marks the chosen option selected, and only that one", async () => {
     const user = userEvent.setup();
-    const onValueChange = vi.fn();
-    render(<Select items={items} onValueChange={onValueChange} />);
-    await user.click(trigger());
-    await user.click(screen.getByRole("option", { name: /Kenya/ }));
-    expect(onValueChange).not.toHaveBeenCalled();
+    setup({ defaultValue: "gh" });
+    await openIt(user);
+    expect(option("Ghana")).toHaveAttribute("aria-selected", "true");
+    expect(option("Nigeria")).toHaveAttribute("aria-selected", "false");
+    expect(screen.getAllByRole("option", { selected: true })).toHaveLength(1);
   });
 
-  it("honours a controlled value", () => {
-    render(<Select items={items} value="ke" onValueChange={() => {}} />);
-    expect(valueText()).toHaveTextContent("Kenya");
-  });
-
-  it("points the trigger at the listbox it controls", async () => {
+  it("tracks the highlight with aria-activedescendant", async () => {
     const user = userEvent.setup();
-    render(<Select items={items} />);
+    setup();
+    await openIt(user);
+    await waitFor(() => expect(listbox()).toHaveFocus());
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toHaveAttribute("aria-activedescendant", option("Ghana").id);
+  });
+
+  it("names the listbox with the same label as the trigger", async () => {
+    const user = userEvent.setup();
+    setup({ label: "Country" });
+    // A listbox with no accessible name is announced as just "listbox".
+    expect(trigger()).toHaveAccessibleName("Country");
+    await openIt(user);
+    expect(listbox()).toHaveAccessibleName("Country");
+  });
+
+  it("describes the trigger with its error rather than its helper", () => {
+    setup({ helperText: "Pick a country", errorMessage: "Required" });
+    expect(trigger()).toHaveAccessibleDescription("Required");
+  });
+
+  // ---------------------------------------------------------------- keyboard
+
+  it("opens on Enter and lands on the current selection", async () => {
+    const user = userEvent.setup();
+    setup({ defaultValue: "za" });
+    trigger().focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(listbox()).toBeInTheDocument());
+    // Not the top of the list: a long one should not start somewhere the user
+    // has to scroll back from.
+    expect(highlighted()).toContain("South Africa");
+  });
+
+  it("steps over a disabled option", async () => {
+    const user = userEvent.setup();
+    setup({ defaultValue: "gh" });
+    trigger().focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(listbox()).toBeInTheDocument());
+    await user.keyboard("{ArrowDown}");
+    // "Kenya" is disabled and skipped in one press.
+    expect(highlighted()).toContain("South Africa");
+  });
+
+  it("jumps by typeahead", async () => {
+    const user = userEvent.setup();
+    setup();
+    await openIt(user);
+    await user.keyboard("so");
+    expect(highlighted()).toContain("South Africa");
+  });
+
+  it("chooses the highlighted option on Enter", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup();
+    await openIt(user);
+    await user.keyboard("{ArrowDown}{Enter}");
+    expect(onChange).toHaveBeenCalledWith("gh", { value: "gh", label: "Ghana" });
+    await waitFor(() => expect(listbox()).not.toBeInTheDocument());
+  });
+
+  it("closes on Escape without choosing", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup();
+    await openIt(user);
+    await user.keyboard("{ArrowDown}{Escape}");
+    await waitFor(() => expect(listbox()).not.toBeInTheDocument());
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("gives focus back to the trigger when it closes", async () => {
+    const user = userEvent.setup();
+    setup();
+    await openIt(user);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(listbox()).not.toBeInTheDocument());
+    expect(trigger()).toHaveFocus();
+  });
+
+  // ------------------------------------------------------------------- forms
+
+  it("carries the value in a real control a plain submission can read", () => {
+    const { container } = setup({ name: "country", defaultValue: "gh" });
+    const native = container.querySelector<HTMLSelectElement>('select[name="country"]')!;
+    expect(native.value).toBe("gh");
+    // Hidden from assistive tech, which has the combobox already, and out of
+    // the tab order so it is not a second stop.
+    expect(native).toHaveAttribute("aria-hidden", "true");
+    expect(native).toHaveAttribute("tabindex", "-1");
+  });
+
+  // -------------------------------------------------------------- controlled
+
+  it("obeys a controlled value and does not move on its own", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup({ value: "ng" });
+    await openIt(user);
+    await user.click(option("Ghana"));
+    expect(onChange).toHaveBeenCalledWith("gh", { value: "gh", label: "Ghana" });
+    expect(trigger()).toHaveTextContent("Nigeria");
+  });
+
+  it("stays shut when disabled", async () => {
+    const user = userEvent.setup();
+    setup({ disabled: true });
     await user.click(trigger());
-    expect(trigger()).toHaveAttribute("aria-controls", screen.getByRole("listbox").id);
+    expect(listbox()).not.toBeInTheDocument();
   });
 
-  it("builds the collection from <Option> children", () => {
-    render(
-      <Select>
-        <Option value="a">Alpha</Option>
-        <Option value="b">Beta</Option>
-      </Select>
-    );
-    expect(rows()).toHaveLength(2);
-    expect(rows()[0]).toHaveTextContent("Alpha");
-  });
-
-  it("falls back to the value when an Option has no text", () => {
-    render(
-      <Select>
-        <Option value="a" />
-      </Select>
-    );
-    expect(rows()[0]).toHaveTextContent("a");
-  });
-
-  it("carries disabled through from an Option child", () => {
-    render(
-      <Select>
-        <Option value="a">Alpha</Option>
-        <Option value="b" disabled>
-          Beta
-        </Option>
-      </Select>
-    );
-    expect(rows()[1]).toHaveAttribute("data-disabled");
-  });
-
-  it("prefers items over children when both are given", () => {
-    render(
-      <Select items={items}>
-        <Option value="x">X</Option>
-      </Select>
-    );
-    expect(rows()).toHaveLength(3);
-  });
-
-  it("renders nothing for a bare Option", () => {
-    const { container } = render(<Option value="a">Alpha</Option>);
-    expect(container).toBeEmptyDOMElement();
+  it('does not render a boolean data attribute as "false"', () => {
+    setup({ defaultValue: "gh" });
+    // "false" MATCHES [data-x] in CSS, so a rendered ="false" silently applies
+    // the wrong styles.
+    expect(document.body.innerHTML).not.toMatch(/data-[\w-]+="false"/);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { TableColumn } from "@crosskit-ui/core";
 import { Table } from "./table";
@@ -275,12 +275,21 @@ describe("Table", () => {
 
   // Bug 0.3: v0 passed <Option> children to a Select that never rendered them,
   // so showSizeChanger produced a permanently empty dropdown.
-  it("renders a page-size changer whose options actually exist", () => {
+  it("renders a page-size changer whose options actually exist", async () => {
+    const user = userEvent.setup();
     const { container } = render(
       <Table data={many} columns={columns} pageSize={10} showSizeChanger />
     );
     expect(container.querySelector('[data-part="page-size"]')).toBeInTheDocument();
-    expect(document.querySelectorAll('[data-scope="select"][data-part="item"]')).toHaveLength(4);
+
+    // Opened first, because the v2 Select gates its listbox on presence like
+    // every other overlay rather than rendering it into a portal eagerly. The
+    // assertion is unchanged in intent — v0 ignored the options it was given
+    // and produced an empty dropdown, which is what this has always been for.
+    await user.click(screen.getByRole("combobox"));
+    await waitFor(() =>
+      expect(document.querySelectorAll('[data-scope="select"][data-part="item"]')).toHaveLength(4)
+    );
   });
 
   it("hides the page-size changer by default", () => {
