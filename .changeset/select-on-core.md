@@ -19,9 +19,10 @@ move too.
 - `size` takes `small` / `middle` / `large` and emits `data-size` in that
   vocabulary, so v2 carries its own rules alongside the `sm`/`md`/`lg` block the
   other adapters still match.
-- `invalid` becomes `status="error"`, which colours the control and deliberately
-  claims nothing to assistive tech. Use `errorMessage` for something a screen
-  reader should read; it still sets `data-invalid` and describes the trigger.
+- `invalid` becomes `status="error"`, which colours the control and marks the
+  trigger `aria-invalid`. `status="warning"` is presentation only, since there is
+  no ARIA state for it. `errorMessage` sets `aria-invalid` too and describes the
+  trigger, and is what a screen reader actually reads out.
 - `variant` is gone — it was a field-level prop the select never used
   distinctly.
 - **`<Option>` children are gone.** One way to declare options rather than two,

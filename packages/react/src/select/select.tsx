@@ -47,8 +47,12 @@ export interface SelectProps {
   placeholder?: string;
   size?: SelectSize;
   /**
-   * Colours the control. Deliberately does not claim anything to assistive
-   * tech — use `errorMessage` for something a screen reader should read.
+   * Colours the control, and `"error"` also marks the trigger `aria-invalid`.
+   *
+   * `"warning"` is presentation only — there is no ARIA state for it, and
+   * inventing one would be a claim a screen reader cannot act on. Use
+   * `errorMessage` for something that should actually be read out; it sets
+   * `aria-invalid` too, and describes the trigger.
    */
   status?: SelectStatus;
   placement?: PlacementAlias | Placement;
@@ -153,7 +157,15 @@ export function Select({
           event,
           collection,
           selected || null,
-          { orientation: "vertical", typeahead: true },
+          // `both`, not `vertical`: a CLOSED select steps on the horizontal
+          // arrows too. `vertical` answered the letters and Home/End and left
+          // ArrowLeft/ArrowRight falling through, which is half the keymap the
+          // other three adapters and a native `<select>` both provide.
+          //
+          // `rtl` stays at its default deliberately. With `dir="rtl"` the other
+          // three still take ArrowRight as *next*, so mirroring here would open
+          // a new divergence rather than close one.
+          { orientation: "both", typeahead: true },
           typeaheadRef.current
         );
         if (!jumped.handled) return;

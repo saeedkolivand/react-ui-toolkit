@@ -201,7 +201,7 @@ export const forms: ComponentDoc[] = [
         reactFirst: true,
         type: '"error" | "warning"',
         description:
-          "Colours the control. Deliberately claims nothing to assistive tech — use `errorMessage` for something a screen reader should read.",
+          "Colours the control, and `error` also marks the trigger `aria-invalid`. `warning` is presentation only — there is no ARIA state for it. Use `errorMessage` for something that should be read out.",
       },
       {
         name: "placement",

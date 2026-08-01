@@ -144,6 +144,33 @@ describe("Select", () => {
     expect(listbox()).not.toBeInTheDocument();
   });
 
+  it("answers the horizontal arrows while closed, and only while closed", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup({ defaultValue: "ng" });
+    trigger().focus();
+    // The other half of the closed keymap. Last round taught the closed branch
+    // letters, Home and End and left it on `orientation: "vertical"`, which is
+    // what decides whether `navigate` consumes the horizontal arrows at all —
+    // so these two still fell through while the other three adapters, and a
+    // native `<select>`, both stepped.
+    await user.keyboard("{ArrowRight}");
+    expect(onChange).toHaveBeenLastCalledWith("gh", { value: "gh", label: "Ghana" });
+    await user.keyboard("{ArrowRight}");
+    // Kenya is disabled, so the step lands past it.
+    expect(onChange).toHaveBeenLastCalledWith("za", { value: "za", label: "South Africa" });
+    await user.keyboard("{ArrowLeft}");
+    expect(onChange).toHaveBeenLastCalledWith("gh", { value: "gh", label: "Ghana" });
+    expect(listbox()).not.toBeInTheDocument();
+
+    // Open, the listbox is vertical: the horizontal arrows move nothing.
+    await openIt(user);
+    expect(highlighted()).toBe("Ghana");
+    // One key, not a round trip: ArrowRight then ArrowLeft returns to Ghana
+    // either way, so a pair would pass whatever the open branch does.
+    await user.keyboard("{ArrowRight}");
+    expect(highlighted()).toBe("Ghana");
+  });
+
   it("opens on Enter and lands on the current selection", async () => {
     const user = userEvent.setup();
     setup({ defaultValue: "za" });
