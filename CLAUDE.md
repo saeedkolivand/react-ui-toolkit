@@ -62,6 +62,32 @@ Do not name other UI or behaviour libraries in shipped code, comments, docs or c
 - **Playgrounds import built `dist`, not `src`.** Changing source and re-running an e2e suite
   without rebuilding measures the old code. This has produced false greens twice.
 
+## Finding your way around
+
+Two indexes are wired up as MCP servers in `.mcp.json`, and both have a CLI. Reach for them
+**before** grepping: 24 packages and apps share a small vocabulary — `label`, `item`, `title`,
+`control` and `content` are each a `data-part` on half a dozen components — so a text search for
+any of them returns most of the repo.
+
+```bash
+codegraph query "useAnchored"          # where a symbol is defined and who imports it
+codegraph callers  "dataAttr"          # every call site
+codegraph impact   "createFormStore"   # what a change would reach
+graphify explain "DatePanel"           # a node and its neighbours, in prose
+graphify path "Form" "createFormStore" # how two things are connected
+```
+
+`codegraph` answers "where and who calls it" from a symbol index; `graphify` answers "how does this
+relate to that" from a community-clustered graph. Use `codegraph` for a symbol you can name and
+`graphify` for a concept you cannot.
+
+Both are generated and gitignored. **Refresh after landing a change**, or the next session searches
+last week's code:
+
+```bash
+codegraph sync . && graphify update .   # AST-only, no API key, a second or two
+```
+
 ## Gate
 
 ```bash
