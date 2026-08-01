@@ -86,20 +86,27 @@ export function Skeleton({
       {...rest}
     >
       {avatarProps && <SkeletonAvatar active={active} {...avatarProps} />}
-      <div data-part="content">
-        {titleProps && <div data-part="title" style={{ inlineSize: len(titleProps.width) }} />}
-        {paragraphProps && (
-          <ul data-part="paragraph">
-            {Array.from({ length: rows }, (_, index) => (
-              <li
-                key={index}
-                data-part="row"
-                style={{ inlineSize: rowWidth(paragraphProps.width, index, rows) }}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      {/* Gated, so a skeleton that is only an avatar does not carry an empty
+          box. It costs nothing at the default `display: flex`, where the part
+          is `flex: 1` inside a root that fills its parent either way — but a
+          consumer override to `inline-flex` makes it 16px of gap around
+          nothing, and consumer overrides are a supported story here. */}
+      {(titleProps || paragraphProps) && (
+        <div data-part="content">
+          {titleProps && <div data-part="title" style={{ inlineSize: len(titleProps.width) }} />}
+          {paragraphProps && (
+            <ul data-part="paragraph">
+              {Array.from({ length: rows }, (_, index) => (
+                <li
+                  key={index}
+                  data-part="row"
+                  style={{ inlineSize: rowWidth(paragraphProps.width, index, rows) }}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -76,6 +76,15 @@ describe("Skeleton", () => {
     expect(block("avatar")).toBeInTheDocument();
   });
 
+  it("carries no content box when there is neither a title nor a paragraph", () => {
+    render(<Skeleton title={false} paragraph={false} avatar />);
+    // At the default `display: flex` this costs nothing — the part is `flex: 1`
+    // inside a root that fills its parent either way. Under a consumer's own
+    // `inline-flex` it is 16px of gap around nothing, and consumer overrides
+    // are a supported story here.
+    expect(parts("content")).toHaveLength(0);
+  });
+
   it("has no avatar unless asked", () => {
     render(<Skeleton />);
     expect(block("avatar")).toBeNull();
