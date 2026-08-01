@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — date harness</title>
+  </head>
+  <body>
+    <!-- Three things jsdom cannot answer. Which way the grid runs is the whole
+         RTL claim, and a table's column order is layout. The header chevrons are
+         mirrored by a transform rather than by swapping icons, which has no DOM
+         to assert against. And the picker's panel is `position: fixed` in a
+         portal, so an ancestor with a `transform` would capture it. -->
+    <div id="root"></div>
+    <script type="module" src="/date.tsx"></script>
+  </body>
+</html>
