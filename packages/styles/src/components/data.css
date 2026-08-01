@@ -1,0 +1,347 @@
+/* Statistic, Descriptions, Pagination and List — reading data rather than
+   entering it. */
+@layer ck.components {
+  /* -------------------------------------------------------------- Statistic */
+  [data-scope="statistic"][data-part="root"] {
+    display: block;
+  }
+  [data-scope="statistic"] [data-part="title"] {
+    font-size: 0.875rem;
+    color: var(--ck-fg-muted);
+    margin-block-end: 0.25rem;
+  }
+  [data-scope="statistic"] [data-part="value"] {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    font-size: 1.5rem;
+    color: var(--ck-fg);
+    /* Tabular figures, so a value that ticks does not jitter its own width. */
+    font-variant-numeric: tabular-nums;
+  }
+  [data-scope="statistic"] [data-part="prefix"],
+  [data-scope="statistic"] [data-part="suffix"] {
+    font-size: 1rem;
+    color: var(--ck-fg-muted);
+  }
+
+  /* ----------------------------------------------------------- Descriptions */
+  [data-scope="descriptions"][data-part="root"] {
+    display: block;
+  }
+  /* `>` for every remaining part, and not for tidiness. `list`, `title` and
+     `header` are names nine other components already use, and `data.css` is
+     imported last — so at equal specificity Descriptions wins every collision.
+     Measured: a Breadcrumb in a value stopped being a flex row and became a
+     two-track grid on the Descriptions column template, and a Statistic's
+     title was repainted by a rule twenty lines below the one it beats, in this
+     same file. All three are direct children, so the child combinator costs no
+     specificity. */
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ck-space-md);
+    margin-block-end: var(--ck-space-md);
+  }
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] > [data-part="title"] {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ck-fg);
+  }
+  /* `margin-inline-start: auto` rather than leaning on `space-between`, which
+     puts the gap *between* two children and degrades to `flex-start` with one.
+     The header renders for either half alone, so `extra` without a title
+     landed at the leading edge — 861px from where the same box sits when an
+     unrelated prop is set. A no-op in the two-child case. */
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] > [data-part="extra"] {
+    margin-inline-start: auto;
+  }
+
+  [data-scope="descriptions"][data-part="root"] > [data-part="list"] {
+    display: grid;
+    margin: 0;
+    /* Horizontal is two tracks per item: a label sized to its content and a
+       value taking the rest. `auto` on the label is what keeps the values
+       aligned down the column. */
+    grid-template-columns: repeat(var(--ck-descriptions-columns, 3), auto 1fr);
+    gap: var(--ck-space-sm) var(--ck-space-md);
+  }
+  [data-scope="descriptions"][data-layout="vertical"] > [data-part="list"] {
+    grid-template-columns: repeat(var(--ck-descriptions-columns, 3), 1fr);
+  }
+  /* `contents`, so the pair wrapper adds a box in one layout and nothing at all
+     in the other. Horizontal needs the label and value in the *outer* grid or
+     the labels of different rows stop lining up; vertical needs a real box or
+     the value cannot sit under its own label. */
+  [data-scope="descriptions"][data-part="root"] > [data-part="list"] > [data-part="pair"] {
+    display: contents;
+  }
+  [data-scope="descriptions"][data-layout="vertical"] > [data-part="list"] > [data-part="pair"] {
+    display: block;
+    grid-column: span var(--ck-descriptions-span, 1);
+    min-inline-size: 0;
+  }
+  /* Through the pair wrapper at the last hop, not a loose descendant. A value
+     is an arbitrary node, so a consumer can put a Checkbox — or any of the ten
+     components with a `label` part — inside one, and the loose form paints it
+     in the muted label colour and hangs the `[data-colon]` `::after` off it.
+     Measured in Chromium: the control read "Active:", colon included in its
+     accessible name. Wider than the leak List had, since it needs no second
+     component in this repo to reach it. */
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="content"] {
+    /* The span is per item and lands inline, because it is a number a consumer
+       chooses rather than one of a fixed set. */
+    grid-column: span var(--ck-descriptions-span, 1);
+    margin: 0;
+    min-inline-size: 0;
+  }
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="label"] {
+    color: var(--ck-fg-muted);
+    font-size: 0.875rem;
+  }
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="content"] {
+    color: var(--ck-fg);
+    font-size: 0.875rem;
+  }
+  [data-scope="descriptions"][data-colon] [data-part="pair"] > [data-part="label"]::after {
+    /* A pseudo-element, not markup: a colon in the DOM is read aloud, and
+       "Name colon Ada" is not what a label sounds like. */
+    content: ":";
+    margin-inline-start: 0.125rem;
+  }
+  [data-scope="descriptions"][data-size="small"] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"][data-size="small"] [data-part="pair"] > [data-part="content"] {
+    font-size: 0.75rem;
+  }
+
+  [data-scope="descriptions"][data-bordered] > [data-part="list"] {
+    gap: 0;
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    overflow: hidden;
+  }
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="content"] {
+    padding: var(--ck-space-sm) var(--ck-space-md);
+    border-block-end: 1px solid var(--ck-border);
+    border-inline-end: 1px solid var(--ck-border);
+  }
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="label"] {
+    background: var(--ck-surface-hover);
+  }
+
+  /* -------------------------------------------------------------- Pagination */
+  [data-scope="pagination"][data-part="root"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ck-space-sm);
+  }
+  [data-scope="pagination"] [data-part="total"] {
+    font-size: 0.875rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="pagination"] [data-part="list"] {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  [data-scope="pagination"] [data-part="item"],
+  [data-scope="pagination"] [data-part="prev"],
+  [data-scope="pagination"] [data-part="next"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 2rem;
+    block-size: 2rem;
+    padding-inline: 0.375rem;
+    font: inherit;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ck-fg);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--ck-radius-base);
+    cursor: pointer;
+  }
+  [data-scope="pagination"][data-size="small"] [data-part="item"],
+  [data-scope="pagination"][data-size="small"] [data-part="prev"],
+  [data-scope="pagination"][data-size="small"] [data-part="next"] {
+    min-inline-size: 1.5rem;
+    block-size: 1.5rem;
+    font-size: 0.75rem;
+  }
+  [data-scope="pagination"] [data-part="item"]:hover:not([data-selected]):not(:disabled),
+  [data-scope="pagination"] [data-part="prev"]:hover:not(:disabled),
+  [data-scope="pagination"] [data-part="next"]:hover:not(:disabled) {
+    background: var(--ck-surface-hover);
+  }
+  [data-scope="pagination"] [data-part="item"][data-selected] {
+    border-color: var(--ck-accent-border);
+    color: var(--ck-accent-text);
+    background: var(--ck-accent-subtle);
+  }
+  [data-scope="pagination"] [data-part="item"]:disabled,
+  [data-scope="pagination"] [data-part="prev"]:disabled,
+  [data-scope="pagination"] [data-part="next"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+  [data-scope="pagination"] [data-part="item"]:focus-visible,
+  [data-scope="pagination"] [data-part="prev"]:focus-visible,
+  [data-scope="pagination"] [data-part="next"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 1px;
+  }
+  [data-scope="pagination"] [data-part="ellipsis"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 2rem;
+    color: var(--ck-fg-muted);
+    user-select: none;
+  }
+  /* Visually hidden, not `display: none`: the combobox needs an accessible
+     name and the options already read "10 / per page", so showing the label
+     would say it twice. Removing it from the layout entirely would remove it
+     from the accessibility tree with it. */
+  [data-scope="pagination"] [data-part="size-changer"] [data-scope="select"][data-part="label"] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  [data-scope="pagination"] [data-part="jumper-label"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="pagination"] [data-part="jumper-input"] {
+    inline-size: 3rem;
+    block-size: 2rem;
+    padding-inline: 0.375rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ck-fg);
+    background: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-base);
+  }
+  [data-scope="pagination"] [data-part="jumper-input"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: 1px;
+  }
+
+  /* ------------------------------------------------------------------- List */
+  [data-scope="list"][data-part="root"] {
+    display: block;
+  }
+  /* Child combinators at every hop, not descendant. A List renders a
+     Pagination inside itself and `Pagination` has its own `item` and `list`
+     parts, so `[data-scope="list"] [data-part="item"]` picks up every page
+     button and pads it like a row. Measured: three of them. Anything a
+     component can nest has to be reached by structure rather than by name. */
+  [data-scope="list"][data-part="root"] > [data-part="list"] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  [data-scope="list"] > [data-part="header"],
+  [data-scope="list"] > [data-part="footer"] {
+    padding-block: var(--ck-space-sm);
+    color: var(--ck-fg-muted);
+    font-size: 0.875rem;
+  }
+  [data-scope="list"] > [data-part="loading"] {
+    display: flex;
+    justify-content: center;
+    padding-block: var(--ck-space-lg);
+  }
+  [data-scope="list"] > [data-part="pagination"] {
+    display: flex;
+    justify-content: flex-end;
+    padding-block-start: var(--ck-space-md);
+  }
+  /* `hideOnSinglePage` makes Pagination render nothing, and an unconditional
+     wrapper then keeps its own padding — the prop removes the bar but not the
+     space it took. `:empty` here rather than a page count in `List`, which
+     would be a second copy of a rule Pagination already owns. */
+  [data-scope="list"] > [data-part="pagination"]:empty {
+    display: none;
+  }
+  [data-scope="list"][data-part="root"] > [data-part="list"] > [data-part="item"] {
+    padding-block: var(--ck-space-sm);
+  }
+  [data-scope="list"][data-size="small"] > [data-part="list"] > [data-part="item"] {
+    padding-block: 0.375rem;
+  }
+  [data-scope="list"][data-size="large"] > [data-part="list"] > [data-part="item"] {
+    padding-block: var(--ck-space-md);
+  }
+  /* The rule goes on the top edge of every row but the first, so a list never
+     ends on a rule with nothing under it. */
+  [data-scope="list"][data-split] > [data-part="list"] > [data-part="item"] + [data-part="item"] {
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="list"][data-bordered] > [data-part="list"] {
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+  }
+  [data-scope="list"][data-bordered] > [data-part="list"] > [data-part="item"] {
+    padding-inline: var(--ck-space-md);
+  }
+
+  [data-scope="list"][data-part="item-content"] {
+    display: flex;
+    align-items: center;
+    gap: var(--ck-space-md);
+  }
+  [data-scope="list"][data-layout="vertical"] [data-scope="list"][data-part="item-content"] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  [data-scope="list"][data-part="item-content"] > [data-part="item-main"] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+  [data-scope="list"][data-part="item-content"] > [data-part="actions"] {
+    display: flex;
+    align-items: center;
+    gap: var(--ck-space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  [data-scope="list"][data-part="meta"] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ck-space-md);
+  }
+  [data-scope="list"][data-part="meta"] > [data-part="meta-avatar"] {
+    flex: none;
+  }
+  [data-scope="list"][data-part="meta"] > [data-part="meta-content"] {
+    min-inline-size: 0;
+  }
+  [data-scope="list"][data-part="meta"] [data-part="meta-title"] {
+    color: var(--ck-fg);
+    font-weight: 500;
+  }
+  [data-scope="list"][data-part="meta"] [data-part="meta-description"] {
+    color: var(--ck-fg-muted);
+    font-size: 0.875rem;
+  }
+}

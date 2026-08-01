@@ -103,3 +103,20 @@ export {
   type SegmentedOption,
   type SegmentedSize,
 } from "./navigation/segmented";
+export { Statistic, type StatisticProps } from "./data/statistic";
+export {
+  Descriptions,
+  type DescriptionsProps,
+  type DescriptionItem,
+  type DescriptionsSize,
+} from "./data/descriptions";
+export { Pagination, type PaginationProps, type PaginationSize } from "./data/pagination";
+export {
+  List,
+  ListItem,
+  ListItemMeta,
+  type ListProps,
+  type ListItemProps,
+  type ListItemMetaProps,
+  type ListSize,
+} from "./data/list";
