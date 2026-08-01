@@ -2,9 +2,9 @@
    <input readOnly role="combobox">, which is the ARIA pattern for a
    *typeahead* combobox and wrong for a plain select.
 
-   The listbox is positioned by Floating UI (through zag), so this file sets
-   no top/left of its own; --ck-select-content-available-height is written by
-   the positioner. */
+   The listbox is positioned by the machine still driving Select, so this file
+   sets no top/left of its own; --ck-select-content-available-height is written
+   by that positioner. */
 @layer ck.components {
   [data-scope="select"][data-part="root"] {
     display: block;

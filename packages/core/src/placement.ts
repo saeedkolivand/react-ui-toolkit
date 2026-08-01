@@ -1,6 +1,6 @@
 import type { Placement } from "./types";
 
-/** v0 used Ant Design's placement names, which Floating UI does not understand. */
+/** v0 used the corner placement names, which the machines do not understand. */
 export type LegacyPlacement =
   | "top"
   | "left"
@@ -31,7 +31,7 @@ const LEGACY: Record<LegacyPlacement, Placement> = {
 };
 
 /**
- * Accepts either naming and returns the Floating UI one, so `placement="topLeft"`
+ * Accepts either naming and returns the canonical one, so `placement="topLeft"`
  * keeps working for anyone migrating from v0.
  */
 export function resolvePlacement(

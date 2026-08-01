@@ -79,7 +79,7 @@ const isSeparator = (entry: CkMenuEntry): entry is CkMenuSeparator => "separator
 })
 export class CkTooltip {
   readonly content = input<string>();
-  /** Accepts Floating UI names and v0's Ant names (`topLeft`, `rightBottom`, …). */
+  /** Accepts the canonical names and v0's corner names (`topLeft`, `rightBottom`, …). */
   readonly placement = input<Placement | LegacyPlacement>();
   readonly open = model<boolean | undefined>(undefined); // enables [(open)]
   readonly defaultOpen = input<boolean>();

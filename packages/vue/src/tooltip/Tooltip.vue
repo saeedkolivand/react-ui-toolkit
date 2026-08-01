@@ -13,7 +13,7 @@ import { usePresence } from "../usePresence";
 const props = withDefaults(
   defineProps<{
     content?: string;
-    /** Accepts Floating UI names and v0's Ant names (`topLeft`, `rightBottom`, …). */
+    /** Accepts the canonical names and v0's corner names (`topLeft`, `rightBottom`, …). */
     placement?: Placement | LegacyPlacement;
     open?: boolean;
     defaultOpen?: boolean;

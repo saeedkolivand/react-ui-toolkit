@@ -1,7 +1,7 @@
 ---
-"@crosskit-ui/core": minor
-"@crosskit-ui/react": minor
-"@crosskit-ui/styles": minor
+"@crosskit-ui/core": major
+"@crosskit-ui/react": major
+"@crosskit-ui/styles": major
 ---
 
 Rebuild Tooltip on the core primitives, add Popover, and replace Menu with Dropdown.
@@ -12,6 +12,12 @@ third-party graph there is Accordion, Select, Tabs and Toast.
 
 **Breaking, React only.** The other three adapters keep the v1 API until they
 move too.
+
+Marked `major` rather than `minor`, because `Menu`, `MenuProps`, `MenuItem`,
+`MenuEntry` and `MenuSeparator` leave the public API and four `Tooltip` props are
+renamed. There is no shape of this change that is compatible with `^1.0.0`, and
+the accumulated changesets are meant to land as 2.0.0 anyway — recording it as a
+minor would have published removed exports as 1.1.0.
 
 - `Tooltip`'s `content` is now `title`, `contentClassName` is `overlayClassName`,
   and `openDelay`/`closeDelay` are `mouseEnterDelay`/`mouseLeaveDelay` **in

@@ -41,7 +41,7 @@ import {
   type Presence,
 } from "@crosskit-ui/core";
 
-/** Ant's trigger vocabulary. `contextMenu` is deliberately absent — see below. */
+/** The trigger vocabulary. `contextMenu` is deliberately absent — see below. */
 export type TriggerKind = "hover" | "focus" | "click";
 
 export interface AnchoredOptions {
@@ -160,7 +160,7 @@ const LEAVES_OR_MODIFIES = new Set([
   "ScrollLock",
 ]);
 
-/** Seconds in, milliseconds out. Ant's unit is the public one; ours is the timer's. */
+/** Seconds in, milliseconds out. Seconds is the public unit; ours is the timer's. */
 const ms = (seconds: number) => Math.max(0, seconds) * 1000;
 
 export function useAnchored(options: AnchoredOptions): Anchored {
@@ -187,6 +187,29 @@ export function useAnchored(options: AnchoredOptions): Anchored {
   const contentId = id ?? autoId;
 
   const [uncontrolled, setUncontrolled] = useState(defaultOpen);
+
+  /**
+   * Disabling an uncontrolled overlay closes it for good, not merely for now.
+   *
+   * `open` below is derived, so `disabled` hides it — but the state underneath
+   * stays `true`, and every handler is detached while disabled, so nothing can
+   * ever write `false`. Re-enabling then reopened it with no gesture at all and
+   * `takeFocus` took the caret with it, which is exactly what that option's own
+   * doc calls hostile. Both of Tooltip's routes in do it, including the empty
+   * `title` one the docs encourage writing as `title={row.note}`.
+   *
+   * Adjusted during render rather than from an effect: an effect would render
+   * the reopened overlay for a frame first, and this is the documented way to
+   * reset state when a prop changes.
+   *
+   * Controlled is deliberately untouched — that value is the consumer's answer,
+   * and it is read back correctly when they re-enable.
+   */
+  const [disabledWas, setDisabledWas] = useState(disabled);
+  if (disabled !== disabledWas) {
+    setDisabledWas(disabled);
+    if (disabled && uncontrolled) setUncontrolled(false);
+  }
   // Derived, not pushed through an effect that closes it. An effect would
   // render the overlay open for one frame first — a tooltip whose title just
   // became empty would flash an empty box — and it would fight a controlled
@@ -427,26 +450,10 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // with the trigger carrying no active descendant and the content carrying
       // one. Focus follows the keys.
       //
-      // Except Tab, which is the user leaving rather than navigating.
-      //
-      // Being honest about this one: it is NOT independently observable, and
-      // the `wasOpenRef` write below is what actually fixed the reported
-      // symptom — Tab landing on the first control of the page. With the
-      // restore working, focus is back on the trigger before the browser acts
-      // on Tab either way, so removing this exclusion fails nothing. jsdom
-      // cannot separate them at all, because `userEvent.tab()` picks its target
-      // before dispatching keydown.
-      //
-      // It stays because the end state being equal is not the whole story: a
-      // Tab without it moves focus three times — into the popup, out on close,
-      // back to the trigger — and a screen reader announces every one of them.
-      // Not doing pointless work is cheaper than relying on the restore to undo
-      // it.
-      //
-      // `wasOpenRef` is set for the same reason the effect sets it: this took
-      // focus, so the close has to give it back, and skipping the write left
-      // `<body>` focused on exactly the path that had just moved focus. That
-      // one IS covered, in both directions.
+      // Modifiers are excluded because a modifier is its OWN keydown: a
+      // Shift+Tab is `Shift` then `Tab`, so filtering `Tab` alone still let the
+      // bare `Shift` pull focus into a popup a hover-open had declined to
+      // focus, and the Shift+Tab that followed then ran from the portal.
       // Tab at the trigger with the popup open is the user leaving, and the
       // hook answers it here rather than passing it on. It owns Tab on the
       // content side too, and a caller that also closed on Tab — as Dropdown

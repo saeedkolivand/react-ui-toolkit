@@ -301,6 +301,36 @@ describe("Dropdown", () => {
     expect(trigger()).toHaveFocus();
   });
 
+  it("stays shut when re-enabled, rather than reopening on its own", async () => {
+    const user = userEvent.setup();
+    const Harness = ({ off }: { off: boolean }) => (
+      <>
+        <input aria-label="typing" />
+        <Dropdown menu={{ items: ITEMS }} disabled={off}>
+          <button>Actions</button>
+        </Dropdown>
+      </>
+    );
+    const { rerender } = render(<Harness off={false} />);
+    trigger().focus();
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() => expect(content()).toBeInTheDocument());
+
+    rerender(<Harness off />);
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+
+    const input = screen.getByRole("textbox", { name: "typing" });
+    input.focus();
+    rerender(<Harness off={false} />);
+
+    // `open` is derived, so `disabled` hid it — but the state underneath stayed
+    // true and every handler is detached while disabled, so nothing could write
+    // false. Re-enabling reopened it with no gesture at all, and `takeFocus`
+    // took the caret out of whatever the user had moved on to.
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(content()).not.toBeInTheDocument();
+  });
+
   // ------------------------------------------------------------------- ARIA
 
   it("announces the trigger as a menu button", async () => {

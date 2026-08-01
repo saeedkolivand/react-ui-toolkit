@@ -179,7 +179,6 @@ export const overlays: ComponentDoc[] = [
     name: "Tooltip",
     group: "Overlays",
     scope: "tooltip",
-    machine: "@zag-js/tooltip",
     gains: [
       "Floating UI positioning with collision handling",
       "Open/close delays with a shared group timer",
@@ -409,14 +408,13 @@ export const overlays: ComponentDoc[] = [
     name: "Menu / Dropdown",
     group: "Overlays",
     scope: "menu",
-    machine: "@zag-js/menu",
     gains: [
       "Arrow-key navigation and typeahead",
       "Roving tabindex",
       "aria-haspopup / aria-expanded / aria-activedescendant",
     ],
     summary:
-      "Replaces v0's Dropdown + Menu + MenuItem trio with one data-driven component. It renders its own trigger button — v0 took a whole element, so the common case put a button inside a button.",
+      "Replaces v0's Dropdown + Menu + MenuItem trio with one data-driven component. v0 took a whole element as its trigger, so the common case put a button inside a button; v1 removed the choice by generating the button itself, and React's v2 Dropdown takes the element back and never wraps it — so your own Button stays exactly one button.",
     props: [
       {
         name: "menu",
@@ -469,7 +467,7 @@ export const overlays: ComponentDoc[] = [
       },
       {
         name: "placement",
-        type: "Placement | LegacyPlacement",
+        type: "Placement | PlacementAlias",
         default: '"bottom-start"',
         description: "Menu position.",
       },
