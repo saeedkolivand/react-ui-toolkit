@@ -51,6 +51,136 @@
     border-radius: var(--ck-radius-sm);
   }
 
+  /* ------------------------------------------------- Tabs, v2 (data-type)
+
+     v2 renames the prop to `type` and emits `data-type`, so it needs its own
+     rules — the `data-ck-variant` block below is v1's and matches nothing a v2
+     Tabs renders. Both coexist until the remaining adapters move, which is the
+     same arrangement `button-v1.css` uses and for the same reason: a rewrite
+     that silently drops every variant style is the regression that already
+     happened once here.
+
+     Logical properties throughout, unlike the v1 block below it. Those are
+     physical and predate the rule; these are the ones RTL has to hold for.
+
+     Child combinators, not descendants. Qualifying both ends with
+     `[data-scope="tabs"]` keeps these off a Popover or Select trigger, but not
+     off ANOTHER Tabs — an inner one's triggers carry that scope by
+     construction. Both blocks are the same specificity, so source order decided
+     and `card` won whatever a nested `line` asked for, down to the selected tab
+     taking the card fill instead of the accent underline. */
+  [data-scope="tabs"][data-part="root"][data-tab-position="bottom"] {
+    flex-direction: column-reverse;
+  }
+  [data-scope="tabs"][data-part="root"][data-tab-position="right"] {
+    flex-direction: row-reverse;
+  }
+
+  /* The panel's gap belongs between it and the list, and the list is not
+     always above it. `padding-top: 1rem` in the v1 rule below assumes it is —
+     correct while `top` was the only arrangement, and 16px on the outside edge
+     with nothing between panel and tabs as soon as `tabPosition` moves them.
+     Each of the other three sides puts the padding back where the list is. */
+  [data-scope="tabs"][data-part="root"][data-tab-position="bottom"]
+    > [data-scope="tabs"][data-part="content"] {
+    padding-block: 0 1rem;
+  }
+  [data-scope="tabs"][data-part="root"][data-tab-position="left"]
+    > [data-scope="tabs"][data-part="content"],
+  [data-scope="tabs"][data-part="root"][data-tab-position="right"]
+    > [data-scope="tabs"][data-part="content"] {
+    /* The vertical root already supplies a 1rem gap on the inline axis, so the
+       panel needs none of its own in either direction. */
+    padding-block-start: 0;
+  }
+
+  [data-scope="tabs"][data-type="line"] > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border-block-end: 2px solid transparent;
+    margin-block-end: -1px;
+  }
+  [data-scope="tabs"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-block-end-color: var(--ck-accent-solid);
+  }
+
+  [data-scope="tabs"][data-type="card"] > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border: 1px solid transparent;
+    border-start-start-radius: var(--ck-radius-md);
+    border-start-end-radius: var(--ck-radius-md);
+    margin-block-end: -1px;
+  }
+  [data-scope="tabs"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-color: var(--ck-border);
+    border-block-end-color: var(--ck-surface);
+    background-color: var(--ck-surface);
+  }
+
+  /* `tabPosition="bottom"` mirrors the block axis.
+
+     Everything above names the block-END edge, which is the edge facing the
+     panel only while the list sits above it. With the list below, a card came
+     out as a closed box: a grey seam between the tab and its own panel, and the
+     white `--ck-surface` notch that is supposed to merge them punched into the
+     divider on the outer edge instead. `line` gets the milder version, with the
+     underline and the divider both on the far side from the panel.
+
+     `left` and `right` have the same shape and are deliberately not touched
+     here: v1's `enclosed` with `orientation="vertical"` already rendered that
+     way, so it is a pre-existing gap rather than one `tabPosition` opens. */
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 0;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border-block-end: 0;
+    border-block-start: 2px solid transparent;
+    margin-block-end: 0;
+    margin-block-start: -1px;
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-block-start-color: var(--ck-accent-solid);
+  }
+
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 0;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-start-radius: var(--ck-radius-md);
+    border-end-end-radius: var(--ck-radius-md);
+    margin-block-end: 0;
+    margin-block-start: -1px;
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-block-end-color: var(--ck-border);
+    border-block-start-color: var(--ck-surface);
+  }
+
   /* v0's four visual variants, preserved as data-variant on the root. */
   [data-ck-variant="line"] [data-part="list"] {
     border-bottom: 1px solid var(--ck-border);

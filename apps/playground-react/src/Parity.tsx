@@ -1,5 +1,5 @@
 import {
-  Accordion,
+  Collapse,
   Alert,
   Avatar,
   Badge,
@@ -161,17 +161,27 @@ export function Parity() {
 
       <section className="parity-section" data-fixture="tabs">
         <h2>Tabs</h2>
+        {/* Mapped here rather than in `fixture.ts`, which is copied byte for
+            byte into all four playgrounds and still feeds three v1 adapters. */}
         <Tabs
-          items={FIXTURE.tabs.map(tab => ({ ...tab, content: FIXTURE.text }))}
-          defaultValue={FIXTURE.tabs[0]!.id}
+          items={FIXTURE.tabs.map(tab => ({
+            key: tab.id,
+            label: tab.label,
+            children: FIXTURE.text,
+          }))}
+          defaultActiveKey={FIXTURE.tabs[0]!.id}
         />
       </section>
 
       <section className="parity-section" data-fixture="accordion">
         <h2>Accordion</h2>
-        <Accordion
-          items={FIXTURE.accordion.map(item => ({ ...item, content: FIXTURE.text }))}
-          defaultValue={[FIXTURE.accordion[0]!.id]}
+        <Collapse
+          items={FIXTURE.accordion.map(item => ({
+            key: item.id,
+            label: item.title,
+            children: FIXTURE.text,
+          }))}
+          defaultActiveKey={[FIXTURE.accordion[0]!.id]}
         />
       </section>
 

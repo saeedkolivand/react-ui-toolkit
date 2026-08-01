@@ -513,16 +513,10 @@ importers:
       '@crosskit-ui/styles':
         specifier: workspace:^
         version: link:../styles
-      '@zag-js/accordion':
-        specifier: catalog:zag
-        version: 1.43.0
       '@zag-js/react':
         specifier: catalog:zag
         version: 1.43.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@zag-js/select':
-        specifier: catalog:zag
-        version: 1.43.0
-      '@zag-js/tabs':
         specifier: catalog:zag
         version: 1.43.0
       '@zag-js/toast':

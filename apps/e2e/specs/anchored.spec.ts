@@ -376,6 +376,90 @@ test("dismisses a focus-triggered menu instead of reopening it", async ({ page }
   await expect(content(page, "menu")).toBeVisible();
 });
 
+test("does not style a nested overlay trigger like a tab", async ({ page }) => {
+  const nested = page.locator('[data-scope="popover"][data-part="trigger"]', {
+    has: page.locator("#tab-nested-trigger"),
+  });
+  await expect(nested).toBeVisible();
+
+  // The tab rules are descendant selectors, so an unscoped
+  // `[data-type="line"] [data-part="trigger"]` reached any `trigger` part in the
+  // subtree — and Tooltip, Popover, Menu and Select all render one. Measured a
+  // popover trigger inside a tab panel carrying `2px solid` and `-1px`.
+  const style = await nested.evaluate(node => {
+    const s = getComputedStyle(node);
+    return { border: s.borderBlockEndWidth, margin: s.marginBlockEnd };
+  });
+  expect(style.border).toBe("0px");
+  expect(style.margin).toBe("0px");
+});
+
+test("puts the tab panel's gap on the side its list is on", async ({ page }) => {
+  const panel = page
+    .locator('[data-tab-position="bottom"] [data-scope="tabs"][data-part="content"]')
+    .first();
+  await expect(panel).toBeVisible();
+
+  // `column-reverse` paints the panel above the list, but the padding was still
+  // `padding-top: 1rem` — 16px on the outside edge of the whole component and
+  // nothing at all between the panel and the tabs it belongs to.
+  const pad = await panel.evaluate(node => {
+    const s = getComputedStyle(node);
+    return { top: s.paddingTop, bottom: s.paddingBottom };
+  });
+  expect(pad).toEqual({ top: "0px", bottom: "16px" });
+});
+
+test("does not let an outer tab type reach a nested Tabs", async ({ page }) => {
+  const trigger = (name: string) => page.getByRole("tab", { name });
+  const shape = (name: string) =>
+    trigger(name).evaluate(node => {
+      const s = getComputedStyle(node);
+      return {
+        end: s.borderBlockEndWidth,
+        start: s.borderBlockStartWidth,
+        radius: s.borderStartStartRadius,
+      };
+    });
+
+  // Scoping both ends to `[data-scope="tabs"]` keeps these rules off a Popover
+  // or Select trigger, but an inner Tabs' own triggers carry that scope too —
+  // and with both blocks at equal specificity, source order handed `card` the
+  // argument. The inner `line` tabs came out identical to the outer card ones.
+  const [inner, alone] = [await shape("Inner line"), await shape("Alone")];
+  expect(inner).toEqual(alone);
+
+  // And the outer is still a card, so the fix scoped rather than removed.
+  expect((await shape("Outer card")).radius).not.toBe("0px");
+});
+
+test("mirrors a card tab's open edge when its list moves below", async ({ page }) => {
+  const edges = (name: string) =>
+    page.getByRole("tab", { name }).evaluate(node => {
+      const s = getComputedStyle(node);
+      return {
+        startColour: s.borderBlockStartColor,
+        endColour: s.borderBlockEndColor,
+        startRadius: s.borderStartStartRadius,
+        endRadius: s.borderEndStartRadius,
+      };
+    });
+
+  const [top, bottom] = [await edges("Top card"), await edges("Bottom")];
+
+  // The type rules name the block-END edge, which faces the panel only while
+  // the list is above it. With the list below, the tab sealed itself shut: a
+  // grey seam between it and its own panel, and the white notch meant to merge
+  // them punched into the divider on the outer edge instead.
+  //
+  // Mirrored, so `bottom` is `top` reflected — the open edge faces the panel in
+  // both, which is the whole point of the shape.
+  expect(bottom.startColour).toBe(top.endColour);
+  expect(bottom.endColour).toBe(top.startColour);
+  expect(bottom.endRadius).toBe(top.startRadius);
+  expect(bottom.startRadius).toBe(top.endRadius);
+});
+
 /**
  * The arrow, in both directions.
  *

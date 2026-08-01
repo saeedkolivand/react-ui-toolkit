@@ -49,7 +49,20 @@ const KNOWN_GAPS = new Set<string>([]);
  * pass. Relative comparison cannot see it by construction, so the excused
  * sections need an absolute assertion as well.
  */
-const MIGRATING = new Set<string>(["vue/button", "svelte/button", "angular/button"]);
+const MIGRATING = new Set<string>([
+  "vue/button",
+  "svelte/button",
+  "angular/button",
+  // React's Tabs emits `data-type` where the others still emit `data-ck-variant`,
+  // and its Collapse renders a heading part and a `region` panel the v1
+  // Accordion does not. Both are the rewrite landing in React first.
+  "vue/tabs",
+  "svelte/tabs",
+  "angular/tabs",
+  "vue/accordion",
+  "svelte/accordion",
+  "angular/accordion",
+]);
 
 /**
  * Sections carrying an absolute assertion, because a relative one cannot cover
@@ -57,6 +70,28 @@ const MIGRATING = new Set<string>(["vue/button", "svelte/button", "angular/butto
  * enforces that, so the hole cannot reopen as more sections migrate.
  */
 const RESOLVED: Record<string, { part: string; expect: Record<string, string | RegExp> }> = {
+  // Both of these assert a BASE rule — one shared by v1 and v2 — for the reason
+  // the button entry gives: the question is whether the stylesheet reached this
+  // component at all, not whether two contracts agree. A variant rule would
+  // answer the wrong one, since the two sides deliberately differ there.
+  tabs: {
+    part: '[data-part="list"]',
+    expect: {
+      // `display: flex` and a real gap. The UA default for a div is `block`
+      // with no gap, so either wrong value means the rule never applied.
+      display: "flex",
+      gap: /^(4px|0\.25rem)$/,
+    },
+  },
+  accordion: {
+    part: '[data-part="item-trigger"]',
+    expect: {
+      display: "flex",
+      // A button's UA default is `button` for appearance and a real border;
+      // both being reset is the stylesheet having reached it.
+      borderTopWidth: "0px",
+    },
+  },
   // The first button in every fixture is the default type. All four adapters
   // pass this today against different contracts — React's v2 rules and v1's for
   // the rest — which is the point: it asks whether the stylesheet is alive, not
