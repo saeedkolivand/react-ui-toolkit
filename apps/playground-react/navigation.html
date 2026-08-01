@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — navigation harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because what is worth asserting here is layout the unit
+         suite cannot see: whether a Steps connector actually spans the gap
+         between two markers, and whether `block` really shares the inline axis
+         out equally. jsdom reports every rect as 0x0 at the origin, so a
+         connector that collapsed to nothing measures the same as one that
+         works. -->
+    <div id="root"></div>
+    <script type="module" src="/navigation.tsx"></script>
+  </body>
+</html>
