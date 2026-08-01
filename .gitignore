@@ -65,3 +65,7 @@ storybook-static/
 # Playwright
 playwright-report/
 test-results/
+
+# Generated code-intelligence indexes (rebuilt with `graphify update .` / `codegraph sync`)
+graphify-out/
+.codegraph/
