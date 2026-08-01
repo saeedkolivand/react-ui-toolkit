@@ -402,7 +402,31 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // visibly and be announced to nobody — measured as `activeTag "BUTTON"`
       // with the trigger carrying no active descendant and the content carrying
       // one. Focus follows the keys.
-      if (open && takeFocus) content?.focus({ preventScroll: true });
+      //
+      // Except Tab, which is the user leaving rather than navigating.
+      //
+      // Being honest about this one: it is NOT independently observable, and
+      // the `wasOpenRef` write below is what actually fixed the reported
+      // symptom — Tab landing on the first control of the page. With the
+      // restore working, focus is back on the trigger before the browser acts
+      // on Tab either way, so removing this exclusion fails nothing. jsdom
+      // cannot separate them at all, because `userEvent.tab()` picks its target
+      // before dispatching keydown.
+      //
+      // It stays because the end state being equal is not the whole story: a
+      // Tab without it moves focus three times — into the popup, out on close,
+      // back to the trigger — and a screen reader announces every one of them.
+      // Not doing pointless work is cheaper than relying on the restore to undo
+      // it.
+      //
+      // `wasOpenRef` is set for the same reason the effect sets it: this took
+      // focus, so the close has to give it back, and skipping the write left
+      // `<body>` focused on exactly the path that had just moved focus. That
+      // one IS covered, in both directions.
+      if (open && takeFocus && event.key !== "Tab") {
+        content?.focus({ preventScroll: true });
+        wasOpenRef.current = true;
+      }
 
       onTriggerKeyDown?.(event, {
         open,

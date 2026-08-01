@@ -238,6 +238,25 @@ test("caps a long menu against the room actually available", async ({ page }) =>
   await expect(page.locator('[data-part="item"]', { hasText: "Row 29" })).toBeInViewport();
 });
 
+test("tabs out of a hover-opened menu to the control after it", async ({ page }) => {
+  // Hover-open, then press: focus lands on the trigger with the menu open,
+  // which is the route that had no keyboard handling two rounds ago.
+  await page.locator("#default-menu").hover();
+  await expect(content(page, "menu")).toBeVisible();
+  await page.locator("#default-menu").click();
+  await expect(content(page, "menu")).toBeVisible();
+
+  await page.keyboard.press("Tab");
+  await expect(content(page, "menu")).toHaveCount(0);
+
+  // Tab is the user LEAVING, not navigating. The close does not preventDefault,
+  // so the browser's own Tab runs from wherever focus is — and moving it into a
+  // popup portalled to the end of <body> first sent the user to `#flip-top`,
+  // the FIRST control on the page, instead of the next one after the trigger.
+  await expect(page.locator("#flip-top")).not.toBeFocused();
+  await expect(page.locator("#default-popover")).toBeFocused();
+});
+
 /**
  * The arrow, in both directions.
  *

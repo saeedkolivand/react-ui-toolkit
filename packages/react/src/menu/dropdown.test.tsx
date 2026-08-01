@@ -250,6 +250,22 @@ describe("Dropdown", () => {
     expect(highlighted()).toBe("Delete");
     await user.keyboard("{Home}{Enter}");
     expect(onClick).toHaveBeenCalledWith({ key: "edit" });
+    // And focus comes back. The trigger-side key path takes focus of its own,
+    // so it has to record that it did — without it the close skipped the
+    // restore for the one route that had just moved focus, and left <body>
+    // focused so the next Tab restarted at the top of the page.
+    expect(trigger()).toHaveFocus();
+  });
+
+  it("gives focus back after Escape on the trigger-side key path too", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await user.click(trigger());
+    await user.keyboard("{ArrowDown}{Escape}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(trigger()).toHaveFocus();
   });
 
   // ------------------------------------------------------------------- ARIA
