@@ -334,6 +334,26 @@ test("scrolls the highlighted row into view in a capped menu", async ({ page }) 
   expect(visible).toBe(true);
 });
 
+test("dismisses a focus-triggered menu instead of reopening it", async ({ page }) => {
+  await page.locator("#focus-menu").focus();
+  await expect(content(page, "menu")).toBeVisible();
+  await expect(content(page, "menu")).toBeFocused();
+
+  // Two correct mechanisms, wrong together: the close hands focus back to the
+  // trigger, and for this mode that focus IS the gesture that opens it. Escape
+  // closed and reopened in one breath, so the menu could not be dismissed at
+  // all — two Escapes still left it open with focus back inside.
+  await page.keyboard.press("Escape");
+  await expect(content(page, "menu")).toHaveCount(0);
+  await expect(page.locator("#focus-menu")).toBeFocused();
+
+  // And the marker is down again, so a focus the USER causes still opens it —
+  // otherwise the fix would break the trigger mode outright.
+  await page.locator("#long-menu").focus();
+  await page.locator("#focus-menu").focus();
+  await expect(content(page, "menu")).toBeVisible();
+});
+
 /**
  * The arrow, in both directions.
  *

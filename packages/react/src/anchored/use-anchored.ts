@@ -271,6 +271,9 @@ export function useAnchored(options: AnchoredOptions): Anchored {
    * to decide whether taking focus would be helping or interrupting.
    */
   const reasonRef = useRef<"hover" | "press" | "keyboard">("press");
+
+  /** True only while the close is handing focus back, so the trigger ignores it. */
+  const restoringRef = useRef(false);
   const schedule = useCallback(
     (next: boolean, delay: number, reason: "hover" | "press" | "keyboard" = "press") => {
       cancel();
@@ -359,7 +362,16 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     // because presence outlives `open`.
     if (!content || !contains(content, document.activeElement)) return;
     const target = anchor ? (getTabbables(anchor)[0] ?? anchor) : null;
+    // Marked, so the trigger's own `focus` handler ignores the focus this
+    // causes. Two correct mechanisms, wrong together: the restore hands focus
+    // back to the trigger, that focus IS keyboard-visible, and a `focus`
+    // trigger reads it as a request to open — so Escape closed and reopened in
+    // one breath and the overlay could not be dismissed at all. `focus()`
+    // dispatches synchronously, so the flag is down again before anything else
+    // can see it.
+    restoringRef.current = true;
     target?.focus({ preventScroll: true });
+    restoringRef.current = false;
   }, [takeFocus, open, content, anchor]);
 
   // ------------------------------------------------------------------- props
@@ -431,6 +443,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
         // Only keyboard focus. Without this a click on the trigger opens it
         // twice over — once for the press, once for the focus the press moved —
         // and a hover overlay pops back up the moment the pointer leaves.
+        if (restoringRef.current) return;
         if (isFocusVisible(event.target)) schedule(true, 0, "keyboard");
       };
       triggerProps.onBlur = event => {

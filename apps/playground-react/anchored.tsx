@@ -84,6 +84,26 @@ function Harness() {
         </Popover>
       </div>
 
+      {/* `trigger="focus"`, which nothing else on this page uses. The close hands
+          focus back to the trigger, and for this mode that focus is itself the
+          gesture that opens it — so the two mechanisms fought and the overlay
+          could not be dismissed at all. Needs a real browser: whether a focus
+          counts as keyboard-visible is `:focus-visible`, which jsdom answers
+          differently and inconsistently. */}
+      <div style={{ position: "absolute", insetBlockStart: 760, insetInlineStart: 400 }}>
+        <Dropdown
+          menu={{
+            items: [
+              { key: "alpha", label: "Alpha" },
+              { key: "beta", label: "Beta" },
+            ],
+          }}
+          trigger="focus"
+        >
+          <button id="focus-menu">focus menu</button>
+        </Dropdown>
+      </div>
+
       {/* Long enough to exceed any viewport this suite runs in. A menu that does
           not cap itself against the room actually available runs off the bottom
           with its last items unreachable — and flip and shift cannot rescue it,
