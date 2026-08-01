@@ -304,6 +304,9 @@ export function Select({
           disabled={disabled}
           data-scope="select"
           data-part="trigger"
+          // The trigger's own, not just the root's: `select.css` keys the
+          // dimmed, not-allowed treatment on `[data-part="trigger"][data-disabled]`.
+          data-disabled={dataAttr(disabled)}
           data-placeholder-shown={dataAttr(selectedOption == null)}
         >
           <span data-scope="select" data-part="value-text">

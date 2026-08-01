@@ -191,6 +191,19 @@ describe("Select", () => {
     expect(trigger()).toHaveTextContent("Nigeria");
   });
 
+  it("marks the trigger itself disabled, not only the root", async () => {
+    setup({ disabled: true });
+    // `select.css` keys the dimmed, not-allowed treatment on
+    // `[data-part="trigger"][data-disabled]`, so the root carrying it alone
+    // left the control looking and feeling enabled — opacity 1, cursor
+    // pointer, hover border still applying.
+    expect(trigger()).toHaveAttribute("data-disabled", "");
+    expect(screen.getByRole("combobox").closest("[data-part='root']")).toHaveAttribute(
+      "data-disabled",
+      ""
+    );
+  });
+
   it("stays shut when disabled", async () => {
     const user = userEvent.setup();
     setup({ disabled: true });
