@@ -44,7 +44,7 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
   // shortcut, so it has to actually exist.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (!event.altKey || event.key.toLowerCase() !== "t") return;
+      if (!event.altKey || event.code !== "KeyT") return;
       const group = groupRef.current;
       if (!group || group.childElementCount === 0) return;
       event.preventDefault();
@@ -85,13 +85,30 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
   // The old shape could not have this bug: each toast owned its own hold and
   // took it away with it. One group-level pair of signals has to be reconciled
   // against reality instead.
+  const pointerAt = useRef<{ x: number; y: number } | undefined>(undefined);
+  const trackPointer = useCallback((event: { clientX: number; clientY: number }) => {
+    pointerAt.current = { x: event.clientX, y: event.clientY };
+  }, []);
+
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
-    // `:hover` on a descendant, not on the group: the group sets
-    // `pointer-events: none` so the page underneath stays clickable, and only
-    // the toasts themselves take pointer events back.
-    held.current.pointer = group.querySelector(":hover") !== null;
+    const at = pointerAt.current;
+    // Not `:hover`. That is the browser's own bookkeeping and it has not caught
+    // up at commit time — the removed node took its `:hover` with it and the
+    // toast that just slid into its slot has not been hit-tested yet, so the
+    // query reads empty for a pointer that never left the group, and no
+    // boundary event follows to correct it.
+    //
+    // Hit-testing the last known pointer position answers from the layout that
+    // exists now. Against a descendant rather than the group, because the group
+    // sets `pointer-events: none` to keep the page underneath clickable.
+    // Optional call because jsdom does not implement `elementFromPoint`. There
+    // it reads as "pointer is not over the group", which is right for every
+    // case a unit test can construct — jsdom has no hover state to be over
+    // anything with. The real behaviour is asserted in the browser suite.
+    const under = at ? (document.elementFromPoint?.(at.x, at.y) ?? null) : null;
+    held.current.pointer = under !== null && group.contains(under);
     held.current.focus = group.contains(document.activeElement);
     apply();
   }, [toasts, apply]);
@@ -118,8 +135,15 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
       aria-live="polite"
       aria-relevant="additions text"
       aria-atomic="false"
-      onMouseEnter={() => hold("pointer", true)}
-      onMouseLeave={() => hold("pointer", false)}
+      onMouseEnter={event => {
+        trackPointer(event);
+        hold("pointer", true);
+      }}
+      onMouseMove={trackPointer}
+      onMouseLeave={() => {
+        pointerAt.current = undefined;
+        hold("pointer", false);
+      }}
       onFocus={() => hold("focus", true)}
       onBlur={() => hold("focus", false)}
     >

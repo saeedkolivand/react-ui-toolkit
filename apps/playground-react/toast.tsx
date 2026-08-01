@@ -25,6 +25,22 @@ const queues = {
   "bottom-start": createToastQueue({ placement: "bottom-start", max: 2 }),
 } as const;
 
+/**
+ * A `resume()` counter on the bottom-end queue.
+ *
+ * The hold bugs on this component are all about a hold being *released* when
+ * nothing released it, and the downstream symptom — a toast expiring — can be
+ * repaired by a later pointer event before it shows up. Counting the releases
+ * measures the thing itself.
+ */
+let resumes = 0;
+const counted = queues["bottom-end"].resume.bind(queues["bottom-end"]);
+queues["bottom-end"].resume = () => {
+  resumes += 1;
+  document.getElementById("resumes")?.setAttribute("data-count", String(resumes));
+  counted();
+};
+
 function Harness() {
   return (
     <main style={{ padding: 0, minBlockSize: "100vh" }}>
@@ -99,6 +115,8 @@ function Harness() {
           add-overflow
         </Button>
       </div>
+
+      <span id="resumes" data-count="0" hidden />
 
       <div data-fixture="bottom-end">
         <Toaster toaster={queues["bottom-end"]} />

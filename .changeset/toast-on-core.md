@@ -21,8 +21,21 @@ framework anywhere. `<Toaster>` in React reads it through `useSyncExternalStore`
 ```
 
 Everything you call on it is unchanged — `create`, `success`, `error`,
-`warning`, `info`, `loading`, `update`, `dismiss` — as is every attribute the
-markup emits. Vue, Svelte and Angular keep `createToaster()` and are untouched.
+`warning`, `info`, `loading`, `update`, `dismiss`. Vue, Svelte and Angular keep
+`createToaster()` and are untouched.
+
+The group emits what it did before. **Each toast root emits less.** The flow
+layout has no per-toast geometry, so `data-first`, `data-stack`, `data-ghost`,
+`data-overlap`, `data-sibling`, `data-mounted` and `data-paused` are gone along
+with the `--x`/`--y`/`--z-index`/`--offset` custom properties that drove the
+old stacking, and `data-placement`, `data-side` and `data-align` now live on the
+group only. `data-state`, `data-type` and the part attributes are unchanged. If
+you style a toast off any of the removed ones, move the selector to the group or
+key it on `data-state`.
+
+`dir` is also gone, deliberately. Every rule is written in logical properties,
+so the group inherits direction from its ancestors — and an explicit `dir="ltr"`
+inside an RTL document would have forced the wrong one.
 
 Two option names differ on the factory: `removeDelay` replaces the machine's
 `gap`/`offsets`, which were part of an absolute-positioning scheme the flow

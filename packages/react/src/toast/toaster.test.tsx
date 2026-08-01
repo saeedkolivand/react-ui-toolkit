@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createToastQueue } from "@crosskit-ui/core";
 import { Toaster } from "./toaster";
@@ -170,6 +170,18 @@ describe("Toaster", () => {
     expect(pause).toHaveBeenCalled();
     await user.unhover(root());
     expect(resume).toHaveBeenCalled();
+  });
+
+  it("matches the hotkey on the physical key, not the composed character", async () => {
+    const toaster = createToastQueue();
+    render(<Toaster toaster={toaster} />);
+    toaster.create({ title: "Saved" });
+    await waitFor(() => expect(roots()).toHaveLength(1));
+    // What macOS actually delivers for option+T: the physical key is `KeyT`
+    // and the character it composes to is a dagger. Matching on the character
+    // meant the label advertised a shortcut that did nothing on that layout.
+    fireEvent.keyDown(document, { code: "KeyT", key: "†", altKey: true });
+    expect(group()).toHaveFocus();
   });
 
   it("keeps holding while one of the two signals is still raised", async () => {

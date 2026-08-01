@@ -125,6 +125,31 @@ test("counts down again after a toast is closed under the pointer", async ({ pag
   await expect(rootsIn(page, "bottom-end")).toHaveCount(0, { timeout: 10_000 });
 });
 
+test("holds a toast that slides under the pointer when the one below closes", async ({ page }) => {
+  await page.click("#add-bottom-end");
+  await page.click("#add-closable");
+  const roots = rootsIn(page, "bottom-end");
+  await expect(roots).toHaveCount(2);
+
+  // Close the lower one with its own close button. The toast above slides down
+  // into the freed slot, under the pointer that just clicked — and the pointer
+  // never crosses the group boundary, so no event follows to say so. Reading
+  // the browser's `:hover` at commit time answers for the layout that has just
+  // stopped existing.
+  const closable = roots.filter({ hasText: "Deleted" });
+  const before = await page.locator("#resumes").getAttribute("data-count");
+  await closable.getByRole("button", { name: "Dismiss" }).click();
+  await expect(roots).toHaveCount(1);
+
+  // Counting releases rather than waiting for the toast to expire: a stray
+  // `mouseover` a moment later re-raises the hold, so the countdown restarting
+  // for an instant can leave no trace in the end state. The release itself is
+  // the bug.
+  expect(await page.locator("#resumes").getAttribute("data-count")).toBe(before);
+  await page.waitForTimeout(6000);
+  await expect(roots).toHaveAttribute("data-state", "open");
+});
+
 test("animates the exit rather than vanishing", async ({ page }) => {
   await page.click("#add-sticky");
   const root = rootsIn(page, "bottom-end").first();
