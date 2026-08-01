@@ -236,9 +236,29 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     onOpenChangeRef.current = onOpenChange;
   });
 
+  /**
+   * The last value handed to the consumer, so a repeat is not reported twice.
+   *
+   * Comparing against `open` cannot work: several handlers can call `setOpen`
+   * within one event, and every one of them reads the same pre-render value.
+   * Kept in step with reality by the effect below.
+   */
+  const reportedRef = useRef(open);
+  useEffect(() => {
+    reportedRef.current = open;
+  });
+
   const setOpen = useCallback(
     (next: boolean) => {
       if (controlled === undefined) setUncontrolled(next);
+      // Only when it actually changed. Notifying unconditionally reported
+      // things that never happened: a hover shorter than the enter delay
+      // reported a close for an overlay that never opened, a trigger → popup →
+      // trigger round trip reported a second open with no close between, and
+      // any two handlers agreeing on a close reported it twice. The Tab and
+      // Escape double-fires fixed by hand earlier were two instances of this.
+      if (reportedRef.current === next) return;
+      reportedRef.current = next;
       onOpenChangeRef.current?.({ open: next });
     },
     [controlled]
@@ -270,7 +290,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
    * How the pending open was asked for. Read when the overlay actually opens,
    * to decide whether taking focus would be helping or interrupting.
    */
-  const reasonRef = useRef<"hover" | "press" | "keyboard">("press");
+  const reasonRef = useRef<"hover" | "press" | "keyboard" | "none">("none");
 
   /** True only while the close is handing focus back, so the trigger ignores it. */
   const restoringRef = useRef(false);
@@ -342,11 +362,23 @@ export function useAnchored(options: AnchoredOptions): Anchored {
   useEffect(() => {
     if (!takeFocus) return;
     if (open) {
-      // A pointer crossing a trigger is not a request for focus.
-      if (reasonRef.current === "hover") return;
+      // Only a press or a key asks for focus.
+      //
+      // A pointer crossing a trigger does not, and neither does an opening
+      // nobody gestured for at all: `defaultOpen` put the caret inside the
+      // popup on page load, and a controlled consumer flipping `open` took it
+      // out of whatever the user was typing in — `INPUT` → `DIV/content`, which
+      // is verbatim what this option's doc calls hostile, reached by the one
+      // route that writes no reason. Defaulting to "press" made the absence of
+      // a gesture look like the most deliberate one.
+      if (reasonRef.current !== "press" && reasonRef.current !== "keyboard") return;
       content?.focus({ preventScroll: true });
       return;
     }
+    // Whatever gesture opened it is spent. Leaving it set made the NEXT opening
+    // inherit it, which is how a stale "hover" once left a menu keyboard-dead.
+    reasonRef.current = "none";
+
     // Focus being inside is the whole condition, and there is deliberately no
     // "did we put it there" flag alongside it. There was, and it was wrong in
     // both directions: it is redundant, because `content` is null until the

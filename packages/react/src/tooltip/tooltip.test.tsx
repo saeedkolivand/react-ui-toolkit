@@ -255,6 +255,25 @@ describe("Tooltip", () => {
     expect(content()).not.toBeInTheDocument();
   });
 
+  it("reports nothing at all for a hover shorter than its own delay", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    // The default enter delay, and a pointer that leaves before it elapses.
+    render(
+      <Tooltip title="Note" onOpenChange={onOpenChange}>
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.hover(button());
+    await user.unhover(button());
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // `setOpen` used to notify unconditionally, so the close fired for a
+    // tooltip that never opened: `[[{open:false}]]` with no open before it.
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(content()).not.toBeInTheDocument();
+  });
+
   it("reports one close per Escape, not two", async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();

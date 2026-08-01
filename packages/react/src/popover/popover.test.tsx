@@ -197,6 +197,77 @@ describe("Popover", () => {
     await waitFor(() => expect(content()).toHaveFocus());
   });
 
+  it("leaves focus alone when it opens with no gesture behind it", async () => {
+    const Harness = ({ open }: { open: boolean }) => (
+      <>
+        <input aria-label="typing" />
+        <Popover title="P" content={<button>inner</button>} open={open} onOpenChange={() => {}}>
+          <button>Open</button>
+        </Popover>
+      </>
+    );
+    const { rerender } = render(<Harness open={false} />);
+    const input = screen.getByRole("textbox", { name: "typing" });
+    input.focus();
+
+    // A controlled consumer flipping `open` is the one route that writes no
+    // reason, and the default was "press" — so the absence of a gesture looked
+    // like the most deliberate one and took the caret out of the input.
+    rerender(<Harness open />);
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(input).toHaveFocus();
+  });
+
+  it("forgets the gesture that opened it once it closes", async () => {
+    const user = userEvent.setup();
+    const Harness = ({ open }: { open: boolean }) => (
+      <>
+        <input aria-label="typing" />
+        <Popover
+          title="P"
+          content={<button>inner</button>}
+          open={open}
+          onOpenChange={() => {}}
+          trigger="click"
+        >
+          <button>Open</button>
+        </Popover>
+      </>
+    );
+    const { rerender } = render(<Harness open={false} />);
+
+    // A real press first, which correctly takes focus.
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    rerender(<Harness open />);
+    await waitFor(() => expect(content()).toHaveFocus());
+
+    rerender(<Harness open={false} />);
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+
+    const input = screen.getByRole("textbox", { name: "typing" });
+    input.focus();
+    // Reopened by the consumer with no gesture at all. A reason left over from
+    // the last press would make this look deliberate and take the caret — the
+    // same staleness that once left a menu keyboard-dead, pointed the other way.
+    rerender(<Harness open />);
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(input).toHaveFocus();
+  });
+
+  it("does not focus itself when mounted already open", async () => {
+    render(
+      <Popover title="P" content={<button>inner</button>} defaultOpen>
+        <button>Open</button>
+      </Popover>
+    );
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await new Promise(resolve => setTimeout(resolve, 50));
+    // Page load is not a gesture either.
+    expect(content()).not.toHaveFocus();
+  });
+
   it("names the dialog with its own title", async () => {
     const user = userEvent.setup();
     setup({ trigger: "click" });
