@@ -59,6 +59,17 @@ for (const [id, description] of CASES) {
     const thumb = await centre(page, `#${id} [data-part="thumb"]`);
     expect(Math.abs(marks[2]!.x - thumb.x)).toBeLessThanOrEqual(1);
     expect(Math.abs(marks[2]!.y - thumb.y)).toBeLessThanOrEqual(1);
+
+    // The box model directly, because the centring above cannot see it: a mark
+    // that inherits `content-box` is 8px rather than 6 and sits 1px off — which
+    // is exactly the tolerance every position assertion here needs for
+    // sub-pixel layout. Measuring the thing the fix changed has no such
+    // overlap.
+    const box = await page
+      .locator(`#${id} [data-part="mark"]`)
+      .first()
+      .evaluate(el => Math.round(el.getBoundingClientRect().width));
+    expect(box).toBe(6);
   });
 
   test(`puts each mark label on its own mark, ${description}`, async ({ page }) => {

@@ -116,7 +116,10 @@
   /* The label is the one thing here with no known size, so it is the one that
      still needs `translate` — and therefore the one direction mirror left in
      the file. Vertical puts it beside the track instead, where the inline axis
-     does the flipping and no mirror is needed at all. */
+     does the flipping and no mirror is needed at all — and its rule
+     follows the `:dir(rtl)` one at equal specificity, so it already wins in
+     both directions. A vertical-RTL rule beside these was written first and
+     measured to be inert. */
   [data-scope="slider"] [data-part="mark-label"] {
     position: absolute;
     inset-block-start: 0.75rem;
@@ -132,9 +135,6 @@
   [data-scope="slider"][data-orientation="vertical"] [data-part="mark-label"] {
     inset-block-start: 50%;
     inset-inline-start: 0.75rem;
-    translate: 0 -50%;
-  }
-  [data-scope="slider"][data-orientation="vertical"]:dir(rtl) [data-part="mark-label"] {
     translate: 0 -50%;
   }
 
