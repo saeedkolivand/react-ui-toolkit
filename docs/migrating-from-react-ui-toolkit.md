@@ -115,13 +115,19 @@ of them, remove the workaround:
 | `visible` | `open` |  |
 | `showDelay / hideDelay` | `openDelay / closeDelay` |  |
 | `overlayClassName` | `contentClassName` |  |
+| `contentClassName` | `overlayClassName` | React only, and back to the name v0 had: the prop names the popup, and `content` is what goes in it. |
+| `content` | `title` | React only. Frees `content` for Popover, where a title and a body are different things. |
 | `cloneElement onto your trigger` | `a wrapper element with display: inline-flex` | Zag's trigger handlers are pointerenter/pointerleave and focus/blur — none of which bubble — so a box-less wrapper would have worked in React and silently failed everywhere else. |
 
-#### Menu
+#### Menu / Dropdown
 
 | v0 | v1 | Notes |
 | --- | --- | --- |
 | `Dropdown + Menu + MenuItem` | `one Menu with items` |  |
+| `Menu with a generated trigger` | `Dropdown wrapping your own trigger` | React only. The generated button solved nested buttons by removing the choice; taking the element back and never wrapping it solves the same thing without it. |
+| `MenuItem.value` | `item.key (React Dropdown)` |  |
+| `{ separator: true }` | `{ type: 'divider' } (React Dropdown)` |  |
+| `onSelect(d => d.value)` | `menu.onClick(i => i.key) (React Dropdown)` |  |
 | `MenuItem.key` | `MenuItem.value` |  |
 | `overlay` | `items` |  |
 | `children as the trigger element` | `trigger as content` | <Dropdown><Button/></Dropdown> produced invalid nested buttons. |
@@ -176,6 +182,12 @@ of them, remove the workaround:
 These components kept their v0 prop names, so only the import path changes:
 
 `Icon`, `Spinner`, `Divider`, `Badge`, `Tag`, `Card`, `Alert`, `Container`, `Checkbox`, `Radio & RadioGroup`, `Drawer`, `Avatar`.
+
+## New, with no v0 equivalent
+
+Nothing to migrate — these did not exist before:
+
+`Popover`.
 
 ## Deleted, not renamed
 

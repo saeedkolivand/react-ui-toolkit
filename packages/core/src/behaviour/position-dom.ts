@@ -107,6 +107,11 @@ export function applyPosition(floating: HTMLElement, position: PositionResult): 
   floating.style.left = `${position.x}px`;
   floating.style.top = `${position.y}px`;
   floating.dataset.placement = position.placement;
+  // For the popups that scroll. Written always rather than on request, because
+  // it costs two custom properties and the alternative is every caller having
+  // to know whether its own content might overflow.
+  floating.style.setProperty("--ck-available-width", `${position.available.width}px`);
+  floating.style.setProperty("--ck-available-height", `${position.available.height}px`);
 
   if (position.arrow) {
     const { x, y, centerOffset } = position.arrow;

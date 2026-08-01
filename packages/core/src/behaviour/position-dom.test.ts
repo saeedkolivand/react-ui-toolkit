@@ -8,6 +8,7 @@ const result = (overrides: Partial<PositionResult> = {}): PositionResult => ({
   y: 40,
   placement: "bottom-start",
   rtl: false,
+  available: { width: 800, height: 300 },
   ...overrides,
 });
 
@@ -17,6 +18,18 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = "";
+});
+
+describe("applyPosition available space", () => {
+  it("publishes the room on the chosen side, for popups that scroll", () => {
+    applyPosition(el(), result({ available: { width: 640, height: 210 } }));
+    // A menu caps its own `max-height` against this. Without it the box takes
+    // its fallback height and runs off the bottom of the viewport with the last
+    // items unreachable — and neither flip nor shift can help, because content
+    // taller than both sides fits on neither.
+    expect(el().style.getPropertyValue("--ck-available-height")).toBe("210px");
+    expect(el().style.getPropertyValue("--ck-available-width")).toBe("640px");
+  });
 });
 
 describe("applyPosition", () => {

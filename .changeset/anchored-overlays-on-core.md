@@ -1,4 +1,5 @@
 ---
+"@crosskit-ui/core": minor
 "@crosskit-ui/react": minor
 "@crosskit-ui/styles": minor
 ---
@@ -40,6 +41,12 @@ document rather than a neighbour of its trigger. Neither does it on a hover-open
 from the primitives already in core. It opens on Enter, Space and the arrows
 whatever `trigger` says, because a menu button answering Enter belongs to the
 role rather than to the pointer configuration.
+
+`core`'s `computePosition` now also reports how much room the chosen side has,
+and `applyPosition` writes it as `--ck-available-width` / `--ck-available-height`.
+A popup that scrolls has to cap itself against that or it runs off the screen
+with its last items unreachable, and neither flip nor shift can help once the
+content is taller than both sides.
 
 Styles: a `popover` scope, an arrow driven by the positioner's own
 `data-placement` and `--ck-arrow-x/y`, and a real `z-index` on the anchored

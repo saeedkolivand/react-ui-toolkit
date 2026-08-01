@@ -84,6 +84,24 @@ function Harness() {
         </Popover>
       </div>
 
+      {/* Long enough to exceed any viewport this suite runs in. A menu that does
+          not cap itself against the room actually available runs off the bottom
+          with its last items unreachable — and flip and shift cannot rescue it,
+          because content taller than both sides fits on neither. */}
+      <div style={{ position: "absolute", insetBlockStart: 300, insetInlineStart: 850 }}>
+        <Dropdown
+          menu={{
+            items: Array.from({ length: 30 }, (_, i) => ({
+              key: `row-${i}`,
+              label: `Row ${i}`,
+            })),
+          }}
+          trigger="click"
+        >
+          <button id="long-menu">long menu</button>
+        </Dropdown>
+      </div>
+
       {/* An ancestor with a transform. `position: fixed` inside one resolves
           against THAT element rather than the viewport, so a popup rendered in
           place here would land somewhere else entirely — the portal is what

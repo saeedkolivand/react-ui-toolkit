@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "typecheck": "astro check && node scripts/check-props.mjs",
+    "typecheck": "astro check && node scripts/check-props.mjs && node scripts/generate-migration.mjs --check",
     "gen:migration": "node scripts/generate-migration.mjs",
     "check:props": "node scripts/check-props.mjs"
   },

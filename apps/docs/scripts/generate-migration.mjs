@@ -3,7 +3,7 @@
 // The per-component pages and the migration guide describe the same API changes,
 // so they read from one source. Written by hand in both places they would drift
 // on the first rename nobody remembered to mirror.
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 // Node 22 strips TypeScript types natively, so the .ts registry imports with no
@@ -93,7 +93,12 @@ for (const { group, items } of byGroup()) {
   }
 }
 
-const unchanged = components.filter(c => !c.changes?.length).map(c => c.name);
+// `isNew` components are excluded rather than merely lacking `changes`:
+// having nothing to migrate and having never existed read identically to
+// this filter, and only one of them belongs under a heading about kept
+// prop names.
+const unchanged = components.filter(c => !c.changes?.length && !c.isNew).map(c => c.name);
+const added = components.filter(c => c.isNew).map(c => c.name);
 lines.push(
   "## Unchanged APIs",
   "",
@@ -101,6 +106,16 @@ lines.push(
   "",
   unchanged.map(name => `\`${name}\``).join(", ") + ".",
   "",
+  ...(added.length
+    ? [
+        "## New, with no v0 equivalent",
+        "",
+        "Nothing to migrate \u2014 these did not exist before:",
+        "",
+        added.map(name => `\`${name}\``).join(", ") + ".",
+        "",
+      ]
+    : []),
   "## Deleted, not renamed",
   "",
   "| Removed | Replacement |",
@@ -116,5 +131,23 @@ lines.push(
 const out = fileURLToPath(
   new URL("../../../docs/migrating-from-react-ui-toolkit.md", import.meta.url)
 );
-writeFileSync(out, lines.join("\n"), "utf8");
-console.log(`wrote ${out}`);
+const generated = lines.join("\n");
+
+// `--check` exists so the committed guide cannot drift from this registry
+// unnoticed. It did: two rounds of prop renames landed with the file
+// untouched, because regenerating it was a command somebody had to remember
+// to run. Wired into the docs `typecheck`, which the gate already runs.
+if (process.argv.includes("--check")) {
+  const current = existsSync(out) ? readFileSync(out, "utf8") : "";
+  if (current !== generated) {
+    console.error(
+      out +
+        " is out of date. Run: pnpm --filter @crosskit-ui/docs gen:migration, and commit the result."
+    );
+    process.exit(1);
+  }
+  console.log("migration guide is up to date");
+} else {
+  writeFileSync(out, generated, "utf8");
+  console.log(`wrote ${out}`);
+}

@@ -195,6 +195,49 @@ test("opens both default triggers from the keyboard alone", async ({ page }) => 
   await expect(page.locator("#default-popover-button")).toBeFocused();
 });
 
+test("caps a long menu against the room actually available", async ({ page }) => {
+  // Short on purpose. At this suite's default 1000x800 the 20rem fallback fits
+  // above or below whatever the trigger does, so flip rescues it and the bug is
+  // invisible — the first version of this test passed with the fix reverted for
+  // exactly that reason. 400px tall is the case where 320px of menu fits on
+  // NEITHER side, which is the only case that needs the real number.
+  await page.setViewportSize({ width: 900, height: 400 });
+  await page.locator("#long-menu").click();
+  await expect(content(page, "menu")).toBeVisible();
+
+  const viewport = page.viewportSize()!;
+
+  // Polled, because this settles over an extra frame by construction: the cap
+  // depends on which side was chosen, and the side depends on the height the cap
+  // changes. Capping resizes the box, the ResizeObserver in `autoUpdate` sees it
+  // and repositions, and the second pass is stable because the anchor has not
+  // moved. Reading once catches it mid-convergence at y=-22.
+  await expect
+    .poll(async () => {
+      const b = await box(content(page, "menu"));
+      return { top: Math.round(b.y), bottom: Math.round(b.y + b.height) };
+    })
+    .toEqual({ top: 0, bottom: expect.any(Number) });
+
+  const c = await box(content(page, "menu"));
+  // BOTH edges. Asserting only the bottom is not enough, and the first version
+  // of this test proved it: with the trigger at y=300 in a 400px viewport, flip
+  // sends the menu upward, so an uncapped 320px box overflows the TOP while its
+  // bottom edge stays comfortably on screen.
+  //
+  // `--available-height` was only ever written by the v1 machine, so v2 took the
+  // 20rem fallback wherever the trigger sat.
+  expect(c.y).toBeGreaterThanOrEqual(-1);
+  expect(c.y + c.height).toBeLessThanOrEqual(viewport.height + 1);
+
+  // And genuinely capped rather than merely short — the list is 30 rows, so an
+  // uncapped box would be far taller than this.
+  expect(await content(page, "menu").evaluate(n => n.scrollHeight > n.clientHeight)).toBe(true);
+  // The last row is reachable by scrolling within the menu.
+  await content(page, "menu").evaluate(n => n.scrollTo(0, n.scrollHeight));
+  await expect(page.locator('[data-part="item"]', { hasText: "Row 29" })).toBeInViewport();
+});
+
 /**
  * The arrow, in both directions.
  *

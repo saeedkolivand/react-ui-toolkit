@@ -58,6 +58,15 @@ export interface ComponentDoc {
    */
   machine?: string;
   gains?: string[];
+  /**
+   * Set for a component that has no v0 ancestor at all.
+   *
+   * The migration guide lists everything with no `changes` under "kept their v0
+   * prop names", which is true of a renamed-nothing component and false of a
+   * brand-new one — it would tell a migrating reader that a component they
+   * never had kept prop names it never had.
+   */
+  isNew?: boolean;
   props: PropDoc[];
   parts?: PartDoc[];
   changes?: ChangeDoc[];

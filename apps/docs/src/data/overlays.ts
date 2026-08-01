@@ -303,6 +303,7 @@ export const overlays: ComponentDoc[] = [
     name: "Popover",
     group: "Overlays",
     scope: "popover",
+    isNew: true,
     gains: [
       "A title and a body, both of which may hold real controls",
       "role=dialog rather than tooltip, so what is inside stays reachable",
