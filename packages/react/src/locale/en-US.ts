@@ -21,6 +21,7 @@ export interface Locale {
     selectInvert: string;
   };
   Select: { notFound: string; placeholder: string };
+  Empty: { description: string };
   DatePicker: { today: string; now: string; ok: string; placeholder: string };
   Pagination: { previous: string; next: string; jumpTo: string; perPage: string };
   Upload: { uploading: string; remove: string; retry: string; error: string };
@@ -51,6 +52,7 @@ export const enUS: Locale = {
     selectInvert: "Invert selection",
   },
   Select: { notFound: "No results", placeholder: "Select" },
+  Empty: { description: "No data" },
   DatePicker: { today: "Today", now: "Now", ok: "OK", placeholder: "Select date" },
   Pagination: { previous: "Previous", next: "Next", jumpTo: "Go to", perPage: "per page" },
   Upload: { uploading: "Uploading…", remove: "Remove", retry: "Retry", error: "Upload failed" },

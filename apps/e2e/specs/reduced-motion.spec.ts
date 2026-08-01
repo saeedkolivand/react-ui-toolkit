@@ -102,3 +102,39 @@ test("slows the button spinner rather than stopping it", async ({ page }) => {
   // slows it from 0.6s to 1.5s instead of removing it. `button.css` was right.
   expect((await motionOf(page, spinner)).animation).toBe(1500);
 });
+
+test("silences the skeleton shimmer, and only because it was shimmering", async ({ page }) => {
+  // `:first-child`, because a paragraph has three of them and `motionOf`
+  // takes a selector that has to resolve to one element.
+  const row = '#active [data-part="row"]:first-child';
+
+  // The control comes first and from outside the preference: the block is
+  // measured shimmering before it is measured silenced. Without it, a selector
+  // typo that animated nothing at all would pass this test perfectly.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/skeleton.html");
+  await expect(page.locator(row)).toBeVisible();
+  expect((await motionOf(page, row)).animation).toBeGreaterThan(IMPERCEPTIBLE);
+  // And the still block next to it is not animating, so `[data-active]` is
+  // carrying the shimmer rather than every block shimmering unconditionally.
+  expect((await motionOf(page, '#still [data-part="row"]:first-child')).animation).toBe(0);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  // `!important`, because the rule being cancelled carries `[data-active]` and
+  // the cancelling one cannot — it would then only silence blocks that were
+  // never shimmering. Same layer, one attribute more specific: exactly the
+  // mismatch that made four of the blocks above do nothing.
+  expect((await motionOf(page, row)).animation).toBeLessThanOrEqual(IMPERCEPTIBLE);
+});
+
+test("silences a standalone skeleton block too", async ({ page }) => {
+  await page.goto("/skeleton.html");
+  // By id: the harness grew a row of block buttons, and `motionOf` needs a
+  // selector that resolves to one element.
+  const button = "#active-button";
+  await expect(page.locator(button)).toBeVisible();
+  // The five standalone blocks are their own roots with their own `[data-active]`
+  // — they are not descendants of a skeleton root, so a reduced-motion block
+  // written only as a descendant selector would miss all of them.
+  expect((await motionOf(page, button)).animation).toBeLessThanOrEqual(IMPERCEPTIBLE);
+});
