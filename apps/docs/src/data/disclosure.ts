@@ -44,9 +44,9 @@ export const disclosure: ComponentDoc[] = [
       },
       {
         name: "items",
-        reactRemoved: true,
         type: "TabItem[]",
-        description: "Each needs an id, a label and content.",
+        description:
+          "The tabs. v1 items are `{ id, label, content }`; React's v2 items are `{ key, label, children }`, keyed the way the rest of the v2 API is.",
       },
       {
         name: "value",
@@ -94,10 +94,12 @@ export const disclosure: ComponentDoc[] = [
     ],
     samples: {
       react: `<Tabs
-  variant="enclosed"
+  type="card"
+  defaultActiveKey="overview"
+  onChange={key => setTab(key)}
   items={[
-    { id: "overview", label: "Overview", content: <Overview /> },
-    { id: "settings", label: "Settings", content: <Settings /> },
+    { key: "overview", label: "Overview", children: <Overview /> },
+    { key: "settings", label: "Settings", children: <Settings /> },
   ]}
 />`,
       vue: `<Tabs :items="items" variant="enclosed">
@@ -144,9 +146,9 @@ export const disclosure: ComponentDoc[] = [
       },
       {
         name: "items",
-        reactRemoved: true,
-        type: "AccordionItem[]",
-        description: "Each needs an id, title, content.",
+        type: "AccordionItem[] | CollapseItem[]",
+        description:
+          "The panels. v1 items are `{ id, title, content }`; React's v2 items are `{ key, label, children }`.",
       },
       { name: "value", reactRemoved: true, type: "string[]", description: "Open item ids." },
       {
@@ -172,9 +174,9 @@ export const disclosure: ComponentDoc[] = [
     ],
     changes: [{ from: "multiple", to: "allowMultiple" }],
     samples: {
-      react: `<Accordion
-  allowMultiple
-  items={[{ id: "a", title: "Shipping", content: <p>…</p> }]}
+      react: `<Collapse
+  defaultActiveKey={["a"]}
+  items={[{ key: "a", label: "Shipping", children: <p>…</p> }]}
 />`,
       vue: `<Accordion :items="items" allow-multiple>
   <template #a>…</template>

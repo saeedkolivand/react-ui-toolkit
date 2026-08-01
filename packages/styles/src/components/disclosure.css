@@ -69,6 +69,24 @@
     flex-direction: row-reverse;
   }
 
+  /* The panel's gap belongs between it and the list, and the list is not
+     always above it. `padding-top: 1rem` in the v1 rule below assumes it is —
+     correct while `top` was the only arrangement, and 16px on the outside edge
+     with nothing between panel and tabs as soon as `tabPosition` moves them.
+     Each of the other three sides puts the padding back where the list is. */
+  [data-scope="tabs"][data-part="root"][data-tab-position="bottom"]
+    > [data-scope="tabs"][data-part="content"] {
+    padding-block: 0 1rem;
+  }
+  [data-scope="tabs"][data-part="root"][data-tab-position="left"]
+    > [data-scope="tabs"][data-part="content"],
+  [data-scope="tabs"][data-part="root"][data-tab-position="right"]
+    > [data-scope="tabs"][data-part="content"] {
+    /* The vertical root already supplies a 1rem gap on the inline axis, so the
+       panel needs none of its own in either direction. */
+    padding-block-start: 0;
+  }
+
   [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="list"] {
     border-block-end: 1px solid var(--ck-border);
   }

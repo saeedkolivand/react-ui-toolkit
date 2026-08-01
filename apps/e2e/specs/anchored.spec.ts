@@ -394,6 +394,22 @@ test("does not style a nested overlay trigger like a tab", async ({ page }) => {
   expect(style.margin).toBe("0px");
 });
 
+test("puts the tab panel's gap on the side its list is on", async ({ page }) => {
+  const panel = page
+    .locator('[data-tab-position="bottom"] [data-scope="tabs"][data-part="content"]')
+    .first();
+  await expect(panel).toBeVisible();
+
+  // `column-reverse` paints the panel above the list, but the padding was still
+  // `padding-top: 1rem` — 16px on the outside edge of the whole component and
+  // nothing at all between the panel and the tabs it belongs to.
+  const pad = await panel.evaluate(node => {
+    const s = getComputedStyle(node);
+    return { top: s.paddingTop, bottom: s.paddingBottom };
+  });
+  expect(pad).toEqual({ top: "0px", bottom: "16px" });
+});
+
 /**
  * The arrow, in both directions.
  *

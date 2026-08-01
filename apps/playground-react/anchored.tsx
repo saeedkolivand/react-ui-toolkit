@@ -144,6 +144,14 @@ function Harness() {
         />
       </div>
 
+      {/* `tabPosition="bottom"`, so the panel's gap can be measured on the side
+          the list is actually on. */}
+      <div
+        style={{ position: "absolute", insetBlockStart: 940, insetInlineStart: 400, width: 320 }}
+      >
+        <Tabs tabPosition="bottom" items={[{ key: "b1", label: "Bottom", children: "panel" }]} />
+      </div>
+
       {/* An ancestor with a transform. `position: fixed` inside one resolves
           against THAT element rather than the viewport, so a popup rendered in
           place here would land somewhere else entirely — the portal is what
