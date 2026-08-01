@@ -49,6 +49,14 @@
     font-weight: 600;
     color: var(--ck-fg);
   }
+  /* `margin-inline-start: auto` rather than leaning on `space-between`, which
+     puts the gap *between* two children and degrades to `flex-start` with one.
+     The header renders for either half alone, so `extra` without a title
+     landed at the leading edge — 861px from where the same box sits when an
+     unrelated prop is set. A no-op in the two-child case. */
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] > [data-part="extra"] {
+    margin-inline-start: auto;
+  }
 
   [data-scope="descriptions"][data-part="root"] > [data-part="list"] {
     display: grid;

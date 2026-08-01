@@ -78,6 +78,19 @@ function Harness() {
       {/* The same two components inside a Descriptions value and outside it.
           Comparing them against each other is what says whether the leak is
           real — an absolute expectation would only say what today renders. */}
+      {/* The same `extra` with and without a title beside it. `space-between`
+          puts the gap *between* two children; with one it is `flex-start`. */}
+      <div id="extra-alone" style={{ inlineSize: 600 }}>
+        <Descriptions items={[{ label: "a", children: "b" }]} extra={<span>Edit</span>} />
+      </div>
+      <div id="extra-both" style={{ inlineSize: 600 }}>
+        <Descriptions
+          items={[{ label: "a", children: "b" }]}
+          title="Profile"
+          extra={<span>Edit</span>}
+        />
+      </div>
+
       <div id="nested-controls">
         <Descriptions
           column={1}

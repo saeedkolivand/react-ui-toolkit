@@ -167,3 +167,20 @@ test("leaves no gap where a hidden pagination bar would have been", async ({ pag
   const height = await wrapper.evaluate(el => Math.round(el.getBoundingClientRect().height));
   expect(height).toBe(0);
 });
+
+test("keeps Descriptions extra at the trailing edge with or without a title", async ({ page }) => {
+  await page.goto("/data.html");
+  const alone = page.locator('#extra-alone [data-part="extra"]');
+  const both = page.locator('#extra-both [data-part="extra"]');
+  await expect(alone).toHaveCount(1);
+  await expect(both).toHaveCount(1);
+
+  const right = (locator: typeof alone) =>
+    locator.evaluate(el => Math.round(el.getBoundingClientRect().right));
+
+  // `space-between` puts the gap *between* two children; with one child it is
+  // `flex-start`, so the same `extra` jumps end to end depending on whether an
+  // unrelated prop is set. Compared against each other, since both containers
+  // are the same width and neither position is a number worth hard-coding.
+  expect(await right(alone)).toBe(await right(both));
+});
