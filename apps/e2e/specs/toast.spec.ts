@@ -107,6 +107,24 @@ test("holds a toast open while the pointer is over the group", async ({ page }) 
   await expect(root).toHaveAttribute("data-state", "open");
 });
 
+test("counts down again after a toast is closed under the pointer", async ({ page }) => {
+  await page.click("#add-closable");
+  const roots = rootsIn(page, "bottom-end");
+  await expect(roots).toHaveCount(1);
+
+  // Clicking a close button means the pointer is necessarily over the toast,
+  // and a detached node fires no boundary event — so the hover hold it raised
+  // has no release. Left stranded, nothing on the page ever counts down again.
+  await roots.first().getByRole("button", { name: "Dismiss" }).click();
+  await expect(roots).toHaveCount(0);
+  await page.mouse.move(5, 5);
+
+  await page.click("#add-bottom-end");
+  await expect(rootsIn(page, "bottom-end")).toHaveCount(1);
+  // Default duration is 5s. With the hold stranded this never closes.
+  await expect(rootsIn(page, "bottom-end")).toHaveCount(0, { timeout: 10_000 });
+});
+
 test("animates the exit rather than vanishing", async ({ page }) => {
   await page.click("#add-sticky");
   const root = rootsIn(page, "bottom-end").first();

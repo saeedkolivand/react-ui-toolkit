@@ -222,16 +222,32 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     return id;
   };
 
+  const retype = (before: ToastItem, o: ToastOptions) => {
+    const type = o.type ?? before.type;
+    const retyped = type !== before.type && !chosenDurations.has(before.id);
+    const duration = o.duration ?? (retyped ? resolveDuration(type, undefined) : before.duration);
+    return { type, retyped, duration };
+  };
+
   const update = (id: string, o: ToastOptions) => {
+    // Recorded before either branch returns: sitting after the waiting-branch
+    // early return meant an overflowed toast's chosen duration was never noted,
+    // so a later type change silently overwrote it.
+    if (o.duration !== undefined) chosenDurations.add(id);
     const index = waiting.findIndex(item => item.id === id);
     if (index >= 0) {
-      waiting[index] = { ...waiting[index]!, ...o, id };
+      const held = waiting[index]!;
+      const { type, duration } = retype(held, o);
+      // The same re-derivation the live branch below does. A waiting toast has
+      // not started counting, so there is nothing to restart — it just has to
+      // be promoted carrying the duration its new type implies. Without this an
+      // overflowed `loading` updated to `success` was promoted still infinite
+      // and never left the screen.
+      waiting[index] = { ...held, ...o, id, type, duration };
       return;
     }
     const before = live.find(item => item.id === id);
     if (!before) return;
-    if (o.duration !== undefined) chosenDurations.add(id);
-    const type = o.type ?? before.type;
     // The type carries the duration with it, so a `loading` toast updated to
     // `success` has to stop being infinite — and a `success` updated to
     // `loading` has to stop counting down. Resolving once in `create` left
@@ -240,8 +256,7 @@ export function createToastQueue(options: ToastQueueOptions = {}): ToastQueue {
     //
     // A duration the caller chose survives the change; only a defaulted one is
     // re-derived.
-    const retyped = type !== before.type && !chosenDurations.has(id);
-    const duration = o.duration ?? (retyped ? resolveDuration(type, undefined) : before.duration);
+    const { type, retyped, duration } = retype(before, o);
     const updated = patch(id, { ...o, id, type, duration });
     // A new or re-derived duration restarts the countdown; without this,
     // `update` could only ever shorten a toast's life by accident. Not while

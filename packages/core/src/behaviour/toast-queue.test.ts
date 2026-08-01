@@ -200,6 +200,36 @@ describe("createToastQueue", () => {
     expect(ids(q)).toContain("c");
   });
 
+  it("re-derives the duration of a waiting toast too", () => {
+    const q = createToastQueue({ max: 1 });
+    q.create({ id: "a", title: "a", duration: 1000 });
+    q.loading({ id: "b", title: "Uploading" });
+    // Retyped while still held back, so the re-derivation has to happen on the
+    // waiting branch — otherwise it is promoted still infinite and never goes.
+    q.update("b", { title: "Uploaded", type: "success" });
+    vi.advanceTimersByTime(1200);
+    expect(ids(q)).toEqual(["b"]);
+    vi.advanceTimersByTime(5000);
+    expect(states(q)).toEqual(["closed"]);
+  });
+
+  it("keeps a duration chosen while waiting across a later type change", () => {
+    const q = createToastQueue({ max: 1 });
+    q.create({ id: "a", title: "a", duration: 1000 });
+    q.create({ id: "b", title: "b", type: "info" });
+    q.update("b", { duration: 2000 });
+    // `chosenDurations` used to be recorded after the waiting branch returned,
+    // so a duration that arrived this way was never noted and the retype below
+    // silently replaced it with the new type's default.
+    q.update("b", { type: "success" });
+    vi.advanceTimersByTime(1200);
+    expect(ids(q)).toEqual(["b"]);
+    vi.advanceTimersByTime(1999);
+    expect(states(q)).toEqual(["open"]);
+    vi.advanceTimersByTime(1);
+    expect(states(q)).toEqual(["closed"]);
+  });
+
   it("does not start a waiting toast's countdown before it is shown", () => {
     const q = createToastQueue({ max: 1 });
     q.create({ id: "a", title: "a", duration: 1000 });

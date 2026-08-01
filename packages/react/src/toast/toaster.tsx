@@ -63,15 +63,38 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
   // focus in it started the countdown again with focus still there — the exact
   // thing these handlers exist to prevent.
   const held = useRef({ pointer: false, focus: false });
+  const apply = useCallback(() => {
+    if (held.current.pointer || held.current.focus) toaster.pause();
+    else toaster.resume();
+  }, [toaster]);
   const hold = useCallback(
     (signal: "pointer" | "focus", next: boolean) => {
       held.current[signal] = next;
-      const any = held.current.pointer || held.current.focus;
-      if (any) toaster.pause();
-      else toaster.resume();
+      apply();
     },
-    [toaster]
+    [apply]
   );
+
+  // Re-read both signals from the DOM whenever the list changes, because a
+  // node removed while it holds one produces no release. Closing a toast by
+  // clicking its close button is the ordinary way to hit this — the pointer is
+  // necessarily over the toast — and the browser fires no boundary event for a
+  // node that is already detached, so the hold would stay raised for the rest
+  // of the page's life and nothing would ever count down again.
+  //
+  // The old shape could not have this bug: each toast owned its own hold and
+  // took it away with it. One group-level pair of signals has to be reconciled
+  // against reality instead.
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+    // `:hover` on a descendant, not on the group: the group sets
+    // `pointer-events: none` so the page underneath stays clickable, and only
+    // the toasts themselves take pointer events back.
+    held.current.pointer = group.querySelector(":hover") !== null;
+    held.current.focus = group.contains(document.activeElement);
+    apply();
+  }, [toasts, apply]);
 
   return (
     <div
