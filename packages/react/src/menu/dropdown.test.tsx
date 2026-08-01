@@ -221,6 +221,30 @@ describe("Dropdown", () => {
     await waitFor(() => expect(content()).not.toBeInTheDocument());
   });
 
+  it("stays operable by keyboard when a press leaves focus on the trigger", async () => {
+    const user = userEvent.setup();
+    const { onClick } = setup();
+    // The most ordinary mouse gesture there is, and the one the default trigger
+    // produces: the pointer crosses the button so hover opens the menu, then the
+    // user presses it. `trigger="hover"` attaches no click handler, so nothing
+    // closes it and nothing moves focus — the press simply gives the BUTTON
+    // focus while the menu is open.
+    await user.hover(trigger());
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    await user.click(trigger());
+    expect(content()).toBeInTheDocument();
+    expect(trigger()).toHaveFocus();
+
+    // The trigger's handler used to return early whenever the menu was open, so
+    // no handler on either side answered a key and only Escape worked.
+    await user.keyboard("{ArrowDown}");
+    expect(highlighted()).toBe("Edit");
+    await user.keyboard("{End}");
+    expect(highlighted()).toBe("Delete");
+    await user.keyboard("{Home}{Enter}");
+    expect(onClick).toHaveBeenCalledWith({ key: "edit" });
+  });
+
   // ------------------------------------------------------------------- ARIA
 
   it("announces the trigger as a menu button", async () => {

@@ -110,8 +110,15 @@ export function applyPosition(floating: HTMLElement, position: PositionResult): 
   // For the popups that scroll. Written always rather than on request, because
   // it costs two custom properties and the alternative is every caller having
   // to know whether its own content might overflow.
-  floating.style.setProperty("--ck-available-width", `${position.available.width}px`);
-  floating.style.setProperty("--ck-available-height", `${position.available.height}px`);
+  //
+  // Guarded because the field is optional: this function accepts a position
+  // computed elsewhere, as the note above says, and a hand-built one threw here
+  // — after `left`, `top` and `data-placement` had already been written, so the
+  // element was left half-positioned.
+  if (position.available) {
+    floating.style.setProperty("--ck-available-width", `${position.available.width}px`);
+    floating.style.setProperty("--ck-available-height", `${position.available.height}px`);
+  }
 
   if (position.arrow) {
     const { x, y, centerOffset } = position.arrow;

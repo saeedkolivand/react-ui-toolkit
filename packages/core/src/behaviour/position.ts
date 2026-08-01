@@ -133,8 +133,13 @@ export interface Position {
    * runs off the screen with its last items unreachable, and neither flip nor
    * shift can help once the content is taller than either side. Reported rather
    * than applied, because only the caller knows whether its content scrolls.
+   *
+   * Optional so that adding it stayed a `minor`. `computePosition` always
+   * produces it, but this is an exported interface, and a caller hand-building
+   * a `Position` — which `applyPosition`'s own docblock invites — compiled
+   * before and would not after.
    */
-  available: { width: number; height: number };
+  available?: { width: number; height: number };
 }
 
 const isVertical = (side: Side) => side === "top" || side === "bottom";

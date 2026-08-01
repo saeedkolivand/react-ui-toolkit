@@ -21,6 +21,18 @@ afterEach(() => {
 });
 
 describe("applyPosition available space", () => {
+  it("still positions a result that carries no available space", () => {
+    // The docblock invites a caller to apply a position it computed elsewhere,
+    // and `available` arrived after that promise did. Required, it threw here —
+    // after left, top and data-placement were already written, leaving the
+    // element half-positioned rather than failing cleanly.
+    const { available: _omitted, ...withoutAvailable } = result();
+    expect(() => applyPosition(el(), withoutAvailable)).not.toThrow();
+    expect(el().style.left).toBe("120px");
+    expect(el().dataset.placement).toBe("bottom-start");
+    expect(el().style.getPropertyValue("--ck-available-height")).toBe("");
+  });
+
   it("publishes the room on the chosen side, for popups that scroll", () => {
     applyPosition(el(), result({ available: { width: 640, height: 210 } }));
     // A menu caps its own `max-height` against this. Without it the box takes

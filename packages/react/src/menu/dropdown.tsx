@@ -106,6 +106,56 @@ export function Dropdown({
     [menu.items]
   );
 
+  /**
+   * Every key the menu answers, wherever focus happens to be.
+   *
+   * One function rather than one per element, because the menu is operable from
+   * two places: normally the content has focus, but a hover-open followed by a
+   * press leaves focus on the trigger with the menu open. Two copies of this
+   * would be two chances for them to disagree.
+   *
+   * Takes `open` and `setOpen` as arguments rather than closing over them —
+   * the trigger's handler is passed to the hook that produces them, so it
+   * cannot refer to its return value.
+   */
+  const handleMenuKeys = (
+    event: KeyboardEvent<HTMLElement>,
+    state: { open: boolean; setOpen: (open: boolean) => void }
+  ) => {
+    const current = state.open ? highlighted : null;
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (current) selectKey(current, state.setOpen);
+      return;
+    }
+    if (event.key === "Tab") {
+      // Tab out closes rather than stepping through the items: a menu is a
+      // single stop in the tab order. The dismissable layer would catch the
+      // focus leaving anyway, but doing it here keeps the close synchronous
+      // with the key rather than one focus event later.
+      state.setOpen(false);
+      return;
+    }
+    const result = navigate(
+      event,
+      collection,
+      current,
+      { orientation: "vertical", typeahead: true },
+      typeaheadRef.current
+    );
+    if (!result.handled) return;
+    event.preventDefault();
+    if (result.value !== undefined) setHighlighted(result.value);
+  };
+
+  const selectKey = (key: string, setOpen: (open: boolean) => void) => {
+    const item = menu.items.filter(isItem).find(i => i.key === key);
+    if (!item || item.disabled) return;
+    menu.onClick?.({ key });
+    setOpen(false);
+  };
+
   const anchored = useAnchored({
     ...rest,
     placement,
@@ -120,8 +170,15 @@ export function Dropdown({
       if (!details.open) setHighlighted(null);
       onOpenChange?.(details);
     },
-    onTriggerKeyDown: (event, { open, setOpen }) => {
-      if (open) return;
+    onTriggerKeyDown: (event, state) => {
+      // Focus can sit on the TRIGGER with the menu already open, and by the most
+      // ordinary route there is: the pointer crosses the button, hover opens the
+      // menu, and then the user presses it. `trigger="hover"` attaches no click
+      // handler, so nothing closes it and nothing moves focus — the press just
+      // gives the button DOM focus. Returning early here left every navigation
+      // key unanswered by either side, with only Escape working.
+      if (state.open) return handleMenuKeys(event, state);
+
       // Enter, Space and the arrows open a menu button whatever `trigger` says.
       // `trigger` decides which POINTER and focus gestures open it; a menu
       // button answering Enter is inherent to the role, and the hover default
@@ -129,11 +186,11 @@ export function Dropdown({
       // keyboard — which is most of the reason to have a menu at all.
       if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
         event.preventDefault();
-        setOpen(true);
+        state.setOpen(true);
         setHighlighted(collection.first()?.value ?? null);
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
-        setOpen(true);
+        state.setOpen(true);
         setHighlighted(collection.last()?.value ?? null);
       }
     },
@@ -164,39 +221,6 @@ export function Dropdown({
     if (!open) typeaheadRef.current.clear();
   }, [open]);
 
-  const select = (key: string) => {
-    const item = menu.items.filter(isItem).find(i => i.key === key);
-    if (!item || item.disabled) return;
-    menu.onClick?.({ key });
-    setOpen(false);
-  };
-
-  const onContentKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      if (active) select(active);
-      return;
-    }
-    if (event.key === "Tab") {
-      // Tab out closes rather than stepping through the items: a menu is a
-      // single stop in the tab order. The dismissable layer would catch the
-      // focus leaving anyway, but doing it here keeps the close synchronous
-      // with the key rather than one focus event later.
-      setOpen(false);
-      return;
-    }
-    const result = navigate(
-      event,
-      collection,
-      active,
-      { orientation: "vertical", typeahead: true },
-      typeaheadRef.current
-    );
-    if (!result.handled) return;
-    event.preventDefault();
-    if (result.value !== undefined) setHighlighted(result.value);
-  };
-
   return (
     <AnchoredView
       anchored={anchored}
@@ -205,7 +229,7 @@ export function Dropdown({
       overlayClassName={overlayClassName}
       contentProps={{
         "aria-activedescendant": active ? itemId(active) : undefined,
-        onKeyDown: onContentKeyDown,
+        onKeyDown: (event: KeyboardEvent<HTMLElement>) => handleMenuKeys(event, { open, setOpen }),
       }}
       body={menu.items.map((item, index) =>
         isDivider(item) ? (
@@ -228,7 +252,7 @@ export function Dropdown({
             // keyboard press that scrolls a different row under a stationary
             // cursor would leave the highlight stuck on whatever it is over.
             onPointerMove={() => !item.disabled && setHighlighted(item.key)}
-            onClick={() => select(item.key)}
+            onClick={() => selectKey(item.key, setOpen)}
           >
             {item.icon && <Icon name={item.icon} size="sm" />}
             {item.label}
