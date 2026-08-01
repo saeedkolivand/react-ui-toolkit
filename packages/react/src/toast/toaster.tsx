@@ -21,13 +21,41 @@ export interface ToasterProps {
   id?: string;
 }
 
+export type NotificationProps = ToasterProps;
+
 // Rendered on the server and before hydration. A module constant, not a literal
 // in the call: `useSyncExternalStore` compares snapshots by identity, and a
 // fresh `[]` on every call is an infinite render.
 const EMPTY: readonly ToastItem[] = [];
 const serverSnapshot = () => EMPTY;
 
-export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
+/**
+ * The two surfaces over one queue.
+ *
+ * A message is transient and speaks for itself; a notification is a card that
+ * stays until it is read, so it carries a close button unless it is told not to.
+ * That, and the `data-scope` a consumer styles them apart by, is the whole
+ * difference — the queue, the markup and the ARIA are shared, which is what
+ * stops the two drifting into different bugs.
+ */
+interface Surface {
+  scope: "toast" | "notification";
+  /** What `closable` means when a caller did not say. */
+  closable: boolean;
+}
+
+const TOAST: Surface = { scope: "toast", closable: false };
+const NOTIFICATION: Surface = { scope: "notification", closable: true };
+
+export function Toaster(props: ToasterProps) {
+  return <ToastSurface {...props} surface={TOAST} />;
+}
+
+export function Notification(props: NotificationProps) {
+  return <ToastSurface {...props} surface={NOTIFICATION} />;
+}
+
+function ToastSurface({ toaster, hideIcon, id, surface }: ToasterProps & { surface: Surface }) {
   // Unconditional: `id ?? useId()` would be a conditional hook call.
   const autoId = useId();
   const groupId = id ?? autoId;
@@ -42,13 +70,24 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
   // alt+T reaches the region from anywhere, which is the only way a keyboard
   // user gets to a toast's action before it expires. The label announces the
   // shortcut, so it has to actually exist.
+  //
+  // Every surface on the page listens, and a page with both a message queue and
+  // a notification queue is the ordinary setup — so this cycles through the
+  // non-empty groups rather than each surface grabbing focus for itself, which
+  // let whichever mounted last win and made the other unreachable.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (!event.altKey || event.code !== "KeyT") return;
-      const group = groupRef.current;
-      if (!group || group.childElementCount === 0) return;
+      // One press, one move. Each listener computes the same list from the same
+      // DOM, so letting the first one answer and marking the event is what stops
+      // N surfaces advancing the cycle N times for a single press.
+      if (!event.altKey || event.code !== "KeyT" || event.defaultPrevented) return;
+      const groups = [
+        ...document.querySelectorAll<HTMLElement>(`[data-part="group"][data-ck-layout="flow"]`),
+      ].filter(group => group.childElementCount > 0);
+      if (groups.length === 0) return;
       event.preventDefault();
-      group.focus();
+      const current = groups.findIndex(group => group.contains(document.activeElement));
+      groups[(current + 1) % groups.length]!.focus();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -119,7 +158,7 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
   return (
     <div
       ref={groupRef}
-      data-scope="toast"
+      data-scope={surface.scope}
       data-part="group"
       // Marks the flow-layout group. v1's adapters position every toast
       // absolutely through inline custom properties; this one is a flex column,
@@ -157,6 +196,7 @@ export function Toaster({ toaster, hideIcon, id }: ToasterProps) {
           groupId={groupId}
           toaster={toaster}
           hideIcon={hideIcon}
+          surface={surface}
         />
       ))}
     </div>
@@ -168,9 +208,10 @@ interface ToastViewProps {
   groupId: string;
   toaster: ToastQueue;
   hideIcon?: boolean;
+  surface: Surface;
 }
 
-function ToastView({ item, groupId, toaster, hideIcon }: ToastViewProps) {
+function ToastView({ item, groupId, toaster, hideIcon, surface }: ToastViewProps) {
   const base = `${groupId}-${item.id}`;
   const icon = ICON_FOR[item.type];
   // The one cast: `core` types these `unknown` because it has no framework in
@@ -180,7 +221,7 @@ function ToastView({ item, groupId, toaster, hideIcon }: ToastViewProps) {
 
   return (
     <div
-      data-scope="toast"
+      data-scope={surface.scope}
       data-part="root"
       id={base}
       data-state={item.state}
@@ -193,19 +234,19 @@ function ToastView({ item, groupId, toaster, hideIcon }: ToastViewProps) {
     >
       {!hideIcon && icon && <Icon name={icon} data-part="icon" />}
       {title != null && (
-        <h3 data-scope="toast" data-part="title" id={`${base}-title`}>
+        <h3 data-scope={surface.scope} data-part="title" id={`${base}-title`}>
           {title}
         </h3>
       )}
       {description != null && (
-        <p data-scope="toast" data-part="description" id={`${base}-description`}>
+        <p data-scope={surface.scope} data-part="description" id={`${base}-description`}>
           {description}
         </p>
       )}
       {item.action && (
         <button
           type="button"
-          data-scope="toast"
+          data-scope={surface.scope}
           data-part="action-trigger"
           onClick={() => {
             item.action?.onClick();
@@ -215,10 +256,12 @@ function ToastView({ item, groupId, toaster, hideIcon }: ToastViewProps) {
           {item.action.label}
         </button>
       )}
-      {item.closable && (
+      {/* `??`, not `||`: a notification told `closable: false` has to lose its
+          close button, and `||` reads an explicit `false` as "unset". */}
+      {(item.closable ?? surface.closable) && (
         <button
           type="button"
-          data-scope="toast"
+          data-scope={surface.scope}
           data-part="close-trigger"
           aria-label="Dismiss"
           onClick={() => toaster.dismiss(item.id)}

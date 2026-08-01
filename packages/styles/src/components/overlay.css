@@ -189,6 +189,57 @@
     --arrow-background: var(--ck-surface);
   }
 
+  /* ------------------------------------------------------------ Popconfirm */
+
+  /* Rendered inside a Popover's own parts, so every rule here is scoped
+     `popconfirm` and every popover rule above is compound — neither reaches the
+     other. The question sits in the popover's `title` part, which is what gives
+     the dialog its accessible name; this row lays the symbol beside it. */
+  [data-scope="popconfirm"][data-part="header"] {
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+  }
+  [data-scope="popconfirm"][data-part="icon"] {
+    display: flex;
+    flex: none;
+    /* A warning whatever the confirm is about — a Popconfirm is asked before
+       something that cannot be taken back. */
+    color: var(--ck-warning-solid);
+    /* Optically centred against the first line of the question rather than the
+       box, which is what `align-items: start` above leaves it needing. */
+    margin-block-start: 0.125rem;
+  }
+  /* The question and its detail share one column beside the symbol, so they
+     align by construction. Indenting the detail to a constant instead would be
+     a second copy of the symbol's width and the row gap — wrong the moment
+     either changes, and wrong outright when `icon={false}` removes the symbol
+     and leaves the indent behind. */
+  [data-scope="popconfirm"][data-part="message"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+  [data-scope="popconfirm"][data-part="title"] {
+    font-weight: 600;
+    color: var(--ck-fg);
+  }
+  /* Both stated rather than inherited: this sits inside the popover's own title
+     part, which sets `font-weight: 600` and the full-strength foreground. */
+  [data-scope="popconfirm"][data-part="description"] {
+    font-weight: 400;
+    color: var(--ck-fg-muted);
+  }
+  [data-scope="popconfirm"][data-part="actions"] {
+    display: flex;
+    /* `flex-end` follows the writing direction, so this is the trailing edge in
+       both — no `:dir(rtl)` twin, and none wanted. */
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-block-start: 0.75rem;
+  }
+
   /* --------------------------------------------------------------- shared */
 
   /* The arrow the v2 positioner drives. It writes `--ck-arrow-x` / `-y` onto

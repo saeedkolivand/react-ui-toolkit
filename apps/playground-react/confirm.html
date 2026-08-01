@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — confirm and notification harness</title>
+  </head>
+  <body>
+    <!-- Two things jsdom cannot answer. A Popconfirm is a portalled overlay with
+         `position: fixed` coordinates, so an ancestor with a `transform` becomes
+         its containing block and the popup lands somewhere else entirely — a
+         rect of 0×0 at the origin looks identical either way. And a Notification
+         group is pinned to a viewport corner with `pointer-events` passing
+         through it, neither of which jsdom implements at all. -->
+    <div id="root"></div>
+    <script type="module" src="/confirm.tsx"></script>
+  </body>
+</html>
