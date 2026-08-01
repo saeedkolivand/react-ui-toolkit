@@ -200,6 +200,53 @@ describe("Tooltip", () => {
     await waitFor(() => expect(content()).not.toBeInTheDocument());
   });
 
+  it("stays shut when a title comes back after being disabled mid-hover", async () => {
+    const user = userEvent.setup();
+    // The default enter delay, deliberately: the bug lives inside it.
+    const { rerender } = render(
+      <Tooltip title="Note">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.hover(button());
+    // Emptied while the open timer is still armed. `open` is derived, so
+    // nothing shows — but the timer still fires and writes the state
+    // underneath, invisibly.
+    rerender(
+      <Tooltip title="">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await user.unhover(button());
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // The pointer is nowhere near it by now, and this is the shape the docs
+    // recommend: `title={row.note}`, where the note arrives later.
+    rerender(
+      <Tooltip title="Note back">
+        <button>Trigger</button>
+      </Tooltip>
+    );
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(content()).not.toBeInTheDocument();
+  });
+
+  it("reports one close per Escape, not two", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    setup({ onOpenChange });
+    await user.tab();
+    await waitFor(() => expect(content()).toBeInTheDocument());
+    onOpenChange.mockClear();
+
+    // `pushDismissable` answers Escape from a document-level CAPTURE listener,
+    // so it has already closed this before anything on the trigger could —
+    // wherever focus is. A second close here made one press report twice.
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(content()).not.toBeInTheDocument());
+    expect(onOpenChange.mock.calls).toEqual([[{ open: false }]]);
+  });
+
   it('does not render a boolean data attribute as "false"', () => {
     setup({ open: true, onOpenChange: () => {} });
     // "false" MATCHES [data-x] in CSS, so a rendered ="false" silently applies

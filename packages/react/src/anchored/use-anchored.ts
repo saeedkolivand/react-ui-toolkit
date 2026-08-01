@@ -202,14 +202,18 @@ export function useAnchored(options: AnchoredOptions): Anchored {
    * the reopened overlay for a frame first, and this is the documented way to
    * reset state when a prop changes.
    *
+   * On every render while disabled, NOT on the `disabled` transition. Flipping
+   * the prop does not cancel a timer `schedule` already armed, so a hover
+   * followed by a disable inside the 100ms enter delay let that timer fire
+   * *while disabled* and write `true` invisibly — `open` is derived, so nothing
+   * showed — and re-enabling then saw no transition and reset nothing. Writing
+   * unconditionally converges instead: the timer sets it, the next render
+   * clears it.
+   *
    * Controlled is deliberately untouched — that value is the consumer's answer,
    * and it is read back correctly when they re-enable.
    */
-  const [disabledWas, setDisabledWas] = useState(disabled);
-  if (disabled !== disabledWas) {
-    setDisabledWas(disabled);
-    if (disabled && uncontrolled) setUncontrolled(false);
-  }
+  if (disabled && uncontrolled) setUncontrolled(false);
   // Derived, not pushed through an effect that closes it. An effect would
   // render the overlay open for one frame first — a tooltip whose title just
   // became empty would flash an empty box — and it would fight a controlled
@@ -432,11 +436,12 @@ export function useAnchored(options: AnchoredOptions): Anchored {
     // sees keys once focus is inside the content, which for a hover tooltip it
     // never is.
     triggerProps.onKeyDown = event => {
-      if (event.key === "Escape" && open) {
-        cancel();
-        setOpen(false);
-        return;
-      }
+      // Escape is deliberately NOT handled here. `pushDismissable` listens on
+      // the document in the CAPTURE phase, so it has already answered this key
+      // and already called back before anything on the trigger runs — wherever
+      // focus happens to be. Closing again here fired `onOpenChange` twice for
+      // one press, which is the same defect the Tab path had.
+
       // The `setOpen` handed over records the reason, rather than trusting the
       // caller to. It opens without going through `schedule`, so `reasonRef`
       // would otherwise keep whatever the last POINTER gesture wrote — and one
