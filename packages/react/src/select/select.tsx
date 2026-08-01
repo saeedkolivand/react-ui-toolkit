@@ -165,7 +165,13 @@ export function Select({
           // `rtl` stays at its default deliberately. With `dir="rtl"` the other
           // three still take ArrowRight as *next*, so mirroring here would open
           // a new divergence rather than close one.
-          { orientation: "both", typeahead: true },
+          //
+          // `loop: false` because on this branch a step is not a highlight
+          // moving — it is `choose()`, so wrapping past an end COMMITS the
+          // value at the far end and fires `onChange`. The other three stop at
+          // the boundary and so does a native `<select>`. The open branch below
+          // keeps the looping default, where a wrap only moves a highlight.
+          { orientation: "both", loop: false, typeahead: true },
           typeaheadRef.current
         );
         if (!jumped.handled) return;
@@ -329,12 +335,11 @@ export function Select({
           aria-controls={contentId}
           aria-labelledby={labelId}
           aria-describedby={describedBy}
+          // The colour half lives on the root's `data-invalid`; these two are the
+          // half a screen reader hears. `required` had no route at all — the
+          // only element carrying it is the hidden, `aria-hidden` native select.
           aria-invalid={ariaAttr(status === "error" || errorMessage != null)}
           aria-required={ariaAttr(required)}
-          // The colour half lives on the root's `data-invalid`; this is the half
-          // a screen reader hears. `required` had no route at all — the only
-          // element carrying it is the hidden, `aria-hidden` native select.
-
           disabled={disabled}
           data-scope="select"
           data-part="trigger"

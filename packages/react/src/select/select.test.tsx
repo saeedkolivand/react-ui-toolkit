@@ -171,6 +171,24 @@ describe("Select", () => {
     expect(highlighted()).toBe("Ghana");
   });
 
+  it("stops at both ends while closed instead of wrapping", async () => {
+    const user = userEvent.setup();
+    const { onChange } = setup({ defaultValue: "ng" });
+    trigger().focus();
+    // A closed step is `choose()`, not a highlight moving, so a wrap does not
+    // just look wrong — it COMMITS the value at the far end. The other three
+    // adapters stop here, and so does a native `<select>`.
+    await user.keyboard("{ArrowLeft}");
+    expect(onChange).not.toHaveBeenCalled();
+    expect(trigger()).toHaveTextContent("Nigeria");
+
+    await user.keyboard("{End}");
+    expect(onChange).toHaveBeenLastCalledWith("za", { value: "za", label: "South Africa" });
+    await user.keyboard("{ArrowRight}");
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(trigger()).toHaveTextContent("South Africa");
+  });
+
   it("opens on Enter and lands on the current selection", async () => {
     const user = userEvent.setup();
     setup({ defaultValue: "za" });

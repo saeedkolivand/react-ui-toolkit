@@ -158,7 +158,8 @@
        came out 101px against a 442px trigger. */
     width: var(--reference-width, var(--ck-anchor-width));
   }
-  /* `status` colours the control without claiming anything to assistive tech.
+  /* `status` colours the control; `error` also marks the trigger `aria-invalid`,
+     while `warning` is presentation only since there is no ARIA state for it.
      `error` already had a rule through `data-invalid`; `warning` had none, so
      the prop accepted a value and did nothing. */
   [data-scope="select"][data-status="warning"] [data-part="trigger"] {
