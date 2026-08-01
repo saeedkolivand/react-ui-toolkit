@@ -137,9 +137,22 @@ export function Segmented({
     (root.children[index] as HTMLElement | undefined)?.focus();
   };
 
+  // Focus memory is right *within* the group and wrong once you leave it: the
+  // pattern says a group you tab back into puts focus on the checked option,
+  // and keeping the memory across a blur leaves the tab stop on something an
+  // external change to `value` has since unchecked.
+  //
+  // Unconditional, with no `relatedTarget` guard. The guard was written first
+  // and measured to change nothing: an arrow key blurs one option and focuses
+  // the next inside the same dispatch, so `onFocus` re-records the anchor in
+  // the same batch and the clear never reaches a render. Nothing else inside
+  // the group is focusable — `children` is not part of the API.
+  const clearAnchor = () => setFocused(null);
+
   return (
     <div
       ref={ref}
+      onBlur={clearAnchor}
       role="radiogroup"
       aria-orientation={vertical ? "vertical" : "horizontal"}
       aria-disabled={disabled ? "true" : undefined}

@@ -117,6 +117,33 @@ describe("Segmented", () => {
     expect(path).toEqual(["C", "B", "C"]);
   });
 
+  it("returns the tab stop to the checked option once focus leaves", async () => {
+    const { rerender } = render(<Segmented options={OPTIONS} value="Daily" onChange={() => {}} />);
+    items()[0]!.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    expect(tabbable()[0]).toHaveAccessibleName("Weekly");
+
+    await userEvent.tab();
+    // Focus memory is right *within* the group and wrong once you leave it:
+    // the pattern says a group you tab back into puts focus on the checked
+    // option. Keeping the memory across a blur means an external change to
+    // `value` leaves the tab stop pointing at something that is not checked.
+    rerender(<Segmented options={OPTIONS} value="Monthly" onChange={() => {}} />);
+    expect(tabbable()).toHaveLength(1);
+    expect(tabbable()[0]).toHaveAccessibleName("Monthly");
+  });
+
+  it("keeps the memory while focus is still inside the group", async () => {
+    render(<Segmented options={OPTIONS} value="Daily" onChange={() => {}} />);
+    items()[0]!.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    // Moving between options blurs one and focuses the next, so a blur handler
+    // that does not check where focus went would erase the anchor on every
+    // arrow key and make the next one start from the selection again.
+    await userEvent.keyboard("{ArrowRight}");
+    expect(items()[2]).toHaveFocus();
+  });
+
   it("selects as it moves, because a radio group has no panel to defer for", async () => {
     const onChange = vi.fn();
     render(<Segmented options={OPTIONS} onChange={onChange} />);
