@@ -73,10 +73,16 @@ export function Tooltip({
       arrow={arrow}
       className={className}
       overlayClassName={overlayClassName}
-      contentProps={
+      positionerProps={
         // A custom property rather than `background`, so one value drives the
-        // box and the arrow — which is a separate element and could otherwise
+        // box and the arrow — which is a separate element and would otherwise
         // end up a different colour from the thing it points at.
+        //
+        // On the POSITIONER, because that is the only ancestor of both. The
+        // arrow is a sibling of the content, not a child of it — it has to be,
+        // or a scrolling menu would clip it — so a property set on the content
+        // inherits to nothing that matters. Which is precisely the outcome this
+        // indirection exists to prevent, and it did not.
         color ? { style: { "--ck-tooltip-bg": color } as CSSProperties } : undefined
       }
       body={title}

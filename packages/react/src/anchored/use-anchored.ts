@@ -269,7 +269,7 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       stop();
       removeLayer();
     };
-  }, [open, anchor, positioner, content, placement, offset, arrow, cancel, setOpen]);
+  }, [open, anchor, positioner, content, placement, offset, arrow, role, cancel, setOpen]);
 
   // ------------------------------------------------------------- focus moves
 
@@ -396,6 +396,14 @@ export function useAnchored(options: AnchoredOptions): Anchored {
       // hover-open-and-close earlier left a keyboard open reading "hover",
       // declining to take focus, and the menu keyboard-dead with only Escape
       // working.
+      // A key arriving at the trigger while the overlay is OPEN means the user
+      // is driving the popup from the wrong element. `aria-activedescendant` is
+      // only interpreted on the focused node, so the highlight would move
+      // visibly and be announced to nobody — measured as `activeTag "BUTTON"`
+      // with the trigger carrying no active descendant and the content carrying
+      // one. Focus follows the keys.
+      if (open && takeFocus) content?.focus({ preventScroll: true });
+
       onTriggerKeyDown?.(event, {
         open,
         setOpen: next => {

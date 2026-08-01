@@ -32,6 +32,16 @@ export interface AnchoredViewProps {
   overlayClassName?: string;
   /** Merged onto the content AFTER ours, so a caller can override anything. */
   contentProps?: Record<string, unknown>;
+  /**
+   * Merged onto the positioner, which is the only element that is an ancestor
+   * of BOTH the content and the arrow.
+   *
+   * Custom properties inherit downward, so anything meant to reach both — a
+   * background colour driving the box and the thing pointing at it — has to be
+   * set here. Setting it on the content reaches the content alone, and the
+   * arrow keeps the stylesheet default.
+   */
+  positionerProps?: Record<string, unknown>;
 }
 
 /**
@@ -62,6 +72,7 @@ export function AnchoredView({
   className,
   overlayClassName,
   contentProps,
+  positionerProps: extraPositionerProps,
 }: AnchoredViewProps) {
   const { present, triggerProps, triggerAria, positionerProps, arrowProps } = anchored;
 
@@ -82,7 +93,7 @@ export function AnchoredView({
               `position: fixed` with viewport coordinates, and any ancestor with
               a transform, filter, perspective, backdrop-filter or contain:paint
               would capture it as the containing block. */}
-          <div {...positionerProps}>
+          <div {...positionerProps} {...extraPositionerProps}>
             {/* A sibling of the content, not a child of it. The menu's content
                 box scrolls (`overflow-y: auto`), which would clip an arrow that
                 by definition sits outside the box — and `applyPosition` writes

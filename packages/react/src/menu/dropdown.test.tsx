@@ -239,6 +239,13 @@ describe("Dropdown", () => {
     // no handler on either side answered a key and only Escape worked.
     await user.keyboard("{ArrowDown}");
     expect(highlighted()).toBe("Edit");
+
+    // And the highlight is ANNOUNCED, not merely painted. `aria-activedescendant`
+    // is only interpreted on the focused element, so leaving focus on the
+    // trigger moved the visible highlight and told a screen reader nothing.
+    expect(content()).toHaveFocus();
+    expect(document.activeElement).toHaveAttribute("aria-activedescendant", items()[0]!.id);
+
     await user.keyboard("{End}");
     expect(highlighted()).toBe("Delete");
     await user.keyboard("{Home}{Enter}");

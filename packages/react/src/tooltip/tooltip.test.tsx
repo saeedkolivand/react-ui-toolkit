@@ -132,6 +132,22 @@ describe("Tooltip", () => {
     await waitFor(() => expect(button()).not.toHaveAttribute("aria-describedby"));
   });
 
+  it("puts color where both the box and its arrow can see it", () => {
+    setup({ open: true, onOpenChange: () => {}, color: "rgb(1, 2, 3)" });
+    const positioner = document.querySelector<HTMLElement>(
+      '[data-scope="tooltip"][data-part="positioner"]'
+    )!;
+    const arrow = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="arrow"]')!;
+
+    // The arrow is a SIBLING of the content — it has to be, or a scrolling menu
+    // would clip it — so a custom property set on the content inherits to
+    // nothing that matters, and the arrow keeps the stylesheet default while
+    // the box turns. The positioner is the only ancestor of both.
+    expect(arrow.parentElement).toBe(positioner);
+    expect(positioner.style.getPropertyValue("--ck-tooltip-bg")).toBe("rgb(1, 2, 3)");
+    expect(arrow.closest("[style*='--ck-tooltip-bg']")).toBe(positioner);
+  });
+
   it("carries role=tooltip on the content", () => {
     setup({ open: true, onOpenChange: () => {} });
     expect(content()).toHaveAttribute("role", "tooltip");
