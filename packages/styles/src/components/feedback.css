@@ -178,19 +178,25 @@
   [data-scope="card"][data-part="footer"] {
     border-top: 1px solid var(--ck-card-border, var(--ck-border));
   }
-  [data-scope="card"][data-size="sm"] [data-part="header"],
-  [data-scope="card"][data-size="sm"] [data-part="body"],
-  [data-scope="card"][data-size="sm"] [data-part="footer"] {
+  /* Child combinators, because `data-part` is a shared namespace. Thirty-three
+     part names are used by more than one component — `label` by twelve, `item`
+     by ten — so a loose descendant rule on a component that holds arbitrary
+     content reaches whatever the consumer puts inside it. Import order only
+     decides ties; a container with an extra attribute on its root wins
+     outright, whatever order the files load in. */
+  [data-scope="card"][data-size="sm"] > [data-part="header"],
+  [data-scope="card"][data-size="sm"] > [data-part="body"],
+  [data-scope="card"][data-size="sm"] > [data-part="footer"] {
     padding: 0.75rem;
   }
-  [data-scope="card"][data-size="md"] [data-part="header"],
-  [data-scope="card"][data-size="md"] [data-part="body"],
-  [data-scope="card"][data-size="md"] [data-part="footer"] {
+  [data-scope="card"][data-size="md"] > [data-part="header"],
+  [data-scope="card"][data-size="md"] > [data-part="body"],
+  [data-scope="card"][data-size="md"] > [data-part="footer"] {
     padding: 1rem;
   }
-  [data-scope="card"][data-size="lg"] [data-part="header"],
-  [data-scope="card"][data-size="lg"] [data-part="body"],
-  [data-scope="card"][data-size="lg"] [data-part="footer"] {
+  [data-scope="card"][data-size="lg"] > [data-part="header"],
+  [data-scope="card"][data-size="lg"] > [data-part="body"],
+  [data-scope="card"][data-size="lg"] > [data-part="footer"] {
     padding: 1.5rem;
   }
 
