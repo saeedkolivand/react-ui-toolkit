@@ -350,6 +350,48 @@ describe("List", () => {
     expect(parts("pagination", "item").map(b => b.textContent)).toEqual(["1", "2", "3"]);
   });
 
+  it("keeps a size the user picked through its own size changer", async () => {
+    const onChange = vi.fn();
+    render7({
+      pagination: { pageSize: undefined, defaultPageSize: 3, showSizeChanger: true, onChange },
+    });
+    expect(rows()).toHaveLength(3);
+
+    await userEvent.click(screen.getByRole("combobox"));
+    await userEvent.click(screen.getByRole("option", { name: /^10 \// }));
+
+    // `pagination` is typed to accept `showSizeChanger`, so offering a control
+    // that reports the change and then snaps back is worse than not offering
+    // it — List has to keep the size, not only forward it.
+    expect(onChange).toHaveBeenCalledWith(1, 10);
+    expect(rows()).toHaveLength(7);
+  });
+
+  it("clamps a page stranded past the end by a shrinking source", () => {
+    const { rerender } = render(
+      <List
+        dataSource={ROWS}
+        rowKey={row => row.id}
+        renderItem={row => <span>{row.name}</span>}
+        pagination={{ pageSize: 3, current: 3 }}
+      />
+    );
+    expect(rows()).toHaveLength(1);
+
+    // `dataSource` is a prop and can shrink under the page. Pagination clamps
+    // on read *for display*, so the bar shows a page it was not given and the
+    // list slices an empty range — 0 rows, no `Empty`, and nothing saying why.
+    rerender(
+      <List
+        dataSource={ROWS.slice(0, 2)}
+        rowKey={row => row.id}
+        renderItem={row => <span>{row.name}</span>}
+        pagination={{ pageSize: 3, current: 3 }}
+      />
+    );
+    expect(rows()).toHaveLength(2);
+  });
+
   it("shows an Empty for an empty source", () => {
     render(<List dataSource={[]} renderItem={() => null} />);
     expect(document.querySelector('[data-scope="empty"]')).not.toBeNull();

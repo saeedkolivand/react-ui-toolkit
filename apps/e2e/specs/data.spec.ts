@@ -81,3 +81,16 @@ test("gives the pagination window a stable width as pages change", async ({ page
   // claim to.
   expect(new Set(items.map(i => i.w)).size).toBe(1);
 });
+
+test("keeps the size changer to its own width inside the pagination bar", async ({ page }) => {
+  await page.goto("/data.html");
+  const bar = await boxes(page, '#pagination-extras [data-part="root"]');
+  const changer = await boxes(page, '#pagination-extras [data-part="size-changer"]');
+
+  // `Select` defaults to `fullWidth` and the wrapper has no rule of its own, so
+  // whether it stretches across the bar is decided by another component's CSS.
+  // Measured against the bar rather than a number, since the bar is as wide as
+  // its container.
+  expect(changer[0]!.w).toBeGreaterThan(0);
+  expect(changer[0]!.w).toBeLessThan(bar[0]!.w / 2);
+});

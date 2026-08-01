@@ -25,6 +25,14 @@ function Harness() {
         <Pagination total={200} pageSize={10} defaultCurrent={5} />
       </div>
 
+      {/* The one part of Pagination whose layout depends on another
+          component's CSS: `Select` defaults to `fullWidth`, and
+          `[data-part="size-changer"]` has no rule of its own. jsdom cannot see
+          which of the two wins. */}
+      <div id="pagination-extras">
+        <Pagination total={240} showSizeChanger showQuickJumper />
+      </div>
+
       {/* Three columns, and one item claiming all three. */}
       <div id="descriptions-horizontal">
         <Descriptions

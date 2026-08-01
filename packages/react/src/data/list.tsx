@@ -45,12 +45,28 @@ export function List<T>({
   ref,
   ...rest
 }: ListProps<T>) {
+  // Both halves of the page state, not just the page. `List` passes `pageSize`
+  // down, which makes `Pagination` controlled on size — so forwarding
+  // `nextSize` without keeping it means the size changer reports the user's
+  // choice and then snaps back. A control that rejects its own input is worse
+  // than one that is not offered.
   const [uncontrolledPage, setUncontrolledPage] = useState(
     pagination ? (pagination.defaultCurrent ?? 1) : 1
   );
+  const [uncontrolledSize, setUncontrolledSize] = useState(
+    pagination ? (pagination.defaultPageSize ?? 10) : 10
+  );
 
-  const pageSize = pagination ? (pagination.pageSize ?? pagination.defaultPageSize ?? 10) : 0;
-  const page = pagination ? (pagination.current ?? uncontrolledPage) : 1;
+  const pageSize = pagination ? (pagination.pageSize ?? uncontrolledSize) : 0;
+  const pages = Math.max(1, Math.ceil(dataSource.length / Math.max(1, pageSize)));
+  // Clamped, for the same reason `Pagination` clamps: `dataSource` is a prop
+  // and can shrink under the page. Composition makes it worse than it is
+  // there — `Pagination` clamps on read *for display*, so the bar renders a
+  // page it was not given while the list slices an empty range and shows
+  // nothing, with `empty` false so `Empty` does not catch it either.
+  const page = pagination
+    ? Math.min(Math.max(1, pagination.current ?? uncontrolledPage), pages)
+    : 1;
 
   // Sliced here rather than by the consumer, because the alternative is every
   // caller reimplementing the same two lines of index maths against a page
@@ -108,6 +124,7 @@ export function List<T>({
             pageSize={pageSize}
             onChange={(next, nextSize) => {
               if (pagination.current === undefined) setUncontrolledPage(next);
+              if (pagination.pageSize === undefined) setUncontrolledSize(nextSize);
               pagination.onChange?.(next, nextSize);
             }}
           />
