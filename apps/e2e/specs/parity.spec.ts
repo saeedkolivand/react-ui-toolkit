@@ -10,6 +10,11 @@ const SECTIONS = [
   "alert",
   "card",
   "field",
+  // Splitting Select out of `field` is only half the fix — this list is the one
+  // the comparison loop iterates, so a section missing from it is never
+  // captured, its MIGRATING entries cost nothing, and the rot-guard that should
+  // fail when the other three catch up can never fire.
+  "select",
   "toggle",
   "display",
   "layout",

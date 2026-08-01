@@ -226,7 +226,15 @@ export const forms: ComponentDoc[] = [
         description: "Shown while empty.",
       },
       { name: "name", type: "string", description: "Submitted through the hidden <select>." },
-      ...FIELD_PROPS.filter(p => p.name !== "variant"),
+      // `variant` is dropped outright — the select never used it distinctly.
+      // `size` and `invalid` are still real for the three v1 adapters and gone
+      // from React, so they are marked rather than removed: an unmarked row
+      // claims the prop in all four, and the table was showing two `size` rows
+      // with contradicting vocabularies. `check:props` cannot catch this — it
+      // flattens every React source into one Set, and Input declares both.
+      ...FIELD_PROPS.filter(p => p.name !== "variant").map(p =>
+        p.name === "size" || p.name === "invalid" ? { ...p, reactRemoved: true } : p
+      ),
     ],
     changes: [
       { from: "options", to: "items" },
