@@ -196,11 +196,14 @@
     letter-spacing: 0.05em;
   }
 
+  /* Same defect and the same fix as overlay.css: the `content` half lost to the
+     `[data-state]` animation rules, and naming parts one at a time is how the
+     trigger's own transition came to be left out entirely. */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="select"][data-part="content"],
-    [data-scope="select"][data-part="indicator"] {
-      animation-duration: 1ms;
-      transition-duration: 1ms;
+    [data-scope="select"][data-part] {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
     }
   }
 }

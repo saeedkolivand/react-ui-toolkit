@@ -118,7 +118,7 @@ export class CkTooltip {
   imports: [CkPortal, ZagSpread, CkPresenceNode, CkIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <!-- Zag's own data-scope/data-part are replaced with Button's so the trigger
+    <!-- The machine's own data-scope/data-part are replaced with Button's so the trigger
          simply IS a Button. Nothing in overlay.css targets
          [data-scope="menu"][data-part="trigger"], and the machine's data-state
          still lands, which is all the CSS needs. -->

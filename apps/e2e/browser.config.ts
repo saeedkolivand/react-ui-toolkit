@@ -20,7 +20,7 @@ import { defineConfig } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./specs",
-  testMatch: /(position|overlay|anchored)\.spec\.ts$/,
+  testMatch: /(position|overlay|anchored|reduced-motion)\.spec\.ts$/,
   reporter: process.env.CI ? [["html", { open: "never" }], ["github"]] : "list",
   use: {
     viewport: { width: 1000, height: 800 },
