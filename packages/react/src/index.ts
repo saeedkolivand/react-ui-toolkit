@@ -43,9 +43,10 @@ export {
 } from "./select/select";
 export { Tabs, type TabsProps, type TabItem, type TabsType, type TabPosition } from "./tabs/tabs";
 export { Collapse, type CollapseProps, type CollapseItem } from "./accordion/collapse";
-export { Toaster, type ToasterProps } from "./toast/toaster";
+export { Toaster, Notification, type ToasterProps, type NotificationProps } from "./toast/toaster";
 export { Tooltip, type TooltipProps } from "./tooltip/tooltip";
 export { Popover, type PopoverProps } from "./popover/popover";
+export { Popconfirm, type PopconfirmProps } from "./popover/popconfirm";
 export {
   Dropdown,
   type DropdownProps,

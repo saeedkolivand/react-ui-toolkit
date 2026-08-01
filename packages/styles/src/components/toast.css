@@ -1,16 +1,25 @@
-/* Toast. Two layouts share this file for now. The v1 adapters have their group
-   positioned from inline custom properties, so those rules style appearance
-   only. The v2 group carries `data-ck-layout="flow"` and gets its placement
-   and stacking from the `flow` section at the bottom — no inline geometry, no
-   per-toast offset maths. */
+/* Toast and Notification. Two layouts share this file for now. The v1 adapters
+   have their group positioned from inline custom properties, so those rules
+   style appearance only. The v2 group carries `data-ck-layout="flow"` and gets
+   its placement and stacking from the `flow` section at the bottom — no inline
+   geometry, no per-toast offset maths.
+
+   Both scopes are listed on every shared rule rather than the notification
+   getting a stylesheet of its own. The two surfaces render the same markup over
+   the same queue and differ only in what they are called and whether a close
+   button appears by default, so a second copy of these rules would be a second
+   place for one of them to drift. `:is()` takes the specificity of its most
+   specific argument, which is one attribute either way — so nothing here got
+   heavier, and every selector stays compound and cannot reach into a component
+   nested inside a toast. */
 @layer ck.components {
-  [data-scope="toast"][data-part="group"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="group"] {
     position: fixed;
     z-index: var(--ck-z-toast);
     display: flex;
     flex-direction: column;
-    /* zag writes --width; without it the group collapses and the toasts inside
-       have nothing to size against. */
+    /* The v1 adapters write --width; without it the group collapses and the
+       toasts inside have nothing to size against. */
     width: var(--width, 22rem);
     max-width: calc(100vw - 2rem);
     list-style: none;
@@ -19,7 +28,7 @@
     outline: none;
   }
 
-  [data-scope="toast"][data-part="root"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"] {
     position: relative;
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -31,7 +40,7 @@
     background-color: var(--ck-toast-bg, var(--ck-surface));
     color: var(--ck-toast-fg, var(--ck-fg));
     box-shadow: var(--ck-shadow-lg);
-    /* zag drives stacking, offset and scale entirely through these. */
+    /* v1 drives stacking, offset and scale entirely through these. */
     translate: var(--x) var(--y);
     scale: var(--scale);
     z-index: var(--z-index);
@@ -47,39 +56,47 @@
   /* One accent per type, mixed into bg/border exactly the way Alert does it —
      the semantic tokens have already flipped for dark mode, so there is no
      `dark:` twin here either. */
-  [data-scope="toast"][data-part="root"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"] {
     --ck-toast-accent: var(--ck-neutral-solid);
   }
-  [data-scope="toast"][data-part="root"][data-type="success"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"][data-type="success"] {
     --ck-toast-accent: var(--ck-success-solid);
   }
-  [data-scope="toast"][data-part="root"][data-type="error"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"][data-type="error"] {
     --ck-toast-accent: var(--ck-danger-solid);
   }
-  [data-scope="toast"][data-part="root"][data-type="warning"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"][data-type="warning"] {
     --ck-toast-accent: var(--ck-warning-solid);
   }
-  [data-scope="toast"][data-part="root"][data-type="info"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"][data-type="info"] {
     --ck-toast-accent: var(--ck-info-solid);
   }
-  [data-scope="toast"][data-part="root"]:not([data-type="loading"]) {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"]:not(
+      [data-type="loading"]
+    ) {
     --ck-toast-bg: color-mix(in oklab, var(--ck-toast-accent) 12%, var(--ck-surface));
     --ck-toast-border: color-mix(in oklab, var(--ck-toast-accent) 35%, transparent);
   }
 
-  [data-scope="toast"] [data-part="icon"] {
+  /* A descendant selector here, and only here, because the icon is a stamped
+     `<Icon data-part="icon">` — it keeps `data-scope="icon"`, so no compound
+     selector of ours can reach it. A CHILD of the root rather than any
+     descendant, though: `[data-scope="toast"] [data-part="icon"]` also matched
+     anything a consumer put in a toast's own title or description that happened
+     to call itself `icon`, and handed it a grid row in a grid it is not in. */
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="root"] > [data-part="icon"] {
     grid-row: 1 / span 2;
     color: var(--ck-toast-accent, var(--ck-fg-muted));
     flex-shrink: 0;
   }
 
-  [data-scope="toast"][data-part="title"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="title"] {
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1.25rem;
     margin: 0;
   }
-  [data-scope="toast"][data-part="description"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="description"] {
     font-size: 0.875rem;
     line-height: 1.25rem;
     color: var(--ck-toast-fg, var(--ck-fg-muted));
@@ -87,7 +104,7 @@
     margin: 0;
   }
 
-  [data-scope="toast"][data-part="action-trigger"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="action-trigger"] {
     grid-column: 2;
     justify-self: start;
     appearance: none;
@@ -102,7 +119,7 @@
     text-decoration: underline;
   }
 
-  [data-scope="toast"][data-part="close-trigger"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="close-trigger"] {
     grid-row: 1;
     grid-column: 3;
     appearance: none;
@@ -115,10 +132,10 @@
     cursor: pointer;
     line-height: 0;
   }
-  [data-scope="toast"][data-part="close-trigger"]:hover {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="close-trigger"]:hover {
     opacity: 1;
   }
-  [data-scope="toast"][data-part="close-trigger"]:focus-visible {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="close-trigger"]:focus-visible {
     outline: 2px solid var(--ck-ring);
     outline-offset: 2px;
   }
@@ -133,7 +150,7 @@
 
      Child combinator at both hops: a Toaster rendered inside another group's
      toast would otherwise take these rules from the outer group. */
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="group"][data-ck-layout="flow"] {
     gap: 0.75rem;
     padding: 1rem;
     /* The group spans the edge it is pinned to and lets pointer events through,
@@ -144,7 +161,10 @@
     max-width: none;
     pointer-events: none;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"] {
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="top"] {
     inset-block-start: 0;
     /* Newest nearest the edge it enters from. DOM order is creation order, so
        the newest toast is the last child — which `column` puts furthest from a
@@ -152,17 +172,27 @@
        rule for the same reason: last child is already nearest the bottom. */
     flex-direction: column-reverse;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"] {
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="bottom"] {
     inset-block-end: 0;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-align="start"] {
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-align="start"] {
     align-items: flex-start;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-align="end"] {
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-align="end"] {
     align-items: flex-end;
   }
 
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"] > [data-part="root"] {
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="group"][data-ck-layout="flow"]
+    > [data-part="root"] {
     position: relative;
     width: 22rem;
     max-width: calc(100vw - 2rem);
@@ -182,31 +212,44 @@
      style has nothing to transition from, so this is a keyframe animation
      instead: it runs on insertion, needs no starting style, and stops
      mattering the moment it ends. */
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"]
+  :is([data-scope="toast"], [data-scope="notification"])[data-part="group"][data-ck-layout="flow"]
     > [data-part="root"][data-state="closed"] {
     opacity: 0;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"]
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="top"]
     > [data-part="root"][data-state="closed"] {
     translate: 0 -0.5rem;
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"]
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="bottom"]
     > [data-part="root"][data-state="closed"] {
     translate: 0 0.5rem;
   }
 
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="top"]
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="top"]
     > [data-part="root"] {
     animation: ck-toast-in-top var(--ck-duration-md) var(--ck-ease-out);
   }
-  [data-scope="toast"][data-part="group"][data-ck-layout="flow"][data-side="bottom"]
+  :is(
+      [data-scope="toast"],
+      [data-scope="notification"]
+    )[data-part="group"][data-ck-layout="flow"][data-side="bottom"]
     > [data-part="root"] {
     animation: ck-toast-in-bottom var(--ck-duration-md) var(--ck-ease-out);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="toast"][data-part="root"],
-    [data-scope="toast"][data-part="group"][data-ck-layout="flow"] > [data-part="root"] {
+    :is([data-scope="toast"], [data-scope="notification"])[data-part="root"],
+    :is([data-scope="toast"], [data-scope="notification"])[data-part="group"][data-ck-layout="flow"]
+      > [data-part="root"] {
       transition-duration: 1ms !important;
       /* The enter is an animation, not a transition, so the line above does not
          reach it — which is the same mistake this file would have shipped in
