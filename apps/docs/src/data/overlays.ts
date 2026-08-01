@@ -521,14 +521,23 @@ export const overlays: ComponentDoc[] = [
       "Promise-tracking toasts and update-in-place",
     ],
     summary:
-      "The toast queue is a plain store with no framework in it, so the toaster is a module-level singleton. The three lines below are identical in React, Vue, Svelte and Angular — no provider, no inject, no DI token in any of them.",
+      "The toast queue is a plain store with no framework in it, so the toaster is a module-level singleton. The three lines below are identical in React, Vue, Svelte and Angular — no provider, no inject, no DI token in any of them. React builds its queue with createToastQueue(); the other three still use createToaster() until they move across.",
     props: [
-      { name: "toaster", type: "Toaster", description: "The store from createToaster()." },
+      {
+        name: "toaster",
+        type: "ToastQueue",
+        description: "The queue from createToastQueue() in React, or createToaster() elsewhere.",
+      },
       { name: "hideIcon", type: "boolean", default: "false", description: "Suppress type icons." },
+      {
+        name: "createToastQueue(options)",
+        type: "{ placement?, max?, duration?, removeDelay? }",
+        description: "Defaults to bottom-end, max 5, 5s, 200ms. React only for now.",
+      },
       {
         name: "createToaster(options)",
         type: "{ placement?, max?, duration?, gap?, offsets? }",
-        description: "Defaults to bottom-end, max 5, 5s.",
+        description: "Vue, Svelte and Angular until they move across.",
       },
     ],
     changes: [
@@ -541,7 +550,7 @@ export const overlays: ComponentDoc[] = [
     ],
     samples: {
       react: `// once, anywhere
-export const toaster = createToaster();
+export const toaster = createToastQueue();
 
 // once, at the app root
 <Toaster toaster={toaster} />

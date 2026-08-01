@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { createToaster } from "@crosskit-ui/core";
+import { createToastQueue } from "@crosskit-ui/core";
 import { Button, Drawer, Dropdown, Modal, Popover, Toaster, Tooltip } from "@crosskit-ui/react";
 
 const meta = {
@@ -166,7 +166,7 @@ export const Popovers: Story = {
 
 // The toaster is a module-level singleton, so there is no provider anywhere in
 // this file — which is the whole point of the API.
-const toaster = createToaster();
+const toaster = createToastQueue();
 
 export const Toasts: Story = {
   render: () => (

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — toast harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because none of what this page is for survives jsdom:
+         the group is `position: fixed` and every rect there is 0×0 at the
+         origin, the exit transition never runs, and `pointer-events` is not
+         implemented at all — so a group that swallows every click on the page
+         underneath it looks identical to one that lets them through. -->
+    <div id="root"></div>
+    <script type="module" src="/toast.tsx"></script>
+  </body>
+</html>

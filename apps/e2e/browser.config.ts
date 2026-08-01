@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { SINGLE_SERVER_SPECS } from "./single-server-specs";
 
 /**
  * The suites that need one browser and one server, not the four-server rig.
@@ -20,7 +21,7 @@ import { defineConfig } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./specs",
-  testMatch: /(position|overlay|anchored|reduced-motion)\.spec\.ts$/,
+  testMatch: SINGLE_SERVER_SPECS,
   reporter: process.env.CI ? [["html", { open: "never" }], ["github"]] : "list",
   use: {
     viewport: { width: 1000, height: 800 },

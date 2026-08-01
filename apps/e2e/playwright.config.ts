@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { SINGLE_SERVER_SPECS } from "./single-server-specs";
 
 /**
  * One suite, four servers.
@@ -17,11 +18,10 @@ export const FRAMEWORKS = [
 
 export default defineConfig({
   testDir: "./specs",
-  // The positioner and overlay suites run alone under browser.config.ts,
-  // against a single server and its own baseURL. Without this they are collected
-  // here too — where there is no baseURL at all, so every `page.goto("/…html")`
-  // throws, dozens of times.
-  testIgnore: /(position|overlay|anchored|reduced-motion)\.spec\.ts$/,
+  // The single-server suites run alone under browser.config.ts, against their
+  // own baseURL. Without this they are collected here too — where there is no
+  // baseURL at all, so every `page.goto("/…html")` throws, dozens of times.
+  testIgnore: SINGLE_SERVER_SPECS,
   // In CI: an HTML report to upload on failure, plus inline annotations. The
   // failure output here names a property and two values, so having it attached
   // to the run is the difference between fixing it and re-running it locally.
