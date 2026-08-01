@@ -114,3 +114,56 @@ test("keeps a Descriptions label rule off a control inside a value", async ({ pa
   // role, and the wrapper div has neither.
   await expect(page.getByRole("checkbox")).toHaveAccessibleName("Active");
 });
+
+test("leaves a nested component's own parts alone inside a Descriptions value", async ({
+  page,
+}) => {
+  await page.goto("/data.html");
+  await expect(page.locator('#nested-controls [data-scope="breadcrumb"]')).toHaveCount(1);
+  await expect(page.locator('#loose-controls [data-scope="breadcrumb"]')).toHaveCount(1);
+
+  const read = (root: string, selector: string, props: string[]) =>
+    page.locator(`${root} ${selector}`).evaluate((el, names) => {
+      const style = getComputedStyle(el);
+      return names.map(name => style.getPropertyValue(name)).join("|");
+    }, props);
+
+  // Measured against the identical component outside, not against a constant:
+  // `list` and `title` are part names nine other components already use, and
+  // `data.css` is imported last, so at equal specificity Descriptions wins
+  // every collision. A Breadcrumb in a value stopped being a flex row.
+  const inside = await read("#nested-controls", '[data-scope="breadcrumb"] [data-part="list"]', [
+    "display",
+    "grid-template-columns",
+  ]);
+  const outside = await read("#loose-controls", '[data-scope="breadcrumb"] [data-part="list"]', [
+    "display",
+    "grid-template-columns",
+  ]);
+  expect(inside).toBe(outside);
+
+  const statIn = await read("#nested-controls", '[data-scope="statistic"] [data-part="title"]', [
+    "font-size",
+    "font-weight",
+    "color",
+  ]);
+  const statOut = await read("#loose-controls", '[data-scope="statistic"] [data-part="title"]', [
+    "font-size",
+    "font-weight",
+    "color",
+  ]);
+  expect(statIn).toBe(statOut);
+});
+
+test("leaves no gap where a hidden pagination bar would have been", async ({ page }) => {
+  await page.goto("/data.html");
+  const wrapper = page.locator('#list-single-page [data-part="pagination"]');
+  await expect(wrapper).toHaveCount(1);
+
+  // `hideOnSinglePage` is the one prop whose whole job is to remove the bar,
+  // and `Pagination` honours it by returning null — so an unconditional
+  // wrapper keeps its own padding and the prop removes the bar but not the
+  // space. jsdom measures 0 either way.
+  const height = await wrapper.evaluate(el => Math.round(el.getBoundingClientRect().height));
+  expect(height).toBe(0);
+});

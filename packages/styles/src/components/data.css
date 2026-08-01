@@ -29,20 +29,28 @@
   [data-scope="descriptions"][data-part="root"] {
     display: block;
   }
-  [data-scope="descriptions"] [data-part="header"] {
+  /* `>` for every remaining part, and not for tidiness. `list`, `title` and
+     `header` are names nine other components already use, and `data.css` is
+     imported last — so at equal specificity Descriptions wins every collision.
+     Measured: a Breadcrumb in a value stopped being a flex row and became a
+     two-track grid on the Descriptions column template, and a Statistic's
+     title was repainted by a rule twenty lines below the one it beats, in this
+     same file. All three are direct children, so the child combinator costs no
+     specificity. */
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--ck-space-md);
     margin-block-end: var(--ck-space-md);
   }
-  [data-scope="descriptions"] [data-part="title"] {
+  [data-scope="descriptions"][data-part="root"] > [data-part="header"] > [data-part="title"] {
     font-size: 1rem;
     font-weight: 600;
     color: var(--ck-fg);
   }
 
-  [data-scope="descriptions"] [data-part="list"] {
+  [data-scope="descriptions"][data-part="root"] > [data-part="list"] {
     display: grid;
     margin: 0;
     /* Horizontal is two tracks per item: a label sized to its content and a
@@ -51,17 +59,17 @@
     grid-template-columns: repeat(var(--ck-descriptions-columns, 3), auto 1fr);
     gap: var(--ck-space-sm) var(--ck-space-md);
   }
-  [data-scope="descriptions"][data-layout="vertical"] [data-part="list"] {
+  [data-scope="descriptions"][data-layout="vertical"] > [data-part="list"] {
     grid-template-columns: repeat(var(--ck-descriptions-columns, 3), 1fr);
   }
   /* `contents`, so the pair wrapper adds a box in one layout and nothing at all
      in the other. Horizontal needs the label and value in the *outer* grid or
      the labels of different rows stop lining up; vertical needs a real box or
      the value cannot sit under its own label. */
-  [data-scope="descriptions"] [data-part="pair"] {
+  [data-scope="descriptions"][data-part="root"] > [data-part="list"] > [data-part="pair"] {
     display: contents;
   }
-  [data-scope="descriptions"][data-layout="vertical"] [data-part="pair"] {
+  [data-scope="descriptions"][data-layout="vertical"] > [data-part="list"] > [data-part="pair"] {
     display: block;
     grid-column: span var(--ck-descriptions-span, 1);
     min-inline-size: 0;
@@ -100,7 +108,7 @@
     font-size: 0.75rem;
   }
 
-  [data-scope="descriptions"][data-bordered] [data-part="list"] {
+  [data-scope="descriptions"][data-bordered] > [data-part="list"] {
     gap: 0;
     border: 1px solid var(--ck-border);
     border-radius: var(--ck-radius-md);
@@ -258,6 +266,13 @@
     display: flex;
     justify-content: flex-end;
     padding-block-start: var(--ck-space-md);
+  }
+  /* `hideOnSinglePage` makes Pagination render nothing, and an unconditional
+     wrapper then keeps its own padding — the prop removes the bar but not the
+     space it took. `:empty` here rather than a page count in `List`, which
+     would be a second copy of a rule Pagination already owns. */
+  [data-scope="list"] > [data-part="pagination"]:empty {
+    display: none;
   }
   [data-scope="list"][data-part="root"] > [data-part="list"] > [data-part="item"] {
     padding-block: var(--ck-space-sm);

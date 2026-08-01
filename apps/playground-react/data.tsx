@@ -1,7 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Checkbox, Descriptions, List, Pagination, Statistic } from "@crosskit-ui/react";
+import {
+  Breadcrumb,
+  Checkbox,
+  Descriptions,
+  List,
+  Pagination,
+  Statistic,
+} from "@crosskit-ui/react";
 
 const ROWS = Array.from({ length: 7 }, (_, index) => ({ id: `r${index}`, name: `Row ${index}` }));
 
@@ -65,6 +72,37 @@ function Harness() {
         <Descriptions
           column={1}
           items={[{ label: "Status", children: <Checkbox defaultChecked label="Active" /> }]}
+        />
+      </div>
+
+      {/* The same two components inside a Descriptions value and outside it.
+          Comparing them against each other is what says whether the leak is
+          real — an absolute expectation would only say what today renders. */}
+      <div id="nested-controls">
+        <Descriptions
+          column={1}
+          items={[
+            {
+              label: "Trail",
+              children: <Breadcrumb items={[{ title: "A", href: "#" }, { title: "B" }]} />,
+            },
+            { label: "Count", children: <Statistic title="Users" value={42} /> },
+          ]}
+        />
+      </div>
+      <div id="loose-controls">
+        <Breadcrumb items={[{ title: "A", href: "#" }, { title: "B" }]} />
+        <Statistic title="Users" value={42} />
+      </div>
+
+      {/* One page and told to hide the bar: the wrapper must not keep its own
+          padding once Pagination renders nothing. */}
+      <div id="list-single-page">
+        <List
+          dataSource={ROWS.slice(0, 2)}
+          rowKey={row => row.id}
+          renderItem={row => <span>{row.name}</span>}
+          pagination={{ pageSize: 10, hideOnSinglePage: true }}
         />
       </div>
 
