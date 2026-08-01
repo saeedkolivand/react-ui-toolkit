@@ -138,3 +138,14 @@ test("silences a standalone skeleton block too", async ({ page }) => {
   // written only as a descendant selector would miss all of them.
   expect((await motionOf(page, button)).animation).toBeLessThanOrEqual(IMPERCEPTIBLE);
 });
+
+test("silences the segmented control's selection transition", async ({ page }) => {
+  await page.goto("/navigation.html");
+  const item = '#segmented-plain [data-part="item"]';
+  await expect(page.locator(item).first()).toBeVisible();
+  // The colour swap between segments is the only motion this component has, so
+  // a block that named the root rather than the item would reduce nothing.
+  expect((await motionOf(page, `${item}:first-child`)).transition).toBeLessThanOrEqual(
+    IMPERCEPTIBLE
+  );
+});
