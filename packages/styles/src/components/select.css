@@ -123,6 +123,20 @@
     --ck-field-border: var(--ck-danger-solid);
     --ck-field-ring: var(--ck-danger-solid);
   }
+  /* `status` colours the control; `error` also marks the trigger `aria-invalid`,
+     while `warning` is presentation only since there is no ARIA state for it.
+     `error` already had a rule through `data-invalid`; `warning` had none, so
+     the prop accepted a value and did nothing.
+
+     Set through `--ck-field-*`, matching `[data-invalid]` directly above: a
+     rule writing `border-color` gave a focused warning control a yellow border
+     with the default blue rings, which `error` does not do. Neither survives
+     hover — line 40 outranks both — but that predates this rule and applies to
+     `error` identically, so it is filed rather than patched here. */
+  [data-scope="select"][data-status="warning"] {
+    --ck-field-border: var(--ck-warning-solid);
+    --ck-field-ring: var(--ck-warning-solid);
+  }
 
   /* -------------------------------------------------------------- dropdown */
   /* Two positioning mechanisms, the same arrangement `overlay.css` documents.
@@ -158,14 +172,6 @@
        came out 101px against a 442px trigger. */
     width: var(--reference-width, var(--ck-anchor-width));
   }
-  /* `status` colours the control; `error` also marks the trigger `aria-invalid`,
-     while `warning` is presentation only since there is no ARIA state for it.
-     `error` already had a rule through `data-invalid`; `warning` had none, so
-     the prop accepted a value and did nothing. */
-  [data-scope="select"][data-status="warning"] [data-part="trigger"] {
-    border-color: var(--ck-warning-solid);
-  }
-
   [data-scope="select"][data-part="content"]:focus-visible {
     outline: none;
   }
