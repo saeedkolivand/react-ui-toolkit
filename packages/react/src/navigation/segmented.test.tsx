@@ -98,6 +98,25 @@ describe("Segmented", () => {
     expect(items()[2]).toHaveFocus();
   });
 
+  it("keeps arrowing when a controlled value refuses to move", async () => {
+    // Three presses, not one. Anchoring on anything derived from the selection
+    // advances exactly once and then goes dead: the parent pins `value`, so the
+    // anchor cannot follow focus and every later key recomputes the same step.
+    // One press cannot tell that apart from working.
+    render(
+      <Segmented options={[{ label: "A", value: "a", disabled: true }, "B", "C"]} value="a" />
+    );
+    items()[1]!.focus();
+
+    const path: string[] = [];
+    for (let press = 0; press < 3; press += 1) {
+      await userEvent.keyboard("{ArrowRight}");
+      path.push(document.activeElement?.textContent ?? "");
+    }
+    // A is disabled, so the loop skips it: B -> C -> B -> C.
+    expect(path).toEqual(["C", "B", "C"]);
+  });
+
   it("selects as it moves, because a radio group has no panel to defer for", async () => {
     const onChange = vi.fn();
     render(<Segmented options={OPTIONS} onChange={onChange} />);

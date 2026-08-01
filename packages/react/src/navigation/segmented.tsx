@@ -66,6 +66,13 @@ export function Segmented({
   );
   const selected = controlled ?? uncontrolled;
 
+  // Focus is tracked apart from selection, and not because the two can diverge
+  // by design the way they do in Tabs — here they cannot. It is because a
+  // *controlled* parent may refuse the selection: anchoring navigation on
+  // anything derived from `selected` then leaves the anchor pinned, so the
+  // arrows advance once and every later press recomputes the same step.
+  const [focused, setFocused] = useState<string | null>(null);
+
   const collection = useMemo(
     () =>
       createCollection(
@@ -86,23 +93,23 @@ export function Segmented({
     [controlled, onChange]
   );
 
-  // Which option holds the one `tabIndex={0}`. A consumer can name a disabled
-  // option in `value`, and a tab stop that cannot be focused is no tab stop.
-  const rovingValue = items.some(item => item.value === selected && !item.disabled && !disabled)
-    ? selected
-    : (collection.first()?.value ?? selected);
+  // Which option holds the one `tabIndex={0}`. The focused option wins over the
+  // selected one, which is what lets the tab stop follow the arrows even when
+  // the selection is pinned. A consumer can also name a disabled option in
+  // `value`, and a tab stop that cannot be focused is no tab stop.
+  const wanted = focused ?? selected;
+  const rovingValue = items.some(item => item.value === wanted && !item.disabled && !disabled)
+    ? wanted
+    : (collection.first()?.value ?? wanted);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     // `currentTarget` rather than a ref of our own: the handler is on the root,
     // so it already has the node — and merging a private ref with the
     // consumer's is code that exists only to re-derive it.
     const root = event.currentTarget;
-    // Anchored on the tab stop, not on the selection. The two are the same
-    // everywhere except the case this component handles on purpose — a
-    // disabled selected option, where the tab stop has already moved on — and
-    // stepping from the selection there starts on an option nothing is focused
-    // on, so the first key lands back where focus already was. Tabs anchors on
-    // `focused ?? active` for the same reason.
+    // Anchored on the tab stop, which now follows focus rather than selection.
+    // Stepping from the selection starts on an option nothing is focused on
+    // whenever the two differ, so the key lands back where focus already was.
     const result = navigate(event, collection, rovingValue, {
       // Both axes, and looping, because that is the radio-group pattern rather
       // than the tablist one — `vertical` changes how it looks, not which keys
@@ -124,6 +131,8 @@ export function Segmented({
     select(result.value);
     // By position, not by a `[data-value="…"]` selector: the values are
     // consumer strings and one containing a quote would break the selector.
+    // Focusing is also what records the new anchor — the `onFocus` below fires
+    // from this call, so setting `focused` here as well was dead code.
     const index = items.findIndex(item => item.value === result.value);
     (root.children[index] as HTMLElement | undefined)?.focus();
   };
@@ -164,7 +173,14 @@ export function Segmented({
             data-value={item.value}
             data-selected={dataAttr(checked)}
             data-disabled={dataAttr(itemDisabled)}
-            onClick={() => select(item.value)}
+            onClick={() => {
+              setFocused(item.value);
+              select(item.value);
+            }}
+            // The anchor for the next arrow key. It records a Tab into the
+            // group as well as a click, so the first arrow steps from wherever
+            // focus actually landed.
+            onFocus={() => setFocused(item.value)}
           >
             {item.icon !== undefined && <span data-part="icon">{item.icon}</span>}
             <span data-part="label">{item.label}</span>
