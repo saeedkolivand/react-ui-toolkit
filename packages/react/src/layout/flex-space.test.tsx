@@ -129,6 +129,30 @@ describe("Space", () => {
     expect(parts("split")).toHaveLength(3);
   });
 
+  it("renders no split at all when the split itself is conditioned away", () => {
+    const withSplit = false;
+    render(
+      <Space split={withSplit && "/"}>
+        <b>one</b>
+        <b>two</b>
+      </Space>
+    );
+    // `false` is what `{cond && <Divider/>}` evaluates to, and React renders it
+    // as nothing — but the wrapper span is ours, and an empty flex item still
+    // takes a gap on each side. The row silently gains twice the spacing.
+    expect(parts("split")).toHaveLength(0);
+  });
+
+  it("renders no split for an empty string either", () => {
+    render(
+      <Space split="">
+        <b>one</b>
+        <b>two</b>
+      </Space>
+    );
+    expect(parts("split")).toHaveLength(0);
+  });
+
   it("hides the split from assistive tech", () => {
     render(
       <Space split="/">

@@ -153,6 +153,14 @@
     display: block;
     inline-size: 100%;
   }
+  /* One attribute more specific, because the rule above sits at the same
+     specificity as every per-part `display` and beats them all on order alone.
+     A Node centres what you put in it — that is the whole reason it is not just
+     an Image — so `block` must widen it without flattening it back to a box
+     that stacks its child in the corner. */
+  [data-scope="skeleton"][data-part="node"][data-block] {
+    display: flex;
+  }
 
   /* The shimmer. A single gradient panned across a 200%-wide background, so it
      costs one animated property and no layout. */

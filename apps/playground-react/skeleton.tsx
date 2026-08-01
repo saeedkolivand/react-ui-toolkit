@@ -21,6 +21,15 @@ function Harness() {
         <Skeleton avatar />
       </div>
       <Skeleton.Button id="active-button" active />
+
+      {/* A fixed-width parent, so "is the child centred" is a question with an
+          answer. A Node is the one block that centres what you put in it, and
+          `block` must not cost it that. */}
+      <div style={{ inlineSize: 600 }}>
+        <Skeleton.Node id="block-node" block>
+          <span id="block-node-child">chart</span>
+        </Skeleton.Node>
+      </div>
     </main>
   );
 }

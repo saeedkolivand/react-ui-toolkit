@@ -19,3 +19,19 @@ export const dataAttr = (guard: BooleanGuard): "" | undefined => (guard ? "" : u
 
 /** aria-* expects the string "true" or omission, not a JS boolean. */
 export const ariaAttr = (guard: BooleanGuard): "true" | undefined => (guard ? "true" : undefined);
+
+/**
+ * Whether an optional slot has anything in it, and therefore whether its
+ * wrapper part should exist at all.
+ *
+ * `{condition && <Divider/>}` evaluates to `false`, not to `undefined`, and
+ * every framework renders `false` as nothing — so a `!= null` check passes it
+ * through and emits an empty wrapper. That wrapper is not nothing: as a flex or
+ * grid item it still takes its gap, so a Space with a conditioned-away split
+ * silently doubles its own spacing.
+ *
+ * `unknown` because core is framework-free and has no node type of its own; the
+ * adapters narrow it at the call site.
+ */
+export const hasContent = (slot: unknown): boolean =>
+  slot !== null && slot !== undefined && slot !== false && slot !== "";

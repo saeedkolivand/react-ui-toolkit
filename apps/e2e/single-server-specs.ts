@@ -8,4 +8,5 @@
  * either a spec that never runs or a spec collected by the four-server rig,
  * where there is no baseURL and every `page.goto` throws.
  */
-export const SINGLE_SERVER_SPECS = /(position|overlay|anchored|reduced-motion|toast)\.spec\.ts$/;
+export const SINGLE_SERVER_SPECS =
+  /(position|overlay|anchored|reduced-motion|toast|skeleton)\.spec\.ts$/;

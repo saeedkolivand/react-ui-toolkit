@@ -7,7 +7,7 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
-import { dataAttr } from "@crosskit-ui/core";
+import { dataAttr, hasContent } from "@crosskit-ui/core";
 import { flexGap, type FlexGap } from "./flex";
 
 export type SpaceSize = FlexGap | number;
@@ -73,7 +73,7 @@ export function Space({
         // siblings of the flex container. Anything wrapping the pair becomes the
         // flex item and swallows the gap between them.
         <Fragment key={index}>
-          {index > 0 && split != null && (
+          {index > 0 && hasContent(split) && (
             <span data-part="split" aria-hidden="true">
               {split}
             </span>

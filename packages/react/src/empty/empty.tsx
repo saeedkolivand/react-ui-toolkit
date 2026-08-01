@@ -2,6 +2,7 @@
 "use client";
 
 import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from "react";
+import { hasContent } from "@crosskit-ui/core";
 import { useConfig } from "../config/config-provider";
 
 /**
@@ -55,7 +56,8 @@ export function Empty({
 
   // `undefined` means "not specified" and takes the locale string; `null` and
   // `false` are how you ask for no description at all. Collapsing the two would
-  // make an explicitly empty state impossible to express.
+  // make an explicitly empty state impossible to express — which is why this is
+  // an `=== undefined` check rather than `hasContent`, the opposite question.
   const text = description === undefined ? locale.Empty.description : description;
 
   return (
@@ -63,8 +65,8 @@ export function Empty({
       <div data-part="image" style={imageStyle}>
         {typeof image === "string" ? <img src={image} alt="" data-part="illustration" /> : image}
       </div>
-      {text !== null && text !== false && text !== "" && <div data-part="description">{text}</div>}
-      {children != null && <div data-part="footer">{children}</div>}
+      {hasContent(text) && <div data-part="description">{text}</div>}
+      {hasContent(children) && <div data-part="footer">{children}</div>}
     </div>
   );
 }

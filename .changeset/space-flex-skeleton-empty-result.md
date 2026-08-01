@@ -1,4 +1,5 @@
 ---
+"@crosskit-ui/core": minor
 "@crosskit-ui/react": minor
 "@crosskit-ui/styles": minor
 ---
@@ -48,6 +49,12 @@ children. The actions render last, after any children.
 
 `Locale` gains an `Empty` entry, so a custom locale object needs one more field.
 The shipped `enUS` has it already.
+
+New in `@crosskit-ui/core`: `hasContent(slot)`, the check every optional slot
+now goes through before emitting its wrapper part. `{condition && <Divider/>}`
+evaluates to `false`, not `undefined`, and every framework renders `false` as
+nothing — so a `!= null` check passes it through and emits an empty wrapper,
+which still takes its gap as a flex item.
 
 New in `@crosskit-ui/styles`: `--ck-space-sm`, `--ck-space-md` and
 `--ck-space-lg` tokens, and `--ck-skeleton-fill` / `--ck-skeleton-sheen` for

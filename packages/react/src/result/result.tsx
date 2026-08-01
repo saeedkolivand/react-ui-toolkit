@@ -1,6 +1,6 @@
 // Server-safe: pure markup, no hooks, no handlers.
 import type { HTMLAttributes, ReactNode, Ref } from "react";
-import type { IconName } from "@crosskit-ui/core";
+import { hasContent, type IconName } from "@crosskit-ui/core";
 import { Icon } from "../icon/icon";
 
 export type ResultStatus = "success" | "error" | "info" | "warning" | "404" | "403" | "500";
@@ -51,10 +51,10 @@ export function Result({
       {...rest}
     >
       <div data-part="icon">{icon ?? <Icon name={ICON_FOR[status]} />}</div>
-      {title != null && <div data-part="title">{title}</div>}
-      {subTitle != null && <div data-part="subtitle">{subTitle}</div>}
-      {children != null && <div data-part="content">{children}</div>}
-      {extra != null && <div data-part="extra">{extra}</div>}
+      {hasContent(title) && <div data-part="title">{title}</div>}
+      {hasContent(subTitle) && <div data-part="subtitle">{subTitle}</div>}
+      {hasContent(children) && <div data-part="content">{children}</div>}
+      {hasContent(extra) && <div data-part="extra">{extra}</div>}
     </div>
   );
 }
