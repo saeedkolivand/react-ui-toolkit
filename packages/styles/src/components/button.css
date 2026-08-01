@@ -186,11 +186,12 @@
      outright, whatever order the files load in.
      
      `>` and NOT `[data-part="root"]` on the scope, which is the trap `icon.css`
-     and `button-v1.css` each already carry a note about. Alert, Tag and Toast
-     render their dismiss control as a Button with their own part stamped on
-     it, and consumer attributes spread last — so the stamped name REPLACES
-     `root` and every rule requiring it stops matching. The child combinator is
-     what closes the leak; the extra attribute only breaks composition. */
+     and `button-v1.css` each already carry a note about. Alert renders its
+     dismiss control as a Button with its own part stamped on it, and consumer
+     attributes spread last — so the stamped name REPLACES `root` and every
+     rule requiring it stops matching. (Tag and Toast write their part onto a
+     raw `<button>`, so they never had a `root` to lose.) The child combinator
+     is what closes the leak; the extra attribute only breaks composition. */
   [data-scope="button"] > [data-part="label"] {
     /* Nothing to add: the root's flex layout and gap position it. Declared so a
        theme has a part to hang overrides on. */

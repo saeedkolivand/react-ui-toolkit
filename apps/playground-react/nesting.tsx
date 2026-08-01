@@ -7,7 +7,6 @@ import {
   Card,
   Descriptions,
   Empty,
-  Icon,
   List,
   Result,
   Skeleton,
@@ -47,20 +46,19 @@ const ROWS = [
 function Harness() {
   return (
     <main style={{ padding: 24, display: "grid", gap: 32 }}>
-      {/* Not a nesting: a Button rendered as *another component's part*.
-          Rule 3 spreads consumer attributes last, so the stamped
-          `data-part="close-trigger"` replaces the button's own `root` — and
-          any button rule that requires `[data-part="root"]` stops matching.
-          The loose Button beside it is the control. */}
-      <div id="stamped">
-        <div id="stamped-in">
-          <Alert title="Heads up" dismissible onDismiss={() => {}}>
-            Something happened
-          </Alert>
-        </div>
-        <div id="stamped-out">
-          <Button icon={<Icon name="close" />} aria-label="Dismiss" type="text" size="small" />
-        </div>
+      {/* Not a nesting: a Button rendered as *another component's part*. Rule 3
+          spreads consumer attributes last, so the stamped
+          `data-part="close-trigger"` replaces the button's own `root`, and any
+          button rule requiring `[data-part="root"]` stops matching.
+
+          No loose control beside it, deliberately. A Button outside an Alert
+          sits in a different font context, so comparing the two measures
+          inheritance rather than whether the rule matched — the spec asserts
+          the glyph against its own `1em` instead. */}
+      <div id="stamped-in">
+        <Alert title="Heads up" dismissible onDismiss={() => {}}>
+          Something happened
+        </Alert>
       </div>
 
       <Pair id="card-list" container={c => <Card>{c}</Card>}>

@@ -113,9 +113,9 @@ test("keeps a Button's own rules when it is stamped as another component's part"
   // than the rule. `button.css` sizes a composed icon at `1em`; when its rule
   // stops matching, `icon.css` supplies 1.25rem instead and the glyph jumps.
   //
-  // The rule stops matching over an attribute, not a combinator: Alert, Tag and
-  // Toast render their dismiss control as a Button with their own part stamped
-  // on it, and consumer attributes spread last — so the stamped name REPLACES
-  // `root`. `icon.css` and `button-v1.css` each already carry a note about this.
+  // The rule stops matching over an attribute, not a combinator: Alert renders
+  // its dismiss control as a Button with its own part stamped on it, and
+  // consumer attributes spread last — so the stamped name REPLACES `root`.
+  // `icon.css` and `button-v1.css` each already carry a note about this.
   expect(measured.size).toBe(measured.em);
 });

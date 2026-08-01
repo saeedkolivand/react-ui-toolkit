@@ -26,12 +26,15 @@ loose:
 their own parts through child combinators or compound selectors. No component's
 own rendering changes — only what its rules can reach.
 
-The combinator alone, with no `[data-part="root"]` added to the scope. `Alert`,
-`Tag` and `Toast` render their dismiss control as a `Button` with their own part
-stamped on it, and consumer attributes spread last — so the stamped name
+The combinator alone, with no `[data-part="root"]` added to the scope. `Alert`
+renders its dismiss control as a `Button` with its own part stamped on it, and
+consumer attributes spread last — so the stamped name
 _replaces_ `root` and every rule requiring it stops matching.
 
 Import order is **not** a defence. It decides ties only, so a container with an
 extra attribute on its root (`[data-scope="card"][data-size="md"] …`, three
 attributes) outranks a child combinator (two) whatever order the files load in.
 That is why `Card` reached into components defined in a later file.
+
+(`Tag` and `Toast` write their part onto a raw `<button>`, so they never had a
+`root` to lose.)
