@@ -376,6 +376,24 @@ test("dismisses a focus-triggered menu instead of reopening it", async ({ page }
   await expect(content(page, "menu")).toBeVisible();
 });
 
+test("does not style a nested overlay trigger like a tab", async ({ page }) => {
+  const nested = page.locator('[data-scope="popover"][data-part="trigger"]', {
+    has: page.locator("#tab-nested-trigger"),
+  });
+  await expect(nested).toBeVisible();
+
+  // The tab rules are descendant selectors, so an unscoped
+  // `[data-type="line"] [data-part="trigger"]` reached any `trigger` part in the
+  // subtree — and Tooltip, Popover, Menu and Select all render one. Measured a
+  // popover trigger inside a tab panel carrying `2px solid` and `-1px`.
+  const style = await nested.evaluate(node => {
+    const s = getComputedStyle(node);
+    return { border: s.borderBlockEndWidth, margin: s.marginBlockEnd };
+  });
+  expect(style.border).toBe("0px");
+  expect(style.margin).toBe("0px");
+});
+
 /**
  * The arrow, in both directions.
  *

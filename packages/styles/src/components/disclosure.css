@@ -69,27 +69,27 @@
     flex-direction: row-reverse;
   }
 
-  [data-type="line"] [data-part="list"] {
+  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="list"] {
     border-block-end: 1px solid var(--ck-border);
   }
-  [data-type="line"] [data-part="trigger"] {
+  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="trigger"] {
     border-block-end: 2px solid transparent;
     margin-block-end: -1px;
   }
-  [data-type="line"] [data-part="trigger"][data-selected] {
+  [data-scope="tabs"][data-type="line"] [data-scope="tabs"][data-part="trigger"][data-selected] {
     border-block-end-color: var(--ck-accent-solid);
   }
 
-  [data-type="card"] [data-part="list"] {
+  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="list"] {
     border-block-end: 1px solid var(--ck-border);
   }
-  [data-type="card"] [data-part="trigger"] {
+  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="trigger"] {
     border: 1px solid transparent;
     border-start-start-radius: var(--ck-radius-md);
     border-start-end-radius: var(--ck-radius-md);
     margin-block-end: -1px;
   }
-  [data-type="card"] [data-part="trigger"][data-selected] {
+  [data-scope="tabs"][data-type="card"] [data-scope="tabs"][data-part="trigger"][data-selected] {
     border-color: var(--ck-border);
     border-block-end-color: var(--ck-surface);
     background-color: var(--ck-surface);

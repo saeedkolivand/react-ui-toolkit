@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Button, Dropdown, Popover, Tooltip } from "@crosskit-ui/react";
+import { Button, Dropdown, Popover, Tabs, Tooltip } from "@crosskit-ui/react";
 
 /**
  * The anchored overlay harness.
@@ -120,6 +120,28 @@ function Harness() {
         >
           <button id="long-menu">long menu</button>
         </Dropdown>
+      </div>
+
+      {/* A Popover trigger INSIDE a tab panel. The tab rules are descendant
+          selectors, so an unscoped `[data-type="line"] [data-part="trigger"]`
+          reached this one and gave a popover trigger a tab's bottom border —
+          Tooltip, Popover, Menu and Select all render a `trigger` part. */}
+      <div
+        style={{ position: "absolute", insetBlockStart: 840, insetInlineStart: 400, width: 320 }}
+      >
+        <Tabs
+          items={[
+            {
+              key: "nested",
+              label: "Nested",
+              children: (
+                <Popover title="Inner" content="body">
+                  <button id="tab-nested-trigger">nested trigger</button>
+                </Popover>
+              ),
+            },
+          ]}
+        />
       </div>
 
       {/* An ancestor with a transform. `position: fixed` inside one resolves

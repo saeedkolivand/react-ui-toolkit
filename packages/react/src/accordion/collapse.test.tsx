@@ -86,6 +86,25 @@ describe("Collapse", () => {
     expect(header("Section A")).toHaveAttribute("aria-controls", panel.id);
   });
 
+  it("leaves the chevron its own icon scope", async () => {
+    const user = userEvent.setup();
+    render(<Collapse items={ITEMS} />);
+    const chevron = header("Section A").querySelector("svg")!;
+
+    // `Icon` spreads its rest props LAST, so passing `data-scope` here replaces
+    // the svg's own `data-scope="icon"` — and `icon.css` keys every bit of icon
+    // presentation off that alone. The chevron rendered as an 866px black
+    // block. The stylesheet never needed it: the accordion rule is a descendant
+    // selector already satisfied by the root.
+    expect(chevron).toHaveAttribute("data-scope", "icon");
+    expect(chevron).toHaveAttribute("data-part", "item-indicator");
+
+    // And it still carries the state the rotation keys off.
+    expect(chevron).toHaveAttribute("data-state", "closed");
+    await user.click(header("Section A"));
+    expect(header("Section A").querySelector("svg")).toHaveAttribute("data-state", "open");
+  });
+
   // ---------------------------------------------------------------- keyboard
 
   it("moves between headers with the arrow keys", async () => {

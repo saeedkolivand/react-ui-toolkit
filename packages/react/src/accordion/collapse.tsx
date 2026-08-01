@@ -130,14 +130,17 @@ export function Collapse({
                 onKeyDown={onKeyDown}
               >
                 {item.label}
-                {/* Rotates off `data-state`, so nothing toggles a class. */}
-                <Icon
-                  name="chevronDown"
-                  size="sm"
-                  data-scope="accordion"
-                  data-part="item-indicator"
-                  data-state={state}
-                />
+                {/* Rotates off `data-state`, so nothing toggles a class.
+                    
+                    No `data-scope` here, deliberately. `Icon` spreads its rest
+                    props last — rule 3, so a consumer can override anything —
+                    which means passing one REPLACES the svg's own
+                    `data-scope="icon"`, and `icon.css` keys every bit of icon
+                    presentation off that alone. The chevron rendered as an
+                    866px black block. The stylesheet does not need it either:
+                    the rule is `[data-scope="accordion"] [data-part=…]`, a
+                    descendant selector already satisfied by the root. */}
+                <Icon name="chevronDown" size="sm" data-part="item-indicator" data-state={state} />
               </button>
             </h3>
             <div
