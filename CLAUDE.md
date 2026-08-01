@@ -65,28 +65,41 @@ Do not name other UI or behaviour libraries in shipped code, comments, docs or c
 ## Finding your way around
 
 Two indexes are wired up as MCP servers in `.mcp.json`, and both have a CLI. Reach for them
-**before** grepping: 24 packages and apps share a small vocabulary — `label`, `item`, `title`,
-`control` and `content` are each a `data-part` on half a dozen components — so a text search for
-any of them returns most of the repo.
+**before** grepping: 14 workspaces share one small `data-part` vocabulary on purpose, and `label`,
+`item`, `title`, `control` and `content` between them account for hundreds of occurrences across
+most of the component files — so `rg 'data-part="title"'` returns a large slice of the tree, and
+that is the normal case here rather than a bad query.
 
 ```bash
 codegraph query "useAnchored"          # where a symbol is defined and who imports it
-codegraph callers  "dataAttr"          # every call site
-codegraph impact   "createFormStore"   # what a change would reach
+codegraph callers "dataAttr"           # every call site
+codegraph impact  "createFormStore"    # what a change would reach
+graphify query   "how does a Form.Item bind its child?"   # a subgraph for a question
 graphify explain "DatePanel"           # a node and its neighbours, in prose
 graphify path "Form" "createFormStore" # how two things are connected
 ```
 
-`codegraph` answers "where and who calls it" from a symbol index; `graphify` answers "how does this
-relate to that" from a community-clustered graph. Use `codegraph` for a symbol you can name and
-`graphify` for a concept you cannot.
+`codegraph` answers "where is it and who calls it" from a symbol index; `graphify` answers "how does
+this relate to that" from a community-clustered graph. Use `codegraph` for a symbol you can name and
+`graphify` for a concept you cannot. `graphify-out/GRAPH_REPORT.md` is the whole-architecture view —
+read it only when `query`/`explain`/`path` do not surface enough, because it is large.
 
-Both are generated and gitignored. **Refresh after landing a change**, or the next session searches
-last week's code:
+**Neither CLI comes from this repo.** They are installed separately and are not in any
+`package.json`, on purpose: they are a reading aid, not a build step. Nothing here depends on them —
+if the commands do not exist, this section simply does not apply and normal search still works. CI
+never runs them.
+
+**Both indexes are generated and gitignored, so a fresh clone has neither.** Build them once, then
+refresh after landing a change — an index a week stale is worse than none, because it answers
+confidently:
 
 ```bash
-codegraph sync . && graphify update .   # AST-only, no API key, a second or two
+codegraph init .                        # first time; `codegraph sync .` after that
+graphify update .                       # builds and refreshes; AST-only, no API key
 ```
+
+The `graphify` MCP server is pointed at `graphify-out/graph.json`; until that file exists it has
+nothing to serve, which is the one thing to do before wondering why the tool is quiet.
 
 ## Gate
 

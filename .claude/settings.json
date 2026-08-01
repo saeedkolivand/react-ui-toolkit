@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/graphify-hint.mjs\"",
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
