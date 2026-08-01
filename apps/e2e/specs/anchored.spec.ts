@@ -21,6 +21,23 @@ import { test, expect, type Page, type Locator } from "@playwright/test";
  * is why the first version of this file passed every "centred on its trigger"
  * check and failed only the edge-aligned one, by 3.2px.
  */
+/**
+ * Waits until the position has actually been written, then hands back the
+ * positioner.
+ *
+ * `toBeVisible()` is not enough and CI proved it: the element is in the document
+ * and painted before `applyPosition` runs, and a portalled `position: fixed` box
+ * with no coordinates sits at its static place at the end of `<body>` — measured
+ * at y=840 for a trigger at y=380, which reads as a wild mispositioning rather
+ * than as a race. `data-placement` is written in the same call as `left`/`top`,
+ * so its presence is the signal that all of them are there.
+ */
+const positioned = async (page: Page, scope: string) => {
+  const locator = positioner(page, scope);
+  await expect(locator).toHaveAttribute("data-placement", /\S/);
+  return locator;
+};
+
 const box = async (locator: Locator) => {
   const rect = await locator.boundingBox();
   expect(rect, "element has no box").not.toBeNull();
@@ -41,7 +58,7 @@ test("places the tooltip above its trigger when there is room", async ({ page })
   await trigger.hover();
   await expect(content(page, "tooltip")).toBeVisible();
 
-  const [t, c] = [await box(trigger), await box(positioner(page, "tooltip"))];
+  const [t, c] = [await box(trigger), await box(await positioned(page, "tooltip"))];
   // Above, and actually touching: a positioner that silently returned {0,0}
   // would also be "above" a trigger 380px down the page, so the gap is bounded
   // at both ends rather than only asserted to be positive.
@@ -61,7 +78,7 @@ test("flips to the opposite side rather than leaving the viewport", async ({ pag
   // fit. `data-placement` carries the placement actually used, AFTER the flip,
   // which is what the stylesheet points the arrow with.
   await expect(positioner(page, "tooltip")).toHaveAttribute("data-placement", "bottom");
-  const [t, c] = [await box(trigger), await box(positioner(page, "tooltip"))];
+  const [t, c] = [await box(trigger), await box(await positioned(page, "tooltip"))];
   expect(c.y).toBeGreaterThanOrEqual(t.y + t.height - 1);
   // Still on screen, which is the point of flipping at all.
   expect(c.y).toBeGreaterThanOrEqual(0);
@@ -81,7 +98,7 @@ test("escapes an ancestor with a transform", async ({ page }) => {
   );
   expect(parent).toBe("BODY");
 
-  const [t, c] = [await box(trigger), await box(positioner(page, "tooltip"))];
+  const [t, c] = [await box(trigger), await box(await positioned(page, "tooltip"))];
   expect(Math.abs(c.x + c.width / 2 - (t.x + t.width / 2))).toBeLessThan(2);
   expect(t.y - (c.y + c.height)).toBeLessThan(24);
 });
@@ -90,7 +107,10 @@ test("puts the menu below its trigger and left-aligned to it", async ({ page }) 
   await page.locator("#menu-trigger").click();
   await expect(content(page, "menu")).toBeVisible();
 
-  const [t, c] = [await box(page.locator("#menu-trigger")), await box(positioner(page, "menu"))];
+  const [t, c] = [
+    await box(page.locator("#menu-trigger")),
+    await box(await positioned(page, "menu")),
+  ];
   expect(c.y).toBeGreaterThanOrEqual(t.y + t.height - 1);
   // `bottomLeft` aligns the popup's start edge with the trigger's, rather than
   // centring it — the difference between the twelve names and four.
@@ -103,7 +123,7 @@ test("keeps the popover reachable, and its controls clickable", async ({ page })
 
   const [t, c] = [
     await box(page.locator("#popover-trigger")),
-    await box(positioner(page, "popover")),
+    await box(await positioned(page, "popover")),
   ];
   // `right` means after the trigger on the inline axis.
   expect(c.x).toBeGreaterThanOrEqual(t.x + t.width - 1);
@@ -139,14 +159,16 @@ test("repositions when the page scrolls under the trigger", async ({ page }) => 
   const trigger = page.locator("#fits");
   await trigger.hover();
   await expect(content(page, "tooltip")).toBeVisible();
-  const before = await box(positioner(page, "tooltip"));
+  const before = await box(await positioned(page, "tooltip"));
 
   // `position: fixed` coordinates are viewport-relative, so a popup that does
   // not re-measure on scroll detaches from its anchor and hangs in mid-air.
   await page.evaluate(() => window.scrollBy(0, 120));
-  await expect.poll(async () => (await box(positioner(page, "tooltip"))).y).not.toBe(before.y);
+  await expect
+    .poll(async () => (await box(await positioned(page, "tooltip"))).y)
+    .not.toBe(before.y);
 
-  const [t, c] = [await box(trigger), await box(positioner(page, "tooltip"))];
+  const [t, c] = [await box(trigger), await box(await positioned(page, "tooltip"))];
   expect(t.y - (c.y + c.height)).toBeLessThan(24);
 });
 
@@ -370,8 +392,8 @@ for (const dir of ["ltr", "rtl"] as const) {
     await page.locator("#popover-trigger").click();
     await expect(content(page, "popover")).toBeVisible();
 
-    const pos = await box(positioner(page, "popover"));
-    const arrow = await box(positioner(page, "popover").locator('[data-part="arrow"]'));
+    const pos = await box(await positioned(page, "popover"));
+    const arrow = await box((await positioned(page, "popover")).locator('[data-part="arrow"]'));
     const trigger = await box(page.locator("#popover-trigger"));
 
     // The arrow sits on the popup's edge that FACES the trigger. In rtl the
