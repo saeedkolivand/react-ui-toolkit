@@ -51,6 +51,50 @@
     border-radius: var(--ck-radius-sm);
   }
 
+  /* ------------------------------------------------- Tabs, v2 (data-type)
+
+     v2 renames the prop to `type` and emits `data-type`, so it needs its own
+     rules — the `data-ck-variant` block below is v1's and matches nothing a v2
+     Tabs renders. Both coexist until the remaining adapters move, which is the
+     same arrangement `button-v1.css` uses and for the same reason: a rewrite
+     that silently drops every variant style is the regression that already
+     happened once here.
+
+     Logical properties throughout, unlike the v1 block below it. Those are
+     physical and predate the rule; these are the ones RTL has to hold for. */
+  [data-scope="tabs"][data-part="root"][data-tab-position="bottom"] {
+    flex-direction: column-reverse;
+  }
+  [data-scope="tabs"][data-part="root"][data-tab-position="right"] {
+    flex-direction: row-reverse;
+  }
+
+  [data-type="line"] [data-part="list"] {
+    border-block-end: 1px solid var(--ck-border);
+  }
+  [data-type="line"] [data-part="trigger"] {
+    border-block-end: 2px solid transparent;
+    margin-block-end: -1px;
+  }
+  [data-type="line"] [data-part="trigger"][data-selected] {
+    border-block-end-color: var(--ck-accent-solid);
+  }
+
+  [data-type="card"] [data-part="list"] {
+    border-block-end: 1px solid var(--ck-border);
+  }
+  [data-type="card"] [data-part="trigger"] {
+    border: 1px solid transparent;
+    border-start-start-radius: var(--ck-radius-md);
+    border-start-end-radius: var(--ck-radius-md);
+    margin-block-end: -1px;
+  }
+  [data-type="card"] [data-part="trigger"][data-selected] {
+    border-color: var(--ck-border);
+    border-block-end-color: var(--ck-surface);
+    background-color: var(--ck-surface);
+  }
+
   /* v0's four visual variants, preserved as data-variant on the root. */
   [data-ck-variant="line"] [data-part="list"] {
     border-bottom: 1px solid var(--ck-border);

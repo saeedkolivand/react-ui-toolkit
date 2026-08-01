@@ -150,7 +150,7 @@ of them, remove the workaround:
 | `onTabChange(index)` | `onValueChange({ value })` |  |
 | `TabItem.id?` | `TabItem.id — required` |  |
 
-#### Accordion
+#### Accordion / Collapse
 
 | v0 | v1 | Notes |
 | --- | --- | --- |

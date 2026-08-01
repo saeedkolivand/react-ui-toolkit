@@ -41,8 +41,8 @@ export {
   type SelectItem,
   type OptionProps,
 } from "./select/select";
-export { Tabs, type TabsProps, type TabItem } from "./tabs/tabs";
-export { Accordion, type AccordionProps, type AccordionItem } from "./accordion/accordion";
+export { Tabs, type TabsProps, type TabItem, type TabsType, type TabPosition } from "./tabs/tabs";
+export { Collapse, type CollapseProps, type CollapseItem } from "./accordion/collapse";
 export { Toaster, type ToasterProps } from "./toast/toaster";
 export { Tooltip, type TooltipProps } from "./tooltip/tooltip";
 export { Popover, type PopoverProps } from "./popover/popover";
