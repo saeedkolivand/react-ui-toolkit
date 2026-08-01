@@ -120,3 +120,6 @@ export {
   type ListItemMetaProps,
   type ListSize,
 } from "./data/list";
+export { Slider, type SliderProps, type SliderMark } from "./numeric/slider";
+export { InputNumber, type InputNumberProps, type InputNumberSize } from "./numeric/input-number";
+export { Rate, type RateProps } from "./numeric/rate";
