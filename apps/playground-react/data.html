@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — data harness</title>
+  </head>
+  <body>
+    <!-- A real browser, because what is worth asserting here is the cascade and
+         the grid: whether a List's row rules reach the page buttons of the
+         Pagination it renders inside itself, and whether a Descriptions span
+         actually covers the tracks it claims. jsdom resolves no stylesheet and
+         reports every rect as 0x0, so both look identical to correct there. -->
+    <div id="root"></div>
+    <script type="module" src="/data.tsx"></script>
+  </body>
+</html>
