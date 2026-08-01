@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Skeleton } from "@crosskit-ui/react";
+import { Flex, Skeleton, Space } from "@crosskit-ui/react";
 
 /**
  * The skeleton harness.
@@ -46,6 +46,32 @@ function Harness() {
         <Skeleton.Button shape="circle" size="small" />
         <Skeleton.Button shape="circle" />
         <Skeleton.Button shape="circle" size="large" />
+      </div>
+
+      {/* The same circle in each of the containers a consumer will actually put
+          it in. A cross-axis `auto` is what a flex column stretches, and an
+          aspect ratio does not stop it — so a circle in a `<Flex vertical>`,
+          which this library ships and which defaults to `align-items: stretch`,
+          is the one that can come out flat. */}
+      <div id="circle-contexts" style={{ inlineSize: 600 }}>
+        <Flex vertical>
+          <Skeleton.Button id="circle-flex-column" shape="circle" />
+        </Flex>
+        <Flex>
+          <Skeleton.Button id="circle-flex-row" shape="circle" />
+        </Flex>
+        <div style={{ display: "grid" }}>
+          <Skeleton.Button id="circle-grid" shape="circle" />
+        </div>
+        <div>
+          <Skeleton.Button id="circle-block" shape="circle" />
+        </div>
+        <Space direction="vertical">
+          <Skeleton.Button id="circle-space" shape="circle" />
+        </Space>
+        <Flex vertical>
+          <Skeleton.Button id="circle-numeric" shape="circle" size={48} />
+        </Flex>
       </div>
 
       {/* Every keyword combination that sets its own width, all told to fill.

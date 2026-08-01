@@ -116,7 +116,13 @@
   [data-scope="skeleton"][data-part="button"][data-shape="circle"] {
     border-radius: var(--ck-radius-full);
     aspect-ratio: 1;
-    inline-size: auto;
+    /* `fit-content`, not `auto`. Flexbox stretches a cross size that is `auto`
+       and an aspect ratio does not stop it, so a circle sitting directly in a
+       `<Flex vertical>` — which defaults to `align-items: stretch` — came out
+       flat. Anything other than `auto` opts out of that stretch, and the ratio
+       still supplies the width. Grid is unaffected either way: `justify-items`
+       does not stretch a box with a preferred aspect ratio. */
+    inline-size: fit-content;
   }
   [data-scope="skeleton"][data-part="button"][data-shape="round"] {
     border-radius: var(--ck-radius-full);

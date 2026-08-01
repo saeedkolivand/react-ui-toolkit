@@ -75,3 +75,31 @@ test("keeps a circle button square at every size", async ({ page }) => {
   expect(boxes[0]!.h).toBeLessThan(boxes[1]!.h);
   expect(boxes[1]!.h).toBeLessThan(boxes[2]!.h);
 });
+
+test("keeps a circle button round in every container it can land in", async ({ page }) => {
+  await page.goto("/skeleton.html");
+  const ids = [
+    "circle-flex-column",
+    "circle-flex-row",
+    "circle-grid",
+    "circle-block",
+    "circle-space",
+  ];
+
+  const boxes = await page.locator("#circle-contexts").evaluate((root, names) => {
+    const read = (id: string) => {
+      const r = root.querySelector(`#${id}`)!.getBoundingClientRect();
+      return { id, w: Math.round(r.width), h: Math.round(r.height) };
+    };
+    return [...names.map(read), read("circle-numeric")];
+  }, ids);
+
+  // A flex column stretches a cross size that is `auto`, and an aspect ratio
+  // does not stop it — so the container the circle sits in decides whether it
+  // is still a circle. `<Flex vertical>` ships in this same library and
+  // defaults to `align-items: stretch`, which makes this reachable.
+  expect(boxes.filter(b => b.id !== "circle-numeric").map(b => `${b.w}x${b.h}`)).toEqual(
+    ids.map(() => "32x32")
+  );
+  expect(`${boxes[5]!.w}x${boxes[5]!.h}`).toBe("48x48");
+});
