@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — numeric harness</title>
+  </head>
+  <body>
+    <!-- Slider is geometry, and jsdom reports every rect as 0x0 at the origin.
+         Every combination of orientation and direction is rendered, because
+         `translate` is physical whatever the offset property beside it is —
+         so a mirror that works horizontally can be missing vertically and
+         nothing in the unit suite can tell. -->
+    <div id="root"></div>
+    <script type="module" src="/numeric.tsx"></script>
+  </body>
+</html>
