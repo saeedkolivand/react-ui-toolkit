@@ -52,6 +52,30 @@ describe("Tabs", () => {
     expect(screen.getByRole("tabpanel")).toHaveTextContent("Second panel");
   });
 
+  it("selects the first ENABLED tab when nothing is named", async () => {
+    const user = userEvent.setup();
+    const leadingDisabled = [{ key: "off", label: "Off", disabled: true }, ...ITEMS];
+    render(<Tabs items={leadingDisabled} />);
+
+    // Selecting the disabled one put the roving `tabIndex={0}` on a button that
+    // cannot take focus while every other tab held `-1`, so Tab skipped the
+    // whole list and landed on the panel — a tab list no keyboard could reach.
+    expect(selected()).toHaveTextContent("One");
+    await user.tab();
+    expect(tab("One")).toHaveFocus();
+  });
+
+  it("keeps the tab order reachable when a disabled tab is named directly", async () => {
+    const user = userEvent.setup();
+    render(<Tabs items={ITEMS} activeKey="three" onChange={() => {}} />);
+    // "Three" is disabled and the consumer asked for it anyway. It is selected,
+    // because that is what they said — but the one entry in the tab order has
+    // to be a tab that can actually be focused.
+    expect(selected()).toHaveTextContent("Three");
+    await user.tab();
+    expect(tab("One")).toHaveFocus();
+  });
+
   // ---------------------------------------------------------------- keyboard
 
   it("moves selection with the arrow keys", async () => {

@@ -31,6 +31,14 @@ both are valid in the ARIA pattern, and `manual` is what a panel that loads
 something wants — automatic selection would fetch every panel the user arrows
 past.
 
+A `Tabs` whose first item is disabled is now keyboard-operable. The selection
+fell back to `items[0]` regardless, so the roving `tabIndex={0}` sat on a button
+that cannot take focus while every other tab held `-1` — Tab skipped the whole
+list and landed on the panel. It picks the first ENABLED item now, and the one
+entry in the tab order is always a tab that can be focused, even when a consumer
+names a disabled one in `activeKey`. Inherited from v1, which had the same
+fallback, and fixable for the first time now the selection is ours.
+
 Keyboard navigation now comes from `navigation.ts` and `collection.ts`, which
 also makes it testable: the previous suite could not assert arrow keys at all,
 because the machine filtered focus candidates by visibility and jsdom reports

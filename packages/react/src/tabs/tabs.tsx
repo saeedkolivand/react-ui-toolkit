@@ -61,7 +61,15 @@ export function Tabs({
   const autoId = useId();
   const baseId = id ?? autoId;
 
-  const [uncontrolled, setUncontrolled] = useState(defaultActiveKey ?? items[0]?.key ?? "");
+  // The first ENABLED item, not the first item. Selecting a disabled tab put the
+  // roving `tabIndex={0}` on a button that cannot take focus while every other
+  // tab held `-1`, so Tab skipped the entire list and landed on the panel — a
+  // tab list no keyboard could reach. Inherited from v1, which had the same
+  // `?? items[0]` fallback, and fixable here for the first time now that the
+  // selection is ours rather than a machine's.
+  const [uncontrolled, setUncontrolled] = useState(
+    defaultActiveKey ?? items.find(item => !item.disabled)?.key ?? items[0]?.key ?? ""
+  );
   const active = controlled ?? uncontrolled;
 
   // Focus is tracked apart from selection, because `manual` lets them differ —
@@ -92,6 +100,14 @@ export function Tabs({
   const tabId = (key: string) => `${baseId}-tab-${key}`;
   const panelId = (key: string) => `${baseId}-panel-${key}`;
   const orientation: Orientation = VERTICAL.includes(tabPosition) ? "vertical" : "horizontal";
+
+  // Which tab holds the one `tabIndex={0}`. Normally the focused or selected
+  // one — but a consumer can name a disabled tab in `activeKey`, and a tab
+  // order whose only entry cannot be focused is no tab order at all.
+  const wanted = focused ?? active;
+  const rovingKey = items.some(item => item.key === wanted && !item.disabled)
+    ? wanted
+    : (collection.first()?.value ?? wanted);
 
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     const result = navigate(event, collection, focused ?? active, {
@@ -141,7 +157,7 @@ export function Tabs({
               // Roving: exactly one tab is in the tab order, so Tab moves past
               // the whole list rather than through it. The focused tab wins
               // over the selected one, which is what `manual` needs.
-              tabIndex={(focused ?? active) === item.key ? 0 : -1}
+              tabIndex={item.key === rovingKey ? 0 : -1}
               disabled={item.disabled}
               data-scope="tabs"
               data-part="trigger"
