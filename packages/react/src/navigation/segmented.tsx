@@ -144,9 +144,14 @@ export function Segmented({
   //
   // Unconditional, with no `relatedTarget` guard. The guard was written first
   // and measured to change nothing: an arrow key blurs one option and focuses
-  // the next inside the same dispatch, so `onFocus` re-records the anchor in
-  // the same batch and the clear never reaches a render. Nothing else inside
-  // the group is focusable — `children` is not part of the API.
+  // the next, `focusout` before `focusin`, so the `onFocus` below re-records
+  // the anchor immediately after this clears it. Nothing else inside the group
+  // is focusable — `children` is not part of the API.
+  //
+  // The ordering is what makes it right, not React's batching. Batching only
+  // hides the intermediate state; forcing the clear to commit between the two
+  // events changes no outcome. `focusout` before `focusin` is a DOM guarantee,
+  // so this ports to the other three adapters unchanged.
   const clearAnchor = () => setFocused(null);
 
   return (
