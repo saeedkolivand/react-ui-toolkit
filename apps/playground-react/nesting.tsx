@@ -7,6 +7,7 @@ import {
   Card,
   Descriptions,
   Empty,
+  Icon,
   List,
   Result,
   Skeleton,
@@ -46,6 +47,22 @@ const ROWS = [
 function Harness() {
   return (
     <main style={{ padding: 24, display: "grid", gap: 32 }}>
+      {/* Not a nesting: a Button rendered as *another component's part*.
+          Rule 3 spreads consumer attributes last, so the stamped
+          `data-part="close-trigger"` replaces the button's own `root` — and
+          any button rule that requires `[data-part="root"]` stops matching.
+          The loose Button beside it is the control. */}
+      <div id="stamped">
+        <div id="stamped-in">
+          <Alert title="Heads up" dismissible onDismiss={() => {}}>
+            Something happened
+          </Alert>
+        </div>
+        <div id="stamped-out">
+          <Button icon={<Icon name="close" />} aria-label="Dismiss" type="text" size="small" />
+        </div>
+      </div>
+
       <Pair id="card-list" container={c => <Card>{c}</Card>}>
         <List
           header="Head"

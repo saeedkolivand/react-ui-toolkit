@@ -92,3 +92,30 @@ for (const [id, held, description] of PAIRS) {
     expect(inside).toEqual(outside);
   });
 }
+
+test("keeps a Button's own rules when it is stamped as another component's part", async ({
+  page,
+}) => {
+  await page.goto("/nesting.html");
+  const icon = page.locator('#stamped-in [data-part="close-trigger"] svg');
+  await expect(icon).toHaveCount(1);
+
+  const measured = await icon.evaluate(el => {
+    const style = getComputedStyle(el);
+    return {
+      size: Math.round(el.getBoundingClientRect().height * 100) / 100,
+      em: Math.round(Number.parseFloat(style.fontSize) * 100) / 100,
+    };
+  });
+
+  // Against its own `1em`, not against a loose Button — the two sit in
+  // different font contexts, so comparing them measures inheritance rather
+  // than the rule. `button.css` sizes a composed icon at `1em`; when its rule
+  // stops matching, `icon.css` supplies 1.25rem instead and the glyph jumps.
+  //
+  // The rule stops matching over an attribute, not a combinator: Alert, Tag and
+  // Toast render their dismiss control as a Button with their own part stamped
+  // on it, and consumer attributes spread last — so the stamped name REPLACES
+  // `root`. `icon.css` and `button-v1.css` each already carry a note about this.
+  expect(measured.size).toBe(measured.em);
+});

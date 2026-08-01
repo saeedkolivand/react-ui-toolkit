@@ -183,14 +183,21 @@
      by ten — so a loose descendant rule on a component that holds arbitrary
      content reaches whatever the consumer puts inside it. Import order only
      decides ties; a container with an extra attribute on its root wins
-     outright, whatever order the files load in. */
-  [data-scope="button"][data-part="root"] > [data-part="label"] {
+     outright, whatever order the files load in.
+     
+     `>` and NOT `[data-part="root"]` on the scope, which is the trap `icon.css`
+     and `button-v1.css` each already carry a note about. Alert, Tag and Toast
+     render their dismiss control as a Button with their own part stamped on
+     it, and consumer attributes spread last — so the stamped name REPLACES
+     `root` and every rule requiring it stops matching. The child combinator is
+     what closes the leak; the extra attribute only breaks composition. */
+  [data-scope="button"] > [data-part="label"] {
     /* Nothing to add: the root's flex layout and gap position it. Declared so a
        theme has a part to hang overrides on. */
     display: contents;
   }
 
-  [data-scope="button"][data-part="root"] > [data-part="icon"] {
+  [data-scope="button"] > [data-part="icon"] {
     display: inline-flex;
     align-items: center;
     /* No margin: the root's `gap` spaces the parts, which needs no
@@ -200,14 +207,14 @@
     flex-shrink: 0;
   }
 
-  [data-scope="button"][data-part="root"] > [data-part="icon"] > svg {
+  [data-scope="button"] > [data-part="icon"] > svg {
     inline-size: 1em;
     block-size: 1em;
   }
 
   /* The spinner had no rule at all under the v1 contract, so `loading` rendered
      an empty invisible span. */
-  [data-scope="button"][data-part="root"] > [data-part="spinner"] {
+  [data-scope="button"] > [data-part="spinner"] {
     display: inline-block;
     inline-size: 1em;
     block-size: 1em;
@@ -219,7 +226,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-scope="button"][data-part="root"] > [data-part="spinner"] {
+    [data-scope="button"] > [data-part="spinner"] {
       animation-duration: 1.5s;
     }
   }
