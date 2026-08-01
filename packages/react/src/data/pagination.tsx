@@ -83,6 +83,14 @@ export function Pagination({
     setJump("");
   };
 
+  // The current size, offered whether or not the caller listed it. `Select`
+  // resolves its display text by looking the value up in `options`, so a size
+  // outside them renders the placeholder while the list pages by it — the
+  // control disagreeing with the thing it controls.
+  const sizes = pageSizeOptions.includes(pageSize)
+    ? pageSizeOptions
+    : [...pageSizeOptions, pageSize].sort((a, b) => a - b);
+
   if (hideOnSinglePage && pages <= 1) return null;
 
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -166,7 +174,7 @@ export function Pagination({
             disabled={disabled}
             value={String(pageSize)}
             label={locale.Pagination.perPage}
-            options={pageSizeOptions.map(option => ({
+            options={sizes.map(option => ({
               value: String(option),
               label: `${option} / ${locale.Pagination.perPage}`,
             }))}

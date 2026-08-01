@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Descriptions, List, Pagination, Statistic } from "@crosskit-ui/react";
+import { Checkbox, Descriptions, List, Pagination, Statistic } from "@crosskit-ui/react";
 
 const ROWS = Array.from({ length: 7 }, (_, index) => ({ id: `r${index}`, name: `Row ${index}` }));
 
@@ -54,6 +54,17 @@ function Harness() {
             { label: "Name", children: "Ada" },
             { label: "Bio", children: "Spans the whole row", span: 3 },
           ]}
+        />
+      </div>
+
+      {/* `children` is an arbitrary node, so a consumer can put a control in a
+          value — and every component with a `label` part is then a descendant
+          of `[data-scope="descriptions"]`. This is the leak List had, with a
+          wider door: reachable without writing another component. */}
+      <div id="descriptions-with-control">
+        <Descriptions
+          column={1}
+          items={[{ label: "Status", children: <Checkbox defaultChecked label="Active" /> }]}
         />
       </div>
 

@@ -94,3 +94,23 @@ test("keeps the size changer to its own width inside the pagination bar", async 
   expect(changer[0]!.w).toBeGreaterThan(0);
   expect(changer[0]!.w).toBeLessThan(bar[0]!.w / 2);
 });
+
+test("keeps a Descriptions label rule off a control inside a value", async ({ page }) => {
+  await page.goto("/data.html");
+  const checkbox = page.locator('#descriptions-with-control [data-scope="checkbox"]');
+  await expect(checkbox).toHaveCount(1);
+
+  const colon = await page
+    .locator('#descriptions-with-control [data-scope="checkbox"] [data-part="label"]')
+    .evaluate(el => getComputedStyle(el, "::after").content);
+
+  // `[data-scope="descriptions"] [data-part="label"]` reaches every nested
+  // component that has a `label` part, and `children` is an arbitrary node —
+  // so a Checkbox in a value gets the muted label colour and the `[data-colon]`
+  // pseudo-element, reading "Active:" and putting that colon in the accessible
+  // name. Chromium does; jsdom resolves no stylesheet and sees none of it.
+  expect(colon).toBe("none");
+  // On the control, not the wrapper: a name is a property of the thing with the
+  // role, and the wrapper div has neither.
+  await expect(page.getByRole("checkbox")).toHaveAccessibleName("Active");
+});

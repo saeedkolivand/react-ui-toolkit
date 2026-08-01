@@ -259,6 +259,22 @@ describe("Pagination", () => {
     expect(screen.getByRole("combobox")).toHaveAccessibleName(enUS.Pagination.perPage);
   });
 
+  it("shows a page size that is not one of the offered options", () => {
+    render(<Pagination total={240} pageSize={25} showSizeChanger />);
+    // `Select` resolves its display text by looking the value up in `options`,
+    // so a size outside `pageSizeOptions` renders the placeholder while the
+    // list pages by 25 — the control disagrees with the thing it controls.
+    expect(screen.getByRole("combobox")).toHaveTextContent("25");
+  });
+
+  it("slots the current size into the offered ones in order", async () => {
+    render(<Pagination total={240} pageSize={25} showSizeChanger />);
+    await userEvent.click(screen.getByRole("combobox"));
+    const offered = screen.getAllByRole("option").map(option => option.textContent);
+    // Appended rather than sorted in, the list would read 10, 20, 50, 100, 25.
+    expect(offered.map(label => Number.parseInt(label ?? "", 10))).toEqual([10, 20, 25, 50, 100]);
+  });
+
   it("returns to the first page when the size changes", async () => {
     const onChange = vi.fn();
     render(<Pagination total={240} defaultCurrent={9} showSizeChanger onChange={onChange} />);

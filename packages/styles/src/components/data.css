@@ -66,30 +66,37 @@
     grid-column: span var(--ck-descriptions-span, 1);
     min-inline-size: 0;
   }
-  [data-scope="descriptions"] [data-part="label"],
-  [data-scope="descriptions"] [data-part="content"] {
+  /* Through the pair wrapper at the last hop, not a loose descendant. A value
+     is an arbitrary node, so a consumer can put a Checkbox — or any of the ten
+     components with a `label` part — inside one, and the loose form paints it
+     in the muted label colour and hangs the `[data-colon]` `::after` off it.
+     Measured in Chromium: the control read "Active:", colon included in its
+     accessible name. Wider than the leak List had, since it needs no second
+     component in this repo to reach it. */
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="content"] {
     /* The span is per item and lands inline, because it is a number a consumer
        chooses rather than one of a fixed set. */
     grid-column: span var(--ck-descriptions-span, 1);
     margin: 0;
     min-inline-size: 0;
   }
-  [data-scope="descriptions"] [data-part="label"] {
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="label"] {
     color: var(--ck-fg-muted);
     font-size: 0.875rem;
   }
-  [data-scope="descriptions"] [data-part="content"] {
+  [data-scope="descriptions"] [data-part="pair"] > [data-part="content"] {
     color: var(--ck-fg);
     font-size: 0.875rem;
   }
-  [data-scope="descriptions"][data-colon] [data-part="label"]::after {
+  [data-scope="descriptions"][data-colon] [data-part="pair"] > [data-part="label"]::after {
     /* A pseudo-element, not markup: a colon in the DOM is read aloud, and
        "Name colon Ada" is not what a label sounds like. */
     content: ":";
     margin-inline-start: 0.125rem;
   }
-  [data-scope="descriptions"][data-size="small"] [data-part="label"],
-  [data-scope="descriptions"][data-size="small"] [data-part="content"] {
+  [data-scope="descriptions"][data-size="small"] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"][data-size="small"] [data-part="pair"] > [data-part="content"] {
     font-size: 0.75rem;
   }
 
@@ -99,13 +106,13 @@
     border-radius: var(--ck-radius-md);
     overflow: hidden;
   }
-  [data-scope="descriptions"][data-bordered] [data-part="label"],
-  [data-scope="descriptions"][data-bordered] [data-part="content"] {
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="label"],
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="content"] {
     padding: var(--ck-space-sm) var(--ck-space-md);
     border-block-end: 1px solid var(--ck-border);
     border-inline-end: 1px solid var(--ck-border);
   }
-  [data-scope="descriptions"][data-bordered] [data-part="label"] {
+  [data-scope="descriptions"][data-bordered] [data-part="pair"] > [data-part="label"] {
     background: var(--ck-surface-hover);
   }
 
