@@ -433,6 +433,33 @@ test("does not let an outer tab type reach a nested Tabs", async ({ page }) => {
   expect((await shape("Outer card")).radius).not.toBe("0px");
 });
 
+test("mirrors a card tab's open edge when its list moves below", async ({ page }) => {
+  const edges = (name: string) =>
+    page.getByRole("tab", { name }).evaluate(node => {
+      const s = getComputedStyle(node);
+      return {
+        startColour: s.borderBlockStartColor,
+        endColour: s.borderBlockEndColor,
+        startRadius: s.borderStartStartRadius,
+        endRadius: s.borderEndStartRadius,
+      };
+    });
+
+  const [top, bottom] = [await edges("Top card"), await edges("Bottom")];
+
+  // The type rules name the block-END edge, which faces the panel only while
+  // the list is above it. With the list below, the tab sealed itself shut: a
+  // grey seam between it and its own panel, and the white notch meant to merge
+  // them punched into the divider on the outer edge instead.
+  //
+  // Mirrored, so `bottom` is `top` reflected — the open edge faces the panel in
+  // both, which is the whole point of the shape.
+  expect(bottom.startColour).toBe(top.endColour);
+  expect(bottom.endColour).toBe(top.startColour);
+  expect(bottom.endRadius).toBe(top.startRadius);
+  expect(bottom.startRadius).toBe(top.endRadius);
+});
+
 /**
  * The arrow, in both directions.
  *

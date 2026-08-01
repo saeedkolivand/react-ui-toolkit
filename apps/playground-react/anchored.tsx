@@ -175,12 +175,24 @@ function Harness() {
         <Tabs type="line" items={[{ key: "alone", label: "Alone", children: "panel" }]} />
       </div>
 
+      {/* The same card at the default position, to mirror the bottom one
+          against. */}
+      <div
+        style={{ position: "absolute", insetBlockStart: 1260, insetInlineStart: 400, width: 360 }}
+      >
+        <Tabs type="card" items={[{ key: "t1", label: "Top card", children: "panel" }]} />
+      </div>
+
       {/* `tabPosition="bottom"`, so the panel's gap can be measured on the side
           the list is actually on. */}
       <div
         style={{ position: "absolute", insetBlockStart: 940, insetInlineStart: 400, width: 320 }}
       >
-        <Tabs tabPosition="bottom" items={[{ key: "b1", label: "Bottom", children: "panel" }]} />
+        <Tabs
+          tabPosition="bottom"
+          type="card"
+          items={[{ key: "b1", label: "Bottom", children: "panel" }]}
+        />
       </div>
 
       {/* An ancestor with a transform. `position: fixed` inside one resolves

@@ -128,6 +128,59 @@
     background-color: var(--ck-surface);
   }
 
+  /* `tabPosition="bottom"` mirrors the block axis.
+
+     Everything above names the block-END edge, which is the edge facing the
+     panel only while the list sits above it. With the list below, a card came
+     out as a closed box: a grey seam between the tab and its own panel, and the
+     white `--ck-surface` notch that is supposed to merge them punched into the
+     divider on the outer edge instead. `line` gets the milder version, with the
+     underline and the divider both on the far side from the panel.
+
+     `left` and `right` have the same shape and are deliberately not touched
+     here: v1's `enclosed` with `orientation="vertical"` already rendered that
+     way, so it is a pre-existing gap rather than one `tabPosition` opens. */
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 0;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border-block-end: 0;
+    border-block-start: 2px solid transparent;
+    margin-block-end: 0;
+    margin-block-start: -1px;
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="line"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-block-start-color: var(--ck-accent-solid);
+  }
+
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"] {
+    border-block-end: 0;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"] {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-start-radius: var(--ck-radius-md);
+    border-end-end-radius: var(--ck-radius-md);
+    margin-block-end: 0;
+    margin-block-start: -1px;
+  }
+  [data-scope="tabs"][data-tab-position="bottom"][data-type="card"]
+    > [data-scope="tabs"][data-part="list"]
+    > [data-scope="tabs"][data-part="trigger"][data-selected] {
+    border-block-end-color: var(--ck-border);
+    border-block-start-color: var(--ck-surface);
+  }
+
   /* v0's four visual variants, preserved as data-variant on the root. */
   [data-ck-variant="line"] [data-part="list"] {
     border-bottom: 1px solid var(--ck-border);
