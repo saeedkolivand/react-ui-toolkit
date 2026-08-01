@@ -1,0 +1,98 @@
+/* Form, Form.Item and Form.List.
+
+   Every selector is compound — `[data-scope="form"][data-part="…"]` on one
+   element — because `label`, `item`, `control` and `error` are among the most
+   shared part names in the library. A descendant selector here would restyle a
+   List's items, a Card's title or a Select's control the moment one is placed
+   inside a field. */
+@layer ck.components {
+  [data-scope="form"][data-part="root"] {
+    /* Stated, because an Angular root can be a custom element and those default
+       to `display: inline` — a root that does not say what it is is one
+       framework away from a different box. */
+    display: block;
+  }
+
+  [data-scope="form"][data-part="item"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-block-end: 1rem;
+  }
+
+  [data-scope="form"][data-part="label"] {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    color: var(--ck-fg);
+  }
+
+  /* The marker is generated rather than an element, so it cannot be mistaken
+     for content: a screen reader reading "asterisk Email" tells nobody the
+     field is required, and `aria-required` on the control is what actually
+     does. This is decoration for the sighted reader. */
+  [data-scope="form"][data-part="item"][data-required] > [data-part="label"]::after {
+    content: "*";
+    /* Logical, so it lands after the text in both directions. */
+    margin-inline-start: 0.25rem;
+    color: var(--ck-danger-solid);
+  }
+
+  [data-scope="form"][data-part="control"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-inline-size: 0;
+  }
+
+  [data-scope="form"][data-part="error"] {
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    color: var(--ck-danger-solid);
+  }
+
+  [data-scope="form"][data-part="extra"] {
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    color: var(--ck-fg-muted);
+  }
+
+  /* -------------------------------------------------------------- layouts */
+
+  /* Horizontal puts the label beside the control on one row. A grid, not a
+     flex row, so every label in the form shares one column width without any
+     of them being measured — `subgrid` inherits the parent's tracks, so the
+     label column is as wide as the widest label and every row agrees. */
+  [data-scope="form"][data-part="root"][data-layout="horizontal"] {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0 1rem;
+  }
+  [data-scope="form"][data-layout="horizontal"] > [data-part="item"] {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+  /* A row with no label still has to occupy the control column, or it would
+     start under the labels and be the one thing on the page out of line. */
+  [data-scope="form"][data-layout="horizontal"] > [data-part="item"] > [data-part="control"] {
+    grid-column: 2;
+  }
+  [data-scope="form"][data-layout="horizontal"] > [data-part="item"] > [data-part="label"] {
+    grid-column: 1;
+    /* Optically on the control's first line rather than at the top of a row
+       that may hold an error message under it. */
+    padding-block-start: 0.4375rem;
+  }
+
+  [data-scope="form"][data-part="root"][data-layout="inline"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 0.75rem;
+  }
+  [data-scope="form"][data-layout="inline"] > [data-part="item"] {
+    margin-block-end: 0;
+  }
+}

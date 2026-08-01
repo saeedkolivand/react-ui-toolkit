@@ -124,3 +124,15 @@ export {
 export { Slider, type SliderProps, type SliderMark } from "./numeric/slider";
 export { InputNumber, type InputNumberProps, type InputNumberSize } from "./numeric/input-number";
 export { Rate, type RateProps } from "./numeric/rate";
+export {
+  Form,
+  FormItem,
+  FormList,
+  type FormProps,
+  type FormItemProps,
+  type FormListProps,
+  type FormListField,
+  type FormListOperations,
+  type FormLayout,
+} from "./form/form";
+export { useForm, joinPath, type FormInstance, type NamePath } from "./form/use-form";
