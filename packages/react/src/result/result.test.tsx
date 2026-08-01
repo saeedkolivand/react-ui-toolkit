@@ -74,6 +74,26 @@ describe("Result", () => {
     expect(content.compareDocumentPosition(extra)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
+  it("has no content box for a list that mapped to nothing", () => {
+    const rows: string[] = [];
+    render(
+      <Result title="Done">
+        {rows.map(r => (
+          <p key={r}>{r}</p>
+        ))}
+      </Result>
+    );
+    // An empty box is not nothing: it takes the root's gap and its own
+    // margin, so the actions drift down the page by a slot that is not there.
+    expect(part("content")).toBeNull();
+  });
+
+  it("has no actions box for a list of conditioned-away actions", () => {
+    const show = false;
+    render(<Result title="Done" extra={[show && <button key="a" />, null]} />);
+    expect(part("extra")).toBeNull();
+  });
+
   it("has no content box when there are no children", () => {
     render(<Result title="Done" extra={<button type="button">Home</button>} />);
     expect(part("content")).toBeNull();

@@ -44,9 +44,23 @@ describe("hasContent", () => {
     expect(hasContent(true)).toBe(true);
   });
 
+  it("rejects a list with nothing in it", () => {
+    // `{items.map(…)}` on an empty list is the other everyday way a slot ends
+    // up empty, and it arrives as `[]` rather than as any of the spellings
+    // above — so the wrapper part gets emitted and takes its gap regardless.
+    expect(hasContent([])).toBe(false);
+  });
+
+  it("rejects a list with nothing renderable in it", () => {
+    expect(hasContent([false, null, undefined, ""])).toBe(false);
+  });
+
+  it("accepts a list with one renderable entry", () => {
+    expect(hasContent([false, { type: "b" }])).toBe(true);
+  });
+
   it("accepts ordinary content", () => {
     expect(hasContent("Save")).toBe(true);
     expect(hasContent({ type: "div" })).toBe(true);
-    expect(hasContent([])).toBe(true);
   });
 });

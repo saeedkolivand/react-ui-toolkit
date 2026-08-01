@@ -85,6 +85,18 @@ describe("Empty", () => {
     );
   });
 
+  it("has no footer for a list that mapped to nothing", () => {
+    const actions: string[] = [];
+    render(
+      <Empty>
+        {actions.map(a => (
+          <button key={a} type="button" />
+        ))}
+      </Empty>
+    );
+    expect(part("footer")).toBeNull();
+  });
+
   it("has no footer when there are no children", () => {
     render(<Empty />);
     expect(part("footer")).toBeNull();

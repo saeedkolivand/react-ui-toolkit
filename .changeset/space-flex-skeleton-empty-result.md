@@ -52,9 +52,11 @@ The shipped `enUS` has it already.
 
 New in `@crosskit-ui/core`: `hasContent(slot)`, the check every optional slot
 now goes through before emitting its wrapper part. `{condition && <Divider/>}`
-evaluates to `false`, not `undefined`, and every framework renders `false` as
-nothing — so a `!= null` check passes it through and emits an empty wrapper,
-which still takes its gap as a flex item.
+evaluates to `false`, not `undefined`, and `{items.map(…)}` on an empty list
+evaluates to `[]` — every framework renders both as nothing, so a `!= null`
+check passes them through and emits an empty wrapper, which still takes its gap
+as a flex item. Arrays recurse; a slot wrapped in a fragment is opaque to core
+and cannot be detected framework-free.
 
 New in `@crosskit-ui/styles`: `--ck-space-sm`, `--ck-space-md` and
 `--ck-space-lg` tokens, and `--ck-skeleton-fill` / `--ck-skeleton-sheen` for
