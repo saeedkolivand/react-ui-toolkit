@@ -25,6 +25,14 @@ function Harness() {
       {/* A fixed-width parent, so "is the child centred" is a question with an
           answer. A Node is the one block that centres what you put in it, and
           `block` must not cost it that. */}
+      {/* One per keyword, so "does `size` do anything" is measurable. A rule
+          that restates the base values makes a keyword a silent no-op. */}
+      <div id="avatar-sizes">
+        <Skeleton.Avatar size="small" />
+        <Skeleton.Avatar size="default" />
+        <Skeleton.Avatar size="large" />
+      </div>
+
       <div style={{ inlineSize: 600 }}>
         <Skeleton.Node id="block-node" block>
           <span id="block-node-child">chart</span>

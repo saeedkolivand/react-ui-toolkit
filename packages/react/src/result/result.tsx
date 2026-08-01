@@ -41,6 +41,12 @@ export function Result({
   ref,
   ...rest
 }: ResultProps) {
+  // `undefined` is "not specified" and takes the built-in icon; `null` and
+  // `false` are how a caller asks for no icon at all. `icon ?? built-in` gets
+  // the first right and the second wrong — it renders `false` into a box that
+  // then takes the root gap on both sides of nothing.
+  const iconNode = icon === undefined ? <Icon name={ICON_FOR[status]} /> : icon;
+
   return (
     <div
       ref={ref}
@@ -50,7 +56,7 @@ export function Result({
       className={className}
       {...rest}
     >
-      <div data-part="icon">{icon ?? <Icon name={ICON_FOR[status]} />}</div>
+      {hasContent(iconNode) && <div data-part="icon">{iconNode}</div>}
       {hasContent(title) && <div data-part="title">{title}</div>}
       {hasContent(subTitle) && <div data-part="subtitle">{subTitle}</div>}
       {hasContent(children) && <div data-part="content">{children}</div>}

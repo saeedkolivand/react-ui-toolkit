@@ -40,12 +40,15 @@ carries `aria-busy` rather than a live region — there is no text to announce.
 
 **`Empty`** is the no-data state: `description` (from the locale unless given —
 `null` or `false` removes it), `image` as a node or a URL string, and children
-as a footer. Two built-in illustrations ship as `Empty.PRESENTED_IMAGE_DEFAULT`
+as a footer. `image` reads the same way: absent takes the default illustration,
+`null` or `false` removes it. Two built-in illustrations ship as `Empty.PRESENTED_IMAGE_DEFAULT`
 and `Empty.PRESENTED_IMAGE_SIMPLE`.
 
 **`Result`** is the after-the-fact state: `status` (`success`, `error`, `info`,
 `warning`, `404`, `403`, `500`), `title`, `subTitle`, `icon`, `extra`, and
-children. The actions render last, after any children.
+children. `icon` follows the same rule as `Empty`'s `image` — absent takes the
+built-in one, `null` or `false` removes it. The actions render last, after any
+children.
 
 `Locale` gains an `Empty` entry, so a custom locale object needs one more field.
 The shipped `enUS` has it already.

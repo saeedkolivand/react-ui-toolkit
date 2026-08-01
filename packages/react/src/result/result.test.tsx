@@ -51,6 +51,24 @@ describe("Result", () => {
     expect(part("icon")!.querySelector("svg")).toBeNull();
   });
 
+  it("renders no icon box when the icon is conditioned away", () => {
+    const showIcon = false;
+    render(<Result status="success" icon={showIcon && <span />} title="t" />);
+    // `??` covers null and not false, so this box was emitted empty and took
+    // the root gap on both sides.
+    expect(part("icon")).toBeNull();
+  });
+
+  it("renders no icon box for null either", () => {
+    render(<Result status="success" icon={null} title="t" />);
+    expect(part("icon")).toBeNull();
+  });
+
+  it("still draws the built-in icon when the prop is simply absent", () => {
+    render(<Result status="success" title="t" />);
+    expect(part("icon")!.querySelector("svg")).not.toBeNull();
+  });
+
   it("renders the title and subtitle", () => {
     render(<Result title="Payment taken" subTitle="Order 2456" />);
     expect(screen.getByText("Payment taken")).toBeInTheDocument();

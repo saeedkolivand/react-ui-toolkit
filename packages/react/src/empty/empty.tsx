@@ -62,9 +62,16 @@ export function Empty({
 
   return (
     <div ref={ref} data-scope="empty" data-part="root" className={className} {...rest}>
-      <div data-part="image" style={imageStyle}>
-        {typeof image === "string" ? <img src={image} alt="" data-part="illustration" /> : image}
-      </div>
+      {/* Gated like every other slot, and this is the one that costs the most
+          to get wrong: the part carries a fixed block-size, so an empty one is
+          the full height of the illustration that is not there rather than a
+          hairline. The default parameter above covers `undefined`, so reaching
+          here falsy means the caller asked for no image at all. */}
+      {hasContent(image) && (
+        <div data-part="image" style={imageStyle}>
+          {typeof image === "string" ? <img src={image} alt="" data-part="illustration" /> : image}
+        </div>
+      )}
       {hasContent(text) && <div data-part="description">{text}</div>}
       {hasContent(children) && <div data-part="footer">{children}</div>}
     </div>

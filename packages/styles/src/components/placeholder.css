@@ -76,9 +76,11 @@
     vertical-align: top;
   }
 
+  /* 32 / 24 / 40, the same progression as button and input. The base used to
+     restate the large value, which left `size="large"` a silent no-op. */
   [data-scope="skeleton"][data-part="avatar"] {
-    block-size: 2.5rem;
-    inline-size: 2.5rem;
+    block-size: 2rem;
+    inline-size: 2rem;
     flex: none;
   }
   [data-scope="skeleton"][data-part="avatar"][data-size="small"] {

@@ -26,3 +26,17 @@ test("keeps a block Node centring its content", async ({ page }) => {
   expect(gaps.width).toBeGreaterThan(500);
   expect(Math.abs(gaps.start - gaps.end)).toBeLessThan(2);
 });
+
+test("gives each avatar keyword its own size", async ({ page }) => {
+  await page.goto("/skeleton.html");
+  const avatars = page.locator('#avatar-sizes [data-part="avatar"]');
+  await expect(avatars).toHaveCount(3);
+
+  const sizes = await avatars.evaluateAll(els => els.map(el => el.getBoundingClientRect().height));
+
+  // Measured against each other rather than against fixed numbers: a rule that
+  // restates the base values leaves the keyword a silent no-op, and every
+  // absolute assertion would still pass.
+  expect(sizes[0]).toBeLessThan(sizes[1]!);
+  expect(sizes[1]).toBeLessThan(sizes[2]!);
+});

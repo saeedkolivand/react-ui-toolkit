@@ -62,6 +62,19 @@ describe("Empty", () => {
     expect(img.getAttribute("alt")).toBe("");
   });
 
+  it("renders no image box when the image is conditioned away", () => {
+    const showArt = false;
+    render(<Empty image={showArt && <span />} />);
+    // The image part carries a fixed block-size, so an empty one is not a
+    // hairline — it is the full height of the illustration that is not there.
+    expect(part("image")).toBeNull();
+  });
+
+  it("renders no image box for null either", () => {
+    render(<Empty image={null} />);
+    expect(part("image")).toBeNull();
+  });
+
   it("takes a node image as-is", () => {
     render(<Empty image={<span data-testid="own">art</span>} />);
     expect(screen.getByTestId("own")).toBeInTheDocument();
