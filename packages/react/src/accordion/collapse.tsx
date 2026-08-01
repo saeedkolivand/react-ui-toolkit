@@ -15,7 +15,7 @@ import { Icon } from "../icon/icon";
 export interface CollapseItem {
   key: string;
   label: ReactNode;
-  /** The panel. Ant names this `children`, on the item rather than the Collapse. */
+  /** The panel. Named `children` on the item rather than on the Collapse. */
   children?: ReactNode;
   disabled?: boolean;
 }
@@ -27,7 +27,7 @@ export interface CollapseProps {
   defaultActiveKey?: string | string[];
   /** Always the full open set, even in `accordion` mode where it holds one. */
   onChange?: (key: string[]) => void;
-  /** Only one panel open at a time. Ant's name for it, and the widget pattern
+  /** Only one panel open at a time. The widget pattern
    *  the `data-scope` is named after. */
   accordion?: boolean;
   id?: string;

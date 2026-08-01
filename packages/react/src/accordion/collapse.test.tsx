@@ -29,7 +29,7 @@ describe("Collapse", () => {
     render(<Collapse items={ITEMS} />);
     await user.click(header("Section A"));
     await user.click(header("Section B"));
-    // Ant's default, and the opposite of v1's: `accordion` is what opts into
+    // The opposite of v1's default: `accordion` is what opts into
     // one-at-a-time, rather than `allowMultiple` opting out of it.
     expect(expanded("Section A")).toBe("true");
     expect(expanded("Section B")).toBe("true");

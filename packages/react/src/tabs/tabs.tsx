@@ -12,13 +12,13 @@ import {
 import { createCollection, dataAttr, navigate, type Orientation } from "@crosskit-ui/core";
 
 export type TabsType = "line" | "card";
-/** Ant's four sides. The inline ones also flip the root to a row. */
+/** The four sides. The inline ones also flip the root to a row. */
 export type TabPosition = "top" | "bottom" | "left" | "right";
 
 export interface TabItem {
   key: string;
   label: ReactNode;
-  /** The panel. Ant names this `children`, on the item rather than the Tabs. */
+  /** The panel. Named `children` on the item rather than on the Tabs. */
   children?: ReactNode;
   disabled?: boolean;
 }
@@ -33,7 +33,8 @@ export interface TabsProps {
   /**
    * Whether arrowing to a tab selects it, or only focuses it.
    *
-   * Not an Ant prop, and kept anyway. Both are valid in the ARIA pattern, and
+   * Not part of the API this mirrors, and kept anyway. Both are valid in the
+   * ARIA pattern, and
    * `manual` is the one a tab panel that loads something wants — automatic
    * selection would fetch every panel the user arrows past. Removing it would
    * also be a silent removal from v1, which is worse than an extra prop.

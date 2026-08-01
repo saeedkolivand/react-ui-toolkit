@@ -26,9 +26,10 @@ move too.
 - `collapsible` is gone. A collapse with nothing open is a legitimate state
   rather than one to be prevented, in both modes.
 
-`activationMode` survives, and is deliberately not an Ant prop: both are valid
-in the ARIA pattern, and `manual` is what a panel that loads something wants —
-automatic selection would fetch every panel the user arrows past.
+`activationMode` survives, and is deliberately not part of the API this mirrors:
+both are valid in the ARIA pattern, and `manual` is what a panel that loads
+something wants — automatic selection would fetch every panel the user arrows
+past.
 
 Keyboard navigation now comes from `navigation.ts` and `collection.ts`, which
 also makes it testable: the previous suite could not assert arrow keys at all,
