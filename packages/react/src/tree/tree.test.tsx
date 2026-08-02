@@ -164,7 +164,11 @@ describe("Tree", () => {
     render(<Tree treeData={TREE} defaultExpandAll checkable onCheck={onCheck} />);
     await user.click(named("Guide").querySelector("input")!);
 
-    expect(onCheck.mock.calls[0]![0]).toEqual(expect.arrayContaining(["guide", "intro", "setup"]));
+    // LEAVES, and no parents. The prop documents that, and a consumer wiring
+    // `onCheck` to a form otherwise gets keys the docs promise it will not see
+    // — harmless on the round trip, since `resolveChecks` ignores a stored
+    // parent, and wrong the moment the payload leaves the component.
+    expect(onCheck.mock.calls[0]![0]).toEqual(["intro", "setup"]);
     await waitFor(() => expect(named("Intro")).toHaveAttribute("aria-checked", "true"));
     // Docs is partial, because API is not checked.
     expect(named("Docs")).toHaveAttribute("aria-checked", "mixed");
@@ -224,6 +228,36 @@ describe("Tree", () => {
     await user.click(named("Intro").querySelector("input")!);
     expect(onSelect).not.toHaveBeenCalled();
     expect(onCheck).not.toHaveBeenCalled();
+  });
+
+  it("leaves the checkbox's own part alone", () => {
+    render(<Tree treeData={TREE} defaultExpandAll checkable />);
+    const box = named("Intro").querySelector("input")!;
+    // Consumer attributes spread last, so stamping a `data-part` here would
+    // REPLACE `control` and silently drop every rule that styles the box —
+    // appearance, size, border, radius, and both checked fills. The row would
+    // render a native checkbox and the `mixed` state would have no visual.
+    expect(box).toHaveAttribute("data-part", "control");
+  });
+
+  it("keeps two trees on one page out of each other's way", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <Tree treeData={TREE} defaultExpandAll />
+        <Tree treeData={TREE} defaultExpandAll />
+      </>
+    );
+    const [firstDocs, secondDocs] = screen.getAllByRole("treeitem", { name: /Docs/ });
+    // Rows are resolved through `document.getElementById`, so a constant id
+    // base made every row of every tree share an id — and an arrow press in one
+    // tree moved focus into the other.
+    expect(firstDocs!.id).not.toBe(secondDocs!.id);
+
+    secondDocs!.focus();
+    await user.keyboard("{ArrowDown}");
+    const trees = screen.getAllByRole("tree");
+    await waitFor(() => expect(trees[1]!.contains(document.activeElement)).toBe(true));
   });
 
   it("renders a custom title", () => {

@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, type HTMLAttributes, type KeyboardEvent, type ReactNode, type Ref } from "react";
+import {
+  useId,
+  useState,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  type Ref,
+} from "react";
 import {
   dataAttr,
+  checkedLeaves,
   expandableKeys,
   flattenTree,
   resolveChecks,
@@ -128,9 +136,14 @@ export function Tree({
 
   const check = (entry: FlatNode, on: boolean) => {
     if (disabled || entry.node.disabled) return;
-    const next = toggleCheck(treeData, checkedSet, entry.key, on);
-    if (!controlledChecked) setUncontrolledChecked(next);
-    onCheck?.([...next], { node: entry.node, checked: on });
+    // Narrowed to leaves before it is stored OR reported, so both ends of the
+    // contract are the shape the prop documents. `toggleCheck` returns the
+    // toggled node's own key as well, which `resolveChecks` then ignores — so
+    // emitting it was harmless but still handed a consumer's form the parent
+    // keys the docs promise it will not see.
+    const leaves = checkedLeaves(treeData, toggleCheck(treeData, checkedSet, entry.key, on));
+    if (!controlledChecked) setUncontrolledChecked(new Set(leaves));
+    onCheck?.(leaves, { node: entry.node, checked: on });
   };
 
   const move = (key: string) => {
@@ -142,7 +155,12 @@ export function Tree({
     });
   };
 
-  const idBase = rest.id ?? "ck-tree";
+  // `useId`, not a constant. `move()` resolves rows through
+  // `document.getElementById`, so two trees on one page — which the stories and
+  // the harness both render — shared every row id and an arrow press in one
+  // moved focus into the other.
+  const autoId = useId();
+  const idBase = rest.id ?? autoId;
   const nodeId = (key: string) => `${idBase}-${key}`;
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -262,9 +280,15 @@ export function Tree({
               {entry.expandable && <Icon name="chevronRight" size="sm" />}
             </span>
 
+            {/* The Checkbox gets NO `data-part` of ours. Consumer attributes
+                spread last, so stamping one here REPLACES its own
+                `data-part="control"`, and every `[data-scope="checkbox"]
+                [data-part="control"]` rule stops matching — appearance, size,
+                border, radius and the `:checked`/`:indeterminate` fills all go,
+                leaving a native box with no `mixed` visual at all. Nothing in
+                `tree.css` referenced the name either way. */}
             {checkable && (
               <Checkbox
-                data-part="checkbox"
                 checked={isChecked}
                 indeterminate={isPartial}
                 disabled={off}
