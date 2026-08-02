@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Card, Empty, Result, Skeleton, Space } from "@crosskit-ui/react";
+import { Card, Skeleton } from "@crosskit-ui/react";
 
 const meta = {
-  title: "Components/Placeholder",
+  title: "Components/Skeleton",
+  component: Skeleton,
   parameters: { layout: "padded" },
-} satisfies Meta;
+} satisfies Meta<typeof Skeleton>;
 
 export default meta;
 type Story = StoryObj;
 
-export const Skeletons: Story = {
+export const Basics: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 24, maxInlineSize: 520 }}>
       <Card variant="default">
@@ -25,7 +26,7 @@ export const Skeletons: Story = {
   ),
 };
 
-export const SkeletonBlocks: Story = {
+export const Blocks: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 24 }}>
       {/* One row per keyword, because a size rule that restates the base values
@@ -62,7 +63,7 @@ export const SkeletonBlocks: Story = {
   ),
 };
 
-export const SkeletonSwitch: Story = {
+export const LoadingSwitch: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 24, maxInlineSize: 520 }}>
       <Card variant="default">
@@ -70,51 +71,6 @@ export const SkeletonSwitch: Story = {
           <p>The real content, once it has arrived.</p>
         </Skeleton>
       </Card>
-    </div>
-  ),
-};
-
-export const Empties: Story = {
-  render: () => (
-    <div style={{ display: "grid", gap: 24, maxInlineSize: 520 }}>
-      <Card variant="default">
-        <Empty />
-      </Card>
-      <Card variant="default">
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No invoices yet" />
-      </Card>
-      <Card variant="default">
-        <Empty description="Nothing here — add the first one.">
-          <Button type="primary">New invoice</Button>
-        </Empty>
-      </Card>
-      {/* `null` removes the description entirely; `undefined` would take the
-          locale string instead. */}
-      <Card variant="default">
-        <Empty description={null} />
-      </Card>
-    </div>
-  ),
-};
-
-export const Results: Story = {
-  render: () => (
-    <div style={{ display: "grid", gap: 24, maxInlineSize: 520 }}>
-      {(["success", "error", "info", "warning", "404", "403", "500"] as const).map(status => (
-        <Card key={status} variant="default">
-          <Result
-            status={status}
-            title={`Status ${status}`}
-            subTitle="A sentence of detail under the title."
-            extra={
-              <Space>
-                <Button type="primary">Primary</Button>
-                <Button>Secondary</Button>
-              </Space>
-            }
-          />
-        </Card>
-      ))}
     </div>
   ),
 };

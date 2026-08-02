@@ -3,6 +3,9 @@ import type { Preview } from "@storybook/react-vite";
 import "@crosskit-ui/styles";
 
 const preview: Preview = {
+  // Applied here rather than per file, so every component gets a generated Docs
+  // page with its prop table without 50 story files repeating the tag.
+  tags: ["autodocs"],
   parameters: {
     controls: { matchers: { color: /(background|color)$/i } },
     options: {
@@ -33,6 +36,10 @@ const preview: Preview = {
       document.documentElement.setAttribute("data-theme", theme);
       document.body.style.background = "var(--ck-bg)";
       document.body.style.color = "var(--ck-fg)";
+      // The components carry the font themselves through the reset; this is for
+      // the story's own labels and headings, so the surrounding text does not
+      // disagree with what it is describing.
+      document.body.style.fontFamily = "var(--ck-font-sans)";
       return Story();
     },
   ],

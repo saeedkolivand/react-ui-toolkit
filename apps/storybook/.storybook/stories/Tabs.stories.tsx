@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Collapse, Tabs } from "@crosskit-ui/react";
+import { Tabs } from "@crosskit-ui/react";
 
 const meta = {
-  title: "Components/Disclosure",
+  title: "Components/Tabs",
+  component: Tabs,
   parameters: { layout: "padded" },
-} satisfies Meta;
+} satisfies Meta<typeof Tabs>;
 
 export default meta;
 type Story = StoryObj;
@@ -16,7 +17,7 @@ const TABS = [
   { key: "archived", label: "Archived", children: "Never shown.", disabled: true },
 ];
 
-export const TabTypes: Story = {
+export const Types: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 40 }}>
       {(["line", "card"] as const).map(type => (
@@ -32,7 +33,7 @@ export const TabTypes: Story = {
 // `tabPosition` drives the orientation, so the arrow keys follow the axis the
 // list is actually laid out on rather than a separate prop that could disagree
 // with it.
-export const TabPositions: Story = {
+export const Positions: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 40 }}>
       {(["top", "bottom", "left", "right"] as const).map(position => (
@@ -49,27 +50,4 @@ export const TabPositions: Story = {
 // a panel that loads something wants.
 export const ManualActivation: Story = {
   render: () => <Tabs items={TABS} activationMode="manual" />,
-};
-
-const ITEMS = [
-  { key: "shipping", label: "Shipping", children: "Ships within two business days." },
-  { key: "returns", label: "Returns", children: "Thirty days, no questions asked." },
-  { key: "warranty", label: "Warranty", children: "Two years, parts and labour." },
-];
-
-export const Collapses: Story = {
-  render: () => (
-    <div style={{ display: "grid", gap: 32 }}>
-      <div>
-        {/* Several open at once is the default now, and `accordion` is what opts
-            into one-at-a-time — the inverse of v1's `allowMultiple`. */}
-        <p style={{ margin: "0 0 8px", fontSize: 12, opacity: 0.6 }}>default</p>
-        <Collapse items={ITEMS} defaultActiveKey={["shipping", "returns"]} />
-      </div>
-      <div>
-        <p style={{ margin: "0 0 8px", fontSize: 12, opacity: 0.6 }}>accordion</p>
-        <Collapse items={ITEMS} accordion defaultActiveKey="shipping" />
-      </div>
-    </div>
-  ),
 };

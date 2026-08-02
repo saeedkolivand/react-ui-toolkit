@@ -3,8 +3,9 @@ import { Button, Checkbox, Form, Input, InputNumber, Select, Switch } from "@cro
 
 const meta = {
   title: "Components/Form",
+  component: Form,
   parameters: { layout: "padded" },
-} satisfies Meta;
+} satisfies Meta<typeof Form>;
 
 export default meta;
 type Story = StoryObj;

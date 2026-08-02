@@ -1,52 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { TableColumn } from "@crosskit-ui/core";
-import { Avatar, Progress, Table } from "@crosskit-ui/react";
+import { Table } from "@crosskit-ui/react";
 
 const meta = {
-  title: "Components/Data display",
+  title: "Components/Table",
+  component: Table,
   parameters: { layout: "padded" },
-} satisfies Meta;
+} satisfies Meta<typeof Table>;
 
 export default meta;
 type Story = StoryObj;
-
-const row = { display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" } as const;
-
-export const Avatars: Story = {
-  render: () => (
-    <div style={{ display: "grid", gap: 20 }}>
-      <div style={row}>
-        {(["sm", "md", "lg", "xl"] as const).map(size => (
-          <Avatar key={size} alt="Ada Lovelace" size={size} />
-        ))}
-      </div>
-      <div style={row}>
-        {(["online", "offline", "busy", "away"] as const).map(status => (
-          <Avatar key={status} alt="Grace Hopper" status={status} />
-        ))}
-      </div>
-      <div style={row}>
-        <Avatar alt="Alan Turing" squared />
-        <Avatar alt="Alan Turing" bordered />
-        <Avatar initials="CK" />
-      </div>
-    </div>
-  ),
-};
-
-export const Progresses: Story = {
-  render: () => (
-    <div style={{ display: "grid", gap: 20, maxWidth: 420 }}>
-      <Progress value={62} label="Uploading" showValue />
-      {/* Indeterminate is value={null}, which is what ARIA actually models. */}
-      <Progress value={null} label="Working" />
-      {(["success", "error", "warning", "info"] as const).map(variant => (
-        <Progress key={variant} value={45} variant={variant} />
-      ))}
-      <Progress value={70} striped animated />
-    </div>
-  ),
-};
 
 interface Person {
   name: string;
@@ -69,7 +32,7 @@ const COLUMNS: TableColumn<Person>[] = [
   { id: "location", header: "Location", accessor: "location", align: "end" },
 ];
 
-export const Tables: Story = {
+export const Basics: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 40 }}>
       {/* The header is a real button, so sorting works from the keyboard. */}
