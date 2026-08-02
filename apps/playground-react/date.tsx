@@ -13,7 +13,13 @@ function Harness() {
         <Calendar defaultValue={MARCH} />
       </div>
 
-      {/* `transform` on any ancestor becomes the containing block for a
+      {/* Keep this ABOVE the extra calendars below. The panel's placement is
+          `bottomLeft` and the spec asserts it opens below its field, so
+          anything that pushes this down the page far enough makes the
+          positioner flip it — a harness layout change reads as a placement
+          regression. Twice now.
+
+          `transform` on any ancestor becomes the containing block for a
           `position: fixed` descendant, so a panel that is not portalled to
           `document.body` lands offset by however far this sits from the
           viewport origin. */}
@@ -30,6 +36,13 @@ function Harness() {
           <Calendar defaultValue={MARCH} />
         </div>
       </ConfigProvider>
+
+      {/* Every day blocked, so the hover state of a disabled cell is reachable
+          with a real pointer — `:hover` is pointer state rather than an event,
+          so it cannot be probed by dispatching one. */}
+      <div id="blocked" style={{ inlineSize: 300 }}>
+        <Calendar defaultValue={MARCH} disabledDate={() => true} />
+      </div>
     </main>
   );
 }

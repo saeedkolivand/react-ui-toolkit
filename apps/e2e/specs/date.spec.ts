@@ -107,3 +107,22 @@ test("gives every column the same width under uneven weekday names", async ({ pa
   // nobody re-adds it believing this test covers it.
   expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
 });
+
+test("gives a blocked day no hover background", async ({ page }) => {
+  await open(page, "ltr");
+  const day = page.locator('#blocked [data-part="day"]').first();
+  await expect(day).toHaveAttribute("data-disabled", "");
+
+  const before = await day.evaluate(el => getComputedStyle(el).backgroundColor);
+  await day.hover();
+  const after = await day.evaluate(el => getComputedStyle(el).backgroundColor);
+
+  // A real hover, because `:hover` is pointer state rather than an event — a
+  // dispatched `mouseover` leaves it unmatched, so a probe built that way
+  // reports "no background" whether the rule is guarded or not.
+  //
+  // The guard has to key on `[data-disabled]`, not `:not(:disabled)`: these
+  // cells carry `aria-disabled` on purpose, so a `:disabled` guard is always
+  // true and a blocked day lit up under its own `cursor: not-allowed`.
+  expect(after).toBe(before);
+});

@@ -26,7 +26,6 @@ import {
   addDays,
   addMonths,
   addYears,
-  compareDates,
   dataAttr,
   endOfMonth,
   formatDate,
@@ -55,13 +54,10 @@ export interface DatePanelProps {
   disabledDate?: DisabledDate;
   /** Today, injected so a panel can be rendered at a fixed date in a test. */
   today?: CalendarDate;
-  /** Highlights a second date and the span between them. */
-  rangeEnd?: CalendarDate | null;
   /** Replaces a cell's contents. Gets the day and the default node. */
   cellRender?: (date: Date, node: ReactNode) => ReactNode;
   /** Six rows always, so the panel does not resize between months. */
   fixedWeeks?: boolean;
-  id?: string;
 }
 
 /**
@@ -90,12 +86,10 @@ export function DatePanel({
   onSelect,
   disabledDate,
   today,
-  rangeEnd,
   cellRender,
   fixedWeeks = true,
-  id,
 }: DatePanelProps) {
-  const { locale, direction } = useConfig();
+  const { locale } = useConfig();
   const weekStartsOn = getWeekStart(locale.tag);
   const weekdays = getWeekdayNames(locale.tag, "short", weekStartsOn);
   const longWeekdays = getWeekdayNames(locale.tag, "long", weekStartsOn);
@@ -109,7 +103,6 @@ export function DatePanel({
    * on every arrow press fires `onChange` six times crossing a week.
    */
   const [focused, setFocused] = useState<CalendarDate | null>(null);
-  const active = focused ?? value ?? today ?? startOfMonth(month);
 
   /**
    * The roving tab stop has to take focus with it.
@@ -136,6 +129,21 @@ export function DatePanel({
   const grid = getMonthGrid(month.year, month.month, { weekStartsOn, today, fixedWeeks });
   const disabled = (date: CalendarDate) => disabledDate?.(toDate(date)) ?? false;
 
+  /**
+   * The cursor, clamped to a day this grid actually renders.
+   *
+   * Without the clamp, one click on `next-month` leaves it on a day of the old
+   * month and NO cell matches — so all 42 are `tabIndex={-1}`, Tab skips the
+   * grid entirely, and the ArrowDown handover's `[tabindex="0"]` query finds
+   * nothing and silently does nothing. Checked against the rendered grid rather
+   * than against the month, because the padding days of the neighbouring months
+   * are rendered too and are perfectly good places for the cursor to sit.
+   */
+  const wanted = focused ?? value ?? today ?? startOfMonth(month);
+  const active = grid.some(week => week.some(day => isSameDay(day.date, wanted)))
+    ? wanted
+    : startOfMonth(month);
+
   const move = (next: CalendarDate) => {
     // Raised from the key handler rather than checked in the effect. Asking
     // "is focus still in the grid" there is too late once the move turned the
@@ -159,13 +167,20 @@ export function DatePanel({
     const step = STEP[event.key];
     if (!step) return;
     event.preventDefault();
-    move(step(active, direction === "rtl"));
+    // Read off the DOM, not off `ConfigProvider`. The column order comes from
+    // the document's own direction — a `dir` on `<html>` or on any ancestor —
+    // so taking it from context meant a mirrored grid whose ArrowLeft moved to
+    // the PREVIOUS day whenever the two disagreed, which is the ordinary case
+    // for a consumer who sets `dir` and no provider. The other five components
+    // that reverse horizontal keys all read it this way.
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    move(step(active, rtl));
   };
 
   const title = formatDate(month, locale.tag, { year: "numeric", month: "long" });
 
   return (
-    <div data-scope="calendar" data-part="root" id={id}>
+    <div data-scope="calendar" data-part="root">
       <div data-scope="calendar" data-part="header">
         <button
           type="button"
@@ -238,12 +253,6 @@ export function DatePanel({
               {week.map(day => {
                 const selected =
                   value !== null && value !== undefined && isSameDay(day.date, value);
-                const isEnd = rangeEnd != null && isSameDay(day.date, rangeEnd);
-                const within =
-                  value != null &&
-                  rangeEnd != null &&
-                  compareDates(day.date, value) > 0 &&
-                  compareDates(day.date, rangeEnd) < 0;
                 const off = disabled(day.date);
                 const isActive = isSameDay(day.date, active);
                 const label = formatDate(day.date, locale.tag, { dateStyle: "full" });
@@ -259,8 +268,7 @@ export function DatePanel({
                       // `[data-today]` — every day in the month would look like
                       // today.
                       data-today={dataAttr(day.isToday)}
-                      data-selected={dataAttr(selected || isEnd)}
-                      data-in-range={dataAttr(within)}
+                      data-selected={dataAttr(selected)}
                       data-outside={dataAttr(!day.inMonth)}
                       data-weekend={dataAttr(day.isWeekend)}
                       data-disabled={dataAttr(off)}
@@ -276,7 +284,7 @@ export function DatePanel({
                       // One tab stop for the whole grid, which is what the grid
                       // pattern asks for: 42 stops is a month nobody tabs past.
                       tabIndex={isActive ? 0 : -1}
-                      aria-selected={selected || isEnd ? true : undefined}
+                      aria-selected={selected ? true : undefined}
                       aria-label={label}
                       onKeyDown={onKeyDown}
                       onFocus={() => setFocused(day.date)}

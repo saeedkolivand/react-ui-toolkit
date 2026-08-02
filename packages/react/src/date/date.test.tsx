@@ -105,6 +105,36 @@ describe("Calendar", () => {
     expect(dayNamed(/March 16, 2026/)).toHaveFocus();
   });
 
+  it("takes the direction from the document, not from a provider", async () => {
+    const user = userEvent.setup();
+    document.documentElement.dir = "rtl";
+    try {
+      // No `ConfigProvider` at all — a `dir` on `<html>` is how most consumers
+      // set this, and it is what actually decides the column order. Reading the
+      // context instead gave a mirrored grid whose ArrowLeft moved to the
+      // PREVIOUS day whenever the two disagreed.
+      render(<Calendar defaultValue={MARCH} />);
+      await user.click(dayNamed(/March 15, 2026/));
+      await user.keyboard("{ArrowLeft}");
+      expect(dayNamed(/March 16, 2026/)).toHaveFocus();
+    } finally {
+      document.documentElement.dir = "";
+    }
+  });
+
+  it("keeps a tab stop in the grid after the header pages", async () => {
+    const user = userEvent.setup();
+    render(<Calendar defaultValue={MARCH} />);
+    await user.click(document.querySelector('[data-part="next-month"]')!);
+    await waitFor(() => expect(title().textContent).toContain("April"));
+
+    // The cursor defaults to the selected day, which is now in a month this
+    // grid does not render — so without clamping it to what IS rendered, all 42
+    // cells are `tabIndex={-1}`: Tab skips the grid entirely and the
+    // ArrowDown handover has nothing to find.
+    expect(days().filter(day => day.tabIndex === 0)).toHaveLength(1);
+  });
+
   it("steps the header by month and by year", async () => {
     const user = userEvent.setup();
     render(<Calendar defaultValue={MARCH} />);
@@ -239,6 +269,15 @@ describe("DatePicker", () => {
     // one key that transfers it, and without it the portalled grid is
     // unreachable by keyboard entirely.
     await waitFor(() => expect(dayNamed(/March 15, 2026/)).toHaveFocus());
+  });
+
+  it("announces itself invalid when a form says so, not only on `status`", () => {
+    render(<DatePicker aria-invalid />);
+    // `Form.Item` binds a child by injecting exactly this. Declaring the prop
+    // and not reading it left a picker in a form pointing at its error through
+    // `aria-describedby` while never announcing itself invalid — which an
+    // `Input` in the same form does.
+    expect(input()).toHaveAttribute("aria-invalid", "true");
   });
 
   it("selects today from the footer", async () => {

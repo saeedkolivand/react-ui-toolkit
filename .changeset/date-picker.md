@@ -53,3 +53,9 @@ New in `@crosskit-ui/styles`: `date.css`, keyed on `data-scope` `calendar` and
 rather than each button choosing a different icon.
 
 `Locale.DatePicker` gains `clear`, for the clear button's accessible name.
+
+The direction that reverses the horizontal arrows is read off the DOM rather
+than from `ConfigProvider`, matching the five other components that reverse
+keys: the column order comes from the document's own `dir`, so taking it from
+context gave a mirrored grid whose ArrowLeft moved to the previous day whenever
+the two disagreed.

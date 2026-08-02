@@ -77,6 +77,7 @@ export function DatePicker({
   ref,
   "aria-label": ariaLabel,
   "aria-describedby": describedBy,
+  "aria-invalid": ariaInvalid,
 }: DatePickerProps) {
   const { locale } = useConfig();
   const [uncontrolled, setUncontrolled] = useState<Date | null>(defaultValue ?? null);
@@ -269,7 +270,12 @@ export function DatePicker({
         aria-describedby={describedBy}
         // Only when true. Absent and `"false"` say the same thing to a screen
         // reader, and only one of them is noise.
-        aria-invalid={status === "error" ? true : undefined}
+        //
+        // The prop is honoured as well as the status, because `Form.Item` binds
+        // its child by injecting exactly this — a picker in a form would
+        // otherwise point at an error through `aria-describedby` and never
+        // announce itself invalid, while an `Input` beside it does.
+        aria-invalid={status === "error" || ariaInvalid ? true : undefined}
         onChange={event => setDraft(event.target.value)}
         onKeyDown={onKeyDown}
         onBlur={() => {
