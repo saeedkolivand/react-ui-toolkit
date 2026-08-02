@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Tree } from "@crosskit-ui/react";
+import { Tree, TreeSelect } from "@crosskit-ui/react";
 import type { TreeNode } from "@crosskit-ui/core";
 
 const meta = { title: "Components/Tree", parameters: { layout: "padded" } } satisfies Meta;
@@ -78,6 +78,32 @@ export const CustomTitles: Story = {
           </span>
         )}
       />
+    </div>
+  ),
+};
+
+export const Selects: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: 16, inlineSize: 320 }}>
+      <TreeSelect treeData={TREE} treeDefaultExpandAll placeholder="Pick a file" />
+      <TreeSelect
+        treeData={TREE}
+        treeDefaultExpandAll
+        multiple
+        defaultValue={["button", "input"]}
+      />
+      <TreeSelect
+        treeData={TREE}
+        treeDefaultExpandAll
+        multiple
+        maxTagCount={2}
+        defaultValue={["button", "input", "index"]}
+      />
+      {/* Checkable is many-valued whatever `multiple` says, because a parent
+          tick is a statement about several nodes. */}
+      <TreeSelect treeData={TREE} treeDefaultExpandAll treeCheckable defaultValue={["button"]} />
+      <TreeSelect treeData={TREE} status="error" placeholder="Required" />
+      <TreeSelect treeData={TREE} disabled defaultValue="button" />
     </div>
   ),
 };

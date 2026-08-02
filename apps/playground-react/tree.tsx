@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Tree } from "@crosskit-ui/react";
+import { Tree, TreeSelect } from "@crosskit-ui/react";
 import type { TreeNode } from "@crosskit-ui/core";
 
 const TREE: TreeNode[] = [
@@ -34,6 +34,14 @@ function Harness() {
           in the same render. */}
       <div id="mixed" style={{ inlineSize: 280 }}>
         <Tree treeData={TREE} defaultExpandedKeys={["docs"]} />
+      </div>
+
+      {/* The popup's width is taken from the trigger through the custom
+          property the positioner publishes — a popup narrower than its own
+          control reads as a different control, and neither width exists in
+          jsdom. */}
+      <div id="select" style={{ inlineSize: 320 }}>
+        <TreeSelect treeData={TREE} treeDefaultExpandAll defaultValue="setup" defaultOpen />
       </div>
 
       <div id="lines" style={{ inlineSize: 280 }}>
