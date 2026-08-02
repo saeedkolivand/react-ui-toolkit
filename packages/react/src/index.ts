@@ -136,3 +136,8 @@ export {
   type FormLayout,
 } from "./form/form";
 export { useForm, joinPath, type FormInstance, type NamePath } from "./form/use-form";
+// `DatePanel` is deliberately not re-exported. It is the shared internal
+// between Calendar and DatePicker; nobody has asked for a headless panel, and
+// an exported component is a contract.
+export { Calendar, type CalendarProps, type DisabledDate } from "./date/calendar";
+export { DatePicker, type DatePickerProps, type DatePickerSize } from "./date/date-picker";

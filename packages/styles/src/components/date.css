@@ -1,0 +1,264 @@
+/* Calendar and DatePicker.
+
+   Every selector is compound. `header`, `title`, `grid`, `cell`, `footer` and
+   `clear` are all shared part names — a descendant rule here would restyle a
+   Card's header or a Table's cell the moment one is put inside a picker. */
+@layer ck.components {
+  /* ------------------------------------------------------------- Calendar */
+
+  [data-scope="calendar"][data-part="wrapper"] {
+    /* Stated, because an Angular root can be a custom element and those default
+       to `display: inline`. */
+    display: block;
+  }
+
+  [data-scope="calendar"][data-part="root"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    /* A definite width, because the grid inside is a table at `inline-size:
+       100%` and the panel above it is a shrink-to-fit `position: fixed` box —
+       between them there is nothing to resolve against, so the panel took the
+       whole viewport and the positioner's shift then pushed it hard against the
+       edge, 113px away from the field it is anchored to. Seven 2rem days plus
+       the padding. */
+    inline-size: 17.5rem;
+    background: var(--ck-surface);
+    color: var(--ck-fg);
+  }
+
+  [data-scope="calendar"][data-part="header"] {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  [data-scope="calendar"][data-part="title"] {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    /* The month name changes length between months and locales; without this
+       the arrows either side move as the user pages through. */
+    white-space: nowrap;
+  }
+
+  [data-scope="calendar"]:is(
+    [data-part="prev-year"],
+    [data-part="prev-month"],
+    [data-part="next-month"],
+    [data-part="next-year"]
+  ) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--ck-radius-base);
+    background: none;
+    color: var(--ck-fg-muted);
+    cursor: pointer;
+  }
+  [data-scope="calendar"]:is(
+      [data-part="prev-year"],
+      [data-part="prev-month"],
+      [data-part="next-month"],
+      [data-part="next-year"]
+    ):hover {
+    background: var(--ck-surface-hover);
+    color: var(--ck-fg);
+  }
+
+  /* The arrows are physical shapes with logical jobs, so the whole set is
+     mirrored once here rather than each call site picking a different icon —
+     one place to be wrong instead of four. `scale`, not a swap: the icons are
+     symmetric about the axis being flipped, so this is exact. */
+  [data-scope="calendar"][data-part="header"]:dir(rtl) svg {
+    scale: -1 1;
+  }
+
+  [data-scope="calendar"][data-part="grid"] {
+    border-collapse: collapse;
+    inline-size: 100%;
+  }
+
+  [data-scope="calendar"][data-part="weekday"] {
+    padding-block: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="calendar"][data-part="cell"] {
+    padding: 0;
+    text-align: center;
+  }
+
+  [data-scope="calendar"][data-part="day"] {
+    inline-size: 2rem;
+    block-size: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--ck-radius-base);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  /* `[data-disabled]`, not `:not(:disabled)`: the day cells carry
+     `aria-disabled` on purpose — a `disabled` button cannot take focus, and the
+     roving tab stop has to be able to land on one — so a `:disabled` guard is
+     always true and a blocked day took the full hover background underneath its
+     own `cursor: not-allowed`. */
+  [data-scope="calendar"][data-part="day"]:not([data-disabled]):hover {
+    background: var(--ck-surface-hover);
+  }
+  [data-scope="calendar"][data-part="day"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -2px;
+  }
+  /* Presence attributes throughout — a raw boolean renders `data-today="false"`,
+     and `"false"` matches `[data-today]`, so every day in the month would be
+     ringed as today. */
+  [data-scope="calendar"][data-part="day"][data-outside] {
+    color: var(--ck-fg-subtle, var(--ck-fg-muted));
+    opacity: 0.55;
+  }
+  [data-scope="calendar"][data-part="day"][data-today] {
+    box-shadow: inset 0 0 0 1px var(--ck-accent-border, var(--ck-accent-solid));
+  }
+  [data-scope="calendar"][data-part="day"][data-selected] {
+    background: var(--ck-accent-solid);
+    color: var(--ck-bg);
+  }
+  [data-scope="calendar"][data-part="day"][data-disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Fullscreen is the page-filling variant, so it takes whatever it is given
+     back off the fixed width above. */
+  [data-scope="calendar"][data-part="wrapper"][data-fullscreen] > [data-part="root"] {
+    inline-size: 100%;
+  }
+  [data-scope="calendar"][data-part="wrapper"][data-fullscreen] [data-part="day"] {
+    inline-size: 100%;
+    block-size: 4rem;
+    /* Top-aligned, because a fullscreen cell is a container for content rather
+       than a number in a circle. */
+    display: flex;
+    align-items: start;
+    justify-content: end;
+    padding: 0.25rem;
+  }
+
+  /* ----------------------------------------------------------- DatePicker */
+
+  [data-scope="date-picker"][data-part="control"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    background: var(--ck-surface);
+    color: var(--ck-fg);
+  }
+  [data-scope="date-picker"][data-part="control"]:focus-within {
+    border-color: var(--ck-accent-border);
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -1px;
+  }
+
+  [data-scope="date-picker"][data-part="input"] {
+    inline-size: 100%;
+    min-inline-size: 8rem;
+    block-size: 2rem;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    outline: none;
+  }
+  [data-scope="date-picker"][data-part="input"][data-size="small"] {
+    block-size: 1.5rem;
+    font-size: 0.875rem;
+  }
+  [data-scope="date-picker"][data-part="input"][data-size="large"] {
+    block-size: 2.5rem;
+    font-size: 1rem;
+  }
+  [data-scope="date-picker"][data-part="input"][data-status="error"] {
+    /* On the input rather than the wrapper, because the status is the field's
+       and a composing component may own the box around it. */
+    color: var(--ck-danger-solid);
+  }
+  [data-scope="date-picker"][data-part="control"]:has([data-status="error"]) {
+    border-color: var(--ck-danger-solid);
+  }
+  [data-scope="date-picker"][data-part="control"]:has([data-status="warning"]) {
+    border-color: var(--ck-warning-solid);
+  }
+  [data-scope="date-picker"][data-part="control"]:has([data-disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-scope="date-picker"][data-part="clear"] {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ck-fg-muted);
+    cursor: pointer;
+    line-height: 0;
+  }
+  [data-scope="date-picker"][data-part="clear"]:hover {
+    color: var(--ck-fg);
+  }
+  [data-scope="date-picker"][data-part="suffix"] {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="date-picker"][data-part="positioner"] {
+    z-index: var(--ck-z-popover);
+  }
+  [data-scope="date-picker"][data-part="content"] {
+    background: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    outline: none;
+  }
+  [data-scope="date-picker"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="date-picker"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="date-picker"][data-part="footer"] {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="date-picker"][data-part="today"] {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ck-accent-solid);
+    cursor: pointer;
+  }
+  [data-scope="date-picker"][data-part="today"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
