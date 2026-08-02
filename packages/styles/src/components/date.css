@@ -115,7 +115,20 @@
      roving tab stop has to be able to land on one — so a `:disabled` guard is
      always true and a blocked day took the full hover background underneath its
      own `cursor: not-allowed`. */
-  [data-scope="calendar"][data-part="day"]:not([data-disabled]):hover {
+  /* Hover paints only a day that has no state of its own.
+     `[data-in-range]` and `[data-selected]` are `(0,3,0)` and this rule was
+     `(0,4,0)`, so hovering repainted them grey — and mid-pick that means the
+     day under the cursor, which is the tentative end, so the span appeared to
+     stop one short of the pointer for the whole gesture. Excluding them here
+     rather than raising their specificity keeps every state rule at the same
+     weight and leaves one place that knows about the interaction.
+
+     `[data-disabled]`, not `:not(:disabled)`: the cells carry `aria-disabled`
+     on purpose — a `disabled` button cannot take focus, and the roving tab stop
+     has to be able to land on one — so a `:disabled` guard is always true. */
+  [data-scope="calendar"][data-part="day"]:not([data-disabled]):not([data-selected]):not(
+      [data-in-range]
+    ):hover {
     background: var(--ck-surface-hover);
   }
   [data-scope="calendar"][data-part="day"]:focus-visible {
@@ -128,6 +141,15 @@
   [data-scope="calendar"][data-part="day"][data-outside] {
     color: var(--ck-fg-subtle, var(--ck-fg-muted));
     opacity: 0.55;
+  }
+  /* Square, and under the ends: the two rules paint differently, and a day is
+     never both — `in-range` is strictly between. */
+  [data-scope="calendar"][data-part="day"][data-in-range] {
+    background: var(
+      --ck-accent-subtle,
+      color-mix(in oklab, var(--ck-accent-solid) 12%, transparent)
+    );
+    border-radius: 0;
   }
   [data-scope="calendar"][data-part="day"][data-today] {
     box-shadow: inset 0 0 0 1px var(--ck-accent-border, var(--ck-accent-solid));
@@ -260,5 +282,122 @@
   [data-scope="date-picker"][data-part="today"]:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+}
+
+@layer ck.components {
+  /* ----------------------------------------------------------- RangePicker */
+
+  /* Compound throughout, like the rest of this file: `control`, `separator`,
+     `clear` and `suffix` are shared part names, and a descendant rule would
+     reach whatever a consumer puts inside. */
+  [data-scope="range-picker"][data-part="control"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    background: var(--ck-surface);
+    color: var(--ck-fg);
+  }
+  [data-scope="range-picker"][data-part="control"]:focus-within {
+    border-color: var(--ck-accent-border);
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -1px;
+  }
+  [data-scope="range-picker"][data-part="control"]:has([data-status="error"]) {
+    border-color: var(--ck-danger-solid);
+  }
+  [data-scope="range-picker"][data-part="control"]:has([data-status="warning"]) {
+    border-color: var(--ck-warning-solid);
+  }
+  [data-scope="range-picker"][data-part="control"]:has([data-disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-scope="range-picker"]:is([data-part="start-input"], [data-part="end-input"]) {
+    inline-size: 100%;
+    min-inline-size: 7rem;
+    block-size: 2rem;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    outline: none;
+  }
+  [data-scope="range-picker"]:is(
+      [data-part="start-input"],
+      [data-part="end-input"]
+    )[data-size="small"] {
+    block-size: 1.5rem;
+    font-size: 0.875rem;
+  }
+  [data-scope="range-picker"]:is(
+      [data-part="start-input"],
+      [data-part="end-input"]
+    )[data-size="large"] {
+    block-size: 2.5rem;
+    font-size: 1rem;
+  }
+
+  [data-scope="range-picker"][data-part="separator"] {
+    color: var(--ck-fg-muted);
+    /* The glyph points along the reading direction, and it is a shape rather
+       than a word — so it mirrors with the document the same way the calendar's
+       paging arrows do.
+
+       `inline-block` looks redundant, because the separator is a flex item of
+       `control` and is blockified anyway. It is kept deliberately: a transform
+       does not apply to an inline non-replaced box, so without this the mirror
+       below would silently depend on the parent staying a flex container. */
+    display: inline-block;
+  }
+  [data-scope="range-picker"][data-part="separator"]:dir(rtl) {
+    scale: -1 1;
+  }
+
+  [data-scope="range-picker"][data-part="clear"] {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ck-fg-muted);
+    cursor: pointer;
+    line-height: 0;
+  }
+  [data-scope="range-picker"][data-part="clear"]:hover {
+    color: var(--ck-fg);
+  }
+  [data-scope="range-picker"][data-part="suffix"] {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="range-picker"][data-part="positioner"] {
+    z-index: var(--ck-z-popover);
+  }
+  [data-scope="range-picker"][data-part="content"] {
+    background: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    outline: none;
+  }
+  [data-scope="range-picker"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="range-picker"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  /* Two months side by side, so a range across a boundary is picked without
+     paging. A flex row rather than a grid: the divider is a border on the
+     second panel, which needs the two to be siblings and nothing else. */
+  [data-scope="range-picker"][data-part="panels"] {
+    display: flex;
+  }
+  [data-scope="range-picker"][data-part="panels"] > * + * {
+    border-inline-start: 1px solid var(--ck-border);
   }
 }

@@ -26,6 +26,7 @@ import {
   addDays,
   addMonths,
   addYears,
+  compareDates,
   dataAttr,
   endOfMonth,
   formatDate,
@@ -44,9 +45,25 @@ import { Icon } from "../icon/icon";
 /** A predicate over a day, in the `Date` the consumer thinks in. */
 export type DisabledDate = (date: Date) => boolean;
 
+/**
+ * Two ends and the span between them.
+ *
+ * `end` carries the HOVERED day while a range is being picked, not only the
+ * committed one — that preview is the whole reason a range panel feels like a
+ * range panel, and it is the same highlight either way.
+ */
+export interface DateRange {
+  start: CalendarDate | null;
+  end: CalendarDate | null;
+}
+
 export interface DatePanelProps {
-  /** The selected day, or null. */
+  /** The selected day, or null. Ignored when `range` is given. */
   value?: CalendarDate | null;
+  /** Highlights both ends and everything between. */
+  range?: DateRange;
+  /** The pointer crossing a day, for a range preview. */
+  onDayHover?: (date: CalendarDate | null) => void;
   /** The month on screen. Controlled by whoever owns the panel. */
   month: CalendarDate;
   onMonthChange: (month: CalendarDate) => void;
@@ -81,6 +98,8 @@ const STEP: Record<string, (date: CalendarDate, rtl: boolean) => CalendarDate> =
 
 export function DatePanel({
   value,
+  range,
+  onDayHover,
   month,
   onMonthChange,
   onSelect,
@@ -139,7 +158,28 @@ export function DatePanel({
    * than against the month, because the padding days of the neighbouring months
    * are rendered too and are perfectly good places for the cursor to sit.
    */
-  const wanted = focused ?? value ?? today ?? startOfMonth(month);
+  /**
+   * The days that paint as chosen, and the span that paints as between.
+   *
+   * Normalised, because a range being picked backwards — the pointer is before
+   * the day already clicked — is an ordinary gesture, and `compareDates` on an
+   * unsorted pair highlights nothing at all.
+   */
+  const ends = [range ? range.start : value, range ? range.end : null].filter(
+    (date): date is CalendarDate => date != null
+  );
+  const span: [CalendarDate, CalendarDate] | null =
+    range?.start && range.end
+      ? compareDates(range.start, range.end) <= 0
+        ? [range.start, range.end]
+        : [range.end, range.start]
+      : null;
+
+  // The range's own start counts as "the chosen day" for the cursor, or a range
+  // panel put its tab stop on the 1st while the user's actual selection sat
+  // visible a fortnight away.
+  const chosen = range ? (range.start ?? range.end) : value;
+  const wanted = focused ?? chosen ?? today ?? startOfMonth(month);
   const active = grid.some(week => week.some(day => isSameDay(day.date, wanted)))
     ? wanted
     : startOfMonth(month);
@@ -229,7 +269,14 @@ export function DatePanel({
       {/* A real table with `role="grid"`, which is the pattern a screen reader
           announces as a date grid — row and column position included, which a
           div soup cannot express however many `aria-*` are bolted on. */}
-      <table ref={gridRef} data-scope="calendar" data-part="grid" role="grid" aria-label={title}>
+      <table
+        ref={gridRef}
+        data-scope="calendar"
+        data-part="grid"
+        role="grid"
+        aria-label={title}
+        onPointerLeave={() => onDayHover?.(null)}
+      >
         <thead>
           <tr data-scope="calendar" data-part="weekdays">
             {weekdays.map((name, index) => (
@@ -251,8 +298,14 @@ export function DatePanel({
           {grid.map(week => (
             <tr key={`${week[0]!.date.year}-${week[0]!.date.month}-${week[0]!.date.day}`}>
               {week.map(day => {
-                const selected =
-                  value !== null && value !== undefined && isSameDay(day.date, value);
+                const selected = ends.some(end => isSameDay(day.date, end));
+                // Strictly between, so an end is `selected` and never also
+                // `in-range` — the two paint differently and a day that claimed
+                // both would take whichever rule came last in the file.
+                const within =
+                  span !== null &&
+                  compareDates(day.date, span[0]) > 0 &&
+                  compareDates(day.date, span[1]) < 0;
                 const off = disabled(day.date);
                 const isActive = isSameDay(day.date, active);
                 const label = formatDate(day.date, locale.tag, { dateStyle: "full" });
@@ -269,6 +322,7 @@ export function DatePanel({
                       // today.
                       data-today={dataAttr(day.isToday)}
                       data-selected={dataAttr(selected)}
+                      data-in-range={dataAttr(within)}
                       data-outside={dataAttr(!day.inMonth)}
                       data-weekend={dataAttr(day.isWeekend)}
                       data-disabled={dataAttr(off)}
@@ -288,6 +342,7 @@ export function DatePanel({
                       aria-label={label}
                       onKeyDown={onKeyDown}
                       onFocus={() => setFocused(day.date)}
+                      onPointerEnter={() => onDayHover?.(day.date)}
                       onClick={() => {
                         if (off) return;
                         onSelect(day.date);

@@ -1,5 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, Calendar, ConfigProvider, DatePicker, Form, enUS } from "@crosskit-ui/react";
+import {
+  Button,
+  Calendar,
+  ConfigProvider,
+  DatePicker,
+  Form,
+  RangePicker,
+  enUS,
+} from "@crosskit-ui/react";
 
 const meta = {
   title: "Components/Date",
@@ -100,6 +108,25 @@ export const InAForm: Story = {
         Book
       </Button>
     </Form>
+  ),
+};
+
+export const Ranges: Story = {
+  render: () => (
+    <div style={{ display: "grid", gap: 16, justifyItems: "start" }}>
+      <RangePicker />
+      <RangePicker defaultValue={[MARCH, new Date(2026, 3, 5)]} />
+      <RangePicker defaultValue={[MARCH, new Date(2026, 3, 5)]} size="small" />
+      <RangePicker status="error" />
+      <RangePicker disabled defaultValue={[MARCH, new Date(2026, 3, 5)]} />
+      {/* A minimum stay: only expressible because the predicate is told which
+          end is being picked and where the other one is. */}
+      <RangePicker
+        disabledDate={(date, { picking, start }) =>
+          picking === "end" && start !== null && date < new Date(start.getTime() + 2 * 864e5)
+        }
+      />
+    </div>
   ),
 };
 
