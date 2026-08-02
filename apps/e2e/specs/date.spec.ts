@@ -33,6 +33,10 @@ const open = async (page: Page, dir: "ltr" | "rtl") => {
   await expect(page.locator("html")).toHaveAttribute("dir", dir);
 };
 
+/** The two month panels, which live in the portal rather than under `#range`. */
+const RANGE_PANELS =
+  '[data-scope="range-picker"][data-part="panels"] [data-scope="calendar"][data-part="root"]';
+
 for (const dir of ["ltr", "rtl"] as const) {
   test(`runs the week across the page in reading order, ${dir}`, async ({ page }) => {
     await open(page, dir);
@@ -125,4 +129,49 @@ test("gives a blocked day no hover background", async ({ page }) => {
   // cells carry `aria-disabled` on purpose, so a `:disabled` guard is always
   // true and a blocked day lit up under its own `cursor: not-allowed`.
   expect(after).toBe(before);
+});
+
+for (const dir of ["ltr", "rtl"] as const) {
+  test(`puts the earlier month first in reading order, ${dir}`, async ({ page }) => {
+    await open(page, dir);
+    // NOT scoped to `#range`: the panel is portalled to `document.body`, so a
+    // selector rooted at the trigger matches nothing. The separator below IS
+    // inside it, because that sits in the trigger wrapper.
+    const panels = await boxes(page, RANGE_PANELS);
+    expect(panels).toHaveLength(2);
+
+    // The two months are a flex row, so which one leads follows the document
+    // direction with no rule of ours — and a range panel that showed April
+    // before March would read as going backwards in time.
+    if (dir === "rtl") expect(panels[0]!.left).toBeGreaterThan(panels[1]!.left);
+    else expect(panels[0]!.left).toBeLessThan(panels[1]!.left);
+  });
+
+  test(`points the range separator along the reading direction, ${dir}`, async ({ page }) => {
+    await open(page, dir);
+    const flipped = await page
+      .locator('#range [data-part="separator"]')
+      .evaluate(el => getComputedStyle(el).scale);
+    // A shape, not a word: it says "from here to there", and in RTL there is on
+    // the other side.
+    expect(flipped).toBe(dir === "rtl" ? "-1 1" : "none");
+  });
+}
+
+test("paints the span between the two ends and not the ends themselves", async ({ page }) => {
+  await open(page, "ltr");
+  const [selected] = await page
+    .locator(`${RANGE_PANELS} [data-part="day"][data-selected]`)
+    .evaluateAll(els => [els.map(el => getComputedStyle(el).backgroundColor)]);
+  const [between] = await page
+    .locator(`${RANGE_PANELS} [data-part="day"][data-in-range]`)
+    .evaluateAll(els => [els.map(el => getComputedStyle(el).backgroundColor)]);
+
+  expect(selected!.length).toBeGreaterThan(0);
+  expect(between!.length).toBeGreaterThan(0);
+  // Two different fills, and no day carrying both — `in-range` is strictly
+  // between, so an end painting as both would take whichever rule came last.
+  expect(new Set(selected).size).toBe(1);
+  expect(new Set(between).size).toBe(1);
+  expect(selected![0]).not.toBe(between![0]);
 });

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Calendar, ConfigProvider, DatePicker, enUS } from "@crosskit-ui/react";
+import { Calendar, ConfigProvider, DatePicker, RangePicker, enUS } from "@crosskit-ui/react";
 
 /** A fixed month, so nothing here depends on the day the suite runs. */
 const MARCH = new Date(2026, 2, 15);
@@ -25,6 +25,12 @@ function Harness() {
           viewport origin. */}
       <div id="transformed" style={{ transform: "translateX(0)", marginInlineStart: 80 }}>
         <DatePicker defaultValue={MARCH} />
+      </div>
+
+      {/* Two panels side by side. Which one sits first is the whole RTL claim
+          for this component, and a flex row's order is layout. */}
+      <div id="range">
+        <RangePicker defaultValue={[MARCH, new Date(2026, 3, 5)]} defaultOpen />
       </div>
 
       {/* A locale whose short weekday names are NOT all the same width — hi-IN
