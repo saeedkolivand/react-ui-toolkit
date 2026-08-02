@@ -28,6 +28,7 @@ export * from "./icons";
 export * from "./toast";
 export * from "./placement";
 export * from "./table";
+export * from "./tree";
 export * from "./date/calendar";
 export * from "./date/format";
 export * from "./date/time";

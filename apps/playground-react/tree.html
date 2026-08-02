@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CrossKit — tree harness</title>
+  </head>
+  <body>
+    <!-- Two things jsdom cannot answer. The indent is a custom property fed to a
+         logical padding, so which edge a nested row is pushed from is layout —
+         and it is the whole RTL claim. And the expander's chevron is rotated,
+         and mirrored, by transform: there is no DOM difference between an open
+         branch and a closed one beyond the attribute the rules key on. -->
+    <div id="root"></div>
+    <script type="module" src="/tree.tsx"></script>
+  </body>
+</html>

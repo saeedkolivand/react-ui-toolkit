@@ -1,0 +1,106 @@
+/* Tree.
+
+   The rows are a FLAT list with the indent driven by a custom property, not
+   nested boxes. Nesting would make the DOM disagree with the flat list the
+   keyboard walks — and every `aria-level` would then have to be kept in step
+   with a depth the markup already implies, in two places. */
+@layer ck.components {
+  [data-scope="tree"][data-part="root"] {
+    /* Stated, because an Angular root can be a custom element and those default
+       to `display: inline`. */
+    display: block;
+    color: var(--ck-fg);
+  }
+  [data-scope="tree"][data-part="root"][data-disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  [data-scope="tree"][data-part="node"] {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    /* Logical, so the indent runs from the leading edge in both directions —
+       a tree that indents from the left in RTL reads as broken rather than as
+       nested. */
+    padding-inline-start: calc(var(--ck-tree-depth, 0) * 1.25rem);
+    padding-block: 0.1875rem;
+    border-radius: var(--ck-radius-base);
+    cursor: pointer;
+  }
+  [data-scope="tree"][data-part="node"]:not([data-disabled]):not([data-selected]):hover {
+    background: var(--ck-surface-hover);
+  }
+  [data-scope="tree"][data-part="node"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -2px;
+  }
+  [data-scope="tree"][data-part="node"][data-selected] {
+    background: var(
+      --ck-accent-subtle,
+      color-mix(in oklab, var(--ck-accent-solid) 15%, transparent)
+    );
+  }
+  [data-scope="tree"][data-part="node"][data-disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  [data-scope="tree"][data-part="expander"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--ck-fg-muted);
+    /* Reserved even on a leaf, so the titles of siblings line up whether or not
+       each one happens to have children. */
+    visibility: visible;
+  }
+  [data-scope="tree"][data-part="expander"] svg {
+    transition: rotate var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  /* Rotated rather than swapped for a down-chevron, so the two states are one
+     shape and the transition has something to animate between. The closed
+     direction is mirrored with the document, because a chevron pointing into a
+     branch points the other way when the branch is on the other side. */
+  [data-scope="tree"][data-part="node"][aria-expanded="true"] > [data-part="expander"] svg {
+    rotate: 90deg;
+  }
+  [data-scope="tree"][data-part="expander"]:dir(rtl) svg {
+    scale: -1 1;
+  }
+  [data-scope="tree"][data-part="node"][aria-expanded="true"]
+    > [data-part="expander"]:dir(rtl)
+    svg {
+    /* Both at once: mirrored AND turned, or an open branch in RTL points up. */
+    rotate: -90deg;
+    scale: -1 1;
+  }
+
+  [data-scope="tree"][data-part="title"] {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+
+  /* The connecting lines, drawn on the row rather than as extra elements. */
+  [data-scope="tree"][data-part="root"][data-show-line] > [data-part="node"] {
+    position: relative;
+  }
+  [data-scope="tree"][data-part="root"][data-show-line] > [data-part="node"]::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--ck-tree-depth, 0) * 1.25rem + 0.5rem);
+    border-inline-start: 1px dashed var(--ck-border);
+    pointer-events: none;
+  }
+  /* Nothing to connect at the top level. */
+  [data-scope="tree"][data-part="root"][data-show-line]
+    > [data-part="node"][data-depth="0"]::before {
+    content: none;
+  }
+}
