@@ -4,6 +4,17 @@
 @layer ck.reset {
   [data-scope][data-part] {
     box-sizing: border-box;
+    /* The stylesheet defined `--ck-font-sans` and never applied it, so every
+       component inherited whatever the host page happened to set — and on a page
+       that sets nothing, that is the browser's default serif. Storybook's preview
+       iframe is exactly such a page, which is where this surfaced, but a
+       consumer dropping a Button onto a bare page got the same.
+
+       Safe to set here because `ck.reset` is the FIRST layer declared, so it is
+       the weakest: a consumer's own rule beats it whether they layer it or not,
+       and the intended override is to redefine the token rather than to fight
+       the rule. */
+    font-family: var(--ck-font-sans);
   }
 
   button[data-part="root"],

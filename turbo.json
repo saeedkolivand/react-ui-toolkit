@@ -6,7 +6,18 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md", "!**/*.test.*"],
-      "outputs": ["dist/**", "storybook-static/**"]
+      "outputs": ["dist/**", "storybook-static/**"],
+      // turbo 2 runs tasks in STRICT env mode: a task sees only the variables
+      // named here. Without this the deploy workflow set
+      // STORYBOOK_BASE_PATH=/storybook/ and the build never received it, so
+      // Storybook fell back to base "/" and emitted its preview bundle as
+      // /assets/iframe-*.js. The manager uses relative ./sb-manager/ paths and
+      // loaded fine — which is exactly why the sidebar rendered and only the
+      // preview iframe span forever.
+      //
+      // Declaring them also puts their values in the cache key, so a build made
+      // at one base path can no longer be replayed for another.
+      "env": ["STORYBOOK_BASE_PATH", "DOCS_BASE"]
     },
     "typecheck": {
       "dependsOn": ["^build"],

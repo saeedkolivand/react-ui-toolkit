@@ -56,6 +56,19 @@ jobs:
           fi
           # Fail loudly rather than deploying an empty site.
           test -n "$(ls -A site)" || { echo "::error::site/ is empty — no docs or storybook build output"; exit 1; }
+          # And loudly rather than deploying a Storybook whose preview cannot
+          # load. Storybook's MANAGER uses relative ./sb-manager/ paths and
+          # renders whatever the base path is, while the PREVIEW emits absolute
+          # asset URLs from it — so a base that never reached the build looks
+          # like a working sidebar over a pane that spins forever. Nothing else
+          # in CI can see that, because the build itself succeeds.
+          if [ -f site/storybook/iframe.html ]; then
+            grep -q '"/storybook/assets/' site/storybook/iframe.html || {
+              echo "::error::Storybook preview assets are not under /storybook/ — STORYBOOK_BASE_PATH did not reach the build (turbo runs tasks in strict env mode; the variable must be listed in turbo.json's build task)"
+              grep -oE 'src="[^"]*iframe[^"]*"' site/storybook/iframe.html || true
+              exit 1
+            }
+          fi
 
       - uses: actions/upload-pages-artifact@v5
         with:
