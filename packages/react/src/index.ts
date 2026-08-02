@@ -144,3 +144,4 @@ export { DatePicker, type DatePickerProps, type DatePickerSize } from "./date/da
 export { RangePicker, type RangePickerProps, type DateRangeValue } from "./date/range-picker";
 export { TimePicker, type TimePickerProps } from "./date/time-picker";
 export { Tree, type TreeProps, type TreeNode } from "./tree/tree";
+export { TreeSelect, type TreeSelectProps, type TreeSelectSize } from "./tree/tree-select";

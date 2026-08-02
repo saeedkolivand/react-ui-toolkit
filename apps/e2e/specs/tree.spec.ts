@@ -111,3 +111,29 @@ test("draws a connecting line for every level but the first", async ({ page }) =
   expect(lines.filter(l => l.depth === "0").every(l => !l.drawn)).toBe(true);
   expect(lines.filter(l => l.depth !== "0").every(l => l.drawn)).toBe(true);
 });
+
+test("matches the popup's width to the control it belongs to", async ({ page }) => {
+  await open(page, "ltr");
+  // The CONTROL, not the trigger button. The anchor is the wrapper, which also
+  // holds the clear button — comparing against the button alone is off by
+  // exactly that button plus the gap, which reads as a 20px bug in a popup that
+  // is in fact aligned.
+  const [control] = await boxes(page, '#select [data-part="control"]');
+  const [popup] = await boxes(page, '[data-scope="tree-select"][data-part="content"]');
+
+  // `applyPosition` publishes the anchor's width as a custom property; without
+  // reading it the popup shrink-wraps its deepest row and a narrow tree renders
+  // a popup visibly narrower than the control that opened it.
+  expect(Math.abs(popup!.right - popup!.left - (control!.right - control!.left))).toBeLessThan(2);
+  expect(Math.abs(popup!.left - control!.left)).toBeLessThan(2);
+});
+
+test("turns the indicator when the popup is open", async ({ page }) => {
+  await open(page, "ltr");
+  const rotate = await page
+    .locator('#select [data-part="indicator"]')
+    .evaluate(el => getComputedStyle(el).rotate);
+  // Turned rather than swapped for a second icon, so the two states are one
+  // shape with something to animate between.
+  expect(rotate).toBe("180deg");
+});
