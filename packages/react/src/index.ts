@@ -143,3 +143,4 @@ export { Calendar, type CalendarProps, type DateRange, type DisabledDate } from 
 export { DatePicker, type DatePickerProps, type DatePickerSize } from "./date/date-picker";
 export { RangePicker, type RangePickerProps, type DateRangeValue } from "./date/range-picker";
 export { TimePicker, type TimePickerProps } from "./date/time-picker";
+export { Tree, type TreeProps, type TreeNode } from "./tree/tree";
