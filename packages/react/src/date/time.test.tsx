@@ -215,6 +215,44 @@ describe("TimePicker", () => {
     expect(within(columnNamed("hour")).getByRole("option", { name: "00" })).toHaveFocus();
   });
 
+  it("keeps a tab stop in a column whose value is off the step grid", async () => {
+    const user = userEvent.setup();
+    // 09:41 against a 15-minute column matches nothing — which the panel's own
+    // Now button produces. Every option then gets -1 and Tab walks straight
+    // past the column to the footer.
+    render(withLocale("en-GB", <TimePicker defaultValue={at(9, 41)} minuteStep={15} showSecond />));
+    await openPanel(user);
+    for (const name of ["hour", "minute", "second"]) {
+      const stops = within(columnNamed(name))
+        .getAllByRole("option")
+        .filter(option => (option as HTMLElement).tabIndex === 0);
+      expect(stops, name).toHaveLength(1);
+    }
+    // And it lands on the nearest entry at or below, not on the first.
+    expect(within(columnNamed("minute")).getByRole("option", { name: "30" })).toHaveAttribute(
+      "tabindex",
+      "0"
+    );
+  });
+
+  it("gives the day-period column one stop and the arrows too", async () => {
+    const user = userEvent.setup();
+    // en-US, because the period column is the DEFAULT there — a test that
+    // renders en-GB never sees it, which is how it shipped built by hand with
+    // two stops and no arrow handling.
+    render(withLocale("en-US", <TimePicker defaultValue={at(9, 15)} />));
+    await openPanel(user);
+    const period = columnNamed("period");
+    const stops = within(period)
+      .getAllByRole("option")
+      .filter(option => (option as HTMLElement).tabIndex === 0);
+    expect(stops).toHaveLength(1);
+
+    within(period).getByRole("option", { name: "AM" }).focus();
+    await user.keyboard("{ArrowDown}");
+    expect(within(period).getByRole("option", { name: "PM" })).toHaveFocus();
+  });
+
   it("sets the current time from the footer", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

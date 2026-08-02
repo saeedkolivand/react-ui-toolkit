@@ -248,3 +248,38 @@ test("keeps the chosen time entry's own fill under the pointer", async ({ page }
   // is one attribute lighter than a `:hover` that also names the part.
   expect(await read()).toBe(before);
 });
+
+test("scrolls the chosen entry into view, and keeps focus visible under the arrows", async ({
+  page,
+}) => {
+  await open(page, "ltr");
+  await openTime(page);
+
+  // EVERY match, not `.first()`. The first selected option is the hour, and in
+  // this locale 14:30 shows as "02" — two entries down, visible at
+  // `scrollTop: 0` whether anything scrolled or not. The minute, at index 30,
+  // is the one that needs bringing in, so an assertion on the first alone is
+  // invariant to the thing it tests.
+  const visible = (selector: string) =>
+    page.locator(selector).evaluateAll(els =>
+      els.map(el => {
+        const column = el.closest('[data-part="column"]')!.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        return box.top >= column.top - 1 && box.bottom <= column.bottom + 1;
+      })
+    );
+
+  // The columns are bounded with their own scroller, so a value past the first
+  // few entries opens off-screen unless something brings it in.
+  const opened = await visible('[data-part="option"][data-selected]');
+  expect(opened.length).toBeGreaterThanOrEqual(3);
+  expect(opened.every(Boolean)).toBe(true);
+
+  await page.locator('[data-part="option"][data-selected]').first().focus();
+  for (let press = 0; press < 8; press++) await page.keyboard.press("ArrowDown");
+
+  // And `preventScroll` on the arrow handler moved focus to an entry nobody
+  // could see — the browser's own Tab scrolls here, so the arrows have to match
+  // it. Right on DatePicker, whose grid never scrolls; wrong here.
+  expect((await visible('[data-part="option"]:focus')).every(Boolean)).toBe(true);
+});

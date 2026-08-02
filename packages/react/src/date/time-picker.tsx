@@ -163,7 +163,21 @@ export function TimePicker({
     // consumes the request before the columns exist.
     if (!cell) return;
     handOverRef.current = false;
-    cell.focus({ preventScroll: true });
+    cell.focus();
+  }, [anchored.open, anchored.contentNode]);
+
+  useEffect(() => {
+    if (!anchored.open) return;
+    const content = anchored.contentNode;
+    if (!content) return;
+    // Each column opens scrolled to the top, so a value anywhere past the first
+    // few entries is off-screen until the user hunts for it. `nearest` scrolls
+    // the least that works, which keeps it from moving the page as well.
+    for (const chosen of content.querySelectorAll<HTMLElement>(
+      '[data-part="option"][data-selected]'
+    )) {
+      chosen.scrollIntoView({ block: "nearest" });
+    }
   }, [anchored.open, anchored.contentNode]);
 
   const commit = (next: CalendarTime | null) => {
@@ -235,7 +249,11 @@ export function TimePicker({
     // Clamped rather than wrapped: a column of hours has a first and a last, and
     // arriving at midnight by pressing Down past 23 is nobody's intent.
     const next = Math.min(Math.max(here + step, 0), options.length - 1);
-    options[next]?.focus({ preventScroll: true });
+    // No `preventScroll`: the columns are bounded with their own scroller, so
+    // suppressing it moves focus to an entry nobody can see — the browser's own
+    // Tab scrolls here, and the arrows have to match it. `preventScroll` is
+    // right on DatePicker, whose grid never scrolls.
+    options[next]?.focus();
   };
 
   const blocked = (time: CalendarTime) =>
@@ -257,48 +275,63 @@ export function TimePicker({
     label: (amount: number) => string,
     current: number,
     toTime: (amount: number) => CalendarTime
-  ) => (
-    <div
-      key={part}
-      data-scope="time-picker"
-      data-part="column"
-      role="listbox"
-      aria-label={part}
-      onKeyDown={onColumnKeyDown}
-    >
-      {values.map(amount => {
-        const candidate = toTime(amount);
-        const off = blocked(candidate);
-        return (
-          <button
-            key={amount}
-            type="button"
-            data-scope="time-picker"
-            data-part="option"
-            data-selected={dataAttr(amount === current)}
-            data-disabled={dataAttr(off)}
-            role="option"
-            // `aria-selected` is a real tri-state on an option: absent means
-            // "not selectable", which is a different statement from "selectable
-            // and not selected". So this is the one place `"false"` is right.
-            aria-selected={amount === current ? "true" : "false"}
-            aria-disabled={off ? true : undefined}
-            // One tab stop per column, which is the listbox pattern. Leaving
-            // every option tabbable makes an hour-minute-second panel 144 stops
-            // to walk past — and a keyboard user reaching the OK button would
-            // have to.
-            tabIndex={amount === current ? 0 : -1}
-            onClick={() => {
-              if (off) return;
-              commit(candidate);
-            }}
-          >
-            {label(amount)}
-          </button>
-        );
-      })}
-    </div>
-  );
+  ) => {
+    /**
+     * Which option carries the column's single tab stop.
+     *
+     * Not simply the current value: a step leaves gaps, and a value that lands
+     * in one — 09:41 against a 15-minute column, which the panel's own Now
+     * button produces — matches nothing, so every option gets -1 and Tab walks
+     * straight past the column. The nearest entry at or below it keeps the stop
+     * somewhere a user would expect to arrive.
+     */
+    const stop = values.includes(current)
+      ? current
+      : (values.filter(amount => amount <= current).pop() ?? values[0]);
+
+    return (
+      <div
+        key={part}
+        data-scope="time-picker"
+        data-part="column"
+        role="listbox"
+        aria-label={part}
+        onKeyDown={onColumnKeyDown}
+      >
+        {values.map(amount => {
+          const candidate = toTime(amount);
+          const off = blocked(candidate);
+          return (
+            <button
+              key={amount}
+              type="button"
+              data-scope="time-picker"
+              data-part="option"
+              data-selected={dataAttr(amount === current)}
+              data-disabled={dataAttr(off)}
+              role="option"
+              // `aria-selected` is a real tri-state on an option: absent means
+              // "not selectable", which is a different statement from "selectable
+              // and not selected". So this is the one place `"false"` is right.
+              aria-selected={amount === current ? "true" : "false"}
+              aria-disabled={off ? true : undefined}
+              // One tab stop per column, which is the listbox pattern. Leaving
+              // every option tabbable makes an hour-minute-second panel 144 stops
+              // to walk past — and a keyboard user reaching the OK button would
+              // have to.
+              tabIndex={amount === stop ? 0 : -1}
+              onClick={() => {
+                if (off) return;
+                commit(candidate);
+              }}
+            >
+              {label(amount)}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   const pad = (amount: number) => String(amount).padStart(2, "0");
   const displayHour = twelve ? to12Hour(shown.hour).hour : shown.hour;
@@ -332,36 +365,24 @@ export function TimePicker({
                 ...shown,
                 second: amount,
               }))}
-            {twelve && (
-              <div
-                data-scope="time-picker"
-                data-part="column"
-                role="listbox"
-                aria-label="period"
-                tabIndex={-1}
-              >
-                {periods.map((word, index) => {
-                  const pm = index === 1;
-                  const active = to12Hour(shown.hour).pm === pm;
-                  return (
-                    <button
-                      key={word}
-                      type="button"
-                      data-scope="time-picker"
-                      data-part="option"
-                      data-selected={dataAttr(active)}
-                      role="option"
-                      aria-selected={active ? "true" : "false"}
-                      onClick={() =>
-                        commit({ ...shown, hour: from12Hour(to12Hour(shown.hour).hour, pm) })
-                      }
-                    >
-                      {word}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            {/* Through the same helper as the numeric columns, so it gets one
+                tab stop and the arrow handling with them. Built inline it had
+                two stops and no arrows — and it is the DEFAULT column for
+                en-US, so that was the common case rather than an edge one.
+
+                The values are the two indices; the mapping from an index to a
+                time is what `column` takes a function for. */}
+            {twelve &&
+              column(
+                "period",
+                [0, 1],
+                index => periods[index]!,
+                to12Hour(shown.hour).pm ? 1 : 0,
+                index => ({
+                  ...shown,
+                  hour: from12Hour(to12Hour(shown.hour).hour, index === 1),
+                })
+              )}
           </div>
           <div data-scope="time-picker" data-part="footer">
             <button
