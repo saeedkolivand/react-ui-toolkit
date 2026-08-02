@@ -112,6 +112,78 @@ describe("TreeSelect", () => {
     expect(Array.isArray(onChange.mock.calls[0]![0])).toBe(true);
   });
 
+  it("keys its tags by node, not by label", async () => {
+    // Two nodes sharing a title is ordinary — `README` under two folders — and
+    // keying on the label makes React see a duplicate and drop a tag.
+    const twins: TreeNode[] = [
+      { key: "a/readme", title: "README" },
+      { key: "b/readme", title: "README" },
+    ];
+    const errors: unknown[] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...args) => errors.push(args));
+    try {
+      render(<TreeSelect treeData={twins} multiple defaultValue={["a/readme", "b/readme"]} />);
+      expect(tags()).toEqual(["README", "README"]);
+      expect(errors).toHaveLength(0);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("does not clear itself when the chosen node is clicked again", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <TreeSelect treeData={TREE} treeDefaultExpandAll defaultValue="intro" onChange={onChange} />
+    );
+    await openPanel(user);
+    await user.click(rowNamed("Intro"));
+
+    // `Tree` reads a second click as a deselect. A control that empties itself
+    // when you confirm your own choice is a trap, so this closes instead.
+    expect(onChange).not.toHaveBeenCalled();
+    expect(trigger()).toHaveTextContent("Intro");
+    await waitFor(() => expect(panel()).not.toBeInTheDocument());
+  });
+
+  it("answers a label click in checkable mode, not just the box", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<TreeSelect treeData={TREE} treeDefaultExpandAll treeCheckable onChange={onChange} />);
+    await openPanel(user);
+    // The row, not the ~14px checkbox — otherwise most of the row does nothing.
+    await user.click(rowNamed("Intro").querySelector('[data-part="title"]')!);
+    expect(onChange).toHaveBeenCalledWith(["intro"], ["Intro"]);
+
+    await user.click(rowNamed("Intro").querySelector('[data-part="title"]')!);
+    // And a second click unticks it, which is what a checkbox does.
+    expect(onChange).toHaveBeenLastCalledWith([], []);
+  });
+
+  it("makes exactly one claim about what the popup is", async () => {
+    const user = userEvent.setup();
+    render(<TreeSelect treeData={TREE} treeDefaultExpandAll />);
+    await openPanel(user);
+    // The wrapper was `role="listbox"` holding zero options while the trigger
+    // truthfully said `aria-haspopup="tree"` — two statements about one popup
+    // that disagreed. The `Tree` inside is the widget.
+    expect(panel()).not.toHaveAttribute("role");
+    expect(screen.getAllByRole("tree")).toHaveLength(1);
+    expect(screen.queryAllByRole("listbox")).toHaveLength(0);
+  });
+
+  it("submits through a hidden input per value", () => {
+    render(<TreeSelect treeData={TREE} multiple name="pages" defaultValue={["intro", "setup"]} />);
+    const hidden = Array.from(
+      document.querySelectorAll<HTMLInputElement>('input[type="hidden"][name="pages"]')
+    );
+    // `name` on a `type="button"` is never submitted. One input per key rather
+    // than a joined string, so a multi-valued field arrives as a list instead
+    // of as something the server has to split.
+    expect(hidden.map(input => input.value)).toEqual(["intro", "setup"]);
+    expect(trigger()).not.toHaveAttribute("name");
+  });
+
   it("falls back to the key when a node has no string title", () => {
     const odd: TreeNode[] = [{ key: "lonely" }];
     render(<TreeSelect treeData={odd} defaultValue="lonely" />);
