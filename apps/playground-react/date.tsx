@@ -1,7 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@crosskit-ui/styles";
-import { Calendar, ConfigProvider, DatePicker, RangePicker, enUS } from "@crosskit-ui/react";
+import {
+  Calendar,
+  ConfigProvider,
+  DatePicker,
+  RangePicker,
+  TimePicker,
+  enUS,
+} from "@crosskit-ui/react";
 
 /** A fixed month, so nothing here depends on the day the suite runs. */
 const MARCH = new Date(2026, 2, 15);
@@ -31,6 +38,17 @@ function Harness() {
           for this component, and a flex row's order is layout. */}
       <div id="range">
         <RangePicker defaultValue={[MARCH, new Date(2026, 3, 5)]} defaultOpen />
+      </div>
+
+      {/* A 60-entry minute column is taller than most viewports, so the column
+          has to scroll inside a bounded panel — the footer being reachable is
+          the claim, and a panel that grows to fit is layout jsdom cannot see. */}
+      <div id="time">
+        {/* Opened by the spec, not `defaultOpen`. Two open portalled panels on
+            one page are both `position: fixed` siblings at the end of the body,
+            so whichever comes second covers the other and every `hover()` on
+            the one underneath times out. */}
+        <TimePicker defaultValue={new Date(2026, 2, 15, 14, 30)} showSecond />
       </div>
 
       {/* A locale whose short weekday names are NOT all the same width — hi-IN

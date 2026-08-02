@@ -33,7 +33,7 @@ const GREGORY = { calendar: "gregory" } as const;
  * Built by formatting 1234567890 and reading the result position by position,
  * which works for any numbering system without a table.
  */
-function toAsciiDigits(input: string, locale?: string): string {
+export function toAsciiDigits(input: string, locale?: string): string {
   const localised = new Intl.NumberFormat(locale, { useGrouping: false }).format(1234567890);
   if (localised === "1234567890") return input;
 

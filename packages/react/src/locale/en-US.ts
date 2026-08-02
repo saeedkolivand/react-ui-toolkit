@@ -31,6 +31,7 @@ export interface Locale {
     clear: string;
     start: string;
     end: string;
+    selectTime: string;
   };
   Pagination: { previous: string; next: string; jumpTo: string; perPage: string };
   Upload: { uploading: string; remove: string; retry: string; error: string };
@@ -71,6 +72,7 @@ export const enUS: Locale = {
     clear: "Clear",
     start: "Start date",
     end: "End date",
+    selectTime: "Select time",
   },
   Pagination: { previous: "Previous", next: "Next", jumpTo: "Go to", perPage: "per page" },
   Upload: { uploading: "Uploading…", remove: "Remove", retry: "Retry", error: "Upload failed" },

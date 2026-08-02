@@ -142,3 +142,4 @@ export { useForm, joinPath, type FormInstance, type NamePath } from "./form/use-
 export { Calendar, type CalendarProps, type DateRange, type DisabledDate } from "./date/calendar";
 export { DatePicker, type DatePickerProps, type DatePickerSize } from "./date/date-picker";
 export { RangePicker, type RangePickerProps, type DateRangeValue } from "./date/range-picker";
+export { TimePicker, type TimePickerProps } from "./date/time-picker";
