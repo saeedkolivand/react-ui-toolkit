@@ -115,7 +115,20 @@
      roving tab stop has to be able to land on one — so a `:disabled` guard is
      always true and a blocked day took the full hover background underneath its
      own `cursor: not-allowed`. */
-  [data-scope="calendar"][data-part="day"]:not([data-disabled]):hover {
+  /* Hover paints only a day that has no state of its own.
+     `[data-in-range]` and `[data-selected]` are `(0,3,0)` and this rule was
+     `(0,4,0)`, so hovering repainted them grey — and mid-pick that means the
+     day under the cursor, which is the tentative end, so the span appeared to
+     stop one short of the pointer for the whole gesture. Excluding them here
+     rather than raising their specificity keeps every state rule at the same
+     weight and leaves one place that knows about the interaction.
+
+     `[data-disabled]`, not `:not(:disabled)`: the cells carry `aria-disabled`
+     on purpose — a `disabled` button cannot take focus, and the roving tab stop
+     has to be able to land on one — so a `:disabled` guard is always true. */
+  [data-scope="calendar"][data-part="day"]:not([data-disabled]):not([data-selected]):not(
+      [data-in-range]
+    ):hover {
     background: var(--ck-surface-hover);
   }
   [data-scope="calendar"][data-part="day"]:focus-visible {
@@ -333,7 +346,12 @@
     color: var(--ck-fg-muted);
     /* The glyph points along the reading direction, and it is a shape rather
        than a word — so it mirrors with the document the same way the calendar's
-       paging arrows do. */
+       paging arrows do.
+
+       `inline-block` looks redundant, because the separator is a flex item of
+       `control` and is blockified anyway. It is kept deliberately: a transform
+       does not apply to an inline non-replaced box, so without this the mirror
+       below would silently depend on the parent staying a flex container. */
     display: inline-block;
   }
   [data-scope="range-picker"][data-part="separator"]:dir(rtl) {

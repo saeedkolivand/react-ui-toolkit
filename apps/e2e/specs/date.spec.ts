@@ -175,3 +175,24 @@ test("paints the span between the two ends and not the ends themselves", async (
   expect(new Set(between).size).toBe(1);
   expect(selected![0]).not.toBe(between![0]);
 });
+
+test("keeps a day's own fill under the pointer", async ({ page }) => {
+  await open(page, "ltr");
+  const read = (locator: ReturnType<Page["locator"]>) =>
+    locator.evaluate(el => getComputedStyle(el).backgroundColor);
+
+  for (const state of ["data-in-range", "data-selected"]) {
+    const day = page.locator(`${RANGE_PANELS} [data-part="day"][${state}]`).first();
+    const before = await read(day);
+    await day.hover();
+    const after = await read(day);
+
+    // A real hover, because `:hover` is pointer state rather than an event.
+    // The hover rule was one attribute heavier than the state rules, so it
+    // repainted them — and the day under the cursor mid-pick IS the tentative
+    // end, so the span looked like it stopped one day short of the pointer for
+    // the entire gesture. The existing fill test cannot see it: it reads the
+    // colours with nothing hovered.
+    expect(after).toBe(before);
+  }
+});
