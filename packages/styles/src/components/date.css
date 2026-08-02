@@ -401,3 +401,155 @@
     border-inline-start: 1px solid var(--ck-border);
   }
 }
+
+@layer ck.components {
+  /* ------------------------------------------------------------ TimePicker */
+
+  [data-scope="time-picker"][data-part="control"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    background: var(--ck-surface);
+    color: var(--ck-fg);
+  }
+  [data-scope="time-picker"][data-part="control"]:focus-within {
+    border-color: var(--ck-accent-border);
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -1px;
+  }
+  [data-scope="time-picker"][data-part="control"]:has([data-status="error"]) {
+    border-color: var(--ck-danger-solid);
+  }
+  [data-scope="time-picker"][data-part="control"]:has([data-status="warning"]) {
+    border-color: var(--ck-warning-solid);
+  }
+  [data-scope="time-picker"][data-part="control"]:has([data-disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-scope="time-picker"][data-part="input"] {
+    inline-size: 100%;
+    min-inline-size: 6rem;
+    block-size: 2rem;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    color: inherit;
+    background: none;
+    border: none;
+    outline: none;
+  }
+  [data-scope="time-picker"][data-part="input"][data-size="small"] {
+    block-size: 1.5rem;
+    font-size: 0.875rem;
+  }
+  [data-scope="time-picker"][data-part="input"][data-size="large"] {
+    block-size: 2.5rem;
+    font-size: 1rem;
+  }
+
+  [data-scope="time-picker"][data-part="clear"] {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ck-fg-muted);
+    cursor: pointer;
+    line-height: 0;
+  }
+  [data-scope="time-picker"][data-part="clear"]:hover {
+    color: var(--ck-fg);
+  }
+  [data-scope="time-picker"][data-part="suffix"] {
+    color: var(--ck-fg-muted);
+  }
+
+  [data-scope="time-picker"][data-part="positioner"] {
+    z-index: var(--ck-z-popover);
+  }
+  [data-scope="time-picker"][data-part="content"] {
+    background: var(--ck-surface);
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius-md);
+    box-shadow: var(--ck-shadow-lg);
+    outline: none;
+  }
+  [data-scope="time-picker"][data-part="content"][data-state="open"] {
+    animation: ck-overlay-in var(--ck-duration-sm) var(--ck-ease-out);
+  }
+  [data-scope="time-picker"][data-part="content"][data-state="closed"] {
+    animation: ck-overlay-out var(--ck-duration-sm) var(--ck-ease-in);
+  }
+
+  [data-scope="time-picker"][data-part="columns"] {
+    display: flex;
+  }
+  [data-scope="time-picker"][data-part="column"] {
+    display: flex;
+    flex-direction: column;
+    /* A fixed height with its own scroller, because a 60-entry minute column is
+       taller than most viewports and a panel that grows to fit one is a panel
+       nobody can reach the footer of. */
+    block-size: 12rem;
+    overflow-y: auto;
+    /* Bounded, so the panel does not resize between a two-column and a
+       four-column configuration. */
+    scrollbar-width: thin;
+  }
+  [data-scope="time-picker"][data-part="columns"] > * + * {
+    border-inline-start: 1px solid var(--ck-border);
+  }
+
+  [data-scope="time-picker"][data-part="option"] {
+    flex: none;
+    inline-size: 3.5rem;
+    block-size: 2rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  /* Hover paints only an entry with no state of its own — the same specificity
+     trap the calendar's day cells hit: `[data-selected]` is one attribute
+     lighter than a `:hover` that also names the part, so hovering the chosen
+     entry repainted it. */
+  [data-scope="time-picker"][data-part="option"]:not([data-disabled]):not([data-selected]):hover {
+    background: var(--ck-surface-hover);
+  }
+  [data-scope="time-picker"][data-part="option"]:focus-visible {
+    outline: 2px solid var(--ck-ring);
+    outline-offset: -2px;
+  }
+  [data-scope="time-picker"][data-part="option"][data-selected] {
+    background: var(--ck-accent-solid);
+    color: var(--ck-bg);
+  }
+  [data-scope="time-picker"][data-part="option"][data-disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  [data-scope="time-picker"][data-part="footer"] {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-block-start: 1px solid var(--ck-border);
+  }
+  [data-scope="time-picker"]:is([data-part="now"], [data-part="ok"]) {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ck-accent-solid);
+    cursor: pointer;
+  }
+}

@@ -196,3 +196,90 @@ test("keeps a day's own fill under the pointer", async ({ page }) => {
     expect(after).toBe(before);
   }
 });
+
+const openTime = async (page: Page) => {
+  await page.locator('#time [data-part="input"]').click();
+  await expect(page.locator('[data-scope="time-picker"][data-part="content"]')).toBeVisible();
+  await settle(page);
+};
+
+test("scrolls each time column inside a bounded panel", async ({ page }) => {
+  await open(page, "ltr");
+  await openTime(page);
+
+  const columns = await page
+    .locator('[data-scope="time-picker"][data-part="column"]')
+    .evaluateAll(els =>
+      els.map(el => ({
+        name: el.getAttribute("aria-label"),
+        height: Math.round(el.getBoundingClientRect().height),
+        scrollable: el.scrollHeight > el.clientHeight,
+      }))
+    );
+  // Four, not three: the harness sets no locale, so it inherits en-US and gets
+  // a day-period column alongside hour, minute and second.
+  expect(columns.map(c => c.name)).toEqual(["hour", "minute", "second", "period"]);
+
+  // Every column the same bounded height — including the two-entry period one,
+  // or the panel's own height would depend on which columns it happens to show.
+  expect(new Set(columns.map(c => c.height)).size).toBe(1);
+  // And the long ones scroll their own contents. Without the bound, a 60-entry
+  // minute column makes the panel taller than the viewport and the footer —
+  // Now and OK — is unreachable.
+  expect(columns.filter(c => c.scrollable).map(c => c.name)).toEqual(["hour", "minute", "second"]);
+
+  const footer = await boxes(page, '[data-scope="time-picker"][data-part="footer"]');
+  const box = await boxes(page, '[data-scope="time-picker"][data-part="content"]');
+  expect(footer[0]!.bottom).toBeLessThanOrEqual(box[0]!.bottom + 1);
+  expect(box[0]!.bottom - box[0]!.top).toBeLessThan(page.viewportSize()!.height);
+});
+
+test("keeps the chosen time entry's own fill under the pointer", async ({ page }) => {
+  await open(page, "ltr");
+  await openTime(page);
+  const chosen = page
+    .locator('[data-scope="time-picker"][data-part="option"][data-selected]')
+    .first();
+  const read = () => chosen.evaluate(el => getComputedStyle(el).backgroundColor);
+
+  const before = await read();
+  await chosen.hover();
+  // The same specificity trap the calendar's day cells hit: `[data-selected]`
+  // is one attribute lighter than a `:hover` that also names the part.
+  expect(await read()).toBe(before);
+});
+
+test("scrolls the chosen entry into view, and keeps focus visible under the arrows", async ({
+  page,
+}) => {
+  await open(page, "ltr");
+  await openTime(page);
+
+  // EVERY match, not `.first()`. The first selected option is the hour, and in
+  // this locale 14:30 shows as "02" — two entries down, visible at
+  // `scrollTop: 0` whether anything scrolled or not. The minute, at index 30,
+  // is the one that needs bringing in, so an assertion on the first alone is
+  // invariant to the thing it tests.
+  const visible = (selector: string) =>
+    page.locator(selector).evaluateAll(els =>
+      els.map(el => {
+        const column = el.closest('[data-part="column"]')!.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        return box.top >= column.top - 1 && box.bottom <= column.bottom + 1;
+      })
+    );
+
+  // The columns are bounded with their own scroller, so a value past the first
+  // few entries opens off-screen unless something brings it in.
+  const opened = await visible('[data-part="option"][data-selected]');
+  expect(opened.length).toBeGreaterThanOrEqual(3);
+  expect(opened.every(Boolean)).toBe(true);
+
+  await page.locator('[data-part="option"][data-selected]').first().focus();
+  for (let press = 0; press < 8; press++) await page.keyboard.press("ArrowDown");
+
+  // And `preventScroll` on the arrow handler moved focus to an entry nobody
+  // could see — the browser's own Tab scrolls here, so the arrows have to match
+  // it. Right on DatePicker, whose grid never scrolls; wrong here.
+  expect((await visible('[data-part="option"]:focus')).every(Boolean)).toBe(true);
+});

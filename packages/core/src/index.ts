@@ -30,6 +30,7 @@ export * from "./placement";
 export * from "./table";
 export * from "./date/calendar";
 export * from "./date/format";
+export * from "./date/time";
 export * from "./form/path";
 export * from "./form/rules";
 export * from "./form/store";
