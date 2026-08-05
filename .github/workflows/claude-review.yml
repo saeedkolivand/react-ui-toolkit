@@ -111,7 +111,7 @@ jobs:
       # than the status quo it replaces: today the review says it could not run
       # the gate; with the wrong ref it would report a confident green measured
       # against main.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # full history, so the review can diff against the base
           ref: ${{ steps.pr.outputs.sha }} # verified same-repo above, pinned
