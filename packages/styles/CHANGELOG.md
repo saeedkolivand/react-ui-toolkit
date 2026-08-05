@@ -1,5 +1,846 @@
 # @crosskit-ui/styles
 
+## 2.0.0
+
+### Major Changes
+
+- [#67](https://github.com/saeedkolivand/crosskit/pull/67) [`a267c58`](https://github.com/saeedkolivand/crosskit/commit/a267c5886bf55e77f5e3891d1282f6a0bb02e74a) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Rebuild Tooltip on the core primitives, add Popover, and replace Menu with Dropdown.
+
+  `@zag-js/tooltip`, `@zag-js/menu` and `@zag-js/presence` are gone from
+  `@crosskit-ui/react`, and `use-presence.ts` with them. What remains of the
+  third-party graph there is Accordion, Select, Tabs and Toast.
+
+  **Breaking, React only.** The other three adapters keep the v1 API until they
+  move too.
+
+  Marked `major` rather than `minor`, because `Menu`, `MenuProps`, `MenuItem`,
+  `MenuEntry` and `MenuSeparator` leave the public API and four `Tooltip` props are
+  renamed. There is no shape of this change that is compatible with `^1.0.0`, and
+  the accumulated changesets are meant to land as 2.0.0 anyway — recording it as a
+  minor would have published removed exports as 1.1.0.
+
+  - `Tooltip`'s `content` is now `title`, `contentClassName` is `overlayClassName`,
+    and `openDelay`/`closeDelay` are `mouseEnterDelay`/`mouseLeaveDelay` **in
+    seconds**. An empty `title` never opens, so `title={row.note}` needs no
+    conditional around it. New: `trigger`, `color`.
+  - `Menu` is now `Dropdown`, and takes the trigger _element_ rather than trigger
+    content — no generated button, so your own `<Button>` stays exactly one
+    button. Items move to `menu={{ items, onClick }}`, `value` to `key`, and
+    `{ separator: true }` to `{ type: "divider" }`.
+  - `Popover` is new: a title, a body, and real controls inside it. `role="dialog"`
+    rather than `tooltip`, so a screen reader can reach what is in it. Its default
+    `trigger` is `["hover", "click"]` — `click` is what lets a keyboard open it at
+    all, since Enter or Space on the trigger dispatches one, and unlike the other
+    two there is no second way in.
+
+  All three share one hook, so they cannot drift apart in the parts a user can
+  observe, and all three portal to `document.body` — a transformed ancestor would
+  otherwise capture the `position: fixed` popup and place it somewhere else.
+
+  Dropdown and Popover move focus into the popup when they open and hand it back
+  when they close, which is what makes a portalled popup reachable at all: tab
+  order follows the DOM, and the popup is a body sibling at the end of the
+  document rather than a neighbour of its trigger. Neither does it on a hover-open
+  — a pointer crossing a trigger is not a request for focus.
+
+  `Dropdown` gets arrow keys, Home/End, typeahead, and `aria-activedescendant`
+  from the primitives already in core. It opens on Enter, Space and the arrows
+  whatever `trigger` says, because a menu button answering Enter belongs to the
+  role rather than to the pointer configuration.
+
+  `core`'s `computePosition` now also reports how much room the chosen side has,
+  and `applyPosition` writes it as `--ck-available-width` / `--ck-available-height`.
+  A popup that scrolls has to cap itself against that or it runs off the screen
+  with its last items unreachable, and neither flip nor shift can help once the
+  content is taller than both sides.
+
+  Styles: a `popover` scope, an arrow driven by the positioner's own
+  `data-placement` and `--ck-arrow-x/y`, and a real `z-index` on the anchored
+  positioners alongside the `--z-index` the v1 adapters still read.
+
+- [#70](https://github.com/saeedkolivand/crosskit/pull/70) [`b096aae`](https://github.com/saeedkolivand/crosskit/commit/b096aaece88c47c40260c806b593c80ea4272383) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Rebuild Select on the core primitives.
+
+  `@zag-js/select` is gone from `@crosskit-ui/react`. Toast is the only component
+  there still on a machine.
+
+  **Breaking, React only.** The other three adapters keep the v1 API until they
+  move too.
+
+  - `items` becomes `options`, and `SelectItem` becomes `SelectOption`.
+  - `onValueChange({ value, item })` becomes `onChange(value, option)` — the
+    option as well as the value, because a consumer almost always wants the label
+    too and would otherwise have to look it up again.
+  - `size` takes `small` / `middle` / `large` and emits `data-size` in that
+    vocabulary, so v2 carries its own rules alongside the `sm`/`md`/`lg` block the
+    other adapters still match.
+  - `invalid` becomes `status="error"`, which colours the control and marks the
+    trigger `aria-invalid`. `status="warning"` is presentation only, since there is
+    no ARIA state for it. `errorMessage` sets `aria-invalid` too and describes the
+    trigger, and is what a screen reader actually reads out.
+  - `variant` is gone — it was a field-level prop the select never used
+    distinctly.
+  - **`<Option>` children are gone.** One way to declare options rather than two,
+    and the one that survives being generated. It also cannot be wrapped in
+    another component, which the v1 doc comment named as its own ceiling.
+  - New: `placement`, from the same twelve names the overlays take.
+
+  The listbox is built on `useAnchored`, so it inherits what the anchored
+  overlays already had: portalling out of transformed ancestors, collision-aware
+  placement, dismissal, focus moving in on open and back on close, and a highlight
+  scrolled into view. Keyboard comes from `navigation.ts`, `collection.ts` and
+  `createTypeahead` — arrows, Home/End, typeahead, and stepping over disabled
+  options.
+
+  `applyPosition` also publishes `--ck-anchor-width`, so a popup that belongs to
+  its trigger can match it rather than sizing to its own content — a listbox
+  sized to its content jumps about as the options change.
+
+  Opening lands on the current selection rather than the top of the list, on every
+  route in rather than only the keyboard one.
+
+- [#69](https://github.com/saeedkolivand/crosskit/pull/69) [`a29798d`](https://github.com/saeedkolivand/crosskit/commit/a29798ddb9468157391af5da615292f715b5df13) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Rebuild Tabs on the core primitives, and replace Accordion with Collapse.
+
+  `@zag-js/accordion` and `@zag-js/tabs` are gone from `@crosskit-ui/react`. What
+  remains of that graph there is Select and Toast.
+
+  **Breaking, React only.** The other three adapters keep the v1 API until they
+  move too.
+
+  - `Tabs`: items are keyed by `key` and carry `children` rather than `id` and
+    `content`; `value`/`defaultValue`/`onValueChange` become
+    `activeKey`/`defaultActiveKey`/`onChange`, which passes the key itself rather
+    than a detail object; `variant` becomes `type` with `line` and `card`; and
+    `orientation` becomes `tabPosition`, which derives it — the arrow keys follow
+    the axis the list is actually laid out on, so the two cannot disagree.
+  - `Accordion` is now `Collapse`. Items are keyed the same way, and
+    `value`/`defaultValue`/`onValueChange` become
+    `activeKey`/`defaultActiveKey`/`onChange`.
+  - **`Collapse` allows several panels open by default**, where `Accordion`
+    allowed one. `accordion` is the prop that opts back into one-at-a-time — the
+    inverse of `allowMultiple`, and the default the name change implies.
+  - `collapsible` is gone. A collapse with nothing open is a legitimate state
+    rather than one to be prevented, in both modes.
+
+  `activationMode` survives, and is deliberately not part of the API this mirrors:
+  both are valid in the ARIA pattern, and `manual` is what a panel that loads
+  something wants — automatic selection would fetch every panel the user arrows
+  past.
+
+  A `Tabs` whose first item is disabled is now keyboard-operable. The selection
+  fell back to `items[0]` regardless, so the roving `tabIndex={0}` sat on a button
+  that cannot take focus while every other tab held `-1` — Tab skipped the whole
+  list and landed on the panel. It picks the first ENABLED item now, and the one
+  entry in the tab order is always a tab that can be focused, even when a consumer
+  names a disabled one in `activeKey`. Inherited from v1, which had the same
+  fallback, and fixable for the first time now the selection is ours.
+
+  Keyboard navigation now comes from `navigation.ts` and `collection.ts`, which
+  also makes it testable: the previous suite could not assert arrow keys at all,
+  because the machine filtered focus candidates by visibility and jsdom reports
+  every element as zero-sized.
+
+  Styles: v2 tab rules keyed on `data-type`, in logical properties, alongside the
+  `data-ck-variant` block the v1 adapters still match.
+
+### Minor Changes
+
+- [#57](https://github.com/saeedkolivand/crosskit/pull/57) [`e3dce7f`](https://github.com/saeedkolivand/crosskit/commit/e3dce7f4ebf010aa6b933d0f30eed6ce1cfa7565) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add the dependency-free behaviour primitives to `@crosskit-ui/core`.
+
+  Focus trapping with wrap and restore, a shared dismissable layer stack so nested overlays close in
+  the right order, presence tracking that keeps a node mounted through its exit animation,
+  reference-counted scroll locking, and a pure collection plus keyboard navigation with typeahead.
+
+  Nothing consumes them yet.
+
+- [#73](https://github.com/saeedkolivand/crosskit/pull/73) [`9825949`](https://github.com/saeedkolivand/crosskit/commit/98259491e17583c66f4450a0ac73692bf05a1c88) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Breadcrumb`, `Steps` and `Segmented` to React.
+
+  **`Breadcrumb`** takes `items` (`title`, `href`, `onClick`) and a `separator`.
+  It renders a `<nav aria-label="Breadcrumb">` around an ordered list, the
+  separator sits in its own list item and is `aria-hidden` — read aloud inside the
+  label it turns "Settings" into "Settings slash" — and the last crumb is text
+  with `aria-current="page"` rather than a link, because it is where you already
+  are. An item with `onClick` and no `href` renders a `<button>`, not an anchor:
+  an `<a>` with no `href` takes neither focus nor Enter, so the handler would be
+  mouse-only.
+
+  **`Steps`** takes `items` (`title`, `subTitle`, `description`, `icon`, `status`,
+  `disabled`) plus `current`, `direction`, `labelPlacement`, `size`, `status`,
+  `progressDot` and `initial`. Each step's status comes from its position —
+  before `current` is `finish`, after is `wait` — and `current` itself carries the
+  group `status`, which is how one `status="error"` marks the step that failed
+  rather than the whole list. An item's own `status` overrides that.
+
+  Passing `onChange` turns the steps into buttons; without it they are inert
+  markup rather than N extra tab stops.
+
+  **`Segmented`** takes `options` (a bare string is both label and value, or
+  `{ label, value, disabled, icon }`), `value`/`defaultValue`/`onChange`, `size`,
+  `disabled`, `block` and `vertical`. It is a `role="radiogroup"` of
+  `role="radio"` buttons with a roving tabindex: one tab stop for the whole
+  control, arrows move **and** select on both axes, and the list loops. That is
+  the radio-group pattern rather than the tablist one, which is why there is no
+  `activationMode` — a segmented control has no panel to load, so deferring
+  selection would only cost a keypress.
+
+  If the selected option is disabled the tab stop moves to the first enabled one,
+  since a tab stop that cannot take focus is no tab stop.
+
+  New in `@crosskit-ui/styles`: `navigation.css`, keyed on `data-scope`
+  `breadcrumb`, `steps` and `segmented`.
+
+- [#62](https://github.com/saeedkolivand/crosskit/pull/62) [`667ac59`](https://github.com/saeedkolivand/crosskit/commit/667ac596584cfb4a627ecf24f60e04ef456a3b05) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a dependency-free date engine to `@crosskit-ui/core`.
+
+  Calendar arithmetic on `[year, month, day]` rather than timestamps, so daylight saving cannot skew
+  it; month grids padded to whole weeks with a configurable week start; and month names, weekday
+  names, formatting and locale-aware parsing entirely from `Intl` — no locale packs.
+
+  This completes Phase 3. Nothing consumes any of it yet.
+
+- [#80](https://github.com/saeedkolivand/crosskit/pull/80) [`8d0d5d8`](https://github.com/saeedkolivand/crosskit/commit/8d0d5d8d90637bb8538ecea29adcb4dc3077870c) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Calendar` and `DatePicker` to React, over the date engine in
+  `@crosskit-ui/core`.
+
+  All the arithmetic is already in core — grid generation, month and year
+  stepping, the daylight-saving-safe day difference, and the rule that a calendar
+  day is `[year, month, day]` rather than a timestamp. All the naming comes from
+  `Intl`, so there is no locale pack behind any of this and nothing in the adapter
+  has a month-length table in it.
+
+  The public value is a `Date`, because that is what a consumer has. The
+  `CalendarDate` triple stays internal: it is what makes the arithmetic exact and
+  the wrong thing to hand someone who wants to put a date in a request.
+
+  **`Calendar`** takes `value`/`defaultValue`/`onChange`, `onPanelChange`,
+  `disabledDate`, `cellRender` and `fullscreen`. It renders a real `<table
+role="grid">` — the pattern a screen reader announces as a date grid, row and
+  column position included, which no amount of `aria-*` on nested divs expresses.
+
+  One tab stop for the whole grid, and the cursor is separate from the selection:
+  arrows move without selecting, because a picker that commits on every arrow
+  press fires `onChange` six times crossing a week. Arrows move by day and week,
+  `PageUp`/`PageDown` by month, `Home`/`End` to the ends of the month, and the
+  page follows the cursor out of the month rather than leaving focus on a cell
+  nobody can see.
+
+  Disabled days use `aria-disabled`, not the `disabled` attribute. A disabled
+  button cannot take focus, so the roving tab stop could never land on one — and
+  the arrow that moved the cursor there would leave focus on the previous cell,
+  where the next Enter selects the wrong day. Skipping disabled days instead makes
+  everything past a long block unreachable. So the cell stays focusable and
+  refuses to activate, by either route.
+
+  **`DatePicker`** takes the same value props plus `format`, `placeholder`,
+  `size`, `status`, `showToday`, `allowClear`, `inputReadOnly` and the anchoring
+  props. Typing is read back through the locale's own part order — `01/02/2026` is
+  January in the US and February nearly everywhere else, so reaching for
+  `Date.parse` would silently pick one. An unparseable or disabled entry reverts
+  rather than clearing: someone who mistyped wants to see what they had.
+
+  Focus does **not** move into the panel when it opens, because the field is typed
+  into. `ArrowDown`, `PageUp` and `PageDown` hand the grid the keyboard — they do
+  nothing in a single-line field, so they are free to take, while left and right
+  stay with the caret. Selecting, Escape and a press outside all return focus to
+  the field.
+
+  New in `@crosskit-ui/styles`: `date.css`, keyed on `data-scope` `calendar` and
+  `date-picker`. The header's paging arrows are mirrored once with a transform
+  rather than each button choosing a different icon.
+
+  `Locale.DatePicker` gains `clear`, for the clear button's accessible name.
+
+  The direction that reverses the horizontal arrows is read off the DOM rather
+  than from `ConfigProvider`, matching the five other components that reverse
+  keys: the column order comes from the document's own `dir`, so taking it from
+  context gave a mirrored grid whose ArrowLeft moved to the previous day whenever
+  the two disagreed.
+
+- [#61](https://github.com/saeedkolivand/crosskit/pull/61) [`722ff04`](https://github.com/saeedkolivand/crosskit/commit/722ff04f80e3651b8af79245b6aa5492724dc8a2) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a dependency-free form engine to `@crosskit-ui/core`.
+
+  Nested field paths, declarative validation rules with templated messages, per-field and per-form
+  validate triggers, cross-field dependencies, async validators, list fields with error re-indexing,
+  and submission state.
+
+  The CSS compiler's `Rule` type is renamed `CssRule`, since the validation rule has the stronger
+  claim on the bare name.
+
+- [#78](https://github.com/saeedkolivand/crosskit/pull/78) [`5b33a33`](https://github.com/saeedkolivand/crosskit/commit/5b33a33d6a31d2cb866a47eef0164101002a4689) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Form`, `Form.Item` and `Form.List` to React, over the form engine in
+  `@crosskit-ui/core`.
+
+  Everything that decides behaviour already lives in core — values, errors,
+  touched state, rule evaluation, dependency re-validation and list re-indexing —
+  so what is new here is subscription, context and markup. That is deliberate:
+  "when does this field validate" and "which fields re-validate when this one
+  changes" are where four hand-written adapters would diverge from each other.
+
+  **`Form`** takes `form` (from `Form.useForm()`, optional — omit it and the form
+  owns its own instance), `initialValues`, `onFinish`, `onFinishFailed`, `layout`,
+  `validateTrigger`, `disabled` and `requiredMark`. It renders a `<form
+noValidate>`: the browser's own validation bubbles fire before any rule here
+  runs and say something different in a different language, so the rules are the
+  contract and the browser's are not.
+
+  **`Form.Item`** takes `name`, `label`, `rules`, `dependencies`, `valuePropName`,
+  `trigger`, `getValueFromEvent`, `validateTrigger`, `help`, `extra`, `required`
+  and `noStyle`. It clones its child to bind the value — and **composes** the
+  child's own `onChange` and `onBlur` rather than replacing them, which is the
+  failure mode that makes cloning dangerous and the one thing it has to get right.
+
+  The default unwrapper reads `target[valuePropName]` from an event-like first
+  argument and passes anything else through, so one default covers a text input
+  (`target.value`), a checkbox (`valuePropName="checked"` → `target.checked`) and
+  our own controls, which report `onChange(next)` directly.
+
+  Validation defaults to blur, not change: telling someone their address is
+  invalid while they are typing the first character of it is worse than saying
+  nothing. A visible error still clears the moment the value becomes valid.
+
+  **`Form.List`** takes `name` and a render function `(fields, { add, remove,
+move })`. A row's `name` is its index, so `name={[field.name, "email"]}` inside
+  `<Form.List name="guests">` resolves to `guests[0].email` — the prefix arrives
+  through context, since the rows are rendered by the caller and there is nothing
+  for the list to wrap. Row keys are handed out per row rather than being the
+  index: removing row 1 of three shifts row 2 into index 1, and an index key makes
+  React reuse the removed row's DOM for it, taking the caret, any scroll position
+  and any uncontrolled state to the wrong row.
+
+  Three layouts. `horizontal` shares one label column across every row through
+  `subgrid`, so the column is as wide as the widest label with nothing measured
+  and no width to configure; a row with no label still occupies the control
+  column. `vertical` is the default and `inline` wraps.
+
+  New in `@crosskit-ui/styles`: `form.css`, keyed on `data-scope="form"`. The
+  required marker is generated content on `[data-required]`, so it cannot be
+  mistaken for text by a screen reader — it is decoration. `aria-required`,
+  `aria-invalid` and the message's `aria-describedby` are what carry the state,
+  and all three keep whatever the child already declared rather than writing over
+  it: `cloneElement` sets an explicit `undefined`, so replacing them would erase a
+  consumer's own `aria-describedby` on every field with no error.
+
+  Known gap, unchanged by this: `Select` feeds its `...rest` to the anchoring hook
+  rather than to the DOM, so the `id` and `aria-*` a `Form.Item` injects do not
+  reach it. Value and change binding work, because those are declared props.
+
+- [#51](https://github.com/saeedkolivand/crosskit/pull/51) [`9efaa3f`](https://github.com/saeedkolivand/crosskit/commit/9efaa3fbe798ee7803cf211bdedf7beb11aa7104) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a dependency-free anchor positioner to `@crosskit-ui/core`.
+
+  `computePosition()` is pure geometry — rects in, coordinates out — with flip, shift, arrow
+  placement and RTL mirroring, and it accepts both canonical placements (`top-start`) and their
+  camelCase aliases (`topLeft`). `attachPosition()` is the DOM half, keeping a floating element on
+  its anchor across scroll, resize and either element changing size.
+
+  This is the first piece of the v2 behaviour core. Nothing consumes it yet.
+
+- [#59](https://github.com/saeedkolivand/crosskit/pull/59) [`7bf2fd2`](https://github.com/saeedkolivand/crosskit/commit/7bf2fd29834afab90ba9d767dc676a6d9b4f8805) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Complete the motion engine in `@crosskit-ui/core`.
+
+  `flipLayout()` animates layout changes the browser cannot tween — toast stacks resettling, table
+  rows moving on sort — by inverting the change and animating the inversion away. `createDrag()`
+  recognises pointer drags with trailing-window velocity, for drag-to-dismiss. `stagger()` produces
+  delays for a sequence.
+
+  Nothing consumes them yet.
+
+- [#58](https://github.com/saeedkolivand/crosskit/pull/58) [`b706129`](https://github.com/saeedkolivand/crosskit/commit/b7061296f17d5a7f09dd03b03d69f1484325026f) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add spring physics and a Web Animations wrapper to `@crosskit-ui/core`.
+
+  `createSpring()` solves the damped harmonic oscillator analytically, and `toLinearEasing()` samples
+  it into a CSS `linear()` easing — so an uninterrupted spring runs on the compositor with no
+  JavaScript at all. `animate()` and `retarget()` cover what CSS cannot: interruption from the
+  current value, and keyframes only known at runtime.
+
+  Nothing consumes them yet.
+
+- [#76](https://github.com/saeedkolivand/crosskit/pull/76) [`978b924`](https://github.com/saeedkolivand/crosskit/commit/978b9246acf67a305859f1dd1d4beec0154a7e32) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Slider`, `InputNumber` and `Rate`, on a new numeric primitive in core.
+
+  `@crosskit-ui/core` gains `clamp`, `decimals`, `snap`, `stepBy`, `ratio`,
+  `fromRatio` and `numericKey` — the arithmetic all three share. Written once
+  because floating-point step maths is not something to get right four times, and
+  Phase 5 needs it framework-free anyway. `snap` rounds back to the precision its
+  inputs are written with, so a 0.1 step reports `0.3` rather than
+  `0.30000000000000004`.
+
+  **`Slider`** takes `min`, `max`, `step`, `value`/`defaultValue`, `onChange`,
+  `onChangeComplete`, `vertical`, `disabled`, `marks` and `tooltip`. Dragging uses
+  pointer capture, so a drag that leaves the track keeps tracking — without it the
+  thumb stops exactly when a user is reaching for the end. `onChangeComplete` is
+  separate from `onChange` so a caller has somewhere to hang a network request
+  that is not every frame of a drag.
+
+  **`InputNumber`** takes `min`, `max`, `step`, `value`/`defaultValue`,
+  `onChange`, `size`, `disabled`, `status`, `prefix`, `suffix`, `controls` and
+  `precision`. It keeps the typed text apart from the value: `"1."` and `"-"` are
+  states a number cannot represent, and clamping on each keystroke turns `5` into
+  the max the moment someone starts typing `50`. The clamp happens on blur. An
+  empty field is `null`, which is a different answer from `0`.
+
+  Home and End are left to the caret — in a text field they belong to it, and
+  stealing them makes a long number impossible to edit from the front.
+
+  **`Rate`** takes `count`, `value`/`defaultValue`, `onChange`, `onHoverChange`,
+  `allowHalf`, `allowClear`, `disabled`, `character` and `tooltips`. Clicking the
+  current value clears it, which is the only route back to zero with a pointer.
+  `tooltips` becomes `aria-valuetext`, so it reads "Fair" rather than "3".
+
+  `Locale` gains an `InputNumber` entry for the two spinner labels.
+
+  New in `@crosskit-ui/styles`: `numeric.css`, keyed on `data-scope` `slider`,
+  `input-number` and `rate`.
+
+- [#77](https://github.com/saeedkolivand/crosskit/pull/77) [`334be50`](https://github.com/saeedkolivand/crosskit/commit/334be500b51568ede5f562e72f6a2cb15e6267e4) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Popconfirm` and `Notification` to React.
+
+  **`Popconfirm`** takes `title`, `description`, `onConfirm`, `onCancel`,
+  `okText`, `cancelText`, `okType`, `okDanger`, `okLoading`, `showCancel`, `icon`,
+  plus the anchoring props `placement`, `trigger`, `open`/`defaultOpen`/
+  `onOpenChange` and `disabled`. It is a Popover with a question in it, so
+  positioning, dismissal, the portal and the exit animation are the same code.
+
+  Two deliberate differences from Popover. The default trigger is `click` alone,
+  not hover-and-click: a confirm asks about something destructive and a pointer
+  crossing the trigger is not the user asking it. And an `onConfirm` that returns
+  a promise holds OK busy until it settles — a rejection leaves the question up,
+  because dismissing it would tell the user the action succeeded.
+
+  The question and its detail share one column beside the symbol rather than the
+  detail being indented to a constant. There is no arithmetic to keep in step with
+  the symbol's width, and nothing left stranded when `icon={false}` removes the
+  symbol. Both sit in the popover's `title` part, so the dialog's accessible name
+  is the whole question rather than half of it.
+
+  **`Notification`** is a second surface over the same queue `Toaster` renders:
+  `createToastQueue()` drives either. It emits `data-scope="notification"` so a
+  page can hold both and style them apart, and it is closable by default — a
+  message speaks and goes, a notification stays until it is read. `closable: false`
+  on an item still removes the button.
+
+  Both surfaces share every rule in `toast.css` through `:is()` rather than the
+  notification getting a copy, so there is no second place for one of them to
+  drift.
+
+  Fixed alongside: alt+T now cycles through the non-empty toast regions on the
+  page instead of each surface grabbing focus for itself, which left whichever
+  mounted last holding it and the other unreachable — with the label on both still
+  advertising the shortcut. And the toast grid rule that hands the symbol its row
+  is now a child combinator, so something a consumer puts in a toast's own title or
+  description that happens to call itself `icon` no longer takes a row in a grid it
+  is not a child of.
+
+- [#81](https://github.com/saeedkolivand/crosskit/pull/81) [`9067c09`](https://github.com/saeedkolivand/crosskit/commit/9067c09155c25091683ca5b03810bb5ffb2abe9d) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `RangePicker` to React, over the same date panel `DatePicker` uses.
+
+  Two fields and two months side by side, so a range crossing a month boundary is
+  picked without paging. The right panel is always the one after the left, which
+  is what stops the two drifting apart or showing the same month twice.
+
+  `value` is `[Date | null, Date | null]`. The first click is reported as a
+  half-range rather than held back — `null` for the other end is what makes "one
+  chosen, one not" expressible at all, and a controlled consumer needs to see the
+  first click. A range picked backwards comes back sorted, because picking
+  backwards is an ordinary gesture and ends arriving swapped would be nobody's
+  idea of the answer.
+
+  The span under the pointer previews before the second click, normalised the same
+  way, since `compareDates` on an unsorted pair highlights nothing. `in-range` is
+  strictly between the ends: the ends paint as selected, and a day claiming both
+  would take whichever rule came last in the file.
+
+  `disabledDate` gets the day **and** which end is being picked, plus the anchor —
+  without that a minimum stay is not expressible.
+
+  Reopening the panel always starts a fresh range. Resuming mid-pick would write
+  an end for a start the user has forgotten choosing and commit a range they never
+  saw, and the path that reaches it is ordinary: the first click moves focus to
+  the end field, so that is the field they come back through.
+
+  `DatePanel` regains a `range` prop and an `onDayHover`, which is where the
+  `[data-in-range]` rule removed in the last batch belongs — it now has a caller
+  that exercises it.
+
+  `Locale.DatePicker` gains `start` and `end`, for the two field placeholders.
+
+- [#64](https://github.com/saeedkolivand/crosskit/pull/64) [`00cb4b5`](https://github.com/saeedkolivand/crosskit/commit/00cb4b52687f09ac4a45dc9a13886f354677d55f) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Begin the React v2 API. `Button` now takes `type`, `size` (small/middle/large), `shape`, `danger`,
+  `ghost`, `block`, a `ReactNode` icon, and `htmlType` for the native attribute; an `href` renders an
+  anchor. `ConfigProvider` carries a compiled theme, locale and direction.
+
+  This is a breaking change to `@crosskit-ui/react`. The other adapters are unchanged until they
+  follow.
+
+- [#72](https://github.com/saeedkolivand/crosskit/pull/72) [`3218fcc`](https://github.com/saeedkolivand/crosskit/commit/3218fcc3e75b1798401fb747e34b65ccbeece298) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Space`, `Flex`, `Skeleton`, `Empty` and `Result` to React.
+
+  Five components with no behaviour between them — no timers, no focus, no
+  listeners — so all five are pure markup over the existing tokens, and only
+  `Empty` is a client component (it reads the locale from context).
+
+  **`Flex`** is a flexbox wrapper: `vertical`, `justify`, `align`, `flex`, `gap`,
+  `wrap`, and `component` to render as something other than a `div`. `justify`,
+  `align` and `flex` take the whole CSS value space, so they land inline rather
+  than as `data-*` — the documented boundary for props with no finite set of
+  values. `gap` accepts `"small" | "middle" | "large"`, which resolve to the new
+  `--ck-space-sm/md/lg` tokens, or any number (pixels) or CSS length.
+
+  **`Space`** puts a gap between its children and, unlike a bare `gap`, can put
+  something _between_ them:
+
+  ```tsx
+  <Space split={<Divider orientation="vertical" />}>
+    <Button>Edit</Button>
+    <Button>Delete</Button>
+  </Space>
+  ```
+
+  Each child is wrapped in an `item` part. `size` takes one value or
+  `[horizontal, vertical]`. A horizontal Space centres its items by default, since
+  controls of unequal height otherwise sit on different lines.
+
+  **`Skeleton`** draws a loading placeholder: `avatar`, `title`, `paragraph`
+  (rows and per-row widths), `active` for the shimmer, `round`. Omitting `loading`
+  shows the placeholder, so `<Skeleton />` on its own works and
+  `<Skeleton loading={busy}>…</Skeleton>` is a switch. `Skeleton.Avatar`,
+  `.Button`, `.Input`, `.Image` and `.Node` are standalone blocks. With
+  `loading={false}` the children are returned bare — no wrapper, so no
+  `className`, `id` or `ref` either; put those on something present in both
+  states. The container
+  carries `aria-busy` rather than a live region — there is no text to announce.
+
+  **`Empty`** is the no-data state: `description` (from the locale unless given —
+  `null` or `false` removes it), `image` as a node or a URL string, and children
+  as a footer. `image` reads the same way: absent takes the default illustration,
+  `null` or `false` removes it. Two built-in illustrations ship as `Empty.PRESENTED_IMAGE_DEFAULT`
+  and `Empty.PRESENTED_IMAGE_SIMPLE`.
+
+  **`Result`** is the after-the-fact state: `status` (`success`, `error`, `info`,
+  `warning`, `404`, `403`, `500`), `title`, `subTitle`, `icon`, `extra`, and
+  children. `icon` follows the same rule as `Empty`'s `image` — absent takes the
+  built-in one, `null` or `false` removes it. The actions render last, after any
+  children.
+
+  `Locale` gains an `Empty` entry, so a custom locale object needs one more field.
+  The shipped `enUS` has it already.
+
+  New in `@crosskit-ui/core`: `hasContent(slot)`, the check every optional slot
+  now goes through before emitting its wrapper part. `{condition && <Divider/>}`
+  evaluates to `false`, not `undefined`, and `{items.map(…)}` on an empty list
+  evaluates to `[]` — every framework renders both as nothing, so a `!= null`
+  check passes them through and emits an empty wrapper, which still takes its gap
+  as a flex item. Arrays recurse; a slot wrapped in a fragment is opaque to core
+  and cannot be detected framework-free.
+
+  New in `@crosskit-ui/styles`: `--ck-space-sm`, `--ck-space-md` and
+  `--ck-space-lg` tokens, and `--ck-skeleton-fill` / `--ck-skeleton-sheen` for
+  retinting every placeholder block at once.
+
+- [#74](https://github.com/saeedkolivand/crosskit/pull/74) [`6ceda66`](https://github.com/saeedkolivand/crosskit/commit/6ceda66c78bc65d7043dd10d42232afbe358ca6c) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `Statistic`, `Descriptions`, `Pagination` and `List` to React.
+
+  **`Statistic`** takes `title`, `value`, `precision`, `prefix`, `suffix`,
+  `formatter` and `loading`. Numbers go through `Intl.NumberFormat` with the
+  locale from `ConfigProvider`, so grouping and the decimal mark follow the
+  reader — 1,234.5 or 1.234,5 from the same call. That is why there is no
+  `groupSeparator`/`decimalSeparator` pair: two props can only approximate one
+  locale at a time. `formatter` is the way out. A string `value` is left alone,
+  since reformatting it would mean parsing it back out first.
+
+  **`Descriptions`** takes `items` (`label`, `children`, `span`), `title`,
+  `extra`, `bordered`, `column`, `layout`, `size` and `colon`. It renders a real
+  `<dl>` with `<dt>`/`<dd>` — the pairing a screen reader already understands —
+  and the columns are CSS grid over the top, so `bordered` and `column` are
+  presentation rather than a second DOM shape. `colon` applies only to horizontal
+  unbordered layouts, where a trailing colon is the only place it reads as a
+  label rather than a typo, and it is a pseudo-element so it is not read aloud.
+
+  **`Pagination`** takes `total` (items, not pages), `current`/`defaultCurrent`,
+  `pageSize`/`defaultPageSize`, `onChange`, `showSizeChanger`, `pageSizeOptions`,
+  `showQuickJumper`, `showTotal`, `siblings`, `size`, `disabled` and
+  `hideOnSinglePage`. The page window comes from `getPageWindow` in
+  `@crosskit-ui/core` — the same function `Table` already uses, rather than a
+  second copy of the ellipsis logic. The current page carries `aria-current`, and
+  the ellipsis is `aria-hidden`: it is a gap in a sequence, not a control.
+
+  The current page is clamped on read, not only on write, because `total` and
+  `pageSize` are props — shrinking either can strand a page past the end with
+  nothing to notice it.
+
+  **`List`** takes `dataSource`, `renderItem`, `rowKey`, `header`, `footer`,
+  `bordered`, `size`, `split`, `loading`, `itemLayout`, `pagination` and
+  `emptyText`, plus `List.Item` and `List.Item.Meta`. It slices to the page
+  itself rather than making every caller redo the index maths, and pages against
+  the whole source. An empty list renders `Empty` unless `emptyText` is given —
+  including `emptyText={null}`, which is how you ask for nothing at all.
+
+  `Statistic` and `Pagination` read `ConfigProvider`; `Descriptions` is
+  server-safe.
+
+  New in `@crosskit-ui/styles`: `data.css`, keyed on `data-scope` `statistic`,
+  `descriptions`, `pagination` and `list`.
+
+- [#56](https://github.com/saeedkolivand/crosskit/pull/56) [`bd38d9a`](https://github.com/saeedkolivand/crosskit/commit/bd38d9a9c2f703a358464ef15e93abddf0b5405e) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Compile `styleOverrides` into static CSS.
+
+  `createTheme({ components: { Button: { token, styleOverrides } } })` now accepts arbitrary CSS per
+  part, written as `({ theme, ownerState }) => ({ … })`. The function is evaluated once per variant
+  combination at theme-creation time and emitted as plain selectors, so the authoring API costs
+  nothing at runtime.
+
+- [#60](https://github.com/saeedkolivand/crosskit/pull/60) [`75a8295`](https://github.com/saeedkolivand/crosskit/commit/75a82957953c6f83e1581498194e2fdf9329e236) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a dependency-free table store to `@crosskit-ui/core`.
+
+  Multi-column sorting, per-column and global filtering, pagination, row selection keyed by row id,
+  column visibility and expansion — framework-free, over plain data. Exported as
+  `createTableStoreV2` alongside the existing store, which the adapters still use until they are
+  rewritten.
+
+- [#55](https://github.com/saeedkolivand/crosskit/pull/55) [`5d5405d`](https://github.com/saeedkolivand/crosskit/commit/5d5405d850705734cdb3ac476fe5d6a273217345) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `createTheme()` to `@crosskit-ui/core`.
+
+  A theme configuration goes in and a plain CSS string comes out — colour ramps derived from one
+  brand colour in OKLCH, plus radius and duration scales, wrapped in `@layer ck.overrides`. Nothing
+  runs at render time: no style engine, no class hashing, no per-framework SSR collector.
+
+  `themeScript()` returns an inline script that applies a stored theme preference before first
+  paint. Nothing consumes either yet.
+
+- [#82](https://github.com/saeedkolivand/crosskit/pull/82) [`0627c42`](https://github.com/saeedkolivand/crosskit/commit/0627c426ac198c58e64c405677d96101e752c0d6) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a time engine to `@crosskit-ui/core`, and `TimePicker` to React.
+
+  **`core/date/time.ts`** is deliberately separate from `calendar.ts`. That module
+  exists to keep `Date` honest about days across daylight saving; this one never
+  touches a day. `CalendarTime` is `[hour, minute, second]` in 24-hour form
+  always — the twelve-hour split is a _presentation_ of it, produced at the edge,
+  which is what stops "is 12 AM midnight or noon" leaking into the arithmetic.
+
+  `stepValues`, `to12Hour`/`from12Hour`, `compareTimes`, `clampTime`, `timeToDate`,
+  `formatTime`, `parseTime`, `prefers12Hour` and `getDayPeriods`. Everything
+  locale-shaped comes from `Intl`:
+
+  - **Whether a locale is twelve-hour is asked, not guessed** — it varies inside
+    one language, en-US against en-GB.
+  - **The day-period words come from the locale**, so a Greek or Japanese user's
+    own keyboard output parses. Matching on "am"/"pm" would put English into every
+    field.
+  - **Typed digits go through the same ASCII mapping the date parser uses**, since
+    `\d` is `[0-9]` and finds nothing in the numbering systems fa-IR or ar-EG
+    actually type in.
+
+  `toAsciiDigits` is now exported from `date/format` so both parsers share it.
+
+  **`TimePicker`** takes `value`/`defaultValue`/`onChange`, `format`, `use12Hours`,
+  `hourStep`/`minuteStep`/`secondStep`, `showSecond`, `minTime`/`maxTime` and the
+  usual field and anchoring props.
+
+  A committed time is composed onto the day the current value sits on, so a picker
+  driving one half of a date-and-time pair does not move the other half.
+
+  Each column is a `role="listbox"` with **one tab stop**, not one per option —
+  an hour-minute-second panel is 144 entries, and a keyboard user reaching the OK
+  button would otherwise walk all of them. Arrows move the stop inside a column
+  without committing, and clamp at the ends rather than wrapping: arriving at
+  23:00 by pressing Up past midnight is nobody's intent.
+
+  `minTime`/`maxTime` block the entries outside them _and_ clamp a typed value, so
+  both ways in land on the same answer.
+
+  New in `@crosskit-ui/styles`: the `time-picker` block in `date.css`. Columns are
+  a bounded height with their own scroller — a 60-entry minute column is taller
+  than most viewports, and a panel that grows to fit one is a panel nobody can
+  reach the footer of.
+
+- [#71](https://github.com/saeedkolivand/crosskit/pull/71) [`bd9f7a3`](https://github.com/saeedkolivand/crosskit/commit/bd9f7a32d156e738912e69c0e29582b75da6f052) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Rebuild React's Toaster on a framework-free queue in `core`.
+
+  `createToastQueue()` is new in `@crosskit-ui/core`: a plain store with the queue,
+  per-toast countdowns, pause and resume, overflow and placement in it, and no
+  framework anywhere. `<Toaster>` in React reads it through `useSyncExternalStore`.
+
+  **Breaking, React only.** `<Toaster toaster>` now takes a `ToastQueue` from
+  `createToastQueue()` rather than the store from `createToaster()`:
+
+  ```diff
+  -import { createToaster } from "@crosskit-ui/core";
+  -export const toaster = createToaster();
+  +import { createToastQueue } from "@crosskit-ui/core";
+  +export const toaster = createToastQueue();
+  ```
+
+  Everything you call on it is unchanged — `create`, `success`, `error`,
+  `warning`, `info`, `loading`, `update`, `dismiss`. Vue, Svelte and Angular keep
+  `createToaster()` and are untouched.
+
+  The group emits what it did before. **Each toast root emits less.** The flow
+  layout has no per-toast geometry, so `data-first`, `data-stack`, `data-ghost`,
+  `data-overlap`, `data-sibling`, `data-mounted` and `data-paused` are gone along
+  with the `--x`/`--y`/`--z-index`/`--offset` custom properties that drove the
+  old stacking, and `data-placement`, `data-side` and `data-align` now live on the
+  group only. `data-state`, `data-type` and the part attributes are unchanged. If
+  you style a toast off any of the removed ones, move the selector to the group or
+  key it on `data-state`.
+
+  `dir` is also gone, deliberately. Every rule is written in logical properties,
+  so the group inherits direction from its ancestors — and an explicit `dir="ltr"`
+  inside an RTL document would have forced the wrong one.
+
+  Two option names differ on the factory: `removeDelay` replaces the machine's
+  `gap`/`offsets`, which were part of an absolute-positioning scheme the flow
+  layout does not have. Placement, `max` and `duration` are the same.
+
+  `@crosskit-ui/react` now declares **no third-party runtime dependencies at all**
+  — only its sibling `@crosskit-ui/*` packages.
+
+  Also fixed: the exit transition ran for 300ms while a dismissed toast was
+  removed after 200ms, so the last third of every exit was cut off mid-flight.
+  The two are now a documented pair, in both files.
+
+  Toasts enter with an animation again. A node inserted straight at its resting
+  style has nothing to transition from, so this is keyframes rather than a
+  transition on `data-state` — which only ever drove the exit.
+
+- [#84](https://github.com/saeedkolivand/crosskit/pull/84) [`db89242`](https://github.com/saeedkolivand/crosskit/commit/db89242a76571fa082f06065a21ea5162bad0cda) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add `TreeSelect` to React — the `Tree` from the last release inside an anchored
+  control.
+
+  Takes `treeData`, `value`/`defaultValue`/`onChange`, `multiple`, `treeCheckable`,
+  `treeDefaultExpandAll`, `treeExpandedKeys`/`onTreeExpand`, `placeholder`,
+  `maxTagCount`, `size`, `status`, `disabled`, `allowClear` and the usual
+  anchoring props.
+
+  The value takes the shape the mode implies: a key when single, an array when
+  `multiple` or `treeCheckable`. `treeCheckable` is inherently many-valued — a
+  parent tick is a statement about several nodes, and a single-valued checkable
+  tree could not report it — so it implies `multiple` rather than conflicting with
+  it. Checked values are the leaves, the same contract `Tree`'s own `onCheck`
+  keeps.
+
+  A single-valued select closes on the first pick; a multi-valued one stays open,
+  because closing would make every extra choice a fresh round trip through the
+  trigger.
+
+  Its own `data-scope`, deliberately not `select`'s. Borrowing that one would mean
+  every `[data-scope="select"]` rule applying to a control this file also styles,
+  with source order deciding which wins — the container-leak shape dressed up as
+  reuse.
+
+  The trigger is a `combobox` with `aria-haspopup="tree"`, so a screen reader can
+  say what shape of popup is about to open. Focus stays on it while the panel is
+  up — ArrowDown hands the tree the keyboard, and closing gives focus back.
+
+  New in `@crosskit-ui/styles`: the `tree-select` block in `tree.css`. The popup
+  takes its width from the anchor's own, published by the positioner — a popup
+  narrower than the control that opened it reads as a different control.
+
+  Not in scope: `showSearch`. Filtering a tree while preserving ancestor chains
+  belongs in core alongside `flattenTree`, and is additive when wanted.
+
+- [#83](https://github.com/saeedkolivand/crosskit/pull/83) [`6c2537f`](https://github.com/saeedkolivand/crosskit/commit/6c2537fdb02b1bc7ec96bd917aecafb0448078c9) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add tree arithmetic to `@crosskit-ui/core`, and `Tree` to React.
+
+  **`core/tree.ts`** answers the two questions a tree implementation gets wrong.
+
+  _What is visible._ A tree is nested and a keyboard is not — every arrow key,
+  every roving tab stop and every "next node" question is asked of a **flat** list.
+  `flattenTree` omits a collapsed node's descendants entirely rather than marking
+  them hidden, so "the next node" is the next entry and no caller reimplements the
+  skip. `isLeaf` wins over the children a node happens to carry, which is what a
+  lazy-loading caller needs before the load.
+
+  _What a check means._ "Checked" in a tree is three states, and the third — a
+  parent some of whose descendants are checked — is **derived on every read, never
+  stored**. An incremental version has to be told about every structural change,
+  and a tree that loaded a subtree lazily would keep a parent ticked over children
+  it has never seen. Only leaves are stored; `checkedLeaves` is what a form wants
+  back, since a parent key in the payload is a restatement the server then has to
+  decide whether to trust.
+
+  `toggleCheck` leaves a disabled node exactly as it found it, in both directions:
+  a parent tick must not reach through something the user was told they cannot
+  change. `checkable: false` excludes a node _and_ its subtree, so a heading inside
+  a tree of options is not a thing to tick.
+
+  **`Tree`** takes `treeData`, `expandedKeys`/`defaultExpandedKeys`/`onExpand`/
+  `defaultExpandAll`, `selectedKeys`/`onSelect`/`multiple`, `checkable`/
+  `checkedKeys`/`onCheck`, `titleRender`, `showLine` and `disabled`.
+
+  It renders `role="tree"` over a **flat list of rows** with the indent as a
+  custom property — nesting the rows would make the DOM disagree with the flat
+  list the keyboard walks, and every `aria-level` would then need keeping in step
+  with a depth the markup already implies.
+
+  One tab stop for the whole tree, clamped to a row that is actually rendered: a
+  consumer collapsing a branch while focus sits inside it would otherwise leave
+  the tree with no stop at all, and Tab would walk straight past it. Arrows move
+  between visible rows and clamp at the ends; Right opens then steps in, Left
+  closes then steps **out** to the parent — without that second half, Left on a
+  leaf does nothing and the only way back up a deep tree is Up, one sibling at a
+  time.
+
+  The row carries `aria-checked`, including `"mixed"`, and the checkbox inside it
+  is hidden from assistive tech — otherwise the state is announced once per
+  element.
+
+  New in `@crosskit-ui/styles`: `tree.css`. The expander's chevron is rotated
+  rather than swapped for a second icon, so the two states are one shape with
+  something to animate between, and it mirrors with the document — a chevron
+  pointing into a branch points the other way when the branch is on the other
+  side.
+
+### Patch Changes
+
+- [#50](https://github.com/saeedkolivand/crosskit/pull/50) [`3c85176`](https://github.com/saeedkolivand/crosskit/commit/3c8517672ef5c3e1de79db2cfd0e10d74338f573) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Add a README to every package — 1.0.0 shipped with none, so each npm page showed only "no README available". Also drops an unused `@zag-js/presence` dependency from `@crosskit-ui/angular`.
+
+- [#63](https://github.com/saeedkolivand/crosskit/pull/63) [`109d5c6`](https://github.com/saeedkolivand/crosskit/commit/109d5c6b7964cfee768fd1375a9628606bb591a1) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - `applyPosition` now sets `position: fixed` itself rather than relying on a stylesheet rule that
+  never existed. The coordinates it writes are viewport-relative, so anything else measures them
+  from the wrong containing block — silently, since the element still renders.
+
+- [#68](https://github.com/saeedkolivand/crosskit/pull/68) [`d61d1a0`](https://github.com/saeedkolivand/crosskit/commit/d61d1a07a538c15189ff0d6fd63736e91d347015) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Make `prefers-reduced-motion` actually reduce motion.
+
+  The overrides for the anchored overlays and for Select selected
+  `[data-scope][data-part="…"]`, while the animations they had to beat are gated
+  on `[data-state]` — one attribute more specific, in the same cascade layer. So
+  they lost, and a user who asked for reduced motion got the full 120ms enter
+  animation on every tooltip, menu, popover and select listbox. Popover was not
+  named at all, and Select's trigger transition never was either.
+
+  Both blocks now reach every part of their scope with `!important`, which is what
+  `dialog.css` has always done and why it was the only one that worked. A
+  preference is not a style to be out-ranked, and matching specificity would break
+  again silently the moment a more specific rule appeared.
+
+  `button.css` is unchanged and deliberately so: its spinner slows from 0.6s to
+  1.5s rather than stopping, because a spinner is the only thing on screen saying
+  work is still happening.
+
+- [#85](https://github.com/saeedkolivand/crosskit/pull/85) [`42ab980`](https://github.com/saeedkolivand/crosskit/commit/42ab98073bd56434b7826f09e404f68a5b80a9b1) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Apply the font token the stylesheet already shipped.
+
+  `--ck-font-sans` was defined in the tokens and never used: the only file
+  referencing it, `theme.css`, is a Tailwind bridge that `index.css` does not
+  import. So every component inherited whatever font the host page happened to set,
+  and on a page that sets none it fell back to the browser default serif.
+
+  Applied in `reset.css`, which is safe because `ck.reset` is the first layer
+  declared and therefore the weakest — a consumer's own rule beats it whether they
+  layer it or not, and the intended override is to redefine the token.
+
+- [#75](https://github.com/saeedkolivand/crosskit/pull/75) [`45b4733`](https://github.com/saeedkolivand/crosskit/commit/45b4733e7c1767131f5fb6f5ba31f9f9e0331a1b) Thanks [@saeedkolivand](https://github.com/saeedkolivand)! - Stop container components restyling what a consumer puts inside them.
+
+  `data-part` is a shared namespace: **33 part names are used by more than one
+  component** — `label` by twelve, `item` by ten, `title` by eight. A loose
+  `[data-scope="x"] [data-part="y"]` rule therefore reaches any nested component
+  that happens to use the same part name.
+
+  Measured in Chromium, each composition against the identical tree rendered
+  loose:
+
+  |                                        |                                                |
+  | -------------------------------------- | ---------------------------------------------- |
+  | a `List` inside a `Card`               | header and footer took the Card's 16px padding |
+  | a `Descriptions` inside a `Card`       | header took 16px it does not have              |
+  | a `Statistic` inside a `Result`        | title repainted at weight 600, centred         |
+  | a `Steps` inside an `Alert`            | title, content and description resized         |
+  | a `Statistic` inside a `Skeleton.Node` | title took the placeholder's fill and radius   |
+  | a `List` inside an `Empty`             | footer gained a top margin and centred         |
+  | a `Result` inside a `Button`           | title and icon took the button's label rules   |
+
+  `Card`, `Alert`, `Tag`, `Button`, `Result`, `Empty` and `Skeleton` now reach
+  their own parts through child combinators or compound selectors. No component's
+  own rendering changes — only what its rules can reach.
+
+  The combinator alone, with no `[data-part="root"]` added to the scope. `Alert`
+  renders its dismiss control as a `Button` with its own part stamped on it, and
+  consumer attributes spread last — so the stamped name
+  _replaces_ `root` and every rule requiring it stops matching.
+
+  Import order is **not** a defence. It decides ties only, so a container with an
+  extra attribute on its root (`[data-scope="card"][data-size="md"] …`, three
+  attributes) outranks a child combinator (two) whatever order the files load in.
+  That is why `Card` reached into components defined in a later file.
+
+  (`Tag` and `Toast` write their part onto a raw `<button>`, so they never had a
+  `root` to lose.)
+
 ## 1.0.0
 
 ### Major Changes
